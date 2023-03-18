@@ -10,7 +10,7 @@
 
 `@embed ./template-path.kte`
 
-This directly copy pastes the template into the current template , Its global scoped constants can be used inside the current template.
+This directly copies and pastes the template into the current template , Its global scoped constants can be used inside the current template.
 
 > Embed statements can only be used at the top of the template
 
@@ -63,3 +63,7 @@ This loop will run until the condition is true
 For each on every element of the list
 
 `@for(@const index from 0 to @model.list.size - 1) @endfor`
+
+## @raw
+
+`@raw text goes directly into the template @endraw`

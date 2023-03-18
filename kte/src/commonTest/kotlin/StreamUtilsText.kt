@@ -1,8 +1,8 @@
 import com.wakaztahir.kte.TemplateContext
-import com.wakaztahir.kte.parser.*
-import com.wakaztahir.kte.parser.increment
-import com.wakaztahir.kte.parser.incrementUntil
-import com.wakaztahir.kte.parser.parseTextUntil
+import com.wakaztahir.kte.parser.stream.*
+import com.wakaztahir.kte.parser.stream.increment
+import com.wakaztahir.kte.parser.stream.incrementUntil
+import com.wakaztahir.kte.parser.stream.parseTextUntil
 import kotlin.test.*
 
 class StreamUtilsText {
@@ -36,4 +36,14 @@ class StreamUtilsText {
         assertEquals(true, context.stream.increment("<%--"))
         assertEquals("This is my comment", context.stream.parseTextUntil("--%>"))
     }
+
+    @Test
+    fun testParseTextUntilChar() {
+        val context = TemplateContext(TextStream("<%--This is my comment--%>"))
+        assertEquals(true, context.stream.increment("<%--"))
+        assertEquals("Th", context.stream.parseTextUntil('i'))
+        assertEquals("is is ", context.stream.parseTextUntil('m'))
+        assertEquals("my comment", context.stream.parseTextUntil('-'))
+    }
+
 }

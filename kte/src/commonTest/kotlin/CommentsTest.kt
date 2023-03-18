@@ -1,9 +1,10 @@
 import com.wakaztahir.kte.TemplateContext
 import com.wakaztahir.kte.parser.*
 import com.wakaztahir.kte.parser.CommentParseException
+import com.wakaztahir.kte.parser.stream.TextStream
+import com.wakaztahir.kte.parser.stream.increment
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFails
 import kotlin.test.assertFailsWith
 
 class CommentsTest {

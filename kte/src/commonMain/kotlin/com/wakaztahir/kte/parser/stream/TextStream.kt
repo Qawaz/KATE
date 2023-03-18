@@ -1,4 +1,4 @@
-package com.wakaztahir.kte.parser
+package com.wakaztahir.kte.parser.stream
 
 class TextStream(private val sourceCode: String) : SourceStream() {
 

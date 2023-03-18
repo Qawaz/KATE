@@ -1,4 +1,4 @@
-package com.wakaztahir.kte.parser
+package com.wakaztahir.kte.parser.stream
 
 abstract class SourceStream {
 
