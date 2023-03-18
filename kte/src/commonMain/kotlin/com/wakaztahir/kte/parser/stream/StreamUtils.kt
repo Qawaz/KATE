@@ -38,29 +38,63 @@ internal fun SourceStream.increment(str: String, throwOnUnexpectedEOS: Boolean =
     }
 }
 
-internal fun SourceStream.incrementUntil(chars: Iterable<Char>, allowed: Iterable<Char>): Boolean {
+internal fun SourceStream.increment(
+    until: () -> Boolean,
+    stopIf: (Char) -> Boolean
+): Boolean {
+    val previous = pointer
     while (!hasEnded) {
-        for (char in chars) {
-            if (char == currentChar) {
-                return true
-            }
+        if (until()) {
+            return true
         }
-        if (!allowed.contains(currentChar)) {
+        if (stopIf(currentChar)) {
+            decrementPointer(pointer - previous)
             return false
         }
         incrementPointer()
     }
+    decrementPointer(pointer - previous)
     return false
 }
 
-internal fun SourceStream.incrementUntil(str: String): Boolean {
+internal fun SourceStream.incrementUntil(
+    str: String,
+    stopIf: (Char) -> Boolean = { false }
+): Boolean {
+    return increment(until = { currentChar == str[0] && increment(str) }, stopIf = stopIf)
+}
+
+internal inline fun SourceStream.withAutoReset(perform: SourceStream.() -> Unit) {
+    val previous = pointer
+    perform()
+    decrementPointer(pointer - previous)
+}
+
+//internal inline fun <T> SourceStream.withNullableReset(perform: SourceStream.() -> T?): T? {
+//    val previous = pointer
+//    val value = perform()
+//    if (value == null) decrementPointer(pointer - previous)
+//    return value
+//}
+
+internal fun SourceStream.printLeft() {
+    withAutoReset {
+        var text = ""
+        while (!hasEnded) {
+            text += currentChar
+            incrementPointer()
+        }
+        println(text)
+    }
+}
+
+internal fun SourceStream.escapeSpaces() {
     while (!hasEnded) {
-        if (currentChar == str[0] && increment(str)) {
-            return true
+        if (currentChar != ' ') {
+            break
         }
         incrementPointer()
     }
-    return false
 }
 
 internal fun SourceStream.parseTextUntil(vararg chars: Char): String {
