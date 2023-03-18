@@ -10,7 +10,18 @@ internal fun SourceStream.unexpected(expected: String): UnexpectedEndOfStream {
     return UnexpectedEndOfStream("unexpected end of stream , expected $expected at pointer : $pointer")
 }
 
+internal fun SourceStream.increment(char: Char): Boolean {
+    return if (currentChar == char) {
+        return incrementPointer()
+    } else {
+        false
+    }
+}
+
 internal fun SourceStream.increment(str: String, throwOnUnexpectedEOS: Boolean = false): Boolean {
+    require(str.length > 1){
+        println("$str should be more than a single character")
+    }
     val previous = pointer
     while (!hasEnded && pointer - previous < str.length) {
         val current = pointer - previous

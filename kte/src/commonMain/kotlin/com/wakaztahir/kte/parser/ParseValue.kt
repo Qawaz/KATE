@@ -37,9 +37,9 @@ fun SourceStream.parseDynamicValue(): DynamicValue<*>? {
 }
 
 internal fun SourceStream.parseStringValue(): StringValue? {
-    if (currentChar == '\"' && increment("\"")) {
+    if (currentChar == '\"' && increment('\"')) {
         val value = StringValue(parseTextUntil('\"'))
-        increment("\"")
+        increment('\"')
         return value
     }
     return null

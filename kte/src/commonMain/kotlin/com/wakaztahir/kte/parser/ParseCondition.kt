@@ -39,14 +39,14 @@ internal fun SourceStream.parseConditionType(): ConditionType? {
         return ConditionType.Equals
     } else if (increment("!=")) {
         return ConditionType.NotEquals
-    } else if (increment(">")) {
-        return if (increment("=")) {
+    } else if (increment('>')) {
+        return if (increment('=')) {
             ConditionType.GreaterThanEqualTo
         } else {
             ConditionType.GreaterThan
         }
-    } else if (increment("<")) {
-        return if (increment("=")) {
+    } else if (increment('<')) {
+        return if (increment('=')) {
             ConditionType.LessThanEqualTo
         } else {
             ConditionType.LessThan
@@ -93,7 +93,7 @@ internal fun SourceStream.parseSingleIf(start: String, ifType: IfType): SingleIf
         if (ifType != IfType.Else) {
             val condition = parseCondition()
             if (condition != null) {
-                if (increment(")")) {
+                if (increment(')')) {
                     return SingleIf(
                         condition = condition,
                         type = ifType,

@@ -11,7 +11,9 @@ class StreamUtilsText {
         assertEquals(4, context.stream.pointer)
         assertFalse(context.stream.increment("<%--"))
         assertEquals(4, context.stream.pointer)
-        assertTrue(context.stream.increment("HelloWorld"))
+        assertTrue(context.stream.increment("HelloWorl"))
+        assertEquals(13, context.stream.pointer)
+        assertTrue(context.stream.increment('d'))
         assertEquals(14, context.stream.pointer)
         assertTrue(context.stream.increment("--%>"))
         assertFailsWith(UnexpectedEndOfStream::class) {

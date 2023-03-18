@@ -43,7 +43,7 @@ The value of the constant can only be
 
 ## Conditional Rendering
 
-`@if(condition) @elseif(condition) @endif`
+`@if(condition) @elseif(condition) @else @endif`
 
 #### Conditional Operators
 

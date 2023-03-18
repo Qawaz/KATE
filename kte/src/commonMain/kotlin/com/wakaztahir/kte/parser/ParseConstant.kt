@@ -12,7 +12,7 @@ class ConstantReferenceParseException(message: String) : Throwable(message)
 internal fun SourceStream.parseConstantReference(): ConstantReference? {
     if (currentChar == '@' && increment("@const(")) {
         val variableName = parseTextUntil(')')
-        increment(")")
+        increment(')')
         if (variableName.isNotEmpty()) {
             return ConstantReference(variableName)
         } else {
@@ -36,7 +36,7 @@ internal fun TemplateContext.parseConstantDeclaration(): ConstantDeclaration? {
     if (stream.currentChar == '@' && stream.increment("@const ")) {
         val variableName = stream.parseTextUntil('=').trim()
         if (variableName.isNotEmpty()) {
-            stream.increment("=")
+            stream.increment('=')
             stream.escapeSpaces()
             val property = stream.parseDynamicProperty()
             if (property != null) {
