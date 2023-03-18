@@ -99,7 +99,7 @@ internal fun SourceStream.escapeSpaces() {
     }
 }
 
-internal fun SourceStream.parseTextWhile(block: SourceStream.() -> Boolean): String {
+internal inline fun SourceStream.parseTextWhile(block: SourceStream.() -> Boolean): String {
     var text = ""
     while (!hasEnded) {
         if (block()) {
@@ -116,6 +116,21 @@ internal fun SourceStream.parseTextUntil(char: Char): String {
     return parseTextWhile { currentChar != char }
 }
 
-internal fun SourceStream.parseTextUntil(str: String): String {
-    return parseTextWhile { currentChar != str[0] || !increment(str) }
+internal fun SourceStream.parseTextUntilConsumed(str: String): String {
+    return parseTextWhile {
+        currentChar != str[0] || !increment(str)
+    }
+}
+
+internal fun SourceStream.parseTextUntil(vararg strings: String): String {
+    return parseTextWhile {
+        var unFound = true
+        for (str in strings) {
+            if (currentChar == str[0] && increment(str)) {
+                decrementPointer(str.length)
+                unFound = false
+            }
+        }
+        unFound
+    }
 }

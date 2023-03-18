@@ -2,14 +2,15 @@ package com.wakaztahir.kte.parser.stream
 
 class TextStream(private val sourceCode: String) : SourceStream() {
 
-    override val streamSize: Int = sourceCode.length
     override var pointer: Int = 0
 
     override val currentChar: Char
         get() = sourceCode[pointer]
 
+    override val hasEnded get() = sourceCode.length == pointer
+
     override fun incrementPointer(): Boolean {
-        return if (pointer + 1 <= streamSize) {
+        return if (pointer + 1 <= sourceCode.length) {
             pointer += 1
             true
         } else {

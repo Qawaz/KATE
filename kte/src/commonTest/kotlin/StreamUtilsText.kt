@@ -34,7 +34,7 @@ class StreamUtilsText {
     fun testParseTextUntil() {
         val context = TemplateContext(TextStream("<%--This is my comment--%>"))
         assertEquals(true, context.stream.increment("<%--"))
-        assertEquals("This is my comment", context.stream.parseTextUntil("--%>"))
+        assertEquals("This is my comment", context.stream.parseTextUntilConsumed("--%>"))
     }
 
     @Test

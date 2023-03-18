@@ -22,7 +22,6 @@ kotlin {
         browser()
         binaries.executable()
     }
-    val ktorVersion = "2.2.3"
     sourceSets {
         val commonMain by getting {
             dependencies {
@@ -34,10 +33,11 @@ kotlin {
                 implementation(kotlin("test"))
             }
         }
+        val commonJvmMain by creating {
+            dependsOn(commonMain)
+        }
         val androidMain by getting {
-            dependencies {
-
-            }
+            dependsOn(commonJvmMain)
         }
         val androidInstrumentedTest by getting {
             dependencies {
@@ -46,11 +46,11 @@ kotlin {
             }
         }
         val desktopMain by getting {
-            dependencies {
-
-            }
+            dependsOn(commonJvmMain)
         }
-        val desktopTest by getting
+        val desktopTest by getting {
+
+        }
         val jsMain by getting
     }
 }

@@ -1,10 +1,13 @@
 package com.wakaztahir.kte.parser
 
-import com.wakaztahir.kte.TemplateContext
-import com.wakaztahir.kte.parser.stream.SourceStream
+import com.wakaztahir.kte.model.*
+import com.wakaztahir.kte.model.Condition
+import com.wakaztahir.kte.model.IfStatement
+import com.wakaztahir.kte.model.SingleIf
+import com.wakaztahir.kte.parser.stream.*
 import com.wakaztahir.kte.parser.stream.escapeSpaces
 import com.wakaztahir.kte.parser.stream.increment
-import com.wakaztahir.kte.parser.stream.printLeft
+import com.wakaztahir.kte.parser.stream.parseTextUntil
 
 internal enum class ConditionType {
 
@@ -31,16 +34,6 @@ internal enum class ConditionType {
 
 }
 
-internal class Condition(
-    val propertyFirst: PropertyOrValue,
-    val type: ConditionType,
-    val propertySecond: PropertyOrValue
-) {
-    fun evaluate(context: TemplateContext): Boolean {
-        return type.verifyCompare(propertyFirst.getValue(context)!!.compareAny(propertySecond.getValue(context)!!))
-    }
-}
-
 internal fun SourceStream.parseConditionType(): ConditionType? {
     if (increment("==")) {
         return ConditionType.Equals
@@ -63,26 +56,81 @@ internal fun SourceStream.parseConditionType(): ConditionType? {
     }
 }
 
-internal fun TemplateContext.parseCondition(): Condition? {
+internal fun SourceStream.parseCondition(): Condition? {
 
 
-    val propertyFirst = stream.parseDynamicProperty() ?: run {
+    val propertyFirst = parseDynamicProperty() ?: run {
         return null
     }
 
-    stream.escapeSpaces()
-    val type = stream.parseConditionType() ?: run {
+    escapeSpaces()
+    val type = parseConditionType() ?: run {
         return null
     }
 
-    stream.escapeSpaces()
-    val propertySecond = stream.parseDynamicProperty() ?: run {
+    escapeSpaces()
+    val propertySecond = parseDynamicProperty() ?: run {
         throw IllegalStateException("condition's right hand side cannot be found")
     }
 
-    return Condition(
+    return LogicalCondition(
         propertyFirst = propertyFirst,
         type = type,
         propertySecond = propertySecond
     )
+}
+
+private fun SourceStream.parseIfBlockValue(ifType: IfType): String {
+    return if (ifType == IfType.Else) {
+        parseTextUntilConsumed("@endif")
+    } else {
+        parseTextUntil("@elseif", "@else", "@endif")
+    }
+}
+
+internal fun SourceStream.parseSingleIf(start: String, ifType: IfType): SingleIf? {
+    if (currentChar == '@' && increment(start)) {
+        if (ifType != IfType.Else) {
+            val condition = parseCondition()
+            if (condition != null) {
+                if (increment(")")) {
+                    return SingleIf(
+                        condition = condition,
+                        type = ifType,
+                        blockValue = parseIfBlockValue(ifType)
+                    )
+                } else {
+                    throw IllegalStateException("missing ')' in @if statement")
+                }
+            }
+        } else {
+            return SingleIf(
+                condition = EvaluatedCondition(true),
+                type = IfType.Else,
+                blockValue = parseIfBlockValue(ifType)
+            )
+        }
+    }
+    return null
+}
+
+internal fun SourceStream.parseFirstIf(): SingleIf? =
+    parseSingleIf(start = "@if(", ifType = IfType.If)
+
+internal fun SourceStream.parseElseIf(): SingleIf? =
+    parseSingleIf(start = "@elseif(", ifType = IfType.ElseIf)
+
+internal fun SourceStream.parseElse(): SingleIf? =
+    parseSingleIf(start = "@else", ifType = IfType.Else)
+
+internal fun SourceStream.parseIfStatement(): IfStatement? {
+    val singleIf = parseFirstIf() ?: return null
+    val ifs = mutableListOf<SingleIf>()
+    ifs.add(singleIf)
+    while (true) {
+        val elseIf = parseElseIf() ?: break
+        ifs.add(elseIf)
+    }
+    parseElse()?.let { ifs.add(it) }
+    return IfStatement(ifs)
 }
