@@ -24,9 +24,9 @@ The value of the constant can only be
 |-------------------------------------|-----------|
 | String                              | &check;   |
 | Another Constant's Value            | &check;   |
-| Value Returned from a function call | &check;   |
-| List Element                        | &check;   |
-| A model's property                  | &check;   |
+| Value Returned from a function call | &cross;   |
+| List Element                        | &cross;   |
+| A model's property                  | &cross;   |
 
 ## References & Function Calls
 
