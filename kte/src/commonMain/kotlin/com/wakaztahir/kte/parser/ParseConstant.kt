@@ -3,7 +3,6 @@ package com.wakaztahir.kte.parser
 import com.wakaztahir.kte.TemplateContext
 import com.wakaztahir.kte.parser.stream.*
 import com.wakaztahir.kte.parser.stream.increment
-import com.wakaztahir.kte.parser.stream.parseTextUntil
 import com.wakaztahir.kte.parser.stream.unexpected
 
 //-------------- Reference
@@ -13,6 +12,7 @@ class ConstantReferenceParseException(message: String) : Throwable(message)
 internal fun SourceStream.parseConstantReference(): ConstantReference? {
     if (currentChar == '@' && increment("@const(")) {
         val variableName = parseTextUntil(')')
+        increment(")")
         if (variableName.isNotEmpty()) {
             return ConstantReference(variableName)
         } else {
@@ -24,9 +24,9 @@ internal fun SourceStream.parseConstantReference(): ConstantReference? {
 
 //-------------- Declaration
 
-internal data class ConstantDeclaration(val variableName: String, val variableValue: DynamicProperty) {
+internal data class ConstantDeclaration(val variableName: String, val variableValue: PropertyOrValue) {
     fun storeValue(context: TemplateContext) {
-        variableValue.getValue(context)?.let { context.storeValue(variableName, it) }
+        context.storeValue(variableName, variableValue.getValue(context)!!.getValueAsString())
     }
 }
 

@@ -64,28 +64,30 @@ internal fun SourceStream.incrementUntil(
     return increment(until = { currentChar == str[0] && increment(str) }, stopIf = stopIf)
 }
 
-internal inline fun SourceStream.withAutoReset(perform: SourceStream.() -> Unit) {
+internal inline fun <T> SourceStream.resetIfNull(perform: SourceStream.() -> T?): T? {
     val previous = pointer
-    perform()
-    decrementPointer(pointer - previous)
+    val value = perform()
+    if (value == null) decrementPointer(pointer - previous)
+    return value
 }
 
-//internal inline fun <T> SourceStream.withNullableReset(perform: SourceStream.() -> T?): T? {
-//    val previous = pointer
-//    val value = perform()
-//    if (value == null) decrementPointer(pointer - previous)
-//    return value
-//}
-
-internal fun SourceStream.printLeft() {
-    withAutoReset {
+internal inline fun <T> SourceStream.resetIfNullWithText(
+    condition: () -> Boolean,
+    perform: SourceStream.(String) -> T?
+): T? {
+    return resetIfNull {
         var text = ""
-        while (!hasEnded) {
+        while (!hasEnded && condition()) {
             text += currentChar
             incrementPointer()
         }
-        println(text)
+        perform(text)
     }
+}
+
+internal fun SourceStream.printLeft() = resetIfNullWithText(condition = { true }) { text ->
+    println(text)
+    null
 }
 
 internal fun SourceStream.escapeSpaces() {
@@ -97,42 +99,23 @@ internal fun SourceStream.escapeSpaces() {
     }
 }
 
-internal fun SourceStream.parseTextUntil(vararg chars: Char): String {
+internal fun SourceStream.parseTextWhile(block: SourceStream.() -> Boolean): String {
     var text = ""
     while (!hasEnded) {
-        for (char in chars) {
-            if (char == currentChar) {
-                return text
-            }
+        if (block()) {
+            text += currentChar
+        } else {
+            return text
         }
-        text += currentChar
         incrementPointer()
     }
     return text
 }
 
 internal fun SourceStream.parseTextUntil(char: Char): String {
-    var text = ""
-    while (!hasEnded) {
-        if (currentChar == char) {
-            return text
-        } else {
-            text += currentChar
-        }
-        incrementPointer()
-    }
-    return text
+    return parseTextWhile { currentChar != char }
 }
 
 internal fun SourceStream.parseTextUntil(str: String): String {
-    var text = ""
-    while (!hasEnded) {
-        if (currentChar == str[0] && increment(str)) {
-            return text
-        } else {
-            text += currentChar
-        }
-        incrementPointer()
-    }
-    return text
+    return parseTextWhile { currentChar != str[0] || !increment(str) }
 }

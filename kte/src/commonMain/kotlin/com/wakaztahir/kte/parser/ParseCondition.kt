@@ -6,55 +6,38 @@ import com.wakaztahir.kte.parser.stream.escapeSpaces
 import com.wakaztahir.kte.parser.stream.increment
 import com.wakaztahir.kte.parser.stream.printLeft
 
-internal sealed class ConditionType {
+internal enum class ConditionType {
 
-    abstract fun evaluate(context: TemplateContext, valueOne: DynamicProperty, valueTwo: DynamicProperty): Boolean
+    Equals {
+        override fun verifyCompare(result: Int) = result == 0
+    },
+    NotEquals {
+        override fun verifyCompare(result: Int) = result != 0
+    },
+    GreaterThan {
+        override fun verifyCompare(result: Int) = result == 1
+    },
+    LessThan {
+        override fun verifyCompare(result: Int) = result == -1
+    },
+    GreaterThanEqualTo {
+        override fun verifyCompare(result: Int) = result == 1 || result == 0
+    },
+    LessThanEqualTo {
+        override fun verifyCompare(result: Int) = result == -1 || result == 0
+    };
 
-    object Equals : ConditionType() {
-        override fun evaluate(context: TemplateContext, valueOne: DynamicProperty, valueTwo: DynamicProperty): Boolean {
-            val first = valueOne.getValue(context)
-            val second = valueTwo.getValue(context)
-            return first == second
-        }
-    }
-
-    object NotEquals : ConditionType(){
-        override fun evaluate(context: TemplateContext, valueOne: DynamicProperty, valueTwo: DynamicProperty): Boolean {
-            val first = valueOne.getValue(context)
-            val second = valueTwo.getValue(context)
-            return first != second
-        }
-    }
-    object GreaterThan : ConditionType(){
-        override fun evaluate(context: TemplateContext, valueOne: DynamicProperty, valueTwo: DynamicProperty): Boolean {
-            TODO("Not yet implemented")
-        }
-    }
-    object LessThan : ConditionType(){
-        override fun evaluate(context: TemplateContext, valueOne: DynamicProperty, valueTwo: DynamicProperty): Boolean {
-            TODO("Not yet implemented")
-        }
-    }
-    object GreaterThanEqualTo : ConditionType(){
-        override fun evaluate(context: TemplateContext, valueOne: DynamicProperty, valueTwo: DynamicProperty): Boolean {
-            TODO("Not yet implemented")
-        }
-    }
-    object LessThanEqualTo : ConditionType(){
-        override fun evaluate(context: TemplateContext, valueOne: DynamicProperty, valueTwo: DynamicProperty): Boolean {
-            TODO("Not yet implemented")
-        }
-    }
+    abstract fun verifyCompare(result: Int): Boolean
 
 }
 
 internal class Condition(
-    val propertyFirst: DynamicProperty,
+    val propertyFirst: PropertyOrValue,
     val type: ConditionType,
-    val propertySecond: DynamicProperty
+    val propertySecond: PropertyOrValue
 ) {
     fun evaluate(context: TemplateContext): Boolean {
-        return type.evaluate(context,propertyFirst,propertySecond)
+        return type.verifyCompare(propertyFirst.getValue(context)!!.compareAny(propertySecond.getValue(context)!!))
     }
 }
 
@@ -81,18 +64,22 @@ internal fun SourceStream.parseConditionType(): ConditionType? {
 }
 
 internal fun TemplateContext.parseCondition(): Condition? {
+
+
     val propertyFirst = stream.parseDynamicProperty() ?: run {
-        stream.printLeft()
         return null
     }
+
     stream.escapeSpaces()
     val type = stream.parseConditionType() ?: run {
-        stream.printLeft()
         return null
     }
+
+    stream.escapeSpaces()
     val propertySecond = stream.parseDynamicProperty() ?: run {
         throw IllegalStateException("condition's right hand side cannot be found")
     }
+
     return Condition(
         propertyFirst = propertyFirst,
         type = type,

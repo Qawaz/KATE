@@ -1,4 +1,5 @@
 import com.wakaztahir.kte.TemplateContext
+import com.wakaztahir.kte.model.StringValue
 import com.wakaztahir.kte.parser.parseConstantDeclaration
 import com.wakaztahir.kte.parser.parseConstantReference
 import com.wakaztahir.kte.parser.parseDynamicProperty
@@ -14,7 +15,9 @@ class ConstantsTest {
         val context = TemplateContext(TextStream("@const(myVar)"))
         val ref = context.stream.parseConstantReference()
         assertNotEquals(null, ref)
-        assertEquals(ref!!.variableName, "myVar")
+        assertEquals(ref!!.name, "myVar")
+        context.storeValue("myVar", StringValue("someValue"))
+        assertEquals("someValue", ref.getValue(context)!!.value)
     }
 
     @Test
@@ -23,22 +26,22 @@ class ConstantsTest {
         val ref = context.parseConstantDeclaration()
         assertNotEquals(null, ref)
         assertEquals("myVar", ref!!.variableName)
-        assertEquals("someValue", ref.variableValue.getValue(context))
+        assertEquals("someValue", ref.variableValue.getValue(context)!!.value)
     }
 
     @Test
     fun testParseStringValue() {
         val context = TemplateContext(TextStream("\"someValue\""))
-        val value = context.stream.parseStringValue()!!.getValue(context)
+        val value = context.stream.parseStringValue()!!.value
         assertEquals("someValue", value)
     }
 
     @Test
     fun testParseDynamicProperty() {
         val context = TemplateContext(TextStream("@const(myVar)"))
-        context.storeValue("myVar", "someValue")
+        context.storeValue("myVar", StringValue("someValue"))
         val property = context.stream.parseDynamicProperty()
-        assertEquals(property!!.getValue(context), "someValue")
+        assertEquals(property!!.getValue(context)!!.value, "someValue")
     }
 
     @Test
@@ -48,7 +51,10 @@ class ConstantsTest {
         decContext.updateStream(TextStream("@const myVar2 = @const(myVar)"))
         dec!!.storeValue(decContext)
         val refDec = decContext.parseConstantDeclaration()
-        assertEquals(dec.variableValue.getValue(decContext), refDec!!.variableValue.getValue(decContext))
+        assertEquals(
+            dec.variableValue.getValue(decContext)!!.value,
+            refDec!!.variableValue.getValue(decContext)!!.value
+        )
     }
 
 }
