@@ -21,7 +21,7 @@ This directly copy pastes the template into the current template , Its global sc
 The value of the constant can only be
 
 | Value                               | Supported |
-| ----------------------------------- | --------- |
+|-------------------------------------|-----------|
 | String                              | &check;   |
 | Another Constant's Value            | &check;   |
 | Value Returned from a function call | &check;   |
