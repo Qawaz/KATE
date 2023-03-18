@@ -10,7 +10,8 @@
 
 `@embed ./template-path.kte`
 
-This directly copies and pastes the template into the current template , Its global scoped constants can be used inside the current template.
+This directly copies and pastes the template into the current template , Its global scoped constants can be used inside
+the current template.
 
 > Embed statements can only be used at the top of the template
 
@@ -22,8 +23,12 @@ The value of the constant can only be
 
 | Value                               | Supported |
 |-------------------------------------|-----------|
-| String                              | &check;   |
+| String ("HelloWorld")               | &check;   |
+| Integer (12345)                     | &check;   |
+| Float (1.0f)                        | &check;   |
+| Boolean (true,false)                | &check;   |
 | Another Constant's Value            | &check;   |
+| Expressions                         | &cross;   |
 | Value Returned from a function call | &cross;   |
 | List Element                        | &cross;   |
 | A model's property                  | &cross;   |
@@ -40,7 +45,7 @@ The value of the constant can only be
 
 `@if(condition) @elseif(condition) @endif`
 
-#### Conditional Operators    
+#### Conditional Operators
 
 `==` , `!=` , `>` , `<` , `>=` , `<=`
 
