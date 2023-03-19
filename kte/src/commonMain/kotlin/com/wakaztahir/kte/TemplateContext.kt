@@ -3,13 +3,14 @@ package com.wakaztahir.kte
 import com.wakaztahir.kte.model.ConstantReference
 import com.wakaztahir.kte.model.DynamicValue
 import com.wakaztahir.kte.model.ModelDirective
+import com.wakaztahir.kte.model.StringValue
 import com.wakaztahir.kte.parser.parseDynamicValue
 import com.wakaztahir.kte.parser.stream.SourceStream
-import com.wakaztahir.kte.parser.stream.TextStream
+import com.wakaztahir.kte.parser.stream.TextSourceStream
 
 class TemplateContext(stream: SourceStream) {
 
-    constructor(text: String) : this(TextStream(text))
+    constructor(text: String) : this(TextSourceStream(text))
 
     var stream: SourceStream = stream
         private set
@@ -30,11 +31,11 @@ class TemplateContext(stream: SourceStream) {
     }
 
     internal fun getConstantReference(reference: ConstantReference): DynamicValue<*>? {
-        return propertyMap[reference.name]?.let { TextStream(it).parseDynamicValue() }
+        return propertyMap[reference.name]?.let { TextSourceStream(it).parseDynamicValue() }
     }
 
     internal fun getModelDirectiveValue(directive: ModelDirective): DynamicValue<*>? {
-        TODO("Not yet implemented")
+        return StringValue("todomodel." + directive.propertyPath.joinToString("."))
     }
 
     internal fun storeValue(name: String, property: DynamicValue<*>) {

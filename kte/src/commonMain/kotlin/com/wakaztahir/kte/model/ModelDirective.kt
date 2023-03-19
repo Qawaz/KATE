@@ -1,6 +1,7 @@
 package com.wakaztahir.kte.model
 
 import com.wakaztahir.kte.TemplateContext
+import com.wakaztahir.kte.parser.stream.DestinationStream
 
 internal sealed interface ModelReference {
 
@@ -17,8 +18,12 @@ internal sealed interface ModelReference {
 
 internal class ModelDirective(
     val propertyPath: List<ModelReference>
-) : ReferencedValue,AtDirective{
+) : ReferencedValue, AtDirective {
     override fun getValue(context: TemplateContext): DynamicValue<*>? {
         return context.getModelDirectiveValue(this)
+    }
+
+    override fun generateTo(context: TemplateContext, stream: DestinationStream) {
+        getValue(context)!!.generateTo(context, stream)
     }
 }

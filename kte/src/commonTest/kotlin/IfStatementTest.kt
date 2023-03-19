@@ -1,26 +1,24 @@
 import com.wakaztahir.kte.TemplateContext
-import com.wakaztahir.kte.model.FloatValue
 import com.wakaztahir.kte.model.LogicalCondition
 import com.wakaztahir.kte.parser.parseCondition
 import com.wakaztahir.kte.parser.parseConstantDeclaration
 import com.wakaztahir.kte.parser.parseIfStatement
-import com.wakaztahir.kte.parser.stream.TextStream
-import com.wakaztahir.kte.parser.stream.printLeft
+import com.wakaztahir.kte.parser.stream.TextSourceStream
 import kotlin.test.*
 
 class IfStatementTest {
 
     private fun TemplateContext.evaluateConstants(var1: String, condition: String, var2: String): Boolean {
-        updateStream(TextStream("@const var1 = $var1"))
+        updateStream(TextSourceStream("@const var1 = $var1"))
         stream.parseConstantDeclaration()!!.storeValue(this)
-        updateStream(TextStream("@const var2 = $var2"))
+        updateStream(TextSourceStream("@const var2 = $var2"))
         stream.parseConstantDeclaration()!!.storeValue(this)
-        updateStream(TextStream("@const(var1) $condition @const(var2)"))
+        updateStream(TextSourceStream("@const(var1) $condition @const(var2)"))
         return stream.parseCondition()!!.evaluate(this)
     }
 
     private fun evaluate(var1: String, condition: String, var2: String, constants: Boolean = true): Boolean {
-        val context = TemplateContext(TextStream("$var1 $condition $var2"))
+        val context = TemplateContext(("$var1 $condition $var2"))
         val result = context.stream.parseCondition()!!.evaluate(context)
         val result2 = if (constants) context.evaluateConstants(var1, condition, var2) else true
         return result && result2
@@ -28,7 +26,7 @@ class IfStatementTest {
 
     @Test
     fun testUnequalCondition() {
-        val context = TemplateContext(TextStream("\"ValueOne\" == \"SecondValue\""))
+        val context = TemplateContext(("\"ValueOne\" == \"SecondValue\""))
         val condition = context.stream.parseCondition()!! as LogicalCondition
         assertEquals("ValueOne", condition.propertyFirst.getValue(context)!!.value)
         assertEquals("SecondValue", condition.propertySecond.getValue(context)!!.value)
@@ -78,7 +76,7 @@ class IfStatementTest {
 
     @Test
     fun testConstantsRefs() {
-        val context = TemplateContext(TextStream("\"ValueOne\" == \"SecondValue\""))
+        val context = TemplateContext(("\"ValueOne\" == \"SecondValue\""))
         val condition = context.stream.parseCondition()!! as LogicalCondition
         assertEquals("ValueOne", condition.propertyFirst.getValue(context)!!.value)
         assertEquals("SecondValue", condition.propertySecond.getValue(context)!!.value)
@@ -101,7 +99,7 @@ class IfStatementTest {
     @Test
     fun testParseIf2() {
         val iffy = testIfy(firstIf = false, firstElseIf = true, secondElseIf = false)
-        val context = TemplateContext(TextStream(iffy))
+        val context = TemplateContext((iffy))
         val ifStatement = context.stream.parseIfStatement()
         assertEquals("MySecondValue", ifStatement!!.evaluate(context)!!.blockValue.getValueAsString(context.stream))
         assertEquals(iffy.length,context.stream.pointer)
@@ -110,7 +108,7 @@ class IfStatementTest {
     @Test
     fun testParseIf3() {
         val iffy = testIfy(firstIf = false, firstElseIf = false, secondElseIf = true)
-        val context = TemplateContext(TextStream(iffy))
+        val context = TemplateContext((iffy))
         val ifStatement = context.stream.parseIfStatement()
         assertEquals("MyThirdValue", ifStatement!!.evaluate(context)!!.blockValue.getValueAsString(context.stream))
         assertEquals(iffy.length,context.stream.pointer)
@@ -119,7 +117,7 @@ class IfStatementTest {
     @Test
     fun testParseIf4() {
         val iffy = testIfy(firstIf = false, firstElseIf = false, secondElseIf = false)
-        val context = TemplateContext(TextStream(iffy))
+        val context = TemplateContext((iffy))
         val ifStatement = context.stream.parseIfStatement()
         assertNotEquals(null,ifStatement)
         assertEquals("MyFourthValue", ifStatement!!.evaluate(context)!!.blockValue.getValueAsString(context.stream))

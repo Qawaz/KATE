@@ -1,5 +1,6 @@
 package com.wakaztahir.kte.parser
 
+import com.wakaztahir.kte.TemplateContext
 import com.wakaztahir.kte.model.*
 import com.wakaztahir.kte.model.ConditionType
 import com.wakaztahir.kte.model.DynamicProperty
@@ -12,17 +13,35 @@ internal sealed interface ForLoop : AtDirective {
 
     val blockValue: LazyBlockSlice
 
+    fun iterate(context: TemplateContext, block: () -> Unit)
+
+    override fun generateTo(context: TemplateContext, stream: DestinationStream) {
+        iterate(context) {
+            //
+        }
+    }
+
     class ConditionalFor(
         val condition: Condition,
         override val blockValue: LazyBlockSlice
-    ) : ForLoop
+    ) : ForLoop {
+        override fun iterate(context: TemplateContext, block: () -> Unit) {
+            while (condition.evaluate(context)) {
+                block()
+            }
+        }
+    }
 
     class IterableFor(
         val indexConstName: String?,
         val elementConstName: String,
         val listProperty: ReferencedValue,
         override val blockValue: LazyBlockSlice
-    ) : ForLoop
+    ) : ForLoop {
+        override fun iterate(context: TemplateContext, block: () -> Unit) {
+            
+        }
+    }
 
     class NumberedFor(
         val variableName: String,
@@ -32,7 +51,24 @@ internal sealed interface ForLoop : AtDirective {
         val arithmeticOperatorType: ArithmeticOperatorType,
         val incrementer: DynamicProperty,
         override val blockValue: LazyBlockSlice
-    ) : ForLoop
+    ) : ForLoop {
+
+        private fun DynamicProperty.intVal(context: TemplateContext): Float {
+            (getValue(context) as? IntValue)?.value?.toFloat()?.let { return it }
+            return (getValue(context)!! as? FloatValue)?.value
+                ?: throw IllegalStateException("for loop variable must be an integer / float")
+        }
+
+        override fun iterate(context: TemplateContext, block: () -> Unit) {
+            var i = initializer.intVal(context)
+            val conditionValue = conditional.intVal(context)
+            val incrementerValue = incrementer.intVal(context)
+            while (conditionType.verifyCompare(i.compareTo(conditionValue))) {
+                block()
+                i = arithmeticOperatorType.operate(i, incrementerValue)
+            }
+        }
+    }
 
 }
 
@@ -42,9 +78,9 @@ private fun SourceStream.parseForBlockValue(): LazyBlockSlice {
     incrementUntil("@endfor")
     decrementPointer()
 
-    val length = if(currentChar == ' '){
+    val length = if (currentChar == ' ') {
         pointer - previous
-    }else {
+    } else {
         pointer - previous + 1
     }
 
@@ -95,7 +131,7 @@ private fun SourceStream.parseIterableForLoopAfterVariable(variableName: String)
         escapeSpaces()
         val referencedValue = parseReferencedValue()
         escapeSpaces()
-        if(!increment(')')){
+        if (!increment(')')) {
             throw IllegalStateException("expected ) , got $currentChar")
         }
         increment(' ')

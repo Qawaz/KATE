@@ -4,11 +4,34 @@ import com.wakaztahir.kte.parser.stream.SourceStream
 import com.wakaztahir.kte.parser.stream.increment
 
 enum class ArithmeticOperatorType(val char: Char) {
-    Plus('+'),
-    Minus('-'),
-    Divide('-'),
-    Multiply('*'),
-    Mod('%');
+
+    Plus('+') {
+        override fun operate(value1: Float, value2: Float): Float {
+            return value1 + value2
+        }
+    },
+    Minus('-') {
+        override fun operate(value1: Float, value2: Float): Float {
+            return value1 - value2
+        }
+    },
+    Divide('/') {
+        override fun operate(value1: Float, value2: Float): Float {
+            return value1 / value2
+        }
+    },
+    Multiply('*') {
+        override fun operate(value1: Float, value2: Float): Float {
+            return value1 * value2
+        }
+    },
+    Mod('%') {
+        override fun operate(value1: Float, value2: Float): Float {
+            return value1 % value2
+        }
+    };
+
+    abstract fun operate(value1: Float, value2: Float): Float
 
     fun parse(stream: SourceStream): ArithmeticOperatorType? {
         return if (stream.increment(char)) this@ArithmeticOperatorType else null

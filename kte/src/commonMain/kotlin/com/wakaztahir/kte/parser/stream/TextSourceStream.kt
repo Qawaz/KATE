@@ -1,6 +1,6 @@
 package com.wakaztahir.kte.parser.stream
 
-class TextStream(private val sourceCode: String) : SourceStream() {
+class TextSourceStream(private val sourceCode: String) : SourceStream() {
 
     override var pointer: Int = 0
 

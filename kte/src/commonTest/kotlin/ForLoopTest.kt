@@ -3,7 +3,7 @@ import com.wakaztahir.kte.model.ModelDirective
 import com.wakaztahir.kte.parser.ArithmeticOperatorType
 import com.wakaztahir.kte.parser.ForLoop
 import com.wakaztahir.kte.parser.parseForLoop
-import com.wakaztahir.kte.parser.stream.TextStream
+import com.wakaztahir.kte.parser.stream.TextSourceStream
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -23,7 +23,7 @@ class ForLoopTest {
         assertEquals(null, loop.indexConstName)
         assertEquals("blockValue", loop.blockValue.getValueAsString(context.stream))
         assertEquals("mList", (loop.listProperty as ModelDirective).propertyPath[0].name)
-        context.updateStream(TextStream("@for(@const listName,indexName : @model.list) blockValue @endfor"))
+        context.updateStream(TextSourceStream("@for(@const listName,indexName : @model.list) blockValue @endfor"))
         loop = context.stream.parseForLoop()!! as ForLoop.IterableFor
         assertEquals("indexName", loop.indexConstName)
     }

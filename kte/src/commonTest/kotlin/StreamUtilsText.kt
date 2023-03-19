@@ -6,7 +6,7 @@ import kotlin.test.*
 class StreamUtilsText {
     @Test
     fun testIncrement() {
-        val context = TemplateContext(TextStream("<%--HelloWorld--%>"))
+        val context = TemplateContext(("<%--HelloWorld--%>"))
         assertTrue(context.stream.increment("<%--"))
         assertEquals(4, context.stream.pointer)
         assertFalse(context.stream.increment("<%--"))
@@ -40,14 +40,14 @@ class StreamUtilsText {
 
     @Test
     fun testParseTextUntil() {
-        val context = TemplateContext(TextStream("<%--This is my comment--%>"))
+        val context = TemplateContext(("<%--This is my comment--%>"))
         assertEquals(true, context.stream.increment("<%--"))
         assertEquals("This is my comment", context.stream.parseTextUntilConsumed("--%>"))
     }
 
     @Test
     fun testParseTextUntilChar() {
-        val context = TemplateContext(TextStream("<%--This is my comment--%>"))
+        val context = TemplateContext(("<%--This is my comment--%>"))
         assertEquals(true, context.stream.increment("<%--"))
         assertEquals("Th", context.stream.parseTextWhile { currentChar != 'i' })
         assertEquals("is is ", context.stream.parseTextWhile { currentChar != 'm' })

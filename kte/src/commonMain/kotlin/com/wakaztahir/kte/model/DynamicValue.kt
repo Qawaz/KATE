@@ -1,6 +1,9 @@
 package com.wakaztahir.kte.model
 
-interface DynamicValue<T> {
+import com.wakaztahir.kte.TemplateContext
+import com.wakaztahir.kte.parser.stream.DestinationStream
+
+interface DynamicValue<T> : CodeGen {
     val value: T
 
     operator fun compareTo(other: DynamicValue<T>): Int
@@ -14,8 +17,13 @@ interface DynamicValue<T> {
 }
 
 class IntValue(override val value: Int) : DynamicValue<Int> {
+
     override fun compareTo(other: DynamicValue<Int>): Int {
         return value.compareTo(other.value)
+    }
+
+    override fun generateTo(context: TemplateContext, stream: DestinationStream) {
+        stream.write(value.toString())
     }
 
     override fun getValueAsString(): String = value.toString()
@@ -25,6 +33,10 @@ class IntValue(override val value: Int) : DynamicValue<Int> {
 class FloatValue(override val value: Float) : DynamicValue<Float> {
     override fun compareTo(other: DynamicValue<Float>): Int {
         return value.compareTo(other.value)
+    }
+
+    override fun generateTo(context: TemplateContext, stream: DestinationStream) {
+        stream.write(value.toString())
     }
 
     override fun getValueAsString(): String = value.toString() + 'f'
@@ -40,6 +52,10 @@ class BooleanValue(override val value: Boolean) : DynamicValue<Boolean> {
         }
     }
 
+    override fun generateTo(context: TemplateContext, stream: DestinationStream) {
+        stream.write(if (value) "true" else "false")
+    }
+
     override fun getValueAsString(): String = if (value) "true" else "false"
     override fun toString(): String = getValueAsString()
 }
@@ -51,6 +67,10 @@ class StringValue(override val value: String) : DynamicValue<String> {
         } else {
             -1
         }
+    }
+
+    override fun generateTo(context: TemplateContext, stream: DestinationStream) {
+        stream.write(value)
     }
 
     override fun getValueAsString(): String = '\"' + value + '\"'

@@ -31,6 +31,10 @@ internal data class ConstantDeclaration(val variableName: String, val variableVa
     fun storeValue(context: TemplateContext) {
         context.storeValue(variableName, variableValue.getValue(context)!!.getValueAsString())
     }
+
+    override fun generateTo(context: TemplateContext, stream: DestinationStream) {
+
+    }
 }
 
 class ConstantDeclarationParseException(message: String) : Throwable(message)
@@ -62,6 +66,7 @@ internal fun SourceStream.parseConstantDeclaration(): ConstantDeclaration? {
             if (hasEnded) {
                 unexpected()
             } else {
+                printLeft()
                 throw ConstantDeclarationParseException("constant's name not given")
             }
         }
