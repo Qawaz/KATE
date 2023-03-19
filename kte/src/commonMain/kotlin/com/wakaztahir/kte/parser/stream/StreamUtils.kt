@@ -96,13 +96,8 @@ internal inline fun <T> SourceStream.resetIfNullWithText(
     }
 }
 
-internal fun SourceStream.printLeft() = resetIfNullWithText(condition = { true }) { text ->
-    println(text)
-    null
-}
-
 internal fun SourceStream.escapeSpaces() {
-    if(increment(' ')){
+    if (increment(' ')) {
         escapeSpaces()
     }
 }
@@ -118,6 +113,11 @@ internal inline fun SourceStream.parseTextWhile(block: SourceStream.() -> Boolea
         incrementPointer()
     }
     return text
+}
+
+internal fun SourceStream.printLeft() = resetIfNull {
+    println(parseTextWhile { true })
+    null
 }
 
 internal fun SourceStream.parseTextUntil(char: Char): String {

@@ -1,6 +1,7 @@
 package com.wakaztahir.kte.parser
 
 import com.wakaztahir.kte.model.Condition
+import com.wakaztahir.kte.model.ConditionType
 import com.wakaztahir.kte.model.DynamicProperty
 import com.wakaztahir.kte.model.ReferencedValue
 import com.wakaztahir.kte.parser.stream.*
@@ -24,6 +25,16 @@ internal sealed interface ForLoop {
         override val blockValue: String
     ) : ForLoop
 
+    class NumberedFor(
+        val variableName: String,
+        val initializer: DynamicProperty,
+        val conditionType: ConditionType,
+        val conditional: DynamicProperty,
+        val arithmeticOperatorType: ArithmeticOperatorType,
+        val incrementer: DynamicProperty,
+        override val blockValue: String
+    ) : ForLoop
+
 }
 
 private fun SourceStream.parseForBlockValue(): String {
@@ -36,42 +47,122 @@ internal fun SourceStream.incrementBreakFor(): Boolean {
     return currentChar == '@' && increment("@breakfor")
 }
 
-internal fun SourceStream.parseForLoop(): ForLoop? {
-    if (currentChar == '@' && increment("@for(")) {
+private fun SourceStream.parseForLoopNumberProperty(): DynamicProperty? {
+    parseConstantReference()?.let { return DynamicProperty(property = it, value = null) }
+    parseModelDirective()?.let { return DynamicProperty(property = it, value = null) }
+    parseNumberValue()?.let { return DynamicProperty(property = null, value = it) }
+    return null
+}
 
-        val condition = parseCondition()
-        if (condition != null) {
-            increment(')')
-            increment(' ')
-            val blockValue = parseForBlockValue()
-            return ForLoop.ConditionalFor(
-                condition = condition,
+private fun SourceStream.parseConditionalFor(): ForLoop.ConditionalFor? {
+    val condition = parseCondition()
+    if (condition != null) {
+        increment(')')
+        increment(' ')
+        val blockValue = parseForBlockValue()
+        return ForLoop.ConditionalFor(
+            condition = condition,
+            blockValue = blockValue
+        )
+    }
+    return null
+}
+
+private fun SourceStream.parseIterableForLoopAfterVariable(variableName: String): ForLoop.IterableFor? {
+    var secondVariableName: String? = null
+    if (increment(',')) {
+        secondVariableName = parseTextWhile { currentChar.isConstantVariableName() }
+    }
+    escapeSpaces()
+    if (increment(':')) {
+        escapeSpaces()
+        val referencedValue = parseReferencedValue()
+        escapeSpaces()
+        if(!increment(')')){
+            throw IllegalStateException("expected ) , got $currentChar")
+        }
+        increment(' ')
+        val blockValue = parseForBlockValue()
+        if (referencedValue != null) {
+            return ForLoop.IterableFor(
+                indexConstName = secondVariableName,
+                elementConstName = variableName,
+                listProperty = referencedValue,
                 blockValue = blockValue
             )
         }
+    }
+    return null
+}
+
+private fun SourceStream.parseNumberedForLoopAfterVariable(variableName: String): ForLoop.NumberedFor? {
+    if (increment('=')) {
+        escapeSpaces()
+        val initializer = parseForLoopNumberProperty()
+            ?: throw IllegalStateException("unexpected $currentChar , expected a number or property")
+        if (increment(';')) {
+            val conditionalConst = parseTextWhile { currentChar.isConstantVariableName() }
+            if (conditionalConst == variableName) {
+                val conditionType = parseConditionType()
+                    ?: throw IllegalStateException("expected conditional operator , got $currentChar")
+                val conditional = parseForLoopNumberProperty()
+                    ?: throw IllegalStateException("expected number property of value got $currentChar")
+                if (increment(';')) {
+                    val incrementalConst = parseTextWhile { currentChar.isConstantVariableName() }
+                    if (incrementalConst == variableName) {
+                        val operator = parseArithmeticOperator()
+                        if (operator != null) {
+                            val incrementer = parseForLoopNumberProperty()
+                                ?: throw IllegalStateException("expected number property of value got $currentChar")
+                            if (!increment(')')) {
+                                throw IllegalStateException("expected ) , got $currentChar")
+                            }
+                            increment(' ')
+                            val blockValue = parseForBlockValue()
+                            return ForLoop.NumberedFor(
+                                variableName = variableName,
+                                initializer = initializer,
+                                conditionType = conditionType,
+                                conditional = conditional,
+                                arithmeticOperatorType = operator,
+                                incrementer = incrementer,
+                                blockValue = blockValue
+                            )
+                        } else {
+                            throw IllegalStateException("expected '+','-','/','*','%' , got $operator")
+                        }
+                    } else {
+                        throw IllegalStateException("incremental variable is different : $incrementalConst != $variableName")
+                    }
+                } else {
+                    throw IllegalStateException("unexpected $currentChar , expected ';'")
+                }
+            } else {
+                throw IllegalStateException("conditional variable is different : $conditionalConst != $variableName")
+            }
+        } else {
+            throw IllegalStateException("unexpected $currentChar , expected ';'")
+        }
+    }
+    return null
+}
+
+internal fun SourceStream.parseForLoop(): ForLoop? {
+    if (currentChar == '@' && increment("@for(")) {
+
+        parseConditionalFor()?.let { return it }
 
         val variableName = parseConstantVariableName()
         if (variableName != null) {
-            var secondVariableName: String? = null
-            if (increment(',')) {
-                secondVariableName = parseTextWhile { currentChar.isConstantVariableName() }
-            }
+
             escapeSpaces()
-            increment(':')
-            escapeSpaces()
-            val referencedValue = parseReferencedValue()
-            escapeSpaces()
-            increment(')')
-            increment(' ')
-            val blockValue = parseForBlockValue()
-            if (referencedValue != null) {
-                return ForLoop.IterableFor(
-                    indexConstName = secondVariableName,
-                    elementConstName = variableName,
-                    listProperty = referencedValue,
-                    blockValue = blockValue
-                )
-            }
+
+            // Parsing the numbered loop
+            parseNumberedForLoopAfterVariable(variableName)?.let { return it }
+
+            // Parsing the iterable loop
+            parseIterableForLoopAfterVariable(variableName)?.let { return it }
+
         }
 
     }

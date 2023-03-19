@@ -71,7 +71,13 @@ For each on every element of the list
 
 To get the index of every element in the list
 
-`@for(@const element,index : @model.list ) @endfor`
+`@for(@const element,index : @model.list) @endfor`
+
+To loop using a number
+
+`@for(@const i=0;i<5;i+1) @endfor`
+
+> i++ is not allowed , It must be i+1
 
 To break a parent loop , You can use
 
