@@ -19,14 +19,14 @@ class CommentsTest {
     fun testCommentWithoutEnding() {
         val context = TemplateContext(TextStream("<%--This is my comment"))
         assertFailsWith(CommentParseException::class) {
-            context.parseComment()
+            context.stream.parseComment()
         }
     }
 
     @Test
     fun testNoComment() {
         val context = TemplateContext(TextStream("There is no comment here"))
-        assertEquals(false,context.parseComment())
+        assertEquals(false,context.stream.parseComment())
     }
 
 }

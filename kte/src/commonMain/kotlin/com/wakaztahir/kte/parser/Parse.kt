@@ -6,7 +6,7 @@ fun TemplateContext.parse() {
     while (!stream.hasEnded) {
         when (stream.currentChar) {
             '<' -> {
-                parseComment()
+                stream.parseComment()
             }
             '@' -> {
 

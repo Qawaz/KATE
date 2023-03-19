@@ -11,7 +11,7 @@ internal fun SourceStream.unexpected(expected: String): UnexpectedEndOfStream {
 }
 
 internal fun SourceStream.increment(char: Char): Boolean {
-    return if (currentChar == char) {
+    return if (!hasEnded && currentChar == char) {
         return incrementPointer()
     } else {
         false
@@ -19,7 +19,7 @@ internal fun SourceStream.increment(char: Char): Boolean {
 }
 
 internal fun SourceStream.increment(str: String, throwOnUnexpectedEOS: Boolean = false): Boolean {
-    require(str.length > 1){
+    require(str.length > 1) {
         println("$str should be more than a single character")
     }
     val previous = pointer
@@ -140,6 +140,7 @@ internal fun SourceStream.parseTextUntil(vararg strings: String): String {
             if (currentChar == str[0] && increment(str)) {
                 decrementPointer(str.length)
                 unFound = false
+                break
             }
         }
         unFound

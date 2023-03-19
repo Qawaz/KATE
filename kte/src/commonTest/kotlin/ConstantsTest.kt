@@ -23,7 +23,7 @@ class ConstantsTest {
     @Test
     fun testParseConstantDeclaration() {
         val context = TemplateContext(TextStream("@const myVar = \"someValue\""))
-        val ref = context.parseConstantDeclaration()
+        val ref = context.stream.parseConstantDeclaration()
         assertNotEquals(null, ref)
         assertEquals("myVar", ref!!.variableName)
         assertEquals("someValue", ref.variableValue.getValue(context)!!.value)
@@ -47,10 +47,10 @@ class ConstantsTest {
     @Test
     fun testDeclarationAndReference() {
         val decContext = TemplateContext(TextStream("@const myVar = \"someValue\""))
-        val dec = decContext.parseConstantDeclaration()
+        val dec = decContext.stream.parseConstantDeclaration()
         decContext.updateStream(TextStream("@const myVar2 = @const(myVar)"))
         dec!!.storeValue(decContext)
-        val refDec = decContext.parseConstantDeclaration()
+        val refDec = decContext.stream.parseConstantDeclaration()
         assertEquals(
             dec.variableValue.getValue(decContext)!!.value,
             refDec!!.variableValue.getValue(decContext)!!.value

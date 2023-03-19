@@ -8,12 +8,12 @@ import kotlin.test.assertNotEquals
 class RawTest {
     @Test
     fun testRawBlock() {
-        val context = TemplateContext(TextStream("@raw there's something raw here @endraw"))
-        val block = context.parseRawBlock()
+        val context = TemplateContext("@raw there's something raw here @endraw")
+        val block = context.stream.parseRawBlock()
         assertNotEquals(null, block)
-        assertEquals(" there's something raw here ", block!!.value)
+        assertEquals("there's something raw here", block!!.value)
         context.updateStream(TextStream("@rawvalue@endraw"))
-        context.parseRawBlock()
+        context.stream.parseRawBlock()
         assertEquals(16,context.stream.pointer)
     }
 }

@@ -7,32 +7,6 @@ import com.wakaztahir.kte.model.SingleIf
 import com.wakaztahir.kte.parser.stream.*
 import com.wakaztahir.kte.parser.stream.escapeSpaces
 import com.wakaztahir.kte.parser.stream.increment
-import com.wakaztahir.kte.parser.stream.parseTextUntil
-
-internal enum class ConditionType {
-
-    Equals {
-        override fun verifyCompare(result: Int) = result == 0
-    },
-    NotEquals {
-        override fun verifyCompare(result: Int) = result != 0
-    },
-    GreaterThan {
-        override fun verifyCompare(result: Int) = result == 1
-    },
-    LessThan {
-        override fun verifyCompare(result: Int) = result == -1
-    },
-    GreaterThanEqualTo {
-        override fun verifyCompare(result: Int) = result == 1 || result == 0
-    },
-    LessThanEqualTo {
-        override fun verifyCompare(result: Int) = result == -1 || result == 0
-    };
-
-    abstract fun verifyCompare(result: Int): Boolean
-
-}
 
 internal fun SourceStream.parseConditionType(): ConditionType? {
     if (increment("==")) {
@@ -58,13 +32,19 @@ internal fun SourceStream.parseConditionType(): ConditionType? {
 
 internal fun SourceStream.parseCondition(): Condition? {
 
-
     val propertyFirst = parseDynamicProperty() ?: run {
         return null
     }
 
     escapeSpaces()
-    val type = parseConditionType() ?: run {
+    val type = parseConditionType()
+
+    val storedValue = propertyFirst.getStoredValue()
+    if (type == null && storedValue != null && storedValue is BooleanValue) {
+        return EvaluatedCondition(storedValue.value)
+    }
+
+    if (type == null) {
         return null
     }
 
@@ -85,6 +65,8 @@ private fun SourceStream.parseIfBlockValue(ifType: IfType): String {
         parseTextUntilConsumed("@endif")
     } else {
         parseTextUntil("@elseif", "@else", "@endif")
+    }.let {
+        if (it.lastOrNull() == ' ') it.substringBeforeLast(' ') else it
     }
 }
 
@@ -94,6 +76,7 @@ internal fun SourceStream.parseSingleIf(start: String, ifType: IfType): SingleIf
             val condition = parseCondition()
             if (condition != null) {
                 if (increment(')')) {
+                    increment(' ')
                     return SingleIf(
                         condition = condition,
                         type = ifType,
@@ -104,6 +87,7 @@ internal fun SourceStream.parseSingleIf(start: String, ifType: IfType): SingleIf
                 }
             }
         } else {
+            increment(' ')
             return SingleIf(
                 condition = EvaluatedCondition(true),
                 type = IfType.Else,

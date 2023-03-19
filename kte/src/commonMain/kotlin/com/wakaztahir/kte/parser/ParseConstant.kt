@@ -1,6 +1,8 @@
 package com.wakaztahir.kte.parser
 
 import com.wakaztahir.kte.TemplateContext
+import com.wakaztahir.kte.model.ConstantReference
+import com.wakaztahir.kte.model.DynamicProperty
 import com.wakaztahir.kte.parser.stream.*
 import com.wakaztahir.kte.parser.stream.increment
 import com.wakaztahir.kte.parser.stream.unexpected
@@ -24,7 +26,7 @@ internal fun SourceStream.parseConstantReference(): ConstantReference? {
 
 //-------------- Declaration
 
-internal data class ConstantDeclaration(val variableName: String, val variableValue: PropertyOrValue) {
+internal data class ConstantDeclaration(val variableName: String, val variableValue: DynamicProperty) {
     fun storeValue(context: TemplateContext) {
         context.storeValue(variableName, variableValue.getValue(context)!!.getValueAsString())
     }
@@ -32,21 +34,22 @@ internal data class ConstantDeclaration(val variableName: String, val variableVa
 
 class ConstantDeclarationParseException(message: String) : Throwable(message)
 
-internal fun TemplateContext.parseConstantDeclaration(): ConstantDeclaration? {
-    if (stream.currentChar == '@' && stream.increment("@const ")) {
-        val variableName = stream.parseTextUntil('=').trim()
+internal fun SourceStream.parseConstantDeclaration(): ConstantDeclaration? {
+    if (currentChar == '@' && increment("@const")) {
+        increment(' ')
+        val variableName = parseTextUntil('=').trim()
         if (variableName.isNotEmpty()) {
-            stream.increment('=')
-            stream.escapeSpaces()
-            val property = stream.parseDynamicProperty()
+            increment('=')
+            escapeSpaces()
+            val property = parseDynamicProperty()
             if (property != null) {
                 return ConstantDeclaration(variableName = variableName, variableValue = property)
             } else {
                 throw ConstantDeclarationParseException("constant's value not found")
             }
         } else {
-            if (stream.hasEnded) {
-                stream.unexpected()
+            if (hasEnded) {
+                unexpected()
             } else {
                 throw ConstantDeclarationParseException("constant's name not given")
             }

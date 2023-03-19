@@ -12,9 +12,9 @@ class IfStatementTest {
 
     private fun TemplateContext.evaluateConstants(var1: String, condition: String, var2: String): Boolean {
         updateStream(TextStream("@const var1 = $var1"))
-        parseConstantDeclaration()!!.storeValue(this)
+        stream.parseConstantDeclaration()!!.storeValue(this)
         updateStream(TextStream("@const var2 = $var2"))
-        parseConstantDeclaration()!!.storeValue(this)
+        stream.parseConstantDeclaration()!!.storeValue(this)
         updateStream(TextStream("@const(var1) $condition @const(var2)"))
         return stream.parseCondition()!!.evaluate(this)
     }
@@ -85,8 +85,8 @@ class IfStatementTest {
     }
 
     private fun testIfy(firstIf: Boolean, firstElseIf: Boolean, secondElseIf: Boolean): String {
-        fun Boolean.s() = if (this) "true == true" else "true != true"
-        return "@if(${firstIf.s()})MyFirstValue@elseif(${firstElseIf.s()})MySecondValue@elseif(${secondElseIf.s()})MyThirdValue@elseMyFourthValue@endif"
+        fun Boolean.s() = if (this) "true" else "false"
+        return "@if(${firstIf.s()}) MyFirstValue @elseif(${firstElseIf.s()}) MySecondValue @elseif(${secondElseIf.s()}) MyThirdValue @else MyFourthValue @endif"
     }
 
     @Test
