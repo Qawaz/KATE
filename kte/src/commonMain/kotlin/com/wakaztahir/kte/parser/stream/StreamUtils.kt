@@ -102,11 +102,8 @@ internal fun SourceStream.printLeft() = resetIfNullWithText(condition = { true }
 }
 
 internal fun SourceStream.escapeSpaces() {
-    while (!hasEnded) {
-        if (currentChar != ' ') {
-            break
-        }
-        incrementPointer()
+    if(increment(' ')){
+        escapeSpaces()
     }
 }
 

@@ -57,18 +57,28 @@ Operations that can be performed on an iterable present in the model
 
 `@model.iterable[0]` Gets the first element where zero can be any number between 0 and list.size - 1
 
-## Looping
+## For Loop
 
-`@for(condition) @endfor`
+There's only one type of loop and that's for loop
 
 This loop will run until the condition is true
 
-`@for(@const element : @model.list) @endfor`
+`@for(condition) @endfor`
 
 For each on every element of the list
 
-`@for(@const index from 0 to @model.list.size - 1) @endfor`
+`@for(@const element : @model.list) @endfor`
+
+To get the index of every element in the list
+
+`@for(@const element,index : @model.list ) @endfor`
+
+To break a parent loop , You can use
+
+`@breakfor` like this `@if(index > 5) @breakfor`
+
+inside the for loop's block , This won't break the parent's parent loop
 
 ## @raw
 
-`@raw text goes directly into the template @endraw`
+`@raw this text goes directly into the template @endraw`

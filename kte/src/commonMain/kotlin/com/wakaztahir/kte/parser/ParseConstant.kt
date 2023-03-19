@@ -34,11 +34,21 @@ internal data class ConstantDeclaration(val variableName: String, val variableVa
 
 class ConstantDeclarationParseException(message: String) : Throwable(message)
 
-internal fun SourceStream.parseConstantDeclaration(): ConstantDeclaration? {
+internal fun Char.isConstantVariableName(): Boolean = this.isLetterOrDigit() || this == '_'
+
+internal fun SourceStream.parseConstantVariableName(): String? {
     if (currentChar == '@' && increment("@const")) {
         increment(' ')
-        val variableName = parseTextUntil('=').trim()
+        return parseTextWhile { currentChar.isConstantVariableName() }
+    }
+    return null
+}
+
+internal fun SourceStream.parseConstantDeclaration(): ConstantDeclaration? {
+    val variableName = parseConstantVariableName()
+    if (variableName != null) {
         if (variableName.isNotEmpty()) {
+            escapeSpaces()
             increment('=')
             escapeSpaces()
             val property = parseDynamicProperty()
