@@ -3,7 +3,6 @@ package com.wakaztahir.kte.parser
 import com.wakaztahir.kte.model.*
 import com.wakaztahir.kte.parser.stream.SourceStream
 import com.wakaztahir.kte.parser.stream.increment
-import com.wakaztahir.kte.parser.stream.parseTextUntil
 import com.wakaztahir.kte.parser.stream.parseTextWhile
 
 internal fun SourceStream.parseFunctionParameters(): List<DynamicProperty>? {
@@ -35,7 +34,7 @@ internal fun SourceStream.parseModelDirective(): ModelDirective? {
         val propertyPath = mutableListOf<ModelReference>()
         while (increment('.')) {
             if (increment('@')) {
-                val functionName = parseTextUntil('(')
+                val functionName = parseTextWhile { currentChar != '(' }
                 val parametersList =
                     parseFunctionParameters() ?: throw IllegalStateException("function parameters not found")
                 propertyPath.add(ModelReference.FunctionCall(functionName, parametersList))

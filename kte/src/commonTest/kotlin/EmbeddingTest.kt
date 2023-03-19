@@ -10,7 +10,7 @@ class EmbeddingTest {
     @Test
     fun testParseEmbeddingPath() {
         val context = TemplateContext("@embed ./current.kte")
-        val path = context.stream.parseEmbedding()!!
+        val path = context.stream.parseEmbedding()!!.path
         assertEquals("./current.kte", path)
         context.embedStream(path, TextStream("@const var1 = \"hello-world\""))
         val ref = context.getEmbeddedStream(path)!!.parseConstantDeclaration()!!

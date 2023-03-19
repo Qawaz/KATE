@@ -17,7 +17,7 @@ internal sealed interface ModelReference {
 
 internal class ModelDirective(
     val propertyPath: List<ModelReference>
-) : ReferencedValue {
+) : ReferencedValue,AtDirective{
     override fun getValue(context: TemplateContext): DynamicValue<*>? {
         return context.getModelDirectiveValue(this)
     }

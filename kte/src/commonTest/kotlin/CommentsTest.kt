@@ -11,8 +11,10 @@ class CommentsTest {
 
     @Test
     fun testComments() {
-        val context = TemplateContext(TextStream("<%--This is my comment--%>"))
-        assertEquals(true,context.stream.increment("<%--"))
+        val comment = "<%--This is my comment--%>"
+        val context = TemplateContext(comment)
+        assertEquals(true,context.stream.parseComment())
+        assertEquals(comment.length,context.stream.pointer)
     }
 
     @Test

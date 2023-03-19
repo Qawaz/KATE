@@ -60,14 +60,27 @@ internal fun SourceStream.parseCondition(): Condition? {
     )
 }
 
-private fun SourceStream.parseIfBlockValue(ifType: IfType): String {
-    return if (ifType == IfType.Else) {
-        parseTextUntilConsumed("@endif")
+private fun SourceStream.parseIfBlockValue(ifType: IfType): LazyBlockSlice {
+    val previous = pointer
+
+    if (ifType == IfType.Else) {
+        incrementUntil("@endif")
     } else {
-        parseTextUntil("@elseif", "@else", "@endif")
-    }.let {
-        if (it.lastOrNull() == ' ') it.substringBeforeLast(' ') else it
+        incrementUntil("@elseif", "@else", "@endif")
     }
+
+    decrementPointer()
+    val length = if (currentChar == ' ') {
+        pointer - previous
+    } else {
+        pointer - previous + 1
+    }
+    incrementPointer()
+
+    return LazyBlockSlice(
+        pointer = previous,
+        length = length
+    )
 }
 
 internal fun SourceStream.parseSingleIf(start: String, ifType: IfType): SingleIf? {
@@ -88,10 +101,14 @@ internal fun SourceStream.parseSingleIf(start: String, ifType: IfType): SingleIf
             }
         } else {
             increment(' ')
+            val value = parseIfBlockValue(ifType)
+            if (!increment("@endif")) {
+                throw IllegalStateException("@if must end with @endif")
+            }
             return SingleIf(
                 condition = EvaluatedCondition(true),
                 type = IfType.Else,
-                blockValue = parseIfBlockValue(ifType)
+                blockValue = value
             )
         }
     }

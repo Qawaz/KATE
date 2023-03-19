@@ -43,4 +43,8 @@ class InputStreamSource(val stream: InputStream) : SourceStream() {
         return true
     }
 
+    override fun setPointerAt(position: Int): Boolean {
+        TODO("")
+    }
+
 }

@@ -6,10 +6,12 @@ abstract class SourceStream {
 
     abstract val currentChar: Char
 
-    abstract val hasEnded : Boolean
+    abstract val hasEnded: Boolean
 
     abstract fun incrementPointer(): Boolean
 
-    abstract fun decrementPointer(decrease: Int): Boolean
+    abstract fun decrementPointer(decrease: Int = 1): Boolean
+
+    abstract fun setPointerAt(position: Int): Boolean
 
 }

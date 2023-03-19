@@ -1,28 +1,27 @@
 package com.wakaztahir.kte.parser
 
-import com.wakaztahir.kte.model.Condition
+import com.wakaztahir.kte.model.*
 import com.wakaztahir.kte.model.ConditionType
 import com.wakaztahir.kte.model.DynamicProperty
 import com.wakaztahir.kte.model.ReferencedValue
 import com.wakaztahir.kte.parser.stream.*
 import com.wakaztahir.kte.parser.stream.increment
-import com.wakaztahir.kte.parser.stream.parseTextUntilConsumed
 import com.wakaztahir.kte.parser.stream.parseTextWhile
 
-internal sealed interface ForLoop {
+internal sealed interface ForLoop : AtDirective {
 
-    val blockValue: String
+    val blockValue: LazyBlockSlice
 
     class ConditionalFor(
         val condition: Condition,
-        override val blockValue: String
+        override val blockValue: LazyBlockSlice
     ) : ForLoop
 
     class IterableFor(
         val indexConstName: String?,
         val elementConstName: String,
         val listProperty: ReferencedValue,
-        override val blockValue: String
+        override val blockValue: LazyBlockSlice
     ) : ForLoop
 
     class NumberedFor(
@@ -32,15 +31,33 @@ internal sealed interface ForLoop {
         val conditional: DynamicProperty,
         val arithmeticOperatorType: ArithmeticOperatorType,
         val incrementer: DynamicProperty,
-        override val blockValue: String
+        override val blockValue: LazyBlockSlice
     ) : ForLoop
 
 }
 
-private fun SourceStream.parseForBlockValue(): String {
-    return parseTextUntilConsumed("@endfor").let {
-        if (it.lastOrNull() == ' ') it.substringBeforeLast(' ') else it
+private fun SourceStream.parseForBlockValue(): LazyBlockSlice {
+    val previous = pointer
+
+    incrementUntil("@endfor")
+    decrementPointer()
+
+    val length = if(currentChar == ' '){
+        pointer - previous
+    }else {
+        pointer - previous + 1
     }
+
+    incrementPointer()
+    increment("@endfor")
+
+    return LazyBlockSlice(
+        pointer = previous,
+        length = length
+    )
+//    return parseTextUntilConsumed("@endfor").let {
+//        if (it.lastOrNull() == ' ') it.substringBeforeLast(' ') else it
+//    }
 }
 
 internal fun SourceStream.incrementBreakFor(): Boolean {

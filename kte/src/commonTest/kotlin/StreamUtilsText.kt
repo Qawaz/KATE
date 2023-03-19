@@ -23,13 +23,19 @@ class StreamUtilsText {
 
     @Test
     fun testIncrementUntil() {
-        val context = TemplateContext(TextStream("<%--HelloWorld--%>"))
+        val comment = "<%--HelloWorld--%>"
+        val context = TemplateContext(comment)
         assertEquals(true, context.stream.increment("<%--"))
         assertEquals(true, context.stream.incrementUntil("llo"))
-        assertEquals(9,context.stream.pointer)
+        assertEquals(6, context.stream.pointer)
+        assertEquals(true, context.stream.incrementUntilConsumed("llo"))
+        assertEquals(9, context.stream.pointer)
         assertEquals(false, context.stream.incrementUntil("..."))
-        assertEquals(9,context.stream.pointer)
+        assertEquals(9, context.stream.pointer)
         assertEquals(true, context.stream.incrementUntil("--%>"))
+        assertEquals(14, context.stream.pointer)
+        assertEquals(true, context.stream.incrementUntilConsumed("--%>"))
+        assertEquals(comment.length,context.stream.pointer)
     }
 
     @Test
@@ -43,9 +49,9 @@ class StreamUtilsText {
     fun testParseTextUntilChar() {
         val context = TemplateContext(TextStream("<%--This is my comment--%>"))
         assertEquals(true, context.stream.increment("<%--"))
-        assertEquals("Th", context.stream.parseTextUntil('i'))
-        assertEquals("is is ", context.stream.parseTextUntil('m'))
-        assertEquals("my comment", context.stream.parseTextUntil('-'))
+        assertEquals("Th", context.stream.parseTextWhile { currentChar != 'i' })
+        assertEquals("is is ", context.stream.parseTextWhile { currentChar != 'm' })
+        assertEquals("my comment", context.stream.parseTextWhile { currentChar != '-' })
     }
 
 }

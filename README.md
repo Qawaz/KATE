@@ -1,3 +1,11 @@
+## Features
+
+| Value                   | Supported |
+|-------------------------|-----------|
+| Read From Stream / Text | &check;   |
+| Write To Stream / Text  | &check;   |
+| Easy , Fast & Tested    | &check;   |
+
 ## Input
 
 `Model = Any Data Structure That Implements Template Model`

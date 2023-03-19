@@ -43,7 +43,7 @@ fun SourceStream.parseDynamicValue(): DynamicValue<*>? {
 
 internal fun SourceStream.parseStringValue(): StringValue? {
     if (currentChar == '\"' && increment('\"')) {
-        val value = StringValue(parseTextUntil('\"'))
+        val value = StringValue(parseTextWhile { currentChar != '\"' })
         increment('\"')
         return value
     }

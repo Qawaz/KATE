@@ -92,9 +92,9 @@ class IfStatementTest {
     @Test
     fun testParseIf() {
         val iffy = testIfy(firstIf = true, firstElseIf = false, secondElseIf = false)
-        val context = TemplateContext(TextStream(iffy))
+        val context = TemplateContext(iffy)
         val ifStatement = context.stream.parseIfStatement()
-        assertEquals("MyFirstValue", ifStatement!!.evaluate(context)!!.blockValue)
+        assertEquals("MyFirstValue", ifStatement!!.evaluate(context)!!.blockValue.getValueAsString(context.stream))
         assertEquals(iffy.length,context.stream.pointer)
     }
 
@@ -103,7 +103,7 @@ class IfStatementTest {
         val iffy = testIfy(firstIf = false, firstElseIf = true, secondElseIf = false)
         val context = TemplateContext(TextStream(iffy))
         val ifStatement = context.stream.parseIfStatement()
-        assertEquals("MySecondValue", ifStatement!!.evaluate(context)!!.blockValue)
+        assertEquals("MySecondValue", ifStatement!!.evaluate(context)!!.blockValue.getValueAsString(context.stream))
         assertEquals(iffy.length,context.stream.pointer)
     }
 
@@ -112,7 +112,7 @@ class IfStatementTest {
         val iffy = testIfy(firstIf = false, firstElseIf = false, secondElseIf = true)
         val context = TemplateContext(TextStream(iffy))
         val ifStatement = context.stream.parseIfStatement()
-        assertEquals("MyThirdValue", ifStatement!!.evaluate(context)!!.blockValue)
+        assertEquals("MyThirdValue", ifStatement!!.evaluate(context)!!.blockValue.getValueAsString(context.stream))
         assertEquals(iffy.length,context.stream.pointer)
     }
 
@@ -122,7 +122,7 @@ class IfStatementTest {
         val context = TemplateContext(TextStream(iffy))
         val ifStatement = context.stream.parseIfStatement()
         assertNotEquals(null,ifStatement)
-        assertEquals("MyFourthValue", ifStatement!!.evaluate(context)!!.blockValue)
+        assertEquals("MyFourthValue", ifStatement!!.evaluate(context)!!.blockValue.getValueAsString(context.stream))
         assertEquals(iffy.length,context.stream.pointer)
     }
 

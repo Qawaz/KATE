@@ -11,21 +11,14 @@ enum class IfType(val order: Int) {
 internal class SingleIf(
     val condition: Condition,
     val type: IfType,
-    val blockValue: String,
+    val blockValue: LazyBlockSlice,
 ) {
-    fun parseBlock(context: TemplateContext): Block {
-        TODO("Not yet implemented")
-    }
 }
 
 
-internal class IfStatement(private val ifs: MutableList<SingleIf>) {
+internal class IfStatement(private val ifs: MutableList<SingleIf>) : AtDirective {
 
     val singleIfs: List<SingleIf> get() = ifs
-
-    fun parseBlock(context: TemplateContext): Block {
-        TODO("Not yet implemented")
-    }
 
     private fun sortByOrder() {
         ifs.sortBy { it.type.order }

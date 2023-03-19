@@ -10,18 +10,17 @@ class TextStream(private val sourceCode: String) : SourceStream() {
     override val hasEnded get() = sourceCode.length == pointer
 
     override fun incrementPointer(): Boolean {
-        return if (pointer + 1 <= sourceCode.length) {
-            pointer += 1
-            true
-        } else {
-            false
-        }
+        return setPointerAt(pointer + 1)
     }
 
     override fun decrementPointer(decrease: Int): Boolean {
         if (decrease == 0) return true
-        return if (pointer - decrease >= 0) {
-            pointer -= decrease
+        return setPointerAt(pointer - decrease)
+    }
+
+    override fun setPointerAt(position: Int): Boolean {
+        return if (position <= sourceCode.length && position >= 0) {
+            pointer = position
             true
         } else {
             false

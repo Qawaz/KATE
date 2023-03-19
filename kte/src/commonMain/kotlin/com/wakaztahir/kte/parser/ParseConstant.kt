@@ -1,6 +1,7 @@
 package com.wakaztahir.kte.parser
 
 import com.wakaztahir.kte.TemplateContext
+import com.wakaztahir.kte.model.AtDirective
 import com.wakaztahir.kte.model.ConstantReference
 import com.wakaztahir.kte.model.DynamicProperty
 import com.wakaztahir.kte.parser.stream.*
@@ -13,7 +14,7 @@ class ConstantReferenceParseException(message: String) : Throwable(message)
 
 internal fun SourceStream.parseConstantReference(): ConstantReference? {
     if (currentChar == '@' && increment("@const(")) {
-        val variableName = parseTextUntil(')')
+        val variableName = parseTextWhile { currentChar != ')' }
         increment(')')
         if (variableName.isNotEmpty()) {
             return ConstantReference(variableName)
@@ -26,7 +27,7 @@ internal fun SourceStream.parseConstantReference(): ConstantReference? {
 
 //-------------- Declaration
 
-internal data class ConstantDeclaration(val variableName: String, val variableValue: DynamicProperty) {
+internal data class ConstantDeclaration(val variableName: String, val variableValue: DynamicProperty) : AtDirective {
     fun storeValue(context: TemplateContext) {
         context.storeValue(variableName, variableValue.getValue(context)!!.getValueAsString())
     }
