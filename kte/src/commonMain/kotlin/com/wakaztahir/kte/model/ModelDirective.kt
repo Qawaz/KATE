@@ -1,6 +1,7 @@
 package com.wakaztahir.kte.model
 
-import com.wakaztahir.kte.dsl.ModelProvider
+import com.wakaztahir.kte.dsl.ModelIterable
+import com.wakaztahir.kte.model.model.TemplateModel
 import com.wakaztahir.kte.parser.stream.DestinationStream
 import com.wakaztahir.kte.parser.stream.SourceStream
 
@@ -12,15 +13,14 @@ sealed interface ModelReference {
 
     class FunctionCall(
         override val name: String,
-        val parametersList: List<DynamicProperty>
+        val parametersList: List<ReferencedValue>
     ) : ModelReference
 
 }
 
-class ModelDirective(
-    val propertyPath: List<ModelReference>
-) : ReferencedValue, AtDirective {
-    override fun getValue(model: ModelProvider): DynamicValue<*> {
+class ModelDirective(val propertyPath: List<ModelReference>) : ReferencedValue, AtDirective {
+
+    override fun getValue(model: TemplateModel): DynamicValue<*> {
         return model.getModelDirectiveValue(this)
     }
 
@@ -35,4 +35,9 @@ class ModelDirective(
     fun pathToString(): String {
         return propertyPath.joinToString(".") { it.name }
     }
+
+    override fun getIterable(model: TemplateModel): ModelIterable<KTEValue>? {
+        return model.getPropertyAsIterable(this)
+    }
+
 }

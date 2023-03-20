@@ -4,7 +4,6 @@ import com.wakaztahir.kte.parser.parseConstantDeclaration
 import com.wakaztahir.kte.parser.parseConstantReference
 import com.wakaztahir.kte.parser.parseDynamicProperty
 import com.wakaztahir.kte.parser.parseStringValue
-import com.wakaztahir.kte.parser.stream.TextSourceStream
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
@@ -16,8 +15,8 @@ class ConstantsTest {
         val ref = context.stream.parseConstantReference()
         assertNotEquals(null, ref)
         assertEquals(ref!!.name, "myVar")
-        context.putValue("myVar", StringValue("someValue"))
-        assertEquals("someValue", ref.getValue(context).value)
+        context.stream.model.putValue("myVar", StringValue("someValue"))
+        assertEquals("someValue", ref.getValue(context.stream.model).value)
     }
 
     @Test
@@ -26,7 +25,7 @@ class ConstantsTest {
         val ref = context.stream.parseConstantDeclaration()
         assertNotEquals(null, ref)
         assertEquals("myVar", ref!!.variableName)
-        assertEquals("someValue", ref.variableValue.getValue(context).value)
+        assertEquals("someValue", ref.variableValue.getValue(context.stream.model).value)
     }
 
     @Test
@@ -39,21 +38,22 @@ class ConstantsTest {
     @Test
     fun testParseDynamicProperty() {
         val context = TemplateContext(("@const(myVar)"))
-        context.putValue("myVar", StringValue("someValue"))
+        context.stream.model.putValue("myVar", StringValue("someValue"))
         val property = context.stream.parseDynamicProperty()
-        assertEquals(property!!.getValue(context).value, "someValue")
+        assertEquals(property!!.getValue(context.stream.model).value, "someValue")
     }
 
     @Test
     fun testDeclarationAndReference() {
         val decContext = TemplateContext(("@const myVar = \"someValue\""))
         val dec = decContext.stream.parseConstantDeclaration()
+        assertEquals("someValue", dec!!.variableValue.getValue(decContext.stream.model).value)
         decContext.updateStream("@const myVar2 = @const(myVar)")
-        dec!!.storeValue(decContext)
+        dec!!.storeValue(decContext.stream.model)
         val refDec = decContext.stream.parseConstantDeclaration()
         assertEquals(
-            dec.variableValue.getValue(decContext).value,
-            refDec!!.variableValue.getValue(decContext).value
+            dec.variableValue.getValue(decContext.stream.model).value,
+            refDec!!.variableValue.getValue(decContext.stream.model).value
         )
     }
 

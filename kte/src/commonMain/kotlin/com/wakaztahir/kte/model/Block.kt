@@ -1,14 +1,13 @@
 package com.wakaztahir.kte.model
 
-import com.wakaztahir.kte.dsl.ModelDsl
-import com.wakaztahir.kte.dsl.ModelObject
+import com.wakaztahir.kte.dsl.ModelObjectImpl
 import com.wakaztahir.kte.dsl.ScopedModelObject
-import com.wakaztahir.kte.dsl.TemplateModel
+import com.wakaztahir.kte.model.model.MutableTemplateModel
 import com.wakaztahir.kte.parser.stream.SourceStream
 
 interface LazyBlock {
 
-    val model: TemplateModel
+    val model: MutableTemplateModel
 
     fun canIterate(stream: SourceStream): Boolean
 
@@ -18,10 +17,10 @@ interface LazyBlock {
 class LazyBlockSlice(
     val startPointer: Int,
     val length: Int,
-    parent: TemplateModel
+    parent: MutableTemplateModel
 ) : LazyBlock {
 
-    override val model: TemplateModel = ScopedModelObject(parent = parent, ModelObject())
+    override val model: MutableTemplateModel = ScopedModelObject(parent = parent, ModelObjectImpl())
 
     override fun canIterate(stream: SourceStream): Boolean {
         return stream.pointer < startPointer + length

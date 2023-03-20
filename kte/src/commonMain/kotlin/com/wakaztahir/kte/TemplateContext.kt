@@ -1,15 +1,16 @@
 package com.wakaztahir.kte
 
-import com.wakaztahir.kte.dsl.ModelObject
-import com.wakaztahir.kte.dsl.TemplateModel
+import com.wakaztahir.kte.dsl.ModelObjectImpl
+import com.wakaztahir.kte.model.model.MutableTemplateModel
+import com.wakaztahir.kte.model.model.TemplateModel
 import com.wakaztahir.kte.parser.generateTo
 import com.wakaztahir.kte.parser.stream.SourceStream
 import com.wakaztahir.kte.parser.stream.TextDestinationStream
 import com.wakaztahir.kte.parser.stream.TextSourceStream
 
-class TemplateContext(stream: SourceStream) : TemplateModel by stream.model {
+class TemplateContext(stream: SourceStream){
 
-    constructor(text: String, model: TemplateModel = ModelObject()) : this(TextSourceStream(text, model))
+    constructor(text: String, model: MutableTemplateModel = ModelObjectImpl()) : this(TextSourceStream(text, model))
 
     var stream: SourceStream = stream
         private set
@@ -19,7 +20,7 @@ class TemplateContext(stream: SourceStream) : TemplateModel by stream.model {
     }
 
     fun updateStream(text: String) {
-        this.stream = TextSourceStream(text, ModelObject())
+        this.stream = TextSourceStream(text, this.stream.model)
     }
 
     private val embedMap = hashMapOf<String, SourceStream>()

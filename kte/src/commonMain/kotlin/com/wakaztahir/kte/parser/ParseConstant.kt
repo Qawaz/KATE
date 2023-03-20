@@ -1,6 +1,6 @@
 package com.wakaztahir.kte.parser
 
-import com.wakaztahir.kte.dsl.ModelDsl
+import com.wakaztahir.kte.model.model.MutableTemplateModel
 import com.wakaztahir.kte.model.*
 import com.wakaztahir.kte.parser.stream.*
 import com.wakaztahir.kte.parser.stream.increment
@@ -25,10 +25,9 @@ internal fun SourceStream.parseConstantReference(): ConstantReference? {
 
 //-------------- Declaration
 
-internal data class ConstantDeclaration(val variableName: String, val variableValue: DynamicProperty) : AtDirective,
-    DeclarationStatement {
+internal data class ConstantDeclaration(val variableName: String, val variableValue: ReferencedValue) : AtDirective, DeclarationStatement {
 
-    override fun storeValue(model: ModelDsl) {
+    override fun storeValue(model: MutableTemplateModel) {
         model.putValue(variableName, variableValue)
     }
 
@@ -57,8 +56,8 @@ internal fun SourceStream.parseConstantDeclaration(): ConstantDeclaration? {
             increment('=')
             escapeSpaces()
             val property = parseDynamicProperty()
-            if (property != null) {
-                return ConstantDeclaration(variableName = variableName, variableValue = property)
+            return if (property != null) {
+                ConstantDeclaration(variableName = variableName, variableValue = property)
             } else {
                 throw ConstantDeclarationParseException("constant's value not found")
             }

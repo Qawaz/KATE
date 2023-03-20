@@ -1,9 +1,12 @@
 package com.wakaztahir.kte.model
 
+import com.wakaztahir.kte.dsl.ModelIterable
+import com.wakaztahir.kte.model.model.TemplateModel
+import com.wakaztahir.kte.dsl.UnresolvedValueException
 import com.wakaztahir.kte.parser.stream.DestinationStream
 import com.wakaztahir.kte.parser.stream.SourceStream
 
-interface DynamicValue<T> : CodeGen {
+interface DynamicValue<T> : CodeGen, ReferencedValue {
 
     val value: T
 
@@ -14,7 +17,14 @@ interface DynamicValue<T> : CodeGen {
         return compareTo(other as DynamicValue<T>)
     }
 
-    fun getValueAsString(): String
+    override fun getValue(model: TemplateModel): DynamicValue<T> {
+        return this
+    }
+
+    override fun getIterable(model: TemplateModel): ModelIterable<KTEValue>? {
+        throw UnresolvedValueException("primitive value is not a collection")
+    }
+
 }
 
 class IntValue(override val value: Int) : DynamicValue<Int> {
@@ -27,8 +37,6 @@ class IntValue(override val value: Int) : DynamicValue<Int> {
         destination.write(this@IntValue)
     }
 
-    override fun getValueAsString(): String = value.toString()
-    override fun toString(): String = getValueAsString()
 }
 
 class FloatValue(override val value: Float) : DynamicValue<Float> {
@@ -40,8 +48,6 @@ class FloatValue(override val value: Float) : DynamicValue<Float> {
         destination.write(this@FloatValue)
     }
 
-    override fun getValueAsString(): String = value.toString() + 'f'
-    override fun toString(): String = getValueAsString()
 }
 
 class BooleanValue(override val value: Boolean) : DynamicValue<Boolean> {
@@ -57,8 +63,6 @@ class BooleanValue(override val value: Boolean) : DynamicValue<Boolean> {
         destination.write(this@BooleanValue)
     }
 
-    override fun getValueAsString(): String = if (value) "true" else "false"
-    override fun toString(): String = getValueAsString()
 }
 
 class StringValue(override val value: String) : DynamicValue<String> {
@@ -74,6 +78,4 @@ class StringValue(override val value: String) : DynamicValue<String> {
         destination.write(this@StringValue)
     }
 
-    override fun getValueAsString(): String = '\"' + value + '\"'
-    override fun toString(): String = getValueAsString()
 }

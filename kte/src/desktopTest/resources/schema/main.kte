@@ -12,7 +12,7 @@ class @model.mathTestClassName {
     @for(@const arithmetic : @model.arithmetic){
         @if(@const(generateComments)) // @const(arithmetic).funName performs '@const(arithmetic).symbolName' between two variables @endif
         fun @const(arithmetic).funName() : @const(arithmetic).returnType {
-             val variableOne = @const(arithmetic).basicAddition.first
+             val variableOne = @const(arithmetic).first
              val variableTwo = @const(arithmetic).second
              return variableOne @const(arithmetic).symbolName variableTwo
         }

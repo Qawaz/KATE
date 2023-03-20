@@ -1,11 +1,12 @@
 package com.wakaztahir.kte.parser
 
-import com.wakaztahir.kte.TemplateContext
-import com.wakaztahir.kte.dsl.ModelProvider
+import com.wakaztahir.kte.dsl.ModelIterable
+import com.wakaztahir.kte.model.model.MutableTemplateModel
+import com.wakaztahir.kte.dsl.UnresolvedValueException
 import com.wakaztahir.kte.model.*
 import com.wakaztahir.kte.model.ConditionType
-import com.wakaztahir.kte.model.DynamicProperty
 import com.wakaztahir.kte.model.ReferencedValue
+import com.wakaztahir.kte.model.model.TemplateModel
 import com.wakaztahir.kte.parser.stream.*
 import com.wakaztahir.kte.parser.stream.increment
 import com.wakaztahir.kte.parser.stream.parseTextWhile
@@ -14,7 +15,7 @@ internal sealed interface ForLoop : AtDirective {
 
     val blockValue: LazyBlockSlice
 
-    fun iterate(context: ModelProvider, block: () -> Unit)
+    fun iterate(context: MutableTemplateModel, block: () -> Unit)
 
     override fun generateTo(block: LazyBlock, source: SourceStream, destination: DestinationStream) {
         iterate(block.model) {
@@ -26,7 +27,7 @@ internal sealed interface ForLoop : AtDirective {
         val condition: Condition,
         override val blockValue: LazyBlockSlice
     ) : ForLoop {
-        override fun iterate(context: ModelProvider, block: () -> Unit) {
+        override fun iterate(context: MutableTemplateModel, block: () -> Unit) {
             while (condition.evaluate(context)) {
                 block()
             }
@@ -39,28 +40,74 @@ internal sealed interface ForLoop : AtDirective {
         val listProperty: ReferencedValue,
         override val blockValue: LazyBlockSlice
     ) : ForLoop {
-        override fun iterate(context: ModelProvider, block: () -> Unit) {
 
+        private fun store(model: MutableTemplateModel, value: Int) {
+            if (indexConstName != null) {
+                model.putValue(indexConstName, value)
+            }
+        }
+
+        private fun store(model: MutableTemplateModel, value: KTEValue) {
+            when (value) {
+                is TemplateModel -> {
+                    model.putObject(elementConstName, value)
+                }
+
+                is ModelIterable<*> -> {
+                    model.putIterable(elementConstName, value)
+                }
+
+                is DynamicValue<*> -> {
+                    model.putValue(elementConstName, value)
+                }
+
+                else -> {
+                    throw IllegalStateException("element of unknown type in for loop")
+                }
+            }
+        }
+
+        private fun remove(model: MutableTemplateModel) {
+            if (indexConstName != null) {
+                model.removeKey(indexConstName)
+            }
+            model.removeKey(elementConstName)
+        }
+
+        override fun iterate(context: MutableTemplateModel, block: () -> Unit) {
+            var index = 0
+            val iterable = listProperty.getIterable(context)
+                ?: throw UnresolvedValueException("referenced property is not iterable")
+            val total = iterable.size
+            while (index < total) {
+                store(context, iterable.getOrElse(index) {
+                    throw IllegalStateException("element at $index in for loop not found")
+                })
+                store(context, index)
+                block()
+                index++
+            }
+            remove(context)
         }
     }
 
     class NumberedFor(
         val variableName: String,
-        val initializer: DynamicProperty,
+        val initializer: ReferencedValue,
         val conditionType: ConditionType,
-        val conditional: DynamicProperty,
+        val conditional: ReferencedValue,
         val arithmeticOperatorType: ArithmeticOperatorType,
-        val incrementer: DynamicProperty,
+        val incrementer: ReferencedValue,
         override val blockValue: LazyBlockSlice
     ) : ForLoop {
 
-        private fun DynamicProperty.intVal(context: ModelProvider): Float {
+        private fun ReferencedValue.intVal(context: MutableTemplateModel): Float {
             (getValue(context) as? IntValue)?.value?.toFloat()?.let { return it }
             return (getValue(context) as? FloatValue)?.value
                 ?: throw IllegalStateException("for loop variable must be an integer / float")
         }
 
-        override fun iterate(context: ModelProvider, block: () -> Unit) {
+        override fun iterate(context: MutableTemplateModel, block: () -> Unit) {
             var i = initializer.intVal(context)
             val conditionValue = conditional.intVal(context)
             val incrementerValue = incrementer.intVal(context)
@@ -99,10 +146,10 @@ internal fun SourceStream.incrementBreakFor(): Boolean {
     return currentChar == '@' && increment("@breakfor")
 }
 
-private fun SourceStream.parseForLoopNumberProperty(): DynamicProperty? {
-    parseConstantReference()?.let { return DynamicProperty(property = it, value = null) }
-    parseModelDirective()?.let { return DynamicProperty(property = it, value = null) }
-    parseNumberValue()?.let { return DynamicProperty(property = null, value = it) }
+private fun SourceStream.parseForLoopNumberProperty(): ReferencedValue? {
+    parseConstantReference()?.let { return it }
+    parseModelDirective()?.let { return it }
+    parseNumberValue()?.let { return it }
     return null
 }
 

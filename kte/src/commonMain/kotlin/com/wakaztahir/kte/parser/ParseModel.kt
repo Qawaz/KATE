@@ -5,12 +5,12 @@ import com.wakaztahir.kte.parser.stream.SourceStream
 import com.wakaztahir.kte.parser.stream.increment
 import com.wakaztahir.kte.parser.stream.parseTextWhile
 
-internal fun SourceStream.parseFunctionParameters(): List<DynamicProperty>? {
+internal fun SourceStream.parseFunctionParameters(): List<ReferencedValue>? {
     if (increment('(')) {
         if (increment(')')) {
             return emptyList()
         }
-        val parameters = mutableListOf<DynamicProperty>()
+        val parameters = mutableListOf<ReferencedValue>()
         do {
             val parameter = parseDynamicProperty()
             if (parameter != null) {

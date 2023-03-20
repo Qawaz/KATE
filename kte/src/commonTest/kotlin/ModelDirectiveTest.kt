@@ -1,7 +1,7 @@
 import com.wakaztahir.kte.KTEDelicateFunction
 import com.wakaztahir.kte.TemplateContext
 import com.wakaztahir.kte.dsl.ModelValue
-import com.wakaztahir.kte.dsl.TemplateModel
+import com.wakaztahir.kte.model.model.TemplateModel
 import com.wakaztahir.kte.model.ModelDirective
 import com.wakaztahir.kte.model.ModelReference
 import com.wakaztahir.kte.parser.parseDynamicProperty
@@ -14,7 +14,7 @@ class ModelDirectiveTest {
 
     private inline fun TemplateContext.testDirective(block: (ModelDirective) -> Unit) {
         val previous = stream.pointer
-        block(stream.parseDynamicProperty()!!.getReferencedProperty()!! as ModelDirective)
+        block(stream.parseDynamicProperty() as ModelDirective)
         stream.decrementPointer(stream.pointer - previous)
         block(stream.parseModelDirective()!!)
     }
@@ -29,10 +29,11 @@ class ModelDirectiveTest {
             assertEquals("fourthProp", directive.propertyPath[3].name)
             val call = directive.propertyPath[4] as ModelReference.FunctionCall
             assertEquals("fifthProp", call.name)
-            assertEquals(true, call.parametersList[0].getStoredValue()!!.value)
-            assertEquals(false, call.parametersList[1].getStoredValue()!!.value)
+            assertEquals(true, call.parametersList[0].getValue(context).value)
+            assertEquals(false, call.parametersList[1].getValue(context).value)
         }
     }
+
     @Test
     fun testModelFunctionCallWithParameters() {
         val context = TemplateContext(text = "@model.callSum(1,2)")
