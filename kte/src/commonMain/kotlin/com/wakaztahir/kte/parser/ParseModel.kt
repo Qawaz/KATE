@@ -29,18 +29,26 @@ internal fun SourceStream.parseFunctionParameters(): List<ReferencedValue>? {
 
 internal fun Char.isModelDirectiveLetter(): Boolean = this.isLetterOrDigit() || this == '_'
 
-internal fun SourceStream.parseModelDirective(): ModelDirective? {
-    if (currentChar == '@' && increment("@model")) {
-        val propertyPath = mutableListOf<ModelReference>()
-        while (increment('.')) {
-            val propertyName = parseTextWhile { currentChar.isModelDirectiveLetter() }
-            val parameters = parseFunctionParameters()
-            if (parameters != null) {
-                propertyPath.add(ModelReference.FunctionCall(propertyName, parameters))
-            }else {
-                propertyPath.add(ModelReference.Property(propertyName))
-            }
+internal fun SourceStream.parseDotReferencesInto(propertyPath: MutableList<ModelReference>) {
+    while (increment('.')) {
+        var explicitProperty = false
+        if (increment('@')) {
+            explicitProperty = true
         }
+        val propertyName = parseTextWhile { currentChar.isModelDirectiveLetter() }
+        val parameters = parseFunctionParameters()
+        if (parameters != null && !explicitProperty) {
+            propertyPath.add(ModelReference.FunctionCall(propertyName, parameters))
+        } else {
+            propertyPath.add(ModelReference.Property(propertyName))
+        }
+    }
+}
+
+internal fun SourceStream.parseModelDirective(directive: String = "@model"): ModelDirective? {
+    if (currentChar == '@' && increment(directive)) {
+        val propertyPath = mutableListOf<ModelReference>()
+        parseDotReferencesInto(propertyPath)
         return ModelDirective(propertyPath)
     }
     return null

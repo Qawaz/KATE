@@ -12,28 +12,6 @@ fun TemplateContext.generateTo(destination: DestinationStream) {
     stream.generateTo(stream, destination)
 }
 
-fun LazyBlock.generateTo(source: SourceStream, destination: DestinationStream) {
-    while (canIterate(source)) {
-        if (source.currentChar == '<') {
-            if (source.parseComment()) {
-                continue
-            }
-        }
-        if (source.currentChar == '@') {
-            val directive = source.parseAtDirective()
-            if (directive != null) {
-                if (directive is DeclarationStatement) {
-                    directive.storeValue(model)
-                }
-                directive.generateTo(this, source, destination)
-                continue
-            }
-        }
-        destination.write(source.currentChar)
-        source.incrementPointer()
-    }
-}
-
 fun SourceStream.parseAtDirective(): AtDirective? {
     parseEmbedding()?.let { return it }
     parseConstantReference()?.let { return it }

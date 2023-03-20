@@ -2,7 +2,6 @@ package com.wakaztahir.kte.parser
 
 import com.wakaztahir.kte.dsl.ModelIterable
 import com.wakaztahir.kte.model.model.MutableTemplateModel
-import com.wakaztahir.kte.dsl.UnresolvedValueException
 import com.wakaztahir.kte.model.*
 import com.wakaztahir.kte.model.ConditionType
 import com.wakaztahir.kte.model.ReferencedValue
@@ -41,24 +40,24 @@ internal sealed interface ForLoop : AtDirective {
         override val blockValue: LazyBlockSlice
     ) : ForLoop {
 
-        private fun store(model: MutableTemplateModel, value: Int) {
+        private fun store(value: Int) {
             if (indexConstName != null) {
-                model.putValue(indexConstName, value)
+                blockValue.model.putValue(indexConstName, value)
             }
         }
 
-        private fun store(model: MutableTemplateModel, value: KTEValue) {
+        private fun store(value: KTEValue) {
             when (value) {
                 is TemplateModel -> {
-                    model.putObject(elementConstName, value)
+                    blockValue.model.putObject(elementConstName, value)
                 }
 
                 is ModelIterable<*> -> {
-                    model.putIterable(elementConstName, value)
+                    blockValue.model.putIterable(elementConstName, value)
                 }
 
-                is DynamicValue<*> -> {
-                    model.putValue(elementConstName, value)
+                is PrimitiveValue<*> -> {
+                    blockValue.model.putValue(elementConstName, value)
                 }
 
                 else -> {
@@ -67,27 +66,26 @@ internal sealed interface ForLoop : AtDirective {
             }
         }
 
-        private fun remove(model: MutableTemplateModel) {
+        private fun remove() {
             if (indexConstName != null) {
-                model.removeKey(indexConstName)
+                blockValue.model.removeKey(indexConstName)
             }
-            model.removeKey(elementConstName)
+            blockValue.model.removeKey(elementConstName)
         }
 
         override fun iterate(context: MutableTemplateModel, block: () -> Unit) {
             var index = 0
             val iterable = listProperty.getIterable(context)
-                ?: throw UnresolvedValueException("referenced property is not iterable")
             val total = iterable.size
             while (index < total) {
-                store(context, iterable.getOrElse(index) {
+                store(iterable.getOrElse(index) {
                     throw IllegalStateException("element at $index in for loop not found")
                 })
-                store(context, index)
+                store(index)
                 block()
                 index++
             }
-            remove(context)
+            remove()
         }
     }
 
@@ -101,19 +99,29 @@ internal sealed interface ForLoop : AtDirective {
         override val blockValue: LazyBlockSlice
     ) : ForLoop {
 
-        private fun ReferencedValue.intVal(context: MutableTemplateModel): Float {
-            (getValue(context) as? IntValue)?.value?.toFloat()?.let { return it }
-            return (getValue(context) as? FloatValue)?.value
-                ?: throw IllegalStateException("for loop variable must be an integer / float")
+        private fun ReferencedValue.intVal(context: MutableTemplateModel): Int {
+            (getValue(context) as? IntValue)?.value?.let { return it }
+                ?: throw IllegalStateException("for loop variable must be an integer")
+        }
+
+        private fun storeIndex(value: Int) {
+            blockValue.model.putValue(variableName, value)
+        }
+
+        private fun removeIndex() {
+            blockValue.model.removeKey(variableName)
         }
 
         override fun iterate(context: MutableTemplateModel, block: () -> Unit) {
             var i = initializer.intVal(context)
             val conditionValue = conditional.intVal(context)
             val incrementerValue = incrementer.intVal(context)
+            // println("INITIALIZER : $i,CONDITIONAL : $conditionValue,INCREMENTER : $incrementerValue,OPERATOR : ${arithmeticOperatorType.char},RESULT : ${conditionType.verifyCompare(i.compareTo(conditionValue))}")
             while (conditionType.verifyCompare(i.compareTo(conditionValue))) {
+                storeIndex(i)
                 block()
                 i = arithmeticOperatorType.operate(i, incrementerValue)
+                removeIndex()
             }
         }
     }

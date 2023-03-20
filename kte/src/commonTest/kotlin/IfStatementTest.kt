@@ -5,7 +5,6 @@ import com.wakaztahir.kte.parser.*
 import com.wakaztahir.kte.parser.parseCondition
 import com.wakaztahir.kte.parser.parseConstantDeclaration
 import com.wakaztahir.kte.parser.parseIfStatement
-import com.wakaztahir.kte.parser.stream.TextSourceStream
 import kotlin.test.*
 
 class IfStatementTest {
@@ -26,7 +25,6 @@ class IfStatementTest {
         return result && result2
     }
 
-    @OptIn(KTEDelicateFunction::class)
     @Test
     fun testConstRef() {
         val context = TemplateContext("@if(@const(var1)) blockValue @endif")
@@ -49,8 +47,8 @@ class IfStatementTest {
     fun testUnequalCondition() {
         val context = TemplateContext(("\"ValueOne\" == \"SecondValue\""))
         val condition = context.stream.parseCondition()!! as LogicalCondition
-        assertEquals("ValueOne", condition.propertyFirst.getValue(context).value)
-        assertEquals("SecondValue", condition.propertySecond.getValue(context).value)
+        assertEquals("ValueOne", condition.propertyFirst.getValue(context.stream.model).value)
+        assertEquals("SecondValue", condition.propertySecond.getValue(context.stream.model).value)
     }
 
     @Test
@@ -99,8 +97,8 @@ class IfStatementTest {
     fun testConstantsRefs() {
         val context = TemplateContext(("\"ValueOne\" == \"SecondValue\""))
         val condition = context.stream.parseCondition()!! as LogicalCondition
-        assertEquals("ValueOne", condition.propertyFirst.getValue(context).value)
-        assertEquals("SecondValue", condition.propertySecond.getValue(context).value)
+        assertEquals("ValueOne", condition.propertyFirst.getValue(context.stream.model).value)
+        assertEquals("SecondValue", condition.propertySecond.getValue(context.stream.model).value)
     }
 
     private fun testIfy(firstIf: Boolean, firstElseIf: Boolean, secondElseIf: Boolean): String {
@@ -108,7 +106,6 @@ class IfStatementTest {
         return "@if(${firstIf.s()}) MyFirstValue @elseif(${firstElseIf.s()}) MySecondValue @elseif(${secondElseIf.s()}) MyThirdValue @else MyFourthValue @endif"
     }
 
-    @OptIn(KTEDelicateFunction::class)
     private fun codeGenerated(statement: String): String {
         val context = TemplateContext(statement)
         return context.getDestinationAsString()

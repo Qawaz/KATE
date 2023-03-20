@@ -9,12 +9,12 @@
 <%-- Generating a maths class with basic arithmetic operations --%>
 @if(@const(generateComments)) // @model.mathTestClassName provides functions for basic math operations @endif
 class @model.mathTestClassName {
-    @for(@const arithmetic : @model.arithmetic){
-        @if(@const(generateComments)) // @const(arithmetic).funName performs '@const(arithmetic).symbolName' between two variables @endif
-        fun @const(arithmetic).funName() : @const(arithmetic).returnType {
-             val variableOne = @const(arithmetic).first
-             val variableTwo = @const(arithmetic).second
-             return variableOne @const(arithmetic).symbolName variableTwo
+    @for(@const arithmetic2 : @model.arithmetic)
+        @if(@const(generateComments)) // @const(arithmetic2).funName performs '@const(arithmetic).symbolName' between two variables @endif
+        fun @const(arithmetic2).@funName() : @const(arithmetic2).returnType {
+             val variableOne = @const(arithmetic2).first
+             val variableTwo = @const(arithmetic2).second
+             return variableOne @const(arithmetic2).symbolName variableTwo
         }
-    }
+    @endfor
 }

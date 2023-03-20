@@ -1,5 +1,6 @@
 package com.wakaztahir.kte.parser
 
+import com.wakaztahir.kte.dsl.UnresolvedValueException
 import com.wakaztahir.kte.model.model.MutableTemplateModel
 import com.wakaztahir.kte.model.*
 import com.wakaztahir.kte.parser.stream.*
@@ -10,29 +11,35 @@ import com.wakaztahir.kte.parser.stream.unexpected
 
 class ConstantReferenceParseException(message: String) : Throwable(message)
 
-internal fun SourceStream.parseConstantReference(): ConstantReference? {
+internal fun SourceStream.parseConstantReference(): ModelDirective? {
     if (currentChar == '@' && increment("@const(")) {
-        val variableName = parseTextWhile { currentChar != ')' }
-        increment(')')
+        val propertyPath = mutableListOf<ModelReference>()
+        val variableName = parseTextWhile { currentChar.isModelDirectiveLetter() }
         if (variableName.isNotEmpty()) {
-            return ConstantReference(variableName)
+            propertyPath.add(ModelReference.Property(variableName))
+            if (!increment(')')) {
+                throw ConstantReferenceParseException("expected ) got $currentChar")
+            }
         } else {
-            throw ConstantReferenceParseException("constant reference must end with ')'")
+            throw ConstantReferenceParseException("@const( variable name is empty")
         }
+        parseDotReferencesInto(propertyPath)
+        return ModelDirective(propertyPath)
     }
     return null
 }
 
 //-------------- Declaration
 
-internal data class ConstantDeclaration(val variableName: String, val variableValue: ReferencedValue) : AtDirective, DeclarationStatement {
+internal data class ConstantDeclaration(val variableName: String, val variableValue: ReferencedValue) : AtDirective,
+    DeclarationStatement {
 
     override fun storeValue(model: MutableTemplateModel) {
         model.putValue(variableName, variableValue)
     }
 
     override fun generateTo(block: LazyBlock, source: SourceStream, destination: DestinationStream) {
-
+        storeValue(block.model)
     }
 }
 

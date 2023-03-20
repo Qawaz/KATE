@@ -40,7 +40,7 @@ internal fun SourceStream.parseCondition(): Condition? {
     val type = parseConditionType()
 
     if (type == null) {
-        val storedValue = propertyFirst as? DynamicValue<*>
+        val storedValue = propertyFirst as? PrimitiveValue<*>
         return if (storedValue != null) {
             if (storedValue is BooleanValue) {
                 EvaluatedCondition(storedValue.value)

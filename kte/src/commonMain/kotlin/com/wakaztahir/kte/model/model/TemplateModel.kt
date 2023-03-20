@@ -3,28 +3,29 @@ package com.wakaztahir.kte.model.model
 import com.wakaztahir.kte.dsl.ModelIterable
 import com.wakaztahir.kte.dsl.ModelObjectImpl
 import com.wakaztahir.kte.dsl.ModelValue
-import com.wakaztahir.kte.dsl.UnresolvedValueException
 import com.wakaztahir.kte.model.*
 
 interface TemplateModel : KTEValue {
-    fun getValue(key: String): DynamicValue<*>?
 
-    fun <T : KTEValue> getIterable(key: String): ModelIterable<T>?
+    fun getValue(key: String): PrimitiveValue<*>?
+
+    fun getIterable(key: String): ModelIterable<KTEValue>?
 
     fun getFunction(key: String): ((List<Any>) -> ModelValue)?
 
     fun getObject(key: String): TemplateModel?
 
-    private fun getAnyModelDirectiveValue(directive: ModelDirective): Any {
+    fun getAnyModelDirectiveValue(directive: ModelDirective): KTEValue? {
         var currentObj: TemplateModel = this
-        var currentVal: DynamicValue<*>? = null
+        var currentVal: PrimitiveValue<*>? = null
+        val currentIterable: ModelIterable<*>? = null
         for (prop in directive.propertyPath) {
             when (prop) {
                 is ModelReference.FunctionCall -> {
                     currentObj.getFunction(prop.name)?.let { call ->
                         currentVal = call(prop.parametersList.map { it.getValue(this).value!! }).value
                     } ?: run {
-                        throw UnresolvedValueException("couldn't resolve model path : " + directive.pathToString(until = prop))
+                        return null
                     }
                 }
 
@@ -32,36 +33,34 @@ interface TemplateModel : KTEValue {
                     currentObj.getObject(prop.name)?.let {
                         currentObj = it
                     } ?: run {
+                        currentObj.getIterable(prop.name)
+                        null
+                    } ?: run {
                         currentVal = currentObj.getValue(prop.name) ?: run {
-                            throw UnresolvedValueException(
-                                "couldn't resolve model path : " + directive.pathToString(
-                                    until = prop
-                                )
-                            )
+                            return null
                         }
                     }
                 }
             }
         }
-        return currentVal ?: currentObj.let {
+        return currentVal ?: currentIterable ?: currentObj.let {
             if (it == this) null else it
-        } ?: throw UnresolvedValueException("couldn't resolve model path : " + directive.pathToString())
+        }
     }
 
-    fun <T : KTEValue> getPropertyAsIterable(directive: ModelDirective): ModelIterable<T>? {
+    fun getPropertyAsIterable(directive: ModelDirective): ModelIterable<KTEValue>? {
         val value = getAnyModelDirectiveValue(directive = directive)
         @Suppress("UNCHECKED_CAST")
-        return value as? ModelIterable<T>
+        return value as? ModelIterable<KTEValue>
     }
 
-    fun getModelDirectiveValue(directive: ModelDirective): DynamicValue<*> {
-        return getAnyModelDirectiveValue(directive) as DynamicValue<*>
+    fun getPropertyAsObject(directive: ModelDirective): TemplateModel? {
+        val value = getAnyModelDirectiveValue(directive = directive)
+        return value as? TemplateModel
     }
 
-    fun getConstantReference(reference: ConstantReference): DynamicValue<*> {
-        return getValue(reference.name) ?: run {
-            throw UnresolvedValueException("couldn't get constant reference by name ${reference.name}")
-        }
+    fun getModelDirectiveValue(directive: ModelDirective): PrimitiveValue<*>? {
+        return getAnyModelDirectiveValue(directive) as? PrimitiveValue<*>
     }
 
 }

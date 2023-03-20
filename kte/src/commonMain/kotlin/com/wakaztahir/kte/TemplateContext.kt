@@ -33,11 +33,9 @@ class TemplateContext(stream: SourceStream){
         return embedMap[path]
     }
 
-    @KTEDelicateFunction
+    @OptIn(KTEDelicateFunction::class)
     fun getDestinationAsString(): String {
-        val destination = TextDestinationStream()
-        generateTo(destination)
-        return destination.getValue()
+        return stream.getDestinationAsString(stream)
     }
 
 }

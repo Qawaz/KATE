@@ -2,6 +2,7 @@ package com.wakaztahir.kte.parser.stream
 
 import com.wakaztahir.kte.dsl.ModelObjectImpl
 import com.wakaztahir.kte.model.model.MutableTemplateModel
+import com.wakaztahir.kte.model.model.TemplateModel
 
 class TextSourceStream(
     private val sourceCode: String,

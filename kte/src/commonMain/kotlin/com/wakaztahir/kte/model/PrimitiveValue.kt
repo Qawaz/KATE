@@ -1,35 +1,39 @@
 package com.wakaztahir.kte.model
 
 import com.wakaztahir.kte.dsl.ModelIterable
-import com.wakaztahir.kte.model.model.TemplateModel
 import com.wakaztahir.kte.dsl.UnresolvedValueException
+import com.wakaztahir.kte.model.model.TemplateModel
 import com.wakaztahir.kte.parser.stream.DestinationStream
 import com.wakaztahir.kte.parser.stream.SourceStream
 
-interface DynamicValue<T> : CodeGen, ReferencedValue {
+interface PrimitiveValue<T> : CodeGen, ReferencedValue {
 
     val value: T
 
-    operator fun compareTo(other: DynamicValue<T>): Int
+    operator fun compareTo(other: PrimitiveValue<T>): Int
 
     @Suppress("UNCHECKED_CAST")
-    fun compareAny(other: DynamicValue<*>): Int {
-        return compareTo(other as DynamicValue<T>)
+    fun compareAny(other: PrimitiveValue<*>): Int {
+        return compareTo(other as PrimitiveValue<T>)
     }
 
-    override fun getValue(model: TemplateModel): DynamicValue<T> {
+    override fun getValue(model: TemplateModel): PrimitiveValue<*> {
         return this
     }
 
-    override fun getIterable(model: TemplateModel): ModelIterable<KTEValue>? {
-        throw UnresolvedValueException("primitive value is not a collection")
+    override fun getIterable(model: TemplateModel): ModelIterable<KTEValue> {
+        throw UnresolvedValueException("primitive value is not iterable")
+    }
+
+    override fun getObject(model: TemplateModel): TemplateModel {
+        throw UnresolvedValueException("primitive value is not an object")
     }
 
 }
 
-class IntValue(override val value: Int) : DynamicValue<Int> {
+class IntValue(override val value: Int) : PrimitiveValue<Int> {
 
-    override fun compareTo(other: DynamicValue<Int>): Int {
+    override fun compareTo(other: PrimitiveValue<Int>): Int {
         return value.compareTo(other.value)
     }
 
@@ -39,8 +43,8 @@ class IntValue(override val value: Int) : DynamicValue<Int> {
 
 }
 
-class FloatValue(override val value: Float) : DynamicValue<Float> {
-    override fun compareTo(other: DynamicValue<Float>): Int {
+class FloatValue(override val value: Float) : PrimitiveValue<Float> {
+    override fun compareTo(other: PrimitiveValue<Float>): Int {
         return value.compareTo(other.value)
     }
 
@@ -50,8 +54,8 @@ class FloatValue(override val value: Float) : DynamicValue<Float> {
 
 }
 
-class BooleanValue(override val value: Boolean) : DynamicValue<Boolean> {
-    override fun compareTo(other: DynamicValue<Boolean>): Int {
+class BooleanValue(override val value: Boolean) : PrimitiveValue<Boolean> {
+    override fun compareTo(other: PrimitiveValue<Boolean>): Int {
         return if (value == other.value) {
             0
         } else {
@@ -65,8 +69,8 @@ class BooleanValue(override val value: Boolean) : DynamicValue<Boolean> {
 
 }
 
-class StringValue(override val value: String) : DynamicValue<String> {
-    override fun compareTo(other: DynamicValue<String>): Int {
+class StringValue(override val value: String) : PrimitiveValue<String> {
+    override fun compareTo(other: PrimitiveValue<String>): Int {
         return if (value == other.value) {
             0
         } else {

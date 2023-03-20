@@ -1,7 +1,6 @@
 package com.wakaztahir.kte.model
 
 import com.wakaztahir.kte.TemplateContext
-import com.wakaztahir.kte.model.model.MutableTemplateModel
 import com.wakaztahir.kte.model.model.TemplateModel
 import com.wakaztahir.kte.parser.stream.DestinationStream
 import com.wakaztahir.kte.parser.stream.SourceStream
@@ -34,7 +33,7 @@ internal enum class ConditionType {
 
 interface Condition {
     fun evaluate(context: TemplateModel): Boolean
-    fun evaluate(context : TemplateContext) : Boolean {
+    fun evaluate(context: TemplateContext): Boolean {
         return evaluate(context.stream.model)
     }
 }
@@ -78,7 +77,7 @@ internal class SingleIf(
     val blockValue: LazyBlockSlice,
 ) : CodeGen {
     override fun generateTo(block: LazyBlock, source: SourceStream, destination: DestinationStream) {
-        destination.write(blockValue.getValueAsString(source))
+        blockValue.generateTo(source = source, destination = destination)
     }
 }
 
@@ -91,11 +90,11 @@ internal class IfStatement(private val ifs: MutableList<SingleIf>) : AtDirective
         ifs.sortBy { it.type.order }
     }
 
-    fun evaluate(context : TemplateContext) : SingleIf? {
+    fun evaluate(context: TemplateContext): SingleIf? {
         return evaluate(context.stream.model)
     }
 
-    fun evaluate(context: MutableTemplateModel): SingleIf? {
+    fun evaluate(context: TemplateModel): SingleIf? {
         sortByOrder()
         for (iffy in ifs) {
             if (iffy.condition.evaluate(context)) {

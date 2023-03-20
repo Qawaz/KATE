@@ -4,7 +4,7 @@ import com.wakaztahir.kte.model.*
 import com.wakaztahir.kte.parser.stream.*
 import com.wakaztahir.kte.parser.stream.increment
 
-fun SourceStream.parseNumberValue() : DynamicValue<*>? {
+fun SourceStream.parseNumberValue() : PrimitiveValue<*>? {
     resetIfNullWithText(
         condition = {
             currentChar == '.' || currentChar == 'f' || currentChar.isDigit()
@@ -25,7 +25,7 @@ fun SourceStream.parseNumberValue() : DynamicValue<*>? {
     return null
 }
 
-fun SourceStream.parseDynamicValue(): DynamicValue<*>? {
+fun SourceStream.parsePrimitiveValue(): PrimitiveValue<*>? {
 
     // Booleans
     if (increment("true")) return BooleanValue(true)

@@ -6,7 +6,7 @@ import com.wakaztahir.kte.model.model.TemplateModel
 
 class UnresolvedValueException(message: String) : Throwable(message)
 
-class ModelValue constructor(val value: DynamicValue<*>) {
+class ModelValue constructor(val value: PrimitiveValue<*>) {
 
     constructor(value: Int) : this(IntValue(value))
 
@@ -35,12 +35,12 @@ class ModelListImpl<T : KTEValue>(val collection: List<T>) : List<T> by collecti
         }
     }
 
-    override fun getValue(key: String): DynamicValue<*>? {
+    override fun getValue(key: String): PrimitiveValue<*>? {
         return props[key]?.let { return it(null).value }
     }
 
-    override fun <T : KTEValue> getIterable(key: String): ModelIterable<T>? {
-        throw UnresolvedValueException("property $key doesn't exist on collection")
+    override fun getIterable(key: String): ModelIterable<KTEValue>? {
+        return null
     }
 
     override fun getFunction(key: String): ((List<Any>) -> ModelValue)? {
@@ -48,16 +48,16 @@ class ModelListImpl<T : KTEValue>(val collection: List<T>) : List<T> by collecti
     }
 
     override fun getObject(key: String): TemplateModel? {
-        throw UnresolvedValueException("property $key doesn't exist on collection")
+        return null
     }
 
 }
 
-class ModelObjectImpl : MutableTemplateModel {
+open class ModelObjectImpl : MutableTemplateModel {
 
     private val container: MutableMap<String, Any> = hashMapOf()
 
-    override fun putValue(key: String, value: DynamicValue<*>) {
+    override fun putValue(key: String, value: PrimitiveValue<*>) {
         container[key] = value
     }
 
@@ -82,13 +82,27 @@ class ModelObjectImpl : MutableTemplateModel {
         return container[key]?.let { it as? TemplateModel }
     }
 
-    override fun getValue(key: String): DynamicValue<*>? {
-        return container[key]?.let { it as DynamicValue<*> }
+    override fun getObject(model: TemplateModel): TemplateModel {
+        TODO("Not yet implemented")
     }
 
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : KTEValue> getIterable(key: String): ModelIterable<T>? {
-        return container[key]?.let { it as? ModelIterable<T> }
+    override fun getValue(key: String): PrimitiveValue<*>? {
+        return container[key]?.let { it as PrimitiveValue<*> }
+    }
+
+    override fun getValue(model: TemplateModel): PrimitiveValue<*> {
+        throw UnresolvedValueException("object is not a primitive")
+    }
+
+    override fun getIterable(key: String): ModelIterable<KTEValue>? {
+        return container[key]?.let {
+            @Suppress("UNCHECKED_CAST")
+            it as? ModelIterable<KTEValue>
+        }
+    }
+
+    override fun getIterable(model: TemplateModel): ModelIterable<KTEValue> {
+        throw UnresolvedValueException("object is not iterable")
     }
 
     override fun removeKey(key: String) {
@@ -97,31 +111,9 @@ class ModelObjectImpl : MutableTemplateModel {
 
 }
 
-class ScopedModelObject(
-    private val parent: MutableTemplateModel,
-    private val current: MutableTemplateModel = ModelObjectImpl(),
-) : MutableTemplateModel by current {
-    override fun getConstantReference(reference: ConstantReference): DynamicValue<*> {
-        return try {
-            current.getConstantReference(reference)
-        } catch (e: UnresolvedValueException) {
-            try {
-                parent.getConstantReference(reference)
-            } catch (_: UnresolvedValueException) {
-                throw e
-            }
-        }
-    }
+class ScopedModelObject(private val parent: TemplateModel) : ModelObjectImpl() {
 
-    override fun getModelDirectiveValue(directive: ModelDirective): DynamicValue<*> {
-        return try {
-            current.getModelDirectiveValue(directive)
-        } catch (e: UnresolvedValueException) {
-            try {
-                parent.getModelDirectiveValue(directive)
-            } catch (_: UnresolvedValueException) {
-                throw e
-            }
-        }
+    override fun getAnyModelDirectiveValue(directive: ModelDirective): KTEValue? {
+        return super.getAnyModelDirectiveValue(directive) ?: parent.getAnyModelDirectiveValue(directive)
     }
 }

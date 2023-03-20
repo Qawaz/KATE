@@ -10,7 +10,7 @@ interface MutableTemplateModel : TemplateModel {
 
     // Put Functions
 
-    fun putValue(key: String, value: DynamicValue<*>)
+    fun putValue(key: String, value: PrimitiveValue<*>)
 
     fun putObject(key: String, obj: TemplateModel)
 

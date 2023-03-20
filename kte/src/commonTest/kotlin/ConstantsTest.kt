@@ -1,5 +1,7 @@
+import com.wakaztahir.kte.KTEDelicateFunction
 import com.wakaztahir.kte.TemplateContext
 import com.wakaztahir.kte.model.StringValue
+import com.wakaztahir.kte.parser.*
 import com.wakaztahir.kte.parser.parseConstantDeclaration
 import com.wakaztahir.kte.parser.parseConstantReference
 import com.wakaztahir.kte.parser.parseDynamicProperty
@@ -14,7 +16,7 @@ class ConstantsTest {
         val context = TemplateContext(("@const(myVar)"))
         val ref = context.stream.parseConstantReference()
         assertNotEquals(null, ref)
-        assertEquals(ref!!.name, "myVar")
+        assertEquals(ref!!.propertyPath[0].name, "myVar")
         context.stream.model.putValue("myVar", StringValue("someValue"))
         assertEquals("someValue", ref.getValue(context.stream.model).value)
     }
@@ -26,6 +28,13 @@ class ConstantsTest {
         assertNotEquals(null, ref)
         assertEquals("myVar", ref!!.variableName)
         assertEquals("someValue", ref.variableValue.getValue(context.stream.model).value)
+    }
+
+    @OptIn(KTEDelicateFunction::class)
+    @Test
+    fun testParseConstantGeneration(){
+        val context = TemplateContext(("@const myVar = \"someValue\"@const(myVar)"))
+        assertEquals("someValue",context.getDestinationAsString())
     }
 
     @Test

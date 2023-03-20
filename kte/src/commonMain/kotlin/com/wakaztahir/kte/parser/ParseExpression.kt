@@ -6,32 +6,32 @@ import com.wakaztahir.kte.parser.stream.increment
 enum class ArithmeticOperatorType(val char: Char) {
 
     Plus('+') {
-        override fun operate(value1: Float, value2: Float): Float {
+        override fun operate(value1: Int, value2: Int): Int {
             return value1 + value2
         }
     },
     Minus('-') {
-        override fun operate(value1: Float, value2: Float): Float {
+        override fun operate(value1: Int, value2: Int): Int {
             return value1 - value2
         }
     },
     Divide('/') {
-        override fun operate(value1: Float, value2: Float): Float {
+        override fun operate(value1: Int, value2: Int): Int {
             return value1 / value2
         }
     },
     Multiply('*') {
-        override fun operate(value1: Float, value2: Float): Float {
+        override fun operate(value1: Int, value2: Int): Int {
             return value1 * value2
         }
     },
     Mod('%') {
-        override fun operate(value1: Float, value2: Float): Float {
+        override fun operate(value1: Int, value2: Int): Int {
             return value1 % value2
         }
     };
 
-    abstract fun operate(value1: Float, value2: Float): Float
+    abstract fun operate(value1: Int, value2: Int): Int
 
     fun parse(stream: SourceStream): ArithmeticOperatorType? {
         return if (stream.increment(char)) this@ArithmeticOperatorType else null

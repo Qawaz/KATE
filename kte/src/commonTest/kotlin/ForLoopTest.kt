@@ -1,6 +1,8 @@
-import com.wakaztahir.kte.KTEDelicateFunction
 import com.wakaztahir.kte.TemplateContext
+import com.wakaztahir.kte.dsl.ModelListImpl
 import com.wakaztahir.kte.model.ModelDirective
+import com.wakaztahir.kte.model.StringValue
+import com.wakaztahir.kte.model.model.TemplateModel
 import com.wakaztahir.kte.parser.ArithmeticOperatorType
 import com.wakaztahir.kte.parser.ForLoop
 import com.wakaztahir.kte.parser.parseForLoop
@@ -34,14 +36,47 @@ class ForLoopTest {
         val context = TemplateContext("@for(@const i=0;i<5;i${operatorType.char}1) blockValue @endfor")
         val loop = context.stream.parseForLoop()!! as ForLoop.NumberedFor
         assertEquals("i", loop.variableName)
-        assertEquals(0, loop.initializer.getValue(context).value)
-        assertEquals(5, loop.conditional.getValue(context).value)
+        assertEquals(0, loop.initializer.getValue(context.stream.model).value)
+        assertEquals(5, loop.conditional.getValue(context.stream.model).value)
         assertEquals(operatorType, loop.arithmeticOperatorType)
-        assertEquals(1, loop.incrementer.getValue(context).value)
+        assertEquals(1, loop.incrementer.getValue(context.stream.model).value)
         assertEquals("blockValue", loop.blockValue.getValueAsString(context.stream))
     }
 
-    @OptIn(KTEDelicateFunction::class)
+    @Test
+    fun testForLoopGeneration() {
+        val context = TemplateContext("@const var1 = 3@for(@const i = @const(var1);i>0;i-1) @const(var1) @endfor")
+        assertEquals("333", context.getDestinationAsString())
+    }
+
+    @Test
+    fun testForLoopGeneration3() {
+        val context = TemplateContext("@for(@const i = 0;i<5;i+1) x @endfor")
+        assertEquals("xxxxx", context.getDestinationAsString())
+    }
+
+    @Test
+    fun testForLoopGeneration4() {
+        val context = TemplateContext("@for(@const elem : @model.list) @const(elem) @endfor", TemplateModel {
+            putIterable("list", ModelListImpl(listOf("H", "e", "ll", "o").map { StringValue(it) }))
+        })
+        assertEquals("Hello", context.getDestinationAsString())
+    }
+
+    @Test
+    fun testForLoopGeneration5() {
+        val context = TemplateContext("@model.list.size", TemplateModel {
+            putIterable("list", ModelListImpl(listOf("H", "e", "ll", "o").map { StringValue(it) }))
+        })
+        assertEquals("4", context.getDestinationAsString())
+    }
+
+    @Test
+    fun testForLoopGeneration2() {
+        val context = TemplateContext("@for(@const i=0;i<3;i+1) @const(i) @endfor")
+        assertEquals("012", context.getDestinationAsString())
+    }
+
     @Test
     fun parseMultilineForLoop() {
         val context = TemplateContext(

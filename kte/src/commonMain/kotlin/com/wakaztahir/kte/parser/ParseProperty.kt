@@ -12,6 +12,6 @@ internal fun SourceStream.parseReferencedValue(): ReferencedValue? {
 internal fun SourceStream.parseDynamicProperty(): ReferencedValue? {
     parseConstantReference()?.let { return it }
     parseModelDirective()?.let { return it }
-    parseDynamicValue()?.let { return it }
+    parsePrimitiveValue()?.let { return it }
     return null
 }

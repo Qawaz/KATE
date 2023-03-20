@@ -49,6 +49,10 @@ The value of the constant can only be
 
 `@model.function(value1,value2)` To call a function in the model
 
+Explicit property , so compiler won't think it's a function name
+
+`@model.@property()` in this case
+
 ## Conditional Rendering
 
 `@if(condition) @elseif(condition) @else @endif`
