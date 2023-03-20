@@ -1,9 +1,9 @@
 package com.wakaztahir.kte.model
 
-import com.wakaztahir.kte.TemplateContext
+import com.wakaztahir.kte.dsl.ModelProvider
 
-internal interface ReferencedValue {
+interface ReferencedValue {
 
-    fun getValue(context: TemplateContext): DynamicValue<*>?
+    fun getValue(model: ModelProvider): DynamicValue<*>
 
 }

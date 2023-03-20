@@ -47,7 +47,7 @@ The value of the constant can only be
 
 `@model.property` To get a property from the model
 
-`@model.@function(value1,value2)` To call a function in the model
+`@model.function(value1,value2)` To call a function in the model
 
 ## Conditional Rendering
 

@@ -1,9 +1,7 @@
 package com.wakaztahir.kte.parser
 
-import com.wakaztahir.kte.TemplateContext
-import com.wakaztahir.kte.model.AtDirective
-import com.wakaztahir.kte.model.ConstantReference
-import com.wakaztahir.kte.model.DynamicProperty
+import com.wakaztahir.kte.dsl.ModelDsl
+import com.wakaztahir.kte.model.*
 import com.wakaztahir.kte.parser.stream.*
 import com.wakaztahir.kte.parser.stream.increment
 import com.wakaztahir.kte.parser.stream.unexpected
@@ -27,12 +25,14 @@ internal fun SourceStream.parseConstantReference(): ConstantReference? {
 
 //-------------- Declaration
 
-internal data class ConstantDeclaration(val variableName: String, val variableValue: DynamicProperty) : AtDirective {
-    fun storeValue(context: TemplateContext) {
-        context.storeValue(variableName, variableValue.getValue(context)!!.getValueAsString())
+internal data class ConstantDeclaration(val variableName: String, val variableValue: DynamicProperty) : AtDirective,
+    DeclarationStatement {
+
+    override fun storeValue(model: ModelDsl) {
+        model.putValue(variableName, variableValue)
     }
 
-    override fun generateTo(context: TemplateContext, stream: DestinationStream) {
+    override fun generateTo(block: LazyBlock, source: SourceStream, destination: DestinationStream) {
 
     }
 }

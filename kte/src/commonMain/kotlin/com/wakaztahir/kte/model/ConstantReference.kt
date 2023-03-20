@@ -1,14 +1,15 @@
 package com.wakaztahir.kte.model
 
-import com.wakaztahir.kte.TemplateContext
+import com.wakaztahir.kte.dsl.ModelProvider
 import com.wakaztahir.kte.parser.stream.DestinationStream
+import com.wakaztahir.kte.parser.stream.SourceStream
 
-internal data class ConstantReference(val name: String) : ReferencedValue,AtDirective {
-    override fun getValue(context: TemplateContext): DynamicValue<*>? {
-        return context.getConstantReference(this)
+data class ConstantReference(val name: String) : ReferencedValue, AtDirective {
+    override fun getValue(model: ModelProvider): DynamicValue<*> {
+        return model.getConstantReference(this)
     }
 
-    override fun generateTo(context: TemplateContext, stream: DestinationStream) {
-        getValue(context)!!.generateTo(context,stream)
+    override fun generateTo(block: LazyBlock, source: SourceStream, destination: DestinationStream) {
+        getValue(block.model).generateTo(block, source, destination)
     }
 }

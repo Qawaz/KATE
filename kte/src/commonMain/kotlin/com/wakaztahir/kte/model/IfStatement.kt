@@ -1,7 +1,8 @@
 package com.wakaztahir.kte.model
 
-import com.wakaztahir.kte.TemplateContext
+import com.wakaztahir.kte.dsl.ModelProvider
 import com.wakaztahir.kte.parser.stream.DestinationStream
+import com.wakaztahir.kte.parser.stream.SourceStream
 
 
 internal enum class ConditionType {
@@ -30,7 +31,7 @@ internal enum class ConditionType {
 }
 
 interface Condition {
-    fun evaluate(context: TemplateContext): Boolean
+    fun evaluate(context: ModelProvider): Boolean
 }
 
 internal class LogicalCondition(
@@ -38,13 +39,24 @@ internal class LogicalCondition(
     val type: ConditionType,
     val propertySecond: DynamicProperty
 ) : Condition {
-    override fun evaluate(context: TemplateContext): Boolean {
-        return type.verifyCompare(propertyFirst.getValue(context)!!.compareAny(propertySecond.getValue(context)!!))
+    override fun evaluate(context: ModelProvider): Boolean {
+        return type.verifyCompare(propertyFirst.getValue(context).compareAny(propertySecond.getValue(context)))
+    }
+}
+
+internal class ReferencedBoolean(val value: DynamicProperty) : Condition {
+    override fun evaluate(context: ModelProvider): Boolean {
+        val value = value.getValue(context)
+        if (value is BooleanValue) {
+            return value.value
+        } else {
+            throw IllegalStateException("referenced value is not a boolean value inside the conditions")
+        }
     }
 }
 
 internal class EvaluatedCondition(val value: Boolean) : Condition {
-    override fun evaluate(context: TemplateContext): Boolean {
+    override fun evaluate(context: ModelProvider): Boolean {
         return value
     }
 }
@@ -60,8 +72,8 @@ internal class SingleIf(
     val type: IfType,
     val blockValue: LazyBlockSlice,
 ) : CodeGen {
-    override fun generateTo(context: TemplateContext, stream: DestinationStream) {
-        TODO("Not yet implemented")
+    override fun generateTo(block: LazyBlock, source: SourceStream, destination: DestinationStream) {
+        destination.write(blockValue.getValueAsString(source))
     }
 }
 
@@ -74,7 +86,7 @@ internal class IfStatement(private val ifs: MutableList<SingleIf>) : AtDirective
         ifs.sortBy { it.type.order }
     }
 
-    fun evaluate(context: TemplateContext): SingleIf? {
+    fun evaluate(context: ModelProvider): SingleIf? {
         sortByOrder()
         for (iffy in ifs) {
             if (iffy.condition.evaluate(context)) {
@@ -84,7 +96,7 @@ internal class IfStatement(private val ifs: MutableList<SingleIf>) : AtDirective
         return null
     }
 
-    override fun generateTo(context: TemplateContext, stream: DestinationStream) {
-        evaluate(context)?.generateTo(context, stream)
+    override fun generateTo(block: LazyBlock, source: SourceStream, destination: DestinationStream) {
+        evaluate(block.model)?.generateTo(block,source,destination)
     }
 }

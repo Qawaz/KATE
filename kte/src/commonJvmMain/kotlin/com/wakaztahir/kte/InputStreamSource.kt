@@ -1,5 +1,6 @@
 package com.wakaztahir.kte
 
+import com.wakaztahir.kte.dsl.TemplateModel
 import com.wakaztahir.kte.parser.stream.SourceStream
 import java.io.InputStream
 
@@ -46,5 +47,8 @@ class InputStreamSource(val stream: InputStream) : SourceStream() {
     override fun setPointerAt(position: Int): Boolean {
         TODO("")
     }
+
+    override val model: TemplateModel
+        get() = TODO("Not yet implemented")
 
 }

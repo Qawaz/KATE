@@ -1,8 +1,8 @@
 package com.wakaztahir.kte.model
 
-import com.wakaztahir.kte.TemplateContext
+import com.wakaztahir.kte.dsl.ModelProvider
 
-internal class DynamicProperty(
+class DynamicProperty(
     private val property: ReferencedValue?,
     private val value: DynamicValue<*>?,
 ) {
@@ -19,13 +19,8 @@ internal class DynamicProperty(
         return value
     }
 
-    fun getValue(context: TemplateContext): DynamicValue<*>? {
-        if (property != null) {
-            return property.getValue(context)
-        }
-        if (value != null) {
-            return value
-        }
-        return null!!
+    fun getValue(model: ModelProvider): DynamicValue<*> {
+        return value ?: property!!.getValue(model)
     }
+
 }

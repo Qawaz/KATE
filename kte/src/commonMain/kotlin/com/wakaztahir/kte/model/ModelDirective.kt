@@ -1,9 +1,10 @@
 package com.wakaztahir.kte.model
 
-import com.wakaztahir.kte.TemplateContext
+import com.wakaztahir.kte.dsl.ModelProvider
 import com.wakaztahir.kte.parser.stream.DestinationStream
+import com.wakaztahir.kte.parser.stream.SourceStream
 
-internal sealed interface ModelReference {
+sealed interface ModelReference {
 
     val name: String
 
@@ -16,14 +17,22 @@ internal sealed interface ModelReference {
 
 }
 
-internal class ModelDirective(
+class ModelDirective(
     val propertyPath: List<ModelReference>
 ) : ReferencedValue, AtDirective {
-    override fun getValue(context: TemplateContext): DynamicValue<*>? {
-        return context.getModelDirectiveValue(this)
+    override fun getValue(model: ModelProvider): DynamicValue<*> {
+        return model.getModelDirectiveValue(this)
     }
 
-    override fun generateTo(context: TemplateContext, stream: DestinationStream) {
-        getValue(context)!!.generateTo(context, stream)
+    override fun generateTo(block: LazyBlock, source: SourceStream, destination: DestinationStream) {
+        getValue(block.model).generateTo(block, source, destination)
+    }
+
+    fun pathToString(until: ModelReference): String {
+        return propertyPath.joinToString(".", limit = propertyPath.indexOf(until) + 1) { it.name }
+    }
+
+    fun pathToString(): String {
+        return propertyPath.joinToString(".") { it.name }
     }
 }

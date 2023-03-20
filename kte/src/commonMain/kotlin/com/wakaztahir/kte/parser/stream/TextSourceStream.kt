@@ -1,6 +1,12 @@
 package com.wakaztahir.kte.parser.stream
 
-class TextSourceStream(private val sourceCode: String) : SourceStream() {
+import com.wakaztahir.kte.dsl.ModelObject
+import com.wakaztahir.kte.dsl.TemplateModel
+
+class TextSourceStream(
+    private val sourceCode: String,
+    override val model: TemplateModel = ModelObject()
+) : SourceStream() {
 
     override var pointer: Int = 0
 

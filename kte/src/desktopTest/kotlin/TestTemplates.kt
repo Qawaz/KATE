@@ -1,24 +1,17 @@
-import com.wakaztahir.kte.InputStreamSource
 import com.wakaztahir.kte.OutputStreamDestination
 import com.wakaztahir.kte.TemplateContext
+import com.wakaztahir.kte.dsl.TemplateModel
 import com.wakaztahir.kte.parser.generateTo
-import com.wakaztahir.kte.parser.parse
 import com.wakaztahir.kte.parser.stream.DestinationStream
 import com.wakaztahir.kte.parser.stream.SourceStream
 import com.wakaztahir.kte.parser.stream.TextSourceStream
 import org.junit.Test
 import java.io.File
-import java.net.URI
-import java.nio.file.Files
-import java.nio.file.Paths
-import kotlin.io.path.createFile
-import kotlin.io.path.outputStream
-import kotlin.io.path.toPath
 
 class TestTemplates {
 
-    private fun sourcePath(path: String): SourceStream {
-        return TextSourceStream(object {}.javaClass.getResource(path)!!.readText())
+    private fun sourcePath(path: String,model : TemplateModel): SourceStream {
+        return TextSourceStream(object {}.javaClass.getResource(path)!!.readText(),model)
     }
 
     private fun output(path: String): DestinationStream {
@@ -30,7 +23,9 @@ class TestTemplates {
 
     @Test
     fun testMainTemplate() {
-        val context = TemplateContext(sourcePath("schema/main.kte"))
+        val context = TemplateContext(sourcePath("schema/main.kte",TemplateModel {
+            putValue("mathTestClassName","MathsClass")
+        }))
         context.generateTo(output("output/main.kt"))
     }
 

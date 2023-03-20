@@ -11,7 +11,7 @@ class EmbeddingTest {
         val context = TemplateContext("@embed ./current.kte")
         val path = context.stream.parseEmbedding()!!.path
         assertEquals("./current.kte", path)
-        context.embedStream(path, TextSourceStream("@const var1 = \"hello-world\""))
+        context.embedStream(path, TextSourceStream("@const var1 = \"hello-world\"",))
         val ref = context.getEmbeddedStream(path)!!.parseConstantDeclaration()!!
         assertEquals("var1", ref.variableName)
         assertEquals("hello-world", ref.variableValue.getStoredValue()!!.value)

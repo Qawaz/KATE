@@ -1,6 +1,8 @@
 package com.wakaztahir.kte.parser.stream
 
-abstract class SourceStream {
+import com.wakaztahir.kte.model.LazyBlock
+
+abstract class SourceStream : LazyBlock {
 
     abstract val pointer: Int
 
@@ -13,5 +15,9 @@ abstract class SourceStream {
     abstract fun decrementPointer(decrease: Int = 1): Boolean
 
     abstract fun setPointerAt(position: Int): Boolean
+
+    override fun canIterate(stream: SourceStream): Boolean {
+        return !hasEnded
+    }
 
 }

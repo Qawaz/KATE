@@ -1,6 +1,7 @@
 package com.wakaztahir.kte.parser
 
 import com.wakaztahir.kte.TemplateContext
+import com.wakaztahir.kte.dsl.ModelProvider
 import com.wakaztahir.kte.model.*
 import com.wakaztahir.kte.model.ConditionType
 import com.wakaztahir.kte.model.DynamicProperty
@@ -13,11 +14,11 @@ internal sealed interface ForLoop : AtDirective {
 
     val blockValue: LazyBlockSlice
 
-    fun iterate(context: TemplateContext, block: () -> Unit)
+    fun iterate(context: ModelProvider, block: () -> Unit)
 
-    override fun generateTo(context: TemplateContext, stream: DestinationStream) {
-        iterate(context) {
-            //
+    override fun generateTo(block: LazyBlock, source: SourceStream, destination: DestinationStream) {
+        iterate(block.model) {
+            blockValue.generateTo(source = source, destination = destination)
         }
     }
 
@@ -25,7 +26,7 @@ internal sealed interface ForLoop : AtDirective {
         val condition: Condition,
         override val blockValue: LazyBlockSlice
     ) : ForLoop {
-        override fun iterate(context: TemplateContext, block: () -> Unit) {
+        override fun iterate(context: ModelProvider, block: () -> Unit) {
             while (condition.evaluate(context)) {
                 block()
             }
@@ -38,8 +39,8 @@ internal sealed interface ForLoop : AtDirective {
         val listProperty: ReferencedValue,
         override val blockValue: LazyBlockSlice
     ) : ForLoop {
-        override fun iterate(context: TemplateContext, block: () -> Unit) {
-            
+        override fun iterate(context: ModelProvider, block: () -> Unit) {
+
         }
     }
 
@@ -53,13 +54,13 @@ internal sealed interface ForLoop : AtDirective {
         override val blockValue: LazyBlockSlice
     ) : ForLoop {
 
-        private fun DynamicProperty.intVal(context: TemplateContext): Float {
+        private fun DynamicProperty.intVal(context: ModelProvider): Float {
             (getValue(context) as? IntValue)?.value?.toFloat()?.let { return it }
-            return (getValue(context)!! as? FloatValue)?.value
+            return (getValue(context) as? FloatValue)?.value
                 ?: throw IllegalStateException("for loop variable must be an integer / float")
         }
 
-        override fun iterate(context: TemplateContext, block: () -> Unit) {
+        override fun iterate(context: ModelProvider, block: () -> Unit) {
             var i = initializer.intVal(context)
             val conditionValue = conditional.intVal(context)
             val incrementerValue = incrementer.intVal(context)
@@ -88,12 +89,10 @@ private fun SourceStream.parseForBlockValue(): LazyBlockSlice {
     increment("@endfor")
 
     return LazyBlockSlice(
-        pointer = previous,
-        length = length
+        startPointer = previous,
+        length = length,
+        parent = this.model,
     )
-//    return parseTextUntilConsumed("@endfor").let {
-//        if (it.lastOrNull() == ' ') it.substringBeforeLast(' ') else it
-//    }
 }
 
 internal fun SourceStream.incrementBreakFor(): Boolean {

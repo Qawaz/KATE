@@ -33,13 +33,11 @@ internal fun SourceStream.parseModelDirective(): ModelDirective? {
     if (currentChar == '@' && increment("@model")) {
         val propertyPath = mutableListOf<ModelReference>()
         while (increment('.')) {
-            if (increment('@')) {
-                val functionName = parseTextWhile { currentChar != '(' }
-                val parametersList =
-                    parseFunctionParameters() ?: throw IllegalStateException("function parameters not found")
-                propertyPath.add(ModelReference.FunctionCall(functionName, parametersList))
-            } else {
-                val propertyName = parseTextWhile { currentChar.isModelDirectiveLetter() }
+            val propertyName = parseTextWhile { currentChar.isModelDirectiveLetter() }
+            val parameters = parseFunctionParameters()
+            if (parameters != null) {
+                propertyPath.add(ModelReference.FunctionCall(propertyName, parameters))
+            }else {
                 propertyPath.add(ModelReference.Property(propertyName))
             }
         }

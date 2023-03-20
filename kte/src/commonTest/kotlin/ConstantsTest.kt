@@ -16,8 +16,8 @@ class ConstantsTest {
         val ref = context.stream.parseConstantReference()
         assertNotEquals(null, ref)
         assertEquals(ref!!.name, "myVar")
-        context.storeValue("myVar", StringValue("someValue"))
-        assertEquals("someValue", ref.getValue(context)!!.value)
+        context.putValue("myVar", StringValue("someValue"))
+        assertEquals("someValue", ref.getValue(context).value)
     }
 
     @Test
@@ -26,7 +26,7 @@ class ConstantsTest {
         val ref = context.stream.parseConstantDeclaration()
         assertNotEquals(null, ref)
         assertEquals("myVar", ref!!.variableName)
-        assertEquals("someValue", ref.variableValue.getValue(context)!!.value)
+        assertEquals("someValue", ref.variableValue.getValue(context).value)
     }
 
     @Test
@@ -39,21 +39,21 @@ class ConstantsTest {
     @Test
     fun testParseDynamicProperty() {
         val context = TemplateContext(("@const(myVar)"))
-        context.storeValue("myVar", StringValue("someValue"))
+        context.putValue("myVar", StringValue("someValue"))
         val property = context.stream.parseDynamicProperty()
-        assertEquals(property!!.getValue(context)!!.value, "someValue")
+        assertEquals(property!!.getValue(context).value, "someValue")
     }
 
     @Test
     fun testDeclarationAndReference() {
         val decContext = TemplateContext(("@const myVar = \"someValue\""))
         val dec = decContext.stream.parseConstantDeclaration()
-        decContext.updateStream(TextSourceStream("@const myVar2 = @const(myVar)"))
+        decContext.updateStream("@const myVar2 = @const(myVar)")
         dec!!.storeValue(decContext)
         val refDec = decContext.stream.parseConstantDeclaration()
         assertEquals(
-            dec.variableValue.getValue(decContext)!!.value,
-            refDec!!.variableValue.getValue(decContext)!!.value
+            dec.variableValue.getValue(decContext).value,
+            refDec!!.variableValue.getValue(decContext).value
         )
     }
 

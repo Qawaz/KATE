@@ -1,9 +1,10 @@
 package com.wakaztahir.kte.model
 
-import com.wakaztahir.kte.TemplateContext
 import com.wakaztahir.kte.parser.stream.DestinationStream
+import com.wakaztahir.kte.parser.stream.SourceStream
 
 interface DynamicValue<T> : CodeGen {
+
     val value: T
 
     operator fun compareTo(other: DynamicValue<T>): Int
@@ -22,8 +23,8 @@ class IntValue(override val value: Int) : DynamicValue<Int> {
         return value.compareTo(other.value)
     }
 
-    override fun generateTo(context: TemplateContext, stream: DestinationStream) {
-        stream.write(value.toString())
+    override fun generateTo(block: LazyBlock, source: SourceStream, destination: DestinationStream) {
+        destination.write(this@IntValue)
     }
 
     override fun getValueAsString(): String = value.toString()
@@ -35,8 +36,8 @@ class FloatValue(override val value: Float) : DynamicValue<Float> {
         return value.compareTo(other.value)
     }
 
-    override fun generateTo(context: TemplateContext, stream: DestinationStream) {
-        stream.write(value.toString())
+    override fun generateTo(block: LazyBlock, source: SourceStream, destination: DestinationStream) {
+        destination.write(this@FloatValue)
     }
 
     override fun getValueAsString(): String = value.toString() + 'f'
@@ -52,8 +53,8 @@ class BooleanValue(override val value: Boolean) : DynamicValue<Boolean> {
         }
     }
 
-    override fun generateTo(context: TemplateContext, stream: DestinationStream) {
-        stream.write(if (value) "true" else "false")
+    override fun generateTo(block: LazyBlock, source: SourceStream, destination: DestinationStream) {
+        destination.write(this@BooleanValue)
     }
 
     override fun getValueAsString(): String = if (value) "true" else "false"
@@ -69,8 +70,8 @@ class StringValue(override val value: String) : DynamicValue<String> {
         }
     }
 
-    override fun generateTo(context: TemplateContext, stream: DestinationStream) {
-        stream.write(value)
+    override fun generateTo(block: LazyBlock, source: SourceStream, destination: DestinationStream) {
+        destination.write(this@StringValue)
     }
 
     override fun getValueAsString(): String = '\"' + value + '\"'

@@ -39,13 +39,17 @@ internal fun SourceStream.parseCondition(): Condition? {
     escapeSpaces()
     val type = parseConditionType()
 
-    val storedValue = propertyFirst.getStoredValue()
-    if (type == null && storedValue != null && storedValue is BooleanValue) {
-        return EvaluatedCondition(storedValue.value)
-    }
-
     if (type == null) {
-        return null
+        val storedValue = propertyFirst.getStoredValue()
+        return if (storedValue != null) {
+            if (storedValue is BooleanValue) {
+                EvaluatedCondition(storedValue.value)
+            } else {
+                throw IllegalStateException("condition cannot contain value of type other than boolean")
+            }
+        } else {
+            ReferencedBoolean(propertyFirst)
+        }
     }
 
     escapeSpaces()
@@ -78,8 +82,9 @@ private fun SourceStream.parseIfBlockValue(ifType: IfType): LazyBlockSlice {
     incrementPointer()
 
     return LazyBlockSlice(
-        pointer = previous,
-        length = length
+        startPointer = previous,
+        length = length,
+        parent = model,
     )
 }
 
@@ -90,10 +95,11 @@ internal fun SourceStream.parseSingleIf(start: String, ifType: IfType): SingleIf
             if (condition != null) {
                 if (increment(')')) {
                     increment(' ')
+                    val value = parseIfBlockValue(ifType)
                     return SingleIf(
                         condition = condition,
                         type = ifType,
-                        blockValue = parseIfBlockValue(ifType)
+                        blockValue = value
                     )
                 } else {
                     throw IllegalStateException("missing ')' in @if statement")
@@ -102,9 +108,6 @@ internal fun SourceStream.parseSingleIf(start: String, ifType: IfType): SingleIf
         } else {
             increment(' ')
             val value = parseIfBlockValue(ifType)
-            if (!increment("@endif")) {
-                throw IllegalStateException("@if must end with @endif")
-            }
             return SingleIf(
                 condition = EvaluatedCondition(true),
                 type = IfType.Else,
@@ -126,12 +129,20 @@ internal fun SourceStream.parseElse(): SingleIf? =
 
 internal fun SourceStream.parseIfStatement(): IfStatement? {
     val singleIf = parseFirstIf() ?: return null
+    if (increment("@endif")) {
+        return IfStatement(mutableListOf(singleIf))
+    }
     val ifs = mutableListOf<SingleIf>()
     ifs.add(singleIf)
     while (true) {
         val elseIf = parseElseIf() ?: break
         ifs.add(elseIf)
+        if (increment("@endif")) return IfStatement(ifs)
     }
     parseElse()?.let { ifs.add(it) }
-    return IfStatement(ifs)
+    if (increment("@endif")) {
+        return IfStatement(ifs)
+    } else {
+        throw IllegalStateException("@if must end with @endif")
+    }
 }
