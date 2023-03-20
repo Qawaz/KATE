@@ -18,7 +18,7 @@ interface TemplateModel : KTEValue {
     fun getAnyModelDirectiveValue(directive: ModelDirective): KTEValue? {
         var currentObj: TemplateModel = this
         var currentVal: PrimitiveValue<*>? = null
-        val currentIterable: ModelIterable<*>? = null
+        var currentIterable: ModelIterable<*>? = null
         for (prop in directive.propertyPath) {
             when (prop) {
                 is ModelReference.FunctionCall -> {
@@ -33,11 +33,12 @@ interface TemplateModel : KTEValue {
                     currentObj.getObject(prop.name)?.let {
                         currentObj = it
                     } ?: run {
-                        currentObj.getIterable(prop.name)
-                        null
-                    } ?: run {
-                        currentVal = currentObj.getValue(prop.name) ?: run {
-                            return null
+                        currentObj.getIterable(prop.name)?.let {
+                            currentIterable = it
+                        } ?: run {
+                            currentVal = currentObj.getValue(prop.name) ?: run {
+                                return null
+                            }
                         }
                     }
                 }

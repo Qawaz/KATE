@@ -5,6 +5,7 @@ import com.wakaztahir.kte.model.StringValue
 import com.wakaztahir.kte.model.model.TemplateModel
 import com.wakaztahir.kte.parser.ArithmeticOperatorType
 import com.wakaztahir.kte.parser.ForLoop
+import com.wakaztahir.kte.parser.generateTo
 import com.wakaztahir.kte.parser.parseForLoop
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -69,6 +70,16 @@ class ForLoopTest {
             putIterable("list", ModelListImpl(listOf("H", "e", "ll", "o").map { StringValue(it) }))
         })
         assertEquals("4", context.getDestinationAsString())
+    }
+
+    @Test
+    fun testForLoopGeneration6() {
+        val context = TemplateContext("@model.arithmetic.funName", TemplateModel {
+            putObject("arithmetic") {
+                putValue("funName", "seriouslyHere")
+            }
+        })
+        assertEquals("seriouslyHere", context.getDestinationAsString())
     }
 
     @Test

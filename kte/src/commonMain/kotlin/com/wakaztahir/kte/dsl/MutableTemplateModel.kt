@@ -51,6 +51,10 @@ class ModelListImpl<T : KTEValue>(val collection: List<T>) : List<T> by collecti
         return null
     }
 
+    override fun toString(): String {
+        return '[' + collection.joinToString(",") + ']'
+    }
+
 }
 
 open class ModelObjectImpl : MutableTemplateModel {
@@ -109,11 +113,21 @@ open class ModelObjectImpl : MutableTemplateModel {
         container.remove(key)
     }
 
+    override fun toString(): String {
+        fun Any.toValue(): KTEValue? {
+            return (this as? PrimitiveValue<*>) ?: (this as? TemplateModel) ?: (this as? ModelIterable<*>)
+        }
+        return "{\n" + container.map { item -> "\t${item.key} : ${item.value.toValue()}" }.joinToString("\n") + "\n}"
+    }
+
 }
 
 class ScopedModelObject(private val parent: TemplateModel) : ModelObjectImpl() {
-
     override fun getAnyModelDirectiveValue(directive: ModelDirective): KTEValue? {
         return super.getAnyModelDirectiveValue(directive) ?: parent.getAnyModelDirectiveValue(directive)
+    }
+
+    override fun toString(): String {
+        return parent.toString()  + '\n' + '\t' + super.toString()
     }
 }

@@ -41,6 +41,8 @@ class IntValue(override val value: Int) : PrimitiveValue<Int> {
         destination.write(this@IntValue)
     }
 
+    override fun toString(): String = value.toString()
+
 }
 
 class FloatValue(override val value: Float) : PrimitiveValue<Float> {
@@ -51,6 +53,8 @@ class FloatValue(override val value: Float) : PrimitiveValue<Float> {
     override fun generateTo(block: LazyBlock, source: SourceStream, destination: DestinationStream) {
         destination.write(this@FloatValue)
     }
+
+    override fun toString(): String = value.toString()
 
 }
 
@@ -67,6 +71,8 @@ class BooleanValue(override val value: Boolean) : PrimitiveValue<Boolean> {
         destination.write(this@BooleanValue)
     }
 
+    override fun toString(): String = value.toString()
+
 }
 
 class StringValue(override val value: String) : PrimitiveValue<String> {
@@ -81,5 +87,7 @@ class StringValue(override val value: String) : PrimitiveValue<String> {
     override fun generateTo(block: LazyBlock, source: SourceStream, destination: DestinationStream) {
         destination.write(this@StringValue)
     }
+
+    override fun toString(): String = value
 
 }

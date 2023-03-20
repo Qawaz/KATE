@@ -33,19 +33,23 @@ class ModelDirective(val propertyPath: List<ModelReference>) : ReferencedValue, 
         return propertyPath.joinToString(".") { it.name }
     }
 
+    private fun <T> throwIt(model: TemplateModel): T {
+        println(model.toString())
+        throw UnresolvedValueException(pathToString() + " unresolved model directive")
+    }
+
     override fun getValue(model: TemplateModel): PrimitiveValue<*> {
-        return model.getModelDirectiveValue(this)
-            ?: throw UnresolvedValueException(pathToString() + " unresolved model directive")
+        return model.getModelDirectiveValue(this) ?: throwIt(model)
     }
 
     override fun getIterable(model: TemplateModel): ModelIterable<KTEValue> {
-        return model.getPropertyAsIterable(this)
-            ?: throw UnresolvedValueException(pathToString() + " unresolved model directive")
+        return model.getPropertyAsIterable(this) ?: throwIt(model)
     }
 
     override fun getObject(model: TemplateModel): TemplateModel {
-        return model.getPropertyAsIterable(this)
-            ?: throw UnresolvedValueException(pathToString() + " unresolved model directive")
+        return model.getPropertyAsIterable(this) ?: throwIt(model)
     }
+
+    override fun toString(): String = pathToString()
 
 }

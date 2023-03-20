@@ -17,4 +17,6 @@ interface KTEValue {
         throw IllegalStateException("KTEValue Stub")
     }
 
+    override fun toString() : String
+
 }
