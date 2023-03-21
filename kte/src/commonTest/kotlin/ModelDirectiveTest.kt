@@ -29,8 +29,8 @@ class ModelDirectiveTest {
             assertEquals("fourthProp", directive.propertyPath[3].name)
             val call = directive.propertyPath[4] as ModelReference.FunctionCall
             assertEquals("fifthProp", call.name)
-            assertEquals(true, call.parametersList[0].getValue(context.stream.model).value)
-            assertEquals(false, call.parametersList[1].getValue(context.stream.model).value)
+            assertEquals(true, call.parametersList[0].getPrimitive(context.stream.model).value)
+            assertEquals(false, call.parametersList[1].getPrimitive(context.stream.model).value)
         }
     }
 

@@ -22,7 +22,7 @@ interface TemplateModel : KTEValue {
             when (prop) {
                 is ModelReference.FunctionCall -> {
                     currentObj.getFunction(prop.name)?.let { call ->
-                        currentVal = call(prop.parametersList.map { it.getValue(this).value!! }).value
+                        currentVal = call(prop.parametersList.map { it.getPrimitive(this).value!! }).value
                     } ?: run {
                         return null
                     }

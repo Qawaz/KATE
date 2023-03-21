@@ -15,7 +15,7 @@ class InputStreamSource(val stream: InputStream) : SourceStream() {
     override var pointer: Int = 0
         private set
 
-    override fun incrementPointer(): Boolean {
+    override fun incrementPointer(increase: Int): Boolean {
         if (hasEnded) {
             return false
         }

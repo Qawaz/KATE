@@ -48,7 +48,7 @@ open class ModelObjectImpl : MutableTemplateModel {
         return container[key]?.let { it as? TemplateModel }
     }
 
-    override fun getObject(model: TemplateModel): TemplateModel {
+    override fun getNullableObject(model: TemplateModel): TemplateModel {
         return this
     }
 
@@ -56,19 +56,11 @@ open class ModelObjectImpl : MutableTemplateModel {
         return container[key]?.let { it as PrimitiveValue<*> }
     }
 
-    override fun getValue(model: TemplateModel): PrimitiveValue<*> {
-        throw UnresolvedValueException("object is not a primitive")
-    }
-
     override fun getIterable(key: String): ModelList<KTEValue>? {
         return container[key]?.let {
             @Suppress("UNCHECKED_CAST")
             it as? ModelList<KTEValue>
         }
-    }
-
-    override fun getIterable(model: TemplateModel): ModelList<KTEValue> {
-        throw UnresolvedValueException("object is not iterable")
     }
 
     override fun removeKey(key: String) {

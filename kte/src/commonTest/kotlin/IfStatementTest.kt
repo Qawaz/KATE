@@ -1,7 +1,5 @@
-import com.wakaztahir.kte.KTEDelicateFunction
 import com.wakaztahir.kte.TemplateContext
 import com.wakaztahir.kte.model.LogicalCondition
-import com.wakaztahir.kte.parser.*
 import com.wakaztahir.kte.parser.parseCondition
 import com.wakaztahir.kte.parser.parseConstantDeclaration
 import com.wakaztahir.kte.parser.parseIfStatement
@@ -29,7 +27,21 @@ class IfStatementTest {
     fun testConstRef() {
         val context = TemplateContext("@if(@const(var1)) blockValue @endif")
         context.stream.model.putValue("var1", true)
-        assertEquals("blockValue", context.getDestinationAsStringWithReset())
+        assertEquals("blockValue", context.getDestinationAsString())
+        val context2 = TemplateContext("@if(@const(var1)) blockValue @endif")
+        context2.stream.model.putValue("var1", false)
+        assertEquals("", context2.getDestinationAsString())
+    }
+
+    @Test
+    fun testMultipleBlocks() {
+        val context = TemplateContext("@if(@const(var1)) @if(const(var2)) blockValue @endif @endif")
+        context.stream.model.putValue("var1", true)
+        context.stream.model.putValue("var2", true)
+        val blockValue = context.stream.parseIfStatement(context.stream)!!.singleIfs[0]
+        assertEquals("@if(const(var2) blockValue @endif", blockValue.parser.getValueAsString(context.stream))
+        context.stream.setPointerAt(0)
+        assertEquals("blockValue", context.getDestinationAsString())
     }
 
     @Test
@@ -37,8 +49,8 @@ class IfStatementTest {
         val text = "@if(@const(var1)) blockValue @endif"
         val context = TemplateContext(text)
         context.stream.model.putValue("var1", true)
-        val statement = context.stream.parseIfStatement()!!
-        assertEquals("blockValue", statement.singleIfs[0].blockValue.getValueAsString(context.stream))
+        val statement = context.stream.parseIfStatement(context.stream)!!
+        assertEquals("blockValue", statement.singleIfs[0].parser.getValueAsString(context.stream))
         assertNotEquals(null, statement.evaluate(context))
         assertEquals(text.length, context.stream.pointer)
     }
@@ -47,8 +59,8 @@ class IfStatementTest {
     fun testUnequalCondition() {
         val context = TemplateContext(("\"ValueOne\" == \"SecondValue\""))
         val condition = context.stream.parseCondition()!! as LogicalCondition
-        assertEquals("ValueOne", condition.propertyFirst.getValue(context.stream.model).value)
-        assertEquals("SecondValue", condition.propertySecond.getValue(context.stream.model).value)
+        assertEquals("ValueOne", condition.propertyFirst.getPrimitive(context.stream.model).value)
+        assertEquals("SecondValue", condition.propertySecond.getPrimitive(context.stream.model).value)
     }
 
     @Test
@@ -97,8 +109,8 @@ class IfStatementTest {
     fun testConstantsRefs() {
         val context = TemplateContext(("\"ValueOne\" == \"SecondValue\""))
         val condition = context.stream.parseCondition()!! as LogicalCondition
-        assertEquals("ValueOne", condition.propertyFirst.getValue(context.stream.model).value)
-        assertEquals("SecondValue", condition.propertySecond.getValue(context.stream.model).value)
+        assertEquals("ValueOne", condition.propertyFirst.getPrimitive(context.stream.model).value)
+        assertEquals("SecondValue", condition.propertySecond.getPrimitive(context.stream.model).value)
     }
 
     private fun testIfy(firstIf: Boolean, firstElseIf: Boolean, secondElseIf: Boolean): String {
@@ -115,10 +127,9 @@ class IfStatementTest {
     fun testParseIf() {
         val iffy = testIfy(firstIf = true, firstElseIf = false, secondElseIf = false)
         val context = TemplateContext(iffy)
-        val ifStatement = context.stream.parseIfStatement()
-        assertEquals(12, ifStatement!!.evaluate(context)!!.blockValue.length)
-        assertEquals("MyFirstValue", ifStatement.evaluate(context)!!.blockValue.getValueAsString(context.stream))
+        val ifStatement = context.stream.parseIfStatement(context.stream)!!
         assertEquals("MyFirstValue", codeGenerated(iffy))
+        assertEquals("MyFirstValue", ifStatement.evaluate(context)!!.parser.getValueAsString(context.stream))
         assertEquals(iffy.length, context.stream.pointer)
     }
 
@@ -126,8 +137,8 @@ class IfStatementTest {
     fun testParseIf2() {
         val iffy = testIfy(firstIf = false, firstElseIf = true, secondElseIf = false)
         val context = TemplateContext((iffy))
-        val ifStatement = context.stream.parseIfStatement()
-        assertEquals("MySecondValue", ifStatement!!.evaluate(context)!!.blockValue.getValueAsString(context.stream))
+        val ifStatement = context.stream.parseIfStatement(context.stream)
+        assertEquals("MySecondValue", ifStatement!!.evaluate(context)!!.parser.getValueAsString(context.stream))
         assertEquals("MySecondValue", codeGenerated(iffy))
         assertEquals(iffy.length, context.stream.pointer)
     }
@@ -136,9 +147,9 @@ class IfStatementTest {
     fun testParseIf3() {
         val iffy = testIfy(firstIf = false, firstElseIf = false, secondElseIf = true)
         val context = TemplateContext((iffy))
-        val ifStatement = context.stream.parseIfStatement()
-        assertEquals("MyThirdValue", ifStatement!!.evaluate(context)!!.blockValue.getValueAsString(context.stream))
+        val ifStatement = context.stream.parseIfStatement(context.stream)
         assertEquals("MyThirdValue", codeGenerated(iffy))
+        assertEquals("MyThirdValue", ifStatement!!.evaluate(context)!!.parser.getValueAsString(context.stream))
         assertEquals(iffy.length, context.stream.pointer)
     }
 
@@ -146,14 +157,13 @@ class IfStatementTest {
     fun testParseIf4() {
         val iffy = testIfy(firstIf = false, firstElseIf = false, secondElseIf = false)
         val context = TemplateContext((iffy))
-        val ifStatement = context.stream.parseIfStatement()
+        val ifStatement = context.stream.parseIfStatement(context.stream)
         assertNotEquals(null, ifStatement)
         assertEquals("MyFourthValue", codeGenerated(iffy))
-        assertEquals("MyFourthValue", ifStatement!!.evaluate(context)!!.blockValue.getValueAsString(context.stream))
+        assertEquals("MyFourthValue", ifStatement!!.evaluate(context)!!.parser.getValueAsString(context.stream))
         assertEquals(iffy.length, context.stream.pointer)
     }
 
-    @OptIn(KTEDelicateFunction::class)
     @Test
     fun parseMultilineIfBlock() {
         val context = TemplateContext(

@@ -1,6 +1,5 @@
 package com.wakaztahir.kte.parser
 
-import com.wakaztahir.kte.dsl.UnresolvedValueException
 import com.wakaztahir.kte.model.model.MutableTemplateModel
 import com.wakaztahir.kte.model.*
 import com.wakaztahir.kte.parser.stream.*
@@ -38,8 +37,8 @@ internal data class ConstantDeclaration(val variableName: String, val variableVa
         model.putValue(variableName, variableValue)
     }
 
-    override fun generateTo(block: LazyBlock, source: SourceStream, destination: DestinationStream) {
-        storeValue(block.model)
+    override fun generateTo(model: MutableTemplateModel, source: SourceStream, destination: DestinationStream) {
+        storeValue(model)
     }
 }
 

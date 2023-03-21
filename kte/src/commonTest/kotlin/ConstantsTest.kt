@@ -1,7 +1,5 @@
-import com.wakaztahir.kte.KTEDelicateFunction
 import com.wakaztahir.kte.TemplateContext
 import com.wakaztahir.kte.model.StringValue
-import com.wakaztahir.kte.parser.*
 import com.wakaztahir.kte.parser.parseConstantDeclaration
 import com.wakaztahir.kte.parser.parseConstantReference
 import com.wakaztahir.kte.parser.parseDynamicProperty
@@ -20,7 +18,7 @@ class ConstantsTest {
         assertNotEquals(null, ref)
         assertEquals(ref!!.propertyPath[0].name, "myVar")
         context.stream.model.putValue("myVar", StringValue("someValue"))
-        assertEquals("someValue", ref.getValue(context.stream.model).value)
+        assertEquals("someValue", ref.getPrimitive(context.stream.model).value)
     }
 
     @Test
@@ -29,7 +27,7 @@ class ConstantsTest {
         val ref = context.stream.parseConstantDeclaration()
         assertNotEquals(null, ref)
         assertEquals("myVar", ref!!.variableName)
-        assertEquals("someValue", ref.variableValue.getValue(context.stream.model).value)
+        assertEquals("someValue", ref.variableValue.getPrimitive(context.stream.model).value)
     }
 
     @Test
@@ -52,20 +50,20 @@ class ConstantsTest {
         val context = TemplateContext(("@const(myVar)"))
         context.stream.model.putValue("myVar", StringValue("someValue"))
         val property = context.stream.parseDynamicProperty()
-        assertEquals(property!!.getValue(context.stream.model).value, "someValue")
+        assertEquals(property!!.getPrimitive(context.stream.model).value, "someValue")
     }
 
     @Test
     fun testDeclarationAndReference() {
         val decContext = TemplateContext(("@const myVar = \"someValue\""))
         val dec = decContext.stream.parseConstantDeclaration()
-        assertEquals("someValue", dec!!.variableValue.getValue(decContext.stream.model).value)
+        assertEquals("someValue", dec!!.variableValue.getPrimitive(decContext.stream.model).value)
         decContext.updateStream("@const myVar2 = @const(myVar)")
         dec!!.storeValue(decContext.stream.model)
         val refDec = decContext.stream.parseConstantDeclaration()
         assertEquals(
-            dec.variableValue.getValue(decContext.stream.model).value,
-            refDec!!.variableValue.getValue(decContext.stream.model).value
+            dec.variableValue.getPrimitive(decContext.stream.model).value,
+            refDec!!.variableValue.getPrimitive(decContext.stream.model).value
         )
     }
 

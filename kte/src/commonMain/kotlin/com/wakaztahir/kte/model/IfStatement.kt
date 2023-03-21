@@ -1,7 +1,10 @@
 package com.wakaztahir.kte.model
 
 import com.wakaztahir.kte.TemplateContext
+import com.wakaztahir.kte.model.model.MutableTemplateModel
 import com.wakaztahir.kte.model.model.TemplateModel
+import com.wakaztahir.kte.parser.BreakableForBlockParser
+import com.wakaztahir.kte.parser.BreakableIfBlockParser
 import com.wakaztahir.kte.parser.stream.DestinationStream
 import com.wakaztahir.kte.parser.stream.SourceStream
 
@@ -44,17 +47,25 @@ internal class LogicalCondition(
     val propertySecond: ReferencedValue
 ) : Condition {
     override fun evaluate(context: TemplateModel): Boolean {
-        return type.verifyCompare(propertyFirst.getValue(context).compareAny(propertySecond.getValue(context)))
+        val first = propertyFirst.getNullablePrimitive(context)
+            ?: throw IllegalStateException("first referenced primitive value couldn't be found inside the condition")
+        val second = propertySecond.getNullablePrimitive(context)
+            ?: throw IllegalStateException("second referenced primitive value couldn't be found inside the condition")
+        return type.verifyCompare(first.compareAny(second))
     }
 }
 
 internal class ReferencedBoolean(val value: ReferencedValue) : Condition {
     override fun evaluate(context: TemplateModel): Boolean {
-        val value = value.getValue(context)
-        if (value is BooleanValue) {
-            return value.value
+        val value = value.getNullablePrimitive(context)
+        if (value != null) {
+            if (value is BooleanValue) {
+                return value.value
+            } else {
+                throw IllegalStateException("referenced value is not a boolean value inside the condition")
+            }
         } else {
-            throw IllegalStateException("referenced value is not a boolean value inside the conditions")
+            throw IllegalStateException("referenced value does not exist inside the condition")
         }
     }
 }
@@ -72,12 +83,12 @@ enum class IfType(val order: Int) {
 }
 
 internal class SingleIf(
+    val parser: BreakableIfBlockParser,
     val condition: Condition,
-    val type: IfType,
-    val blockValue: LazyBlockSlice,
+    val type: IfType
 ) : CodeGen {
-    override fun generateTo(block: LazyBlock, source: SourceStream, destination: DestinationStream) {
-        blockValue.generateTo(source = source, destination = destination)
+    override fun generateTo(model: MutableTemplateModel, source: SourceStream, destination: DestinationStream) {
+        parser.generateTo(source = source, destination = destination)
     }
 }
 
@@ -104,10 +115,7 @@ internal class IfStatement(private val ifs: MutableList<SingleIf>) : AtDirective
         return null
     }
 
-    override fun generateTo(block: LazyBlock, source: SourceStream, destination: DestinationStream) {
-        evaluate(block.model)?.generateTo(block, source, destination)
-        ifs.lastOrNull()?.blockValue?.blockEndPointer?.let { end ->
-            source.setPointerAt(end)
-        }
+    override fun generateTo(model: MutableTemplateModel, source: SourceStream, destination: DestinationStream) {
+        evaluate(model)?.generateTo(model = model, source = source, destination = destination)
     }
 }

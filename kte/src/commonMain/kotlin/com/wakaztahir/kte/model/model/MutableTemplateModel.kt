@@ -69,7 +69,9 @@ interface MutableTemplateModel : TemplateModel {
     }
 
     fun putValue(key: String, value: ReferencedValue) {
-        putValue(key, value.getValue(this))
+        val nullablePrimitive = value.getNullablePrimitive(this)
+            ?: throw IllegalStateException("referenced value being saved with key $key couldn't be found")
+        putValue(key, nullablePrimitive)
     }
 
     fun removeKey(key: String)

@@ -1,5 +1,6 @@
 package com.wakaztahir.kte.parser
 
+import com.wakaztahir.kte.dsl.ScopedModelObject
 import com.wakaztahir.kte.model.model.ModelList
 import com.wakaztahir.kte.model.model.MutableTemplateModel
 import com.wakaztahir.kte.model.*
@@ -10,69 +11,103 @@ import com.wakaztahir.kte.parser.stream.*
 import com.wakaztahir.kte.parser.stream.increment
 import com.wakaztahir.kte.parser.stream.parseTextWhile
 
-internal sealed interface ForLoop : AtDirective {
+interface BreakableForBlockParser : BlockParser {
 
-    val blockValue: LazyBlockSlice
+    var hasBroken: Boolean
 
-    fun iterate(context: MutableTemplateModel, block: () -> Unit)
+    override fun hasNext(stream: SourceStream): Boolean {
+        return !stream.hasEnded && !hasBroken
+    }
 
-    override fun generateTo(block: LazyBlock, source: SourceStream, destination: DestinationStream) {
-        iterate(block.model) {
-            blockValue.generateTo(source = source, destination = destination)
+    fun parseEndForAtDirective(source: SourceStream): Boolean {
+        return if (source.currentChar == '@' && source.increment("@endfor")) {
+            hasBroken = true
+            true
+        } else {
+            false
         }
     }
 
+    fun parseBreakForAtDirective(source: SourceStream): Boolean {
+        return if (source.currentChar == '@' && source.increment("@breakfor")) {
+            hasBroken = true
+            true
+        } else {
+            false
+        }
+    }
+
+    override fun parseAtDirective(source: SourceStream): AtDirective? = with(source) {
+        if (parseBreakForAtDirective(source)) return null
+        return super.parseAtDirective(source) ?: run {
+            parseEndForAtDirective(source)
+            null
+        }
+    }
+
+}
+
+internal sealed class ForLoop(val parser: BreakableForBlockParser) : AtDirective {
+
+    val model get() = parser.model
+
+    abstract fun iterate(model: MutableTemplateModel, block: () -> Unit)
+
+    override fun generateTo(model: MutableTemplateModel, source: SourceStream, destination: DestinationStream) {
+        iterate(model) { parser.generateTo(source, destination) }
+    }
+
     class ConditionalFor(
-        val condition: Condition,
-        override val blockValue: LazyBlockSlice
-    ) : ForLoop {
-        override fun iterate(context: MutableTemplateModel, block: () -> Unit) {
-            while (condition.evaluate(context)) {
+        parser: BreakableForBlockParser,
+        val condition: Condition
+    ) : ForLoop(parser = parser) {
+        override fun iterate(model: MutableTemplateModel, block: () -> Unit) {
+            while (condition.evaluate(model)) {
                 block()
             }
         }
     }
 
     class IterableFor(
+        parser: BreakableForBlockParser,
         val indexConstName: String?,
         val elementConstName: String,
-        val listProperty: ReferencedValue,
-        override val blockValue: LazyBlockSlice
-    ) : ForLoop {
+        val listProperty: ReferencedValue
+    ) : ForLoop(parser = parser) {
 
         private fun store(value: Int) {
             if (indexConstName != null) {
-                blockValue.model.putValue(indexConstName, value)
+                model.putValue(indexConstName, value)
             }
         }
 
         private fun store(value: KTEValue) {
             @Suppress("UNCHECKED_CAST")
             (value as? TemplateModel)?.let {
-                blockValue.model.putObject(elementConstName, it)
+                model.putObject(elementConstName, it)
             } ?: (value as? ModelList<KTEValue>)?.let {
-                blockValue.model.putIterable(elementConstName, it)
+                model.putIterable(elementConstName, it)
             } ?: (value as? PrimitiveValue<*>)?.let {
-                blockValue.model.putValue(elementConstName, it)
+                model.putValue(elementConstName, it)
             } ?: throw IllegalStateException("element of unknown type in for loop")
         }
 
         private fun remove() {
             if (indexConstName != null) {
-                blockValue.model.removeKey(indexConstName)
+                model.removeKey(indexConstName)
             }
-            blockValue.model.removeKey(elementConstName)
+            model.removeKey(elementConstName)
         }
 
-        override fun iterate(context: MutableTemplateModel, block: () -> Unit) {
+        override fun iterate(model: MutableTemplateModel, block: () -> Unit) {
             var index = 0
-            val iterable = listProperty.getIterable(context)
+            val iterable = listProperty.getIterable(model)
             val total = iterable.size
-//            println("ITERABLE SIZE : $total")
+            if (total == 0) return
             while (index < total) {
                 store(index)
                 store(iterable.getOrElse(index) {
-                    throw IllegalStateException("element at $index in for loop not found")
+                    throw IllegalStateException("element at $index in iterable for loop not found")
                 })
                 block()
                 index++
@@ -82,107 +117,58 @@ internal sealed interface ForLoop : AtDirective {
     }
 
     class NumberedFor(
+        parser: BreakableForBlockParser,
         val variableName: String,
         val initializer: ReferencedValue,
         val conditionType: ConditionType,
         val conditional: ReferencedValue,
         val arithmeticOperatorType: ArithmeticOperatorType,
         val incrementer: ReferencedValue,
-        override val blockValue: LazyBlockSlice
-    ) : ForLoop {
+    ) : ForLoop(parser = parser) {
 
         private fun ReferencedValue.intVal(context: MutableTemplateModel): Int {
-            (getValue(context) as? IntValue)?.value?.let { return it }
-                ?: throw IllegalStateException("for loop variable must be an integer")
+            val value = getNullablePrimitive(context)
+            if (value == null) {
+                throw IllegalStateException("primitive value required inside for loop doesn't exist")
+            } else {
+                return (value as? IntValue)?.value?.let { return it }
+                    ?: throw IllegalStateException("for loop variable must be an integer")
+            }
         }
 
         private fun storeIndex(value: Int) {
-            blockValue.model.putValue(variableName, value)
+            model.putValue(variableName, value)
         }
 
         private fun removeIndex() {
-            blockValue.model.removeKey(variableName)
+            model.removeKey(variableName)
         }
 
-        override fun iterate(context: MutableTemplateModel, block: () -> Unit) {
-            var i = initializer.intVal(context)
-            val conditionValue = conditional.intVal(context)
-            val incrementerValue = incrementer.intVal(context)
+        override fun iterate(model: MutableTemplateModel, block: () -> Unit) {
+            var i = initializer.intVal(model)
+            val conditionValue = conditional.intVal(model)
+            val incrementerValue = incrementer.intVal(model)
             while (conditionType.verifyCompare(i.compareTo(conditionValue))) {
-//                println(
-//                    "INITIALIZER : $i,CONDITIONAL : $conditionValue,INCREMENTER : $incrementerValue,OPERATOR : ${arithmeticOperatorType.char},RESULT : ${
-//                        conditionType.verifyCompare(
-//                            i.compareTo(conditionValue)
-//                        )
-//                    }"
-//                )
                 storeIndex(i)
-                block()
+                try {
+                    block()
+                } catch (e: Exception) {
+                    println("EXCEPTION STATS")
+                    println(
+                        "I_AT : $i,CONDITIONAL : $conditionValue,INCREMENTER : $incrementerValue,OPERATOR : ${arithmeticOperatorType.char},RESULT : ${
+                            conditionType.verifyCompare(
+                                i.compareTo(conditionValue)
+                            )
+                        }"
+                    )
+                    throw e
+                }
                 i = arithmeticOperatorType.operate(i, incrementerValue)
             }
             removeIndex()
         }
     }
 
-}
-
-private class ForLoopLazyBlockSlice(
-    startPointer: Int,
-    length: Int,
-    blockEndPointer: Int,
-    parent: MutableTemplateModel,
-) : LazyBlockSlice(
-    startPointer = startPointer,
-    length = length,
-    parent = parent,
-    blockEndPointer = blockEndPointer
-) {
-
-    var hasBroken: Boolean = false
-
-    override fun canIterate(stream: SourceStream): Boolean {
-        return super.canIterate(stream) && !hasBroken
-    }
-
-    fun SourceStream.parseBreakForAtDirective(): Boolean {
-        return if (currentChar == '@' && increment("@breakfor")) {
-            hasBroken = true
-            true
-        } else {
-            false
-        }
-    }
-
-    override fun parseAtDirective(source: SourceStream): AtDirective? = with(source) {
-        if (parseBreakForAtDirective()) return null
-        return super.parseAtDirective(source)
-    }
-
-}
-
-private fun SourceStream.parseForBlockValue(): LazyBlockSlice {
-    val previous = pointer
-
-    val ender = "@endfor"
-
-    if (!incrementUntil(ender)) {
-        throw IllegalStateException("@for must end with @endfor")
-    }
-
-    val length = pointer - previous
-
-    decrementPointer()
-    val spaceDecrement = if (currentChar == ' ') 1 else 0
-    incrementPointer()
-
-    increment(ender)
-
-    return ForLoopLazyBlockSlice(
-        startPointer = previous,
-        length = length - spaceDecrement,
-        parent = this.model,
-        blockEndPointer = pointer
-    )
 }
 
 private fun SourceStream.parseForLoopNumberProperty(): ReferencedValue? {
@@ -192,21 +178,38 @@ private fun SourceStream.parseForLoopNumberProperty(): ReferencedValue? {
     return null
 }
 
-private fun SourceStream.parseConditionalFor(): ForLoop.ConditionalFor? {
+private fun SourceStream.parseConditionalForCondition(): Condition? {
     val condition = parseCondition()
     if (condition != null) {
         increment(')')
         increment(' ')
-        val blockValue = parseForBlockValue()
+        return condition
+    }
+    return null
+}
+
+private class ForParser(parent: MutableTemplateModel) : BreakableForBlockParser {
+    override val model = ScopedModelObject(parent = parent)
+    override var hasBroken = false
+}
+
+private fun BlockParser.parseConditionalFor(source: SourceStream): ForLoop.ConditionalFor? {
+    val condition = source.parseConditionalForCondition()
+    if (condition != null) {
         return ForLoop.ConditionalFor(
             condition = condition,
-            blockValue = blockValue
+            parser = ForParser(model)
         )
     }
     return null
 }
 
-private fun SourceStream.parseIterableForLoopAfterVariable(variableName: String): ForLoop.IterableFor? {
+private class IterableForStatement(
+    val indexConstName: String?,
+    val listProperty: ReferencedValue
+)
+
+private fun SourceStream.parseIterableForLoopStatementAfterVariableName(): IterableForStatement? {
     var secondVariableName: String? = null
     if (increment(',')) {
         secondVariableName = parseTextWhile { currentChar.isConstantVariableName() }
@@ -220,20 +223,41 @@ private fun SourceStream.parseIterableForLoopAfterVariable(variableName: String)
             throw IllegalStateException("expected ) , got $currentChar")
         }
         increment(' ')
-        val blockValue = parseForBlockValue()
         if (referencedValue != null) {
-            return ForLoop.IterableFor(
+            return IterableForStatement(
                 indexConstName = secondVariableName,
-                elementConstName = variableName,
-                listProperty = referencedValue,
-                blockValue = blockValue
+                listProperty = referencedValue
             )
         }
     }
     return null
 }
 
-private fun SourceStream.parseNumberedForLoopAfterVariable(variableName: String): ForLoop.NumberedFor? {
+private fun BlockParser.parseIterableForLoopAfterVariable(
+    source: SourceStream,
+    variableName: String
+): ForLoop.IterableFor? {
+    val statement = source.parseIterableForLoopStatementAfterVariableName()
+    if (statement != null) {
+        return ForLoop.IterableFor(
+            parser = ForParser(model),
+            indexConstName = statement.indexConstName,
+            elementConstName = variableName,
+            listProperty = statement.listProperty
+        )
+    }
+    return null
+}
+
+private class NumberedForStatement(
+    val initializer: ReferencedValue,
+    val conditionType: ConditionType,
+    val conditional: ReferencedValue,
+    val arithmeticOperatorType: ArithmeticOperatorType,
+    val incrementer: ReferencedValue,
+)
+
+private fun SourceStream.parseNumberedForLoopStatementAfterVariable(variableName: String): NumberedForStatement? {
     if (increment('=')) {
         escapeSpaces()
         val initializer = parseForLoopNumberProperty()
@@ -256,15 +280,12 @@ private fun SourceStream.parseNumberedForLoopAfterVariable(variableName: String)
                                 throw IllegalStateException("expected ) , got $currentChar")
                             }
                             increment(' ')
-                            val blockValue = parseForBlockValue()
-                            return ForLoop.NumberedFor(
-                                variableName = variableName,
+                            return NumberedForStatement(
                                 initializer = initializer,
                                 conditionType = conditionType,
                                 conditional = conditional,
                                 arithmeticOperatorType = operator,
-                                incrementer = incrementer,
-                                blockValue = blockValue
+                                incrementer = incrementer
                             )
                         } else {
                             throw IllegalStateException("expected '+','-','/','*','%' , got $operator")
@@ -285,21 +306,40 @@ private fun SourceStream.parseNumberedForLoopAfterVariable(variableName: String)
     return null
 }
 
-internal fun SourceStream.parseForLoop(): ForLoop? {
-    if (currentChar == '@' && increment("@for(")) {
+private fun BlockParser.parseNumberedForLoopAfterVariable(
+    variableName: String,
+    source: SourceStream
+): ForLoop.NumberedFor? {
+    val statement = source.parseNumberedForLoopStatementAfterVariable(variableName)
+    if (statement != null) {
+        return ForLoop.NumberedFor(
+            parser = ForParser(model),
+            variableName = variableName,
+            initializer = statement.initializer,
+            conditionType = statement.conditionType,
+            conditional = statement.conditional,
+            arithmeticOperatorType = statement.arithmeticOperatorType,
+            incrementer = statement.incrementer
+        )
+    }
+    return null
+}
 
-        parseConditionalFor()?.let { return it }
+internal fun BlockParser.parseForLoop(source: SourceStream): ForLoop? {
+    if (source.currentChar == '@' && source.increment("@for(")) {
 
-        val variableName = parseConstantVariableName()
+        parseConditionalFor(source)?.let { return it }
+
+        val variableName = source.parseConstantVariableName()
         if (variableName != null) {
 
-            escapeSpaces()
+            source.escapeSpaces()
 
             // Parsing the numbered loop
-            parseNumberedForLoopAfterVariable(variableName)?.let { return it }
+            parseNumberedForLoopAfterVariable(variableName, source = source)?.let { return it }
 
             // Parsing the iterable loop
-            parseIterableForLoopAfterVariable(variableName)?.let { return it }
+            parseIterableForLoopAfterVariable(source = source, variableName)?.let { return it }
 
         }
 

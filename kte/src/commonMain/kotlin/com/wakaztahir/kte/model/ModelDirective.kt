@@ -1,7 +1,7 @@
 package com.wakaztahir.kte.model
 
 import com.wakaztahir.kte.model.model.ModelList
-import com.wakaztahir.kte.dsl.UnresolvedValueException
+import com.wakaztahir.kte.model.model.MutableTemplateModel
 import com.wakaztahir.kte.model.model.TemplateModel
 import com.wakaztahir.kte.parser.stream.DestinationStream
 import com.wakaztahir.kte.parser.stream.SourceStream
@@ -21,8 +21,10 @@ sealed interface ModelReference {
 
 class ModelDirective(val propertyPath: List<ModelReference>) : ReferencedValue, AtDirective {
 
-    override fun generateTo(block: LazyBlock, source: SourceStream, destination: DestinationStream) {
-        getValue(block.model).generateTo(block, source, destination)
+    override fun generateTo(model: MutableTemplateModel, source: SourceStream, destination: DestinationStream) {
+        getNullablePrimitive(model)?.generateTo(model, source, destination) ?: run {
+            throw IllegalStateException("primitive value with path ${pathToString()} doesn't exist")
+        }
     }
 
     fun pathToString(until: ModelReference): String {
@@ -33,20 +35,16 @@ class ModelDirective(val propertyPath: List<ModelReference>) : ReferencedValue, 
         return propertyPath.joinToString(".") { it.name }
     }
 
-    private fun <T> throwIt(model: TemplateModel): T {
-        throw UnresolvedValueException(pathToString() + " unresolved model directive")
+    override fun getNullablePrimitive(model: TemplateModel): PrimitiveValue<*>? {
+        return model.getModelDirectiveValue(this)
     }
 
-    override fun getValue(model: TemplateModel): PrimitiveValue<*> {
-        return model.getModelDirectiveValue(this) ?: throwIt(model)
+    override fun getNullableIterable(model: TemplateModel): ModelList<KTEValue>? {
+        return model.getPropertyAsIterable(this)
     }
 
-    override fun getIterable(model: TemplateModel): ModelList<KTEValue> {
-        return model.getPropertyAsIterable(this) ?: throwIt(model)
-    }
-
-    override fun getObject(model: TemplateModel): TemplateModel {
-        return model.getPropertyAsIterable(this) ?: throwIt(model)
+    override fun getNullableObject(model: TemplateModel): TemplateModel? {
+        return model.getPropertyAsIterable(this)
     }
 
     override fun toString(): String = pathToString()

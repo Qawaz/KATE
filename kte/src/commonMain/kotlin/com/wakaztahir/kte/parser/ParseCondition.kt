@@ -1,10 +1,11 @@
 package com.wakaztahir.kte.parser
 
+import com.wakaztahir.kte.dsl.ScopedModelObject
 import com.wakaztahir.kte.model.*
-import com.wakaztahir.kte.parser.stream.SourceStream
+import com.wakaztahir.kte.model.model.MutableTemplateModel
+import com.wakaztahir.kte.parser.stream.*
 import com.wakaztahir.kte.parser.stream.escapeSpaces
 import com.wakaztahir.kte.parser.stream.increment
-import com.wakaztahir.kte.parser.stream.incrementUntil
 
 internal fun SourceStream.parseConditionType(): ConditionType? {
     if (increment("==")) {
@@ -62,92 +63,99 @@ internal fun SourceStream.parseCondition(): Condition? {
     )
 }
 
-private fun SourceStream.parseIfBlockValue(ifType: IfType): LazyBlockSlice {
-    val previous = pointer
+internal interface BreakableIfBlockParser : BlockParser {
 
-    val blockEnder: String? = if (ifType == IfType.Else) {
-        if (incrementUntil("@endif")) {
-            "@endif"
+    val startPointer: Int
+    val ifType: IfType
+
+    override fun hasNext(stream: SourceStream): Boolean {
+        return !stream.hasEnded && !incrementEnder(stream)
+    }
+
+    override fun generateTo(source: SourceStream, destination: DestinationStream) {
+        source.setPointerAt(startPointer)
+        super.generateTo(source, destination)
+    }
+
+    private fun incrementEnder(source: SourceStream): Boolean {
+        val ender = parseBreakIfEnder(source)
+        return if (ender != null) {
+            source.incrementPointer(ender.length)
+            true
+        } else {
+            false
+        }
+    }
+
+    private fun parseBreakIfEnder(source: SourceStream): String? {
+        return if (source.currentChar == '@') {
+            return if (ifType == IfType.Else && source.incrementUntil("@endif")) "@endif" else {
+                source.incrementUntil("@elseif", "@endif")
+            }
         } else {
             null
         }
-    } else {
-        incrementUntil("@elseif", "@else", "@endif")
     }
 
-    if (blockEnder == null) {
-        throw IllegalStateException("@if block must end with @elseif / @else / @endif")
-    }
-
-    val length = pointer - previous
-
-    decrementPointer()
-    val spaceDecrement = if (currentChar == ' ') 1 else 0
-    incrementPointer()
-
-    return LazyBlockSlice(
-        startPointer = previous,
-        length = length - spaceDecrement,
-        parent = model,
-        blockEndPointer = pointer + blockEnder.length
-    )
 }
 
-internal fun SourceStream.parseSingleIf(start: String, ifType: IfType): SingleIf? {
-    if (currentChar == '@' && increment(start)) {
+private class IfParser(parent: MutableTemplateModel, override val ifType: IfType, override val startPointer: Int) :
+    BreakableIfBlockParser {
+    override val model = ScopedModelObject(parent)
+}
+
+internal fun BlockParser.parseSingleIf(source: SourceStream, start: String, ifType: IfType): SingleIf? {
+    if (source.currentChar == '@' && source.increment(start)) {
         if (ifType != IfType.Else) {
-            val condition = parseCondition()
+            val condition = source.parseCondition()
             if (condition != null) {
-                if (increment(')')) {
-                    increment(' ')
-                    val value = parseIfBlockValue(ifType)
+                if (source.increment(')')) {
+                    source.increment(' ')
+                    val parser = IfParser(model, ifType, source.pointer)
                     return SingleIf(
+                        parser = parser,
                         condition = condition,
-                        type = ifType,
-                        blockValue = value
+                        type = ifType
                     )
                 } else {
                     throw IllegalStateException("missing ')' in @if statement")
                 }
             }
         } else {
-            increment(' ')
-            val value = parseIfBlockValue(ifType)
+            source.increment(' ')
+            val parser = IfParser(model, ifType, source.pointer)
+            while (parser.hasNext(source)) source.incrementPointer()
             return SingleIf(
+                parser = parser,
                 condition = EvaluatedCondition(true),
-                type = IfType.Else,
-                blockValue = value
+                type = ifType
             )
         }
     }
     return null
 }
 
-internal fun SourceStream.parseFirstIf(): SingleIf? =
-    parseSingleIf(start = "@if(", ifType = IfType.If)
+internal fun BlockParser.parseFirstIf(source: SourceStream): SingleIf? =
+    parseSingleIf(source = source, start = "@if(", ifType = IfType.If)
 
-internal fun SourceStream.parseElseIf(): SingleIf? =
-    parseSingleIf(start = "@elseif(", ifType = IfType.ElseIf)
+internal fun BlockParser.parseElseIf(source: SourceStream): SingleIf? =
+    parseSingleIf(source = source, start = "@elseif(", ifType = IfType.ElseIf)
 
-internal fun SourceStream.parseElse(): SingleIf? =
-    parseSingleIf(start = "@else", ifType = IfType.Else)
+internal fun BlockParser.parseElse(source: SourceStream): SingleIf? =
+    parseSingleIf(source = source, start = "@else", ifType = IfType.Else)
 
-internal fun SourceStream.parseIfStatement(): IfStatement? {
-    val singleIf = parseFirstIf() ?: return null
-    if (increment("@endif")) {
+internal fun BlockParser.parseIfStatement(source: SourceStream): IfStatement? {
+    val singleIf = parseFirstIf(source = source) ?: return null
+    if (source.increment("@endif")) {
         return IfStatement(mutableListOf(singleIf))
     }
     val ifs = mutableListOf<SingleIf>()
     ifs.add(singleIf)
     while (true) {
-        val elseIf = parseElseIf() ?: break
+        val elseIf = parseElseIf(source = source) ?: break
         ifs.add(elseIf)
-        if (increment("@endif")) return IfStatement(ifs)
+        if (source.increment("@endif")) return IfStatement(ifs)
     }
-    parseElse()?.let { ifs.add(it) }
-    if (increment("@endif")) {
-        return IfStatement(ifs)
-    } else {
-        throw IllegalStateException("@if must end with @endif")
-    }
+    parseElse(source = source)?.let { ifs.add(it) }
+    return IfStatement(ifs)
 }

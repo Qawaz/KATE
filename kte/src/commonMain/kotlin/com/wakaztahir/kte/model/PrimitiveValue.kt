@@ -1,7 +1,6 @@
 package com.wakaztahir.kte.model
 
-import com.wakaztahir.kte.model.model.ModelList
-import com.wakaztahir.kte.dsl.UnresolvedValueException
+import com.wakaztahir.kte.model.model.MutableTemplateModel
 import com.wakaztahir.kte.model.model.TemplateModel
 import com.wakaztahir.kte.parser.stream.DestinationStream
 import com.wakaztahir.kte.parser.stream.SourceStream
@@ -17,16 +16,8 @@ interface PrimitiveValue<T> : CodeGen, ReferencedValue {
         return compareTo(other as PrimitiveValue<T>)
     }
 
-    override fun getValue(model: TemplateModel): PrimitiveValue<*> {
+    override fun getNullablePrimitive(model: TemplateModel): PrimitiveValue<*> {
         return this
-    }
-
-    override fun getIterable(model: TemplateModel): ModelList<KTEValue> {
-        throw UnresolvedValueException("primitive value is not iterable")
-    }
-
-    override fun getObject(model: TemplateModel): TemplateModel {
-        throw UnresolvedValueException("primitive value is not an object")
     }
 
     override fun stringValue(indentationLevel: Int): String {
@@ -41,7 +32,7 @@ class IntValue(override val value: Int) : PrimitiveValue<Int> {
         return value.compareTo(other.value)
     }
 
-    override fun generateTo(block: LazyBlock, source: SourceStream, destination: DestinationStream) {
+    override fun generateTo(model: MutableTemplateModel, source: SourceStream, destination: DestinationStream) {
         destination.write(this@IntValue)
     }
 
@@ -54,7 +45,7 @@ class FloatValue(override val value: Float) : PrimitiveValue<Float> {
         return value.compareTo(other.value)
     }
 
-    override fun generateTo(block: LazyBlock, source: SourceStream, destination: DestinationStream) {
+    override fun generateTo(model: MutableTemplateModel, source: SourceStream, destination: DestinationStream) {
         destination.write(this@FloatValue)
     }
 
@@ -71,7 +62,7 @@ class BooleanValue(override val value: Boolean) : PrimitiveValue<Boolean> {
         }
     }
 
-    override fun generateTo(block: LazyBlock, source: SourceStream, destination: DestinationStream) {
+    override fun generateTo(model: MutableTemplateModel, source: SourceStream, destination: DestinationStream) {
         destination.write(this@BooleanValue)
     }
 
@@ -88,7 +79,7 @@ class StringValue(override val value: String) : PrimitiveValue<String> {
         }
     }
 
-    override fun generateTo(block: LazyBlock, source: SourceStream, destination: DestinationStream) {
+    override fun generateTo(model: MutableTemplateModel, source: SourceStream, destination: DestinationStream) {
         destination.write(this@StringValue)
     }
 
