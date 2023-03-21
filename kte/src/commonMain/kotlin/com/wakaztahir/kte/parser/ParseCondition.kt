@@ -71,10 +71,13 @@ private fun LazyBlock.parseIfBlockValue(ifType: IfType, source: SourceStream): L
         }
     } else {
         source.incrementUntilDirectiveWithSkip("@if") {
-            if (source.increment("@elseif")) "@elseif" else if (source.increment("@else")) "@else" else if (source.increment(
-                    "@endif"
-                )
-            ) "@endif" else null
+            if (source.increment("@elseif")) {
+                "@elseif"
+            } else if (source.increment("@else")) {
+                "@else"
+            } else if (source.increment("@endif")) {
+                "@endif"
+            } else null
         }
     }
 
