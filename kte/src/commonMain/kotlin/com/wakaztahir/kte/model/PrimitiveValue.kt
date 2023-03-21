@@ -1,6 +1,6 @@
 package com.wakaztahir.kte.model
 
-import com.wakaztahir.kte.dsl.ModelIterable
+import com.wakaztahir.kte.model.model.ModelList
 import com.wakaztahir.kte.dsl.UnresolvedValueException
 import com.wakaztahir.kte.model.model.TemplateModel
 import com.wakaztahir.kte.parser.stream.DestinationStream
@@ -21,12 +21,16 @@ interface PrimitiveValue<T> : CodeGen, ReferencedValue {
         return this
     }
 
-    override fun getIterable(model: TemplateModel): ModelIterable<KTEValue> {
+    override fun getIterable(model: TemplateModel): ModelList<KTEValue> {
         throw UnresolvedValueException("primitive value is not iterable")
     }
 
     override fun getObject(model: TemplateModel): TemplateModel {
         throw UnresolvedValueException("primitive value is not an object")
+    }
+
+    override fun stringValue(indentationLevel: Int): String {
+        return toString()
     }
 
 }

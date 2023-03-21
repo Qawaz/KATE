@@ -1,8 +1,5 @@
 import com.wakaztahir.kte.OutputStreamDestination
 import com.wakaztahir.kte.TemplateContext
-import com.wakaztahir.kte.dsl.ModelIterable
-import com.wakaztahir.kte.dsl.ModelListImpl
-import com.wakaztahir.kte.dsl.ModelValue
 import com.wakaztahir.kte.model.model.TemplateModel
 import com.wakaztahir.kte.model.model.MutableTemplateModel
 import com.wakaztahir.kte.parser.generateTo

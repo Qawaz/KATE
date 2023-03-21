@@ -10,7 +10,7 @@
 @if(@const(generateComments)) // @model.mathTestClassName provides functions for basic math operations @endif
 class @model.mathTestClassName {
     @for(@const arithmetic2 : @model.arithmetic)
-        @if(@const(generateComments)) // @const(arithmetic2).funName performs '@const(arithmetic).symbolName' between two variables @endif
+        @if(@const(generateComments)) // @const(arithmetic2).funName performs '@const(arithmetic2).symbolName' between two variables @endif
         fun @const(arithmetic2).@funName() : @const(arithmetic2).returnType {
              val variableOne = @const(arithmetic2).first
              val variableTwo = @const(arithmetic2).second

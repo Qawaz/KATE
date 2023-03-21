@@ -1,6 +1,7 @@
 package com.wakaztahir.kte.dsl
 
 import com.wakaztahir.kte.model.*
+import com.wakaztahir.kte.model.model.ModelList
 import com.wakaztahir.kte.model.model.MutableTemplateModel
 import com.wakaztahir.kte.model.model.TemplateModel
 
@@ -15,45 +16,6 @@ class ModelValue constructor(val value: PrimitiveValue<*>) {
     constructor(value: String) : this(StringValue(value))
 
     constructor(value: Boolean) : this(BooleanValue(value))
-
-}
-
-interface ModelIterable<T : KTEValue> : List<T>, TemplateModel, KTEValue
-
-class ModelListImpl<T : KTEValue>(val collection: List<T>) : List<T> by collection, ModelIterable<T> {
-
-    private val props: MutableMap<String, (List<Any>?) -> ModelValue> by lazy {
-        hashMapOf<String, (List<Any>?) -> ModelValue>().apply {
-            put("size") { ModelValue(collection.size) }
-            put("contains") {
-                if (it == null || it.size > 1) {
-                    throw IllegalStateException("contains expect's a single parameter")
-                }
-                @Suppress("UNCHECKED_CAST")
-                ModelValue(collection.contains(it[0] as T))
-            }
-        }
-    }
-
-    override fun getValue(key: String): PrimitiveValue<*>? {
-        return props[key]?.let { return it(null).value }
-    }
-
-    override fun getIterable(key: String): ModelIterable<KTEValue>? {
-        return null
-    }
-
-    override fun getFunction(key: String): ((List<Any>) -> ModelValue)? {
-        return props[key]
-    }
-
-    override fun getObject(key: String): TemplateModel? {
-        return null
-    }
-
-    override fun toString(): String {
-        return '[' + collection.joinToString(",") + ']'
-    }
 
 }
 
@@ -73,7 +35,7 @@ open class ModelObjectImpl : MutableTemplateModel {
         container[key] = block
     }
 
-    override fun <T : KTEValue> putIterable(key: String, value: ModelIterable<T>) {
+    override fun putIterable(key: String, value: ModelList<KTEValue>) {
         container[key] = value
     }
 
@@ -87,7 +49,7 @@ open class ModelObjectImpl : MutableTemplateModel {
     }
 
     override fun getObject(model: TemplateModel): TemplateModel {
-        TODO("Not yet implemented")
+        return this
     }
 
     override fun getValue(key: String): PrimitiveValue<*>? {
@@ -98,14 +60,14 @@ open class ModelObjectImpl : MutableTemplateModel {
         throw UnresolvedValueException("object is not a primitive")
     }
 
-    override fun getIterable(key: String): ModelIterable<KTEValue>? {
+    override fun getIterable(key: String): ModelList<KTEValue>? {
         return container[key]?.let {
             @Suppress("UNCHECKED_CAST")
-            it as? ModelIterable<KTEValue>
+            it as? ModelList<KTEValue>
         }
     }
 
-    override fun getIterable(model: TemplateModel): ModelIterable<KTEValue> {
+    override fun getIterable(model: TemplateModel): ModelList<KTEValue> {
         throw UnresolvedValueException("object is not iterable")
     }
 
@@ -115,19 +77,43 @@ open class ModelObjectImpl : MutableTemplateModel {
 
     override fun toString(): String {
         fun Any.toValue(): KTEValue? {
-            return (this as? PrimitiveValue<*>) ?: (this as? TemplateModel) ?: (this as? ModelIterable<*>)
+            return (this as? PrimitiveValue<*>) ?: (this as? TemplateModel) ?: (this as? ModelList<*>)
         }
         return "{\n" + container.map { item -> "\t${item.key} : ${item.value.toValue()}" }.joinToString("\n") + "\n}"
+    }
+
+    override fun stringValue(indentationLevel: Int): String {
+        fun Any.toValue(): KTEValue? {
+            return (this as? PrimitiveValue<*>) ?: (this as? TemplateModel) ?: (this as? ModelList<*>)
+        }
+
+        val indent = indentation(indentationLevel)
+        return "{\n" + container.map { item ->
+            "\t$indent${item.key} : ${
+                item.value.toValue()?.stringValue(indentationLevel + 1)
+            }"
+        }.joinToString("\n") + "\n$indent}"
     }
 
 }
 
 class ScopedModelObject(private val parent: TemplateModel) : ModelObjectImpl() {
+
     override fun getAnyModelDirectiveValue(directive: ModelDirective): KTEValue? {
+        println("REQUIRING ${directive.pathToString()}")
+        println("SCOPED VALUE : ${super.getAnyModelDirectiveValue(directive)}")
+        println("PARENT VALUE : ${parent.getAnyModelDirectiveValue(directive)}")
+//        println("SCOPED MODEL : ${super.stringValue(0)}")
+//        println("PARENT MODEL : ${parent.stringValue(0)}")
         return super.getAnyModelDirectiveValue(directive) ?: parent.getAnyModelDirectiveValue(directive)
     }
 
     override fun toString(): String {
-        return parent.toString()  + '\n' + '\t' + super.toString()
+        return stringValue(0)
     }
+
+    override fun stringValue(indentationLevel: Int): String {
+        return parent.toString() + '\n' + super.stringValue(indentationLevel)
+    }
+
 }

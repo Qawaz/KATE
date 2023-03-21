@@ -1,6 +1,6 @@
 package com.wakaztahir.kte.model
 
-import com.wakaztahir.kte.dsl.ModelIterable
+import com.wakaztahir.kte.model.model.ModelList
 import com.wakaztahir.kte.model.model.TemplateModel
 
 interface KTEValue {
@@ -9,7 +9,7 @@ interface KTEValue {
         throw IllegalStateException("KTEValue Stub")
     }
 
-    fun getIterable(model: TemplateModel): ModelIterable<KTEValue> {
+    fun getIterable(model: TemplateModel): ModelList<KTEValue> {
         throw IllegalStateException("KTEValue Stub")
     }
 
@@ -17,6 +17,16 @@ interface KTEValue {
         throw IllegalStateException("KTEValue Stub")
     }
 
-    override fun toString() : String
+    fun indentation(indentationLevel: Int): String {
+        var indentation = ""
+        repeat(indentationLevel) {
+            indentation += '\t'
+        }
+        return indentation
+    }
+
+    fun stringValue(indentationLevel: Int): String
+
+    override fun toString(): String
 
 }

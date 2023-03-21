@@ -1,7 +1,5 @@
 package com.wakaztahir.kte.model.model
 
-import com.wakaztahir.kte.dsl.ModelIterable
-import com.wakaztahir.kte.dsl.ModelListImpl
 import com.wakaztahir.kte.dsl.ModelObjectImpl
 import com.wakaztahir.kte.dsl.ModelValue
 import com.wakaztahir.kte.model.*
@@ -16,7 +14,7 @@ interface MutableTemplateModel : TemplateModel {
 
     fun putFunction(key: String, block: (parameters: List<Any>) -> ModelValue)
 
-    fun <T : KTEValue> putIterable(key: String, value: ModelIterable<T>)
+    fun putIterable(key: String, value: ModelList<KTEValue>)
 
     // Extensions
 

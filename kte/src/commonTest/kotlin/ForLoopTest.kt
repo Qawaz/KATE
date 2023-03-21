@@ -1,11 +1,10 @@
 import com.wakaztahir.kte.TemplateContext
-import com.wakaztahir.kte.dsl.ModelListImpl
+import com.wakaztahir.kte.model.model.ModelListImpl
 import com.wakaztahir.kte.model.ModelDirective
 import com.wakaztahir.kte.model.StringValue
 import com.wakaztahir.kte.model.model.TemplateModel
 import com.wakaztahir.kte.parser.ArithmeticOperatorType
 import com.wakaztahir.kte.parser.ForLoop
-import com.wakaztahir.kte.parser.generateTo
 import com.wakaztahir.kte.parser.parseForLoop
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -34,26 +33,41 @@ class ForLoopTest {
     @Test
     fun parseForLoopNumbered() {
         val operatorType = ArithmeticOperatorType.Plus
-        val context = TemplateContext("@for(@const i=0;i<5;i${operatorType.char}1) blockValue @endfor")
+        val code = "@for(@const i=0;i<5;i${operatorType.char}1) blockValue @endfor"
+        val context = TemplateContext(code)
         val loop = context.stream.parseForLoop()!! as ForLoop.NumberedFor
         assertEquals("i", loop.variableName)
         assertEquals(0, loop.initializer.getValue(context.stream.model).value)
         assertEquals(5, loop.conditional.getValue(context.stream.model).value)
         assertEquals(operatorType, loop.arithmeticOperatorType)
         assertEquals(1, loop.incrementer.getValue(context.stream.model).value)
+        assertEquals(code.length,loop.blockValue.blockEndPointer)
         assertEquals("blockValue", loop.blockValue.getValueAsString(context.stream))
     }
 
     @Test
     fun testForLoopGeneration() {
         val context = TemplateContext("@const var1 = 3@for(@const i = @const(var1);i>0;i-1) @const(var1) @endfor")
-        assertEquals("333", context.getDestinationAsString())
+        assertEquals("333", context.getDestinationAsStringWithReset())
     }
+
+    @Test
+    fun testForLoopGeneration1() {
+        val context = TemplateContext("@for(@const i=0;i<3;i+1) @if(@const(i)==2) @const(i) @endif @endfor")
+        assertEquals("2", context.getDestinationAsStringWithReset())
+    }
+
+    @Test
+    fun testForLoopGeneration2() {
+        val context = TemplateContext("@for(@const i=0;i<3;i+1) @const(i) @endfor")
+        assertEquals("012", context.getDestinationAsStringWithReset())
+    }
+
 
     @Test
     fun testForLoopGeneration3() {
         val context = TemplateContext("@for(@const i = 0;i<5;i+1) x @endfor")
-        assertEquals("xxxxx", context.getDestinationAsString())
+        assertEquals("xxxxx", context.getDestinationAsStringWithReset())
     }
 
     @Test
@@ -61,7 +75,7 @@ class ForLoopTest {
         val context = TemplateContext("@for(@const elem : @model.list) @const(elem) @endfor", TemplateModel {
             putIterable("list", ModelListImpl(listOf("H", "e", "ll", "o").map { StringValue(it) }))
         })
-        assertEquals("Hello", context.getDestinationAsString())
+        assertEquals("Hello", context.getDestinationAsStringWithReset())
     }
 
     @Test
@@ -69,7 +83,7 @@ class ForLoopTest {
         val context = TemplateContext("@model.list.size", TemplateModel {
             putIterable("list", ModelListImpl(listOf("H", "e", "ll", "o").map { StringValue(it) }))
         })
-        assertEquals("4", context.getDestinationAsString())
+        assertEquals("4", context.getDestinationAsStringWithReset())
     }
 
     @Test
@@ -79,13 +93,7 @@ class ForLoopTest {
                 putValue("funName", "seriouslyHere")
             }
         })
-        assertEquals("seriouslyHere", context.getDestinationAsString())
-    }
-
-    @Test
-    fun testForLoopGeneration2() {
-        val context = TemplateContext("@for(@const i=0;i<3;i+1) @const(i) @endfor")
-        assertEquals("012", context.getDestinationAsString())
+        assertEquals("seriouslyHere", context.getDestinationAsStringWithReset())
     }
 
     @Test
@@ -96,14 +104,14 @@ class ForLoopTest {
               | Line Number 2
               |@endfor""".trimMargin("|")
         )
-        assertEquals("Line Number 1\nLine Number 2", context.getDestinationAsString())
+        assertEquals("Line Number 1\nLine Number 2", context.getDestinationAsStringWithReset())
         val context2 = TemplateContext(
             """@for(@const i=2;i<2;i+1)
               | Line Number 1
               | Line Number 2
               |@endfor""".trimMargin("|")
         )
-        assertEquals("", context2.getDestinationAsString())
+        assertEquals("", context2.getDestinationAsStringWithReset())
     }
 
 

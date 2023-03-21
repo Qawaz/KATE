@@ -1,12 +1,10 @@
 package com.wakaztahir.kte.parser
 
 import com.wakaztahir.kte.model.*
-import com.wakaztahir.kte.model.Condition
-import com.wakaztahir.kte.model.IfStatement
-import com.wakaztahir.kte.model.SingleIf
-import com.wakaztahir.kte.parser.stream.*
+import com.wakaztahir.kte.parser.stream.SourceStream
 import com.wakaztahir.kte.parser.stream.escapeSpaces
 import com.wakaztahir.kte.parser.stream.increment
+import com.wakaztahir.kte.parser.stream.incrementUntil
 
 internal fun SourceStream.parseConditionType(): ConditionType? {
     if (increment("==")) {
@@ -67,24 +65,31 @@ internal fun SourceStream.parseCondition(): Condition? {
 private fun SourceStream.parseIfBlockValue(ifType: IfType): LazyBlockSlice {
     val previous = pointer
 
-    if (ifType == IfType.Else) {
-        incrementUntil("@endif")
+    val blockEnder: String? = if (ifType == IfType.Else) {
+        if (incrementUntil("@endif")) {
+            "@endif"
+        } else {
+            null
+        }
     } else {
         incrementUntil("@elseif", "@else", "@endif")
     }
 
-    decrementPointer()
-    val length = if (currentChar == ' ') {
-        pointer - previous
-    } else {
-        pointer - previous + 1
+    if (blockEnder == null) {
+        throw IllegalStateException("@if block must end with @elseif / @else / @endif")
     }
+
+    val length = pointer - previous
+
+    decrementPointer()
+    val spaceDecrement = if (currentChar == ' ') 1 else 0
     incrementPointer()
 
     return LazyBlockSlice(
         startPointer = previous,
-        length = length,
+        length = length - spaceDecrement,
         parent = model,
+        blockEndPointer = pointer + blockEnder.length
     )
 }
 

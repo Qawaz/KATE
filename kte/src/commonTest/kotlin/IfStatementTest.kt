@@ -29,7 +29,7 @@ class IfStatementTest {
     fun testConstRef() {
         val context = TemplateContext("@if(@const(var1)) blockValue @endif")
         context.stream.model.putValue("var1", true)
-        assertEquals("blockValue", context.getDestinationAsString())
+        assertEquals("blockValue", context.getDestinationAsStringWithReset())
     }
 
     @Test
@@ -116,8 +116,9 @@ class IfStatementTest {
         val iffy = testIfy(firstIf = true, firstElseIf = false, secondElseIf = false)
         val context = TemplateContext(iffy)
         val ifStatement = context.stream.parseIfStatement()
+        assertEquals(12, ifStatement!!.evaluate(context)!!.blockValue.length)
+        assertEquals("MyFirstValue", ifStatement.evaluate(context)!!.blockValue.getValueAsString(context.stream))
         assertEquals("MyFirstValue", codeGenerated(iffy))
-        assertEquals("MyFirstValue", ifStatement!!.evaluate(context)!!.blockValue.getValueAsString(context.stream))
         assertEquals(iffy.length, context.stream.pointer)
     }
 
@@ -126,8 +127,8 @@ class IfStatementTest {
         val iffy = testIfy(firstIf = false, firstElseIf = true, secondElseIf = false)
         val context = TemplateContext((iffy))
         val ifStatement = context.stream.parseIfStatement()
-        assertEquals("MySecondValue", codeGenerated(iffy))
         assertEquals("MySecondValue", ifStatement!!.evaluate(context)!!.blockValue.getValueAsString(context.stream))
+        assertEquals("MySecondValue", codeGenerated(iffy))
         assertEquals(iffy.length, context.stream.pointer)
     }
 
@@ -136,8 +137,8 @@ class IfStatementTest {
         val iffy = testIfy(firstIf = false, firstElseIf = false, secondElseIf = true)
         val context = TemplateContext((iffy))
         val ifStatement = context.stream.parseIfStatement()
-        assertEquals("MyThirdValue", codeGenerated(iffy))
         assertEquals("MyThirdValue", ifStatement!!.evaluate(context)!!.blockValue.getValueAsString(context.stream))
+        assertEquals("MyThirdValue", codeGenerated(iffy))
         assertEquals(iffy.length, context.stream.pointer)
     }
 
@@ -161,14 +162,14 @@ class IfStatementTest {
               | Line Number 2
               |@endif""".trimMargin("|")
         )
-        assertEquals("Line Number 1\nLine Number 2", context.getDestinationAsString())
+        assertEquals("Line Number 1\nLine Number 2", context.getDestinationAsStringWithReset())
         val context2 = TemplateContext(
             """@if(false)
               | Line Number 1
               | Line Number 2
               |@endif""".trimMargin("|")
         )
-        assertEquals("", context2.getDestinationAsString())
+        assertEquals("", context2.getDestinationAsStringWithReset())
     }
 
 }

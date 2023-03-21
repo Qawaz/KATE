@@ -1,6 +1,6 @@
 package com.wakaztahir.kte.parser
 
-import com.wakaztahir.kte.dsl.ModelIterable
+import com.wakaztahir.kte.model.model.ModelList
 import com.wakaztahir.kte.model.model.MutableTemplateModel
 import com.wakaztahir.kte.model.*
 import com.wakaztahir.kte.model.ConditionType
@@ -47,23 +47,14 @@ internal sealed interface ForLoop : AtDirective {
         }
 
         private fun store(value: KTEValue) {
-            when (value) {
-                is TemplateModel -> {
-                    blockValue.model.putObject(elementConstName, value)
-                }
-
-                is ModelIterable<*> -> {
-                    blockValue.model.putIterable(elementConstName, value)
-                }
-
-                is PrimitiveValue<*> -> {
-                    blockValue.model.putValue(elementConstName, value)
-                }
-
-                else -> {
-                    throw IllegalStateException("element of unknown type in for loop")
-                }
-            }
+            @Suppress("UNCHECKED_CAST")
+            (value as? TemplateModel)?.let {
+                blockValue.model.putObject(elementConstName, it)
+            } ?: (value as? ModelList<KTEValue>)?.let {
+                blockValue.model.putIterable(elementConstName, it)
+            } ?: (value as? PrimitiveValue<*>)?.let {
+                blockValue.model.putValue(elementConstName, it)
+            } ?: throw IllegalStateException("element of unknown type in for loop")
         }
 
         private fun remove() {
@@ -77,11 +68,12 @@ internal sealed interface ForLoop : AtDirective {
             var index = 0
             val iterable = listProperty.getIterable(context)
             val total = iterable.size
+//            println("ITERABLE SIZE : $total")
             while (index < total) {
+                store(index)
                 store(iterable.getOrElse(index) {
                     throw IllegalStateException("element at $index in for loop not found")
                 })
-                store(index)
                 block()
                 index++
             }
@@ -116,14 +108,54 @@ internal sealed interface ForLoop : AtDirective {
             var i = initializer.intVal(context)
             val conditionValue = conditional.intVal(context)
             val incrementerValue = incrementer.intVal(context)
-            // println("INITIALIZER : $i,CONDITIONAL : $conditionValue,INCREMENTER : $incrementerValue,OPERATOR : ${arithmeticOperatorType.char},RESULT : ${conditionType.verifyCompare(i.compareTo(conditionValue))}")
             while (conditionType.verifyCompare(i.compareTo(conditionValue))) {
+//                println(
+//                    "INITIALIZER : $i,CONDITIONAL : $conditionValue,INCREMENTER : $incrementerValue,OPERATOR : ${arithmeticOperatorType.char},RESULT : ${
+//                        conditionType.verifyCompare(
+//                            i.compareTo(conditionValue)
+//                        )
+//                    }"
+//                )
                 storeIndex(i)
                 block()
                 i = arithmeticOperatorType.operate(i, incrementerValue)
-                removeIndex()
             }
+            removeIndex()
         }
+    }
+
+}
+
+private class ForLoopLazyBlockSlice(
+    startPointer: Int,
+    length: Int,
+    blockEndPointer: Int,
+    parent: MutableTemplateModel,
+) : LazyBlockSlice(
+    startPointer = startPointer,
+    length = length,
+    parent = parent,
+    blockEndPointer = blockEndPointer
+) {
+
+    var hasBroken: Boolean = false
+
+    override fun canIterate(stream: SourceStream): Boolean {
+        return super.canIterate(stream) && !hasBroken
+    }
+
+    fun SourceStream.parseBreakForAtDirective(): Boolean {
+        return if (currentChar == '@' && increment("@breakfor")) {
+            hasBroken = true
+            true
+        } else {
+            false
+        }
+    }
+
+    override fun parseAtDirective(source: SourceStream): AtDirective? = with(source) {
+        if (parseBreakForAtDirective()) return null
+        return super.parseAtDirective(source)
     }
 
 }
@@ -131,27 +163,26 @@ internal sealed interface ForLoop : AtDirective {
 private fun SourceStream.parseForBlockValue(): LazyBlockSlice {
     val previous = pointer
 
-    incrementUntil("@endfor")
-    decrementPointer()
+    val ender = "@endfor"
 
-    val length = if (currentChar == ' ') {
-        pointer - previous
-    } else {
-        pointer - previous + 1
+    if (!incrementUntil(ender)) {
+        throw IllegalStateException("@for must end with @endfor")
     }
 
+    val length = pointer - previous
+
+    decrementPointer()
+    val spaceDecrement = if (currentChar == ' ') 1 else 0
     incrementPointer()
-    increment("@endfor")
 
-    return LazyBlockSlice(
+    increment(ender)
+
+    return ForLoopLazyBlockSlice(
         startPointer = previous,
-        length = length,
+        length = length - spaceDecrement,
         parent = this.model,
+        blockEndPointer = pointer
     )
-}
-
-internal fun SourceStream.incrementBreakFor(): Boolean {
-    return currentChar == '@' && increment("@breakfor")
 }
 
 private fun SourceStream.parseForLoopNumberProperty(): ReferencedValue? {

@@ -106,5 +106,8 @@ internal class IfStatement(private val ifs: MutableList<SingleIf>) : AtDirective
 
     override fun generateTo(block: LazyBlock, source: SourceStream, destination: DestinationStream) {
         evaluate(block.model)?.generateTo(block, source, destination)
+        ifs.lastOrNull()?.blockValue?.blockEndPointer?.let { end ->
+            source.setPointerAt(end)
+        }
     }
 }

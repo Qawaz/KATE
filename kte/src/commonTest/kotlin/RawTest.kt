@@ -1,7 +1,6 @@
 import com.wakaztahir.kte.KTEDelicateFunction
 import com.wakaztahir.kte.TemplateContext
 import com.wakaztahir.kte.parser.parseRawBlock
-import com.wakaztahir.kte.parser.stream.TextSourceStream
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
@@ -21,6 +20,6 @@ class RawTest {
     @Test
     fun testRawCodeGen() {
         val context = TemplateContext("@raw there's something raw here @endraw")
-        assertEquals("there's something raw here",context.getDestinationAsString())
+        assertEquals("there's something raw here",context.getDestinationAsStringWithReset())
     }
 }

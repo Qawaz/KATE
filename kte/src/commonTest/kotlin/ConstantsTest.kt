@@ -11,6 +11,8 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 
 class ConstantsTest {
+
+
     @Test
     fun testParseConstantReference() {
         val context = TemplateContext(("@const(myVar)"))
@@ -30,11 +32,12 @@ class ConstantsTest {
         assertEquals("someValue", ref.variableValue.getValue(context.stream.model).value)
     }
 
-    @OptIn(KTEDelicateFunction::class)
     @Test
-    fun testParseConstantGeneration(){
-        val context = TemplateContext(("@const myVar = \"someValue\"@const(myVar)"))
-        assertEquals("someValue",context.getDestinationAsString())
+    fun testParseConstantGeneration() {
+        val text = "@const myVar = \"someValue\"@const(myVar)"
+        val context = TemplateContext(text)
+        assertEquals("someValue", context.getDestinationAsString())
+        assertEquals(text.length, context.stream.pointer)
     }
 
     @Test

@@ -1,13 +1,9 @@
 package com.wakaztahir.kte.model
 
 import com.wakaztahir.kte.KTEDelicateFunction
-import com.wakaztahir.kte.dsl.ModelObjectImpl
 import com.wakaztahir.kte.dsl.ScopedModelObject
 import com.wakaztahir.kte.model.model.MutableTemplateModel
-import com.wakaztahir.kte.model.model.TemplateModel
-import com.wakaztahir.kte.parser.generateTo
-import com.wakaztahir.kte.parser.parseAtDirective
-import com.wakaztahir.kte.parser.parseComment
+import com.wakaztahir.kte.parser.*
 import com.wakaztahir.kte.parser.stream.DestinationStream
 import com.wakaztahir.kte.parser.stream.SourceStream
 import com.wakaztahir.kte.parser.stream.TextDestinationStream
@@ -26,7 +22,7 @@ interface LazyBlock {
                 }
             }
             if (source.currentChar == '@') {
-                val directive = source.parseAtDirective()
+                val directive = parseAtDirective(source)
                 if (directive != null) {
                     directive.generateTo(this, source, destination)
                     continue
@@ -37,21 +33,40 @@ interface LazyBlock {
         }
     }
 
+    fun parseAtDirective(source: SourceStream): AtDirective? = with(source) {
+        parseEmbedding()?.let { return it }
+        parseConstantReference()?.let { return it }
+        parseConstantDeclaration()?.let { return it }
+        parseConstantReference()?.let { return it }
+        parseModelDirective()?.let { return it }
+        parseIfStatement()?.let { return it }
+        parseForLoop()?.let { return it }
+        parseRawBlock()?.let { return it }
+        return null
+    }
+
     @KTEDelicateFunction
-    fun getDestinationAsString(source: SourceStream): String {
-        val previous = source.pointer
+    fun getDestinationString(source: SourceStream): String {
         val destination = TextDestinationStream()
         generateTo(source, destination)
-        source.setPointerAt(previous)
         return destination.getValue()
+    }
+
+    @KTEDelicateFunction
+    fun getDestinationStringWithReset(source: SourceStream): String {
+        val previous = source.pointer
+        val value = getDestinationString(source)
+        source.setPointerAt(previous)
+        return value
     }
 
 }
 
 
-class LazyBlockSlice(
+open class LazyBlockSlice(
     val startPointer: Int,
     val length: Int,
+    val blockEndPointer: Int,
     parent: MutableTemplateModel
 ) : LazyBlock {
 
@@ -62,17 +77,16 @@ class LazyBlockSlice(
     }
 
     override fun generateTo(source: SourceStream, destination: DestinationStream) {
-        val previous = source.pointer
         source.setPointerAt(startPointer)
         super.generateTo(source, destination)
-        source.setPointerAt(previous)
+        source.setPointerAt(blockEndPointer)
     }
 
     fun getValueAsString(source: SourceStream): String {
         val previous = source.pointer
         source.setPointerAt(startPointer)
         var text = ""
-        while (source.pointer < startPointer + length) {
+        while (canIterate(source)) {
             text += source.currentChar
             source.incrementPointer()
         }

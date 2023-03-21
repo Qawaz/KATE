@@ -1,6 +1,5 @@
 package com.wakaztahir.kte.model.model
 
-import com.wakaztahir.kte.dsl.ModelIterable
 import com.wakaztahir.kte.dsl.ModelObjectImpl
 import com.wakaztahir.kte.dsl.ModelValue
 import com.wakaztahir.kte.model.*
@@ -9,7 +8,7 @@ interface TemplateModel : KTEValue {
 
     fun getValue(key: String): PrimitiveValue<*>?
 
-    fun getIterable(key: String): ModelIterable<KTEValue>?
+    fun getIterable(key: String): ModelList<KTEValue>?
 
     fun getFunction(key: String): ((List<Any>) -> ModelValue)?
 
@@ -18,7 +17,7 @@ interface TemplateModel : KTEValue {
     fun getAnyModelDirectiveValue(directive: ModelDirective): KTEValue? {
         var currentObj: TemplateModel = this
         var currentVal: PrimitiveValue<*>? = null
-        var currentIterable: ModelIterable<*>? = null
+        var currentIterable: ModelList<*>? = null
         for (prop in directive.propertyPath) {
             when (prop) {
                 is ModelReference.FunctionCall -> {
@@ -36,9 +35,7 @@ interface TemplateModel : KTEValue {
                         currentObj.getIterable(prop.name)?.let {
                             currentIterable = it
                         } ?: run {
-                            currentVal = currentObj.getValue(prop.name) ?: run {
-                                return null
-                            }
+                            currentVal = currentObj.getValue(prop.name)
                         }
                     }
                 }
@@ -49,10 +46,10 @@ interface TemplateModel : KTEValue {
         }
     }
 
-    fun getPropertyAsIterable(directive: ModelDirective): ModelIterable<KTEValue>? {
+    fun getPropertyAsIterable(directive: ModelDirective): ModelList<KTEValue>? {
         val value = getAnyModelDirectiveValue(directive = directive)
         @Suppress("UNCHECKED_CAST")
-        return value as? ModelIterable<KTEValue>
+        return value as? ModelList<KTEValue>
     }
 
     fun getPropertyAsObject(directive: ModelDirective): TemplateModel? {

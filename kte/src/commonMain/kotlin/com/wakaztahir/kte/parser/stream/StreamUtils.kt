@@ -124,17 +124,17 @@ internal fun SourceStream.printLeft() = resetIfNull {
     null
 }
 
-internal fun SourceStream.incrementUntil(vararg strings: String): Boolean {
+internal fun SourceStream.incrementUntil(vararg strings: String): String? {
     incrementWhile {
         for (str in strings) {
             if (currentChar == str[0] && increment(str)) {
                 decrementPointer(str.length)
-                return true
+                return str
             }
         }
         true
     }
-    return false
+    return null
 }
 
 internal fun SourceStream.parseTextUntilConsumed(str: String): String {
