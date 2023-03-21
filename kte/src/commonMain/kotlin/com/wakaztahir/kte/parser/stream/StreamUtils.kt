@@ -142,3 +142,37 @@ internal fun SourceStream.parseTextUntilConsumed(str: String): String {
         currentChar != str[0] || !increment(str)
     }
 }
+
+internal fun SourceStream.incrementUntil(char: Char): Boolean {
+    while (!hasEnded && currentChar != char) {
+        incrementPointer()
+    }
+    return currentChar == char
+}
+
+internal inline fun SourceStream.incrementUntilDirectiveWithSkip(
+    skip: String,
+    canIncrementDirective: () -> String?,
+): String? {
+    if (incrementUntil('@')) {
+        var skips = 0
+        while (!hasEnded) {
+            if (increment(skip)) {
+                skips++
+            } else {
+                val incremented = canIncrementDirective()
+                if (incremented != null) {
+                    if (skips == 0) {
+                        return incremented
+                    } else {
+                        skips--
+                    }
+                }
+            }
+            incrementPointer()
+        }
+    } else {
+        return null
+    }
+    return null
+}

@@ -39,8 +39,8 @@ interface LazyBlock {
         parseConstantDeclaration()?.let { return it }
         parseConstantReference()?.let { return it }
         parseModelDirective()?.let { return it }
-        parseIfStatement()?.let { return it }
-        parseForLoop()?.let { return it }
+        parseIfStatement(source)?.let { return it }
+        parseForLoop(source)?.let { return it }
         parseRawBlock()?.let { return it }
         return null
     }

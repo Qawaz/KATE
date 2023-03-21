@@ -160,28 +160,28 @@ private class ForLoopLazyBlockSlice(
 
 }
 
-private fun SourceStream.parseForBlockValue(): LazyBlockSlice {
-    val previous = pointer
+private fun LazyBlock.parseForBlockValue(source: SourceStream): LazyBlockSlice  {
+    val previous = source.pointer
 
-    val ender = "@endfor"
+    val ender: String = source.incrementUntilDirectiveWithSkip("@for") {
+        if (source.increment("@endfor")) "@endfor" else null
+    } ?: throw IllegalStateException("@for must end with @endfor")
 
-    if (!incrementUntil(ender)) {
-        throw IllegalStateException("@for must end with @endfor")
-    }
+    source.decrementPointer(ender.length)
 
-    val length = pointer - previous
+    val length = source.pointer - previous
 
-    decrementPointer()
-    val spaceDecrement = if (currentChar == ' ') 1 else 0
-    incrementPointer()
+    source.decrementPointer()
+    val spaceDecrement = if (source.currentChar == ' ') 1 else 0
+    source.incrementPointer()
 
-    increment(ender)
+    source.increment(ender)
 
     return ForLoopLazyBlockSlice(
         startPointer = previous,
         length = length - spaceDecrement,
-        parent = this.model,
-        blockEndPointer = pointer
+        parent = this@parseForBlockValue.model,
+        blockEndPointer = source.pointer
     )
 }
 
@@ -192,12 +192,12 @@ private fun SourceStream.parseForLoopNumberProperty(): ReferencedValue? {
     return null
 }
 
-private fun SourceStream.parseConditionalFor(): ForLoop.ConditionalFor? {
-    val condition = parseCondition()
+private fun LazyBlock.parseConditionalFor(source: SourceStream): ForLoop.ConditionalFor? {
+    val condition = source.parseCondition()
     if (condition != null) {
-        increment(')')
-        increment(' ')
-        val blockValue = parseForBlockValue()
+        source.increment(')')
+        source.increment(' ')
+        val blockValue = this@parseConditionalFor.parseForBlockValue(source)
         return ForLoop.ConditionalFor(
             condition = condition,
             blockValue = blockValue
@@ -206,21 +206,24 @@ private fun SourceStream.parseConditionalFor(): ForLoop.ConditionalFor? {
     return null
 }
 
-private fun SourceStream.parseIterableForLoopAfterVariable(variableName: String): ForLoop.IterableFor? {
+private fun LazyBlock.parseIterableForLoopAfterVariable(
+    source: SourceStream,
+    variableName: String,
+): ForLoop.IterableFor?  {
     var secondVariableName: String? = null
-    if (increment(',')) {
-        secondVariableName = parseTextWhile { currentChar.isConstantVariableName() }
+    if (source.increment(',')) {
+        secondVariableName = source.parseTextWhile { currentChar.isConstantVariableName() }
     }
-    escapeSpaces()
-    if (increment(':')) {
-        escapeSpaces()
-        val referencedValue = parseReferencedValue()
-        escapeSpaces()
-        if (!increment(')')) {
-            throw IllegalStateException("expected ) , got $currentChar")
+    source.escapeSpaces()
+    if (source.increment(':')) {
+        source.escapeSpaces()
+        val referencedValue = source.parseReferencedValue()
+        source.escapeSpaces()
+        if (!source.increment(')')) {
+            throw IllegalStateException("expected ) , got ${source.currentChar}")
         }
-        increment(' ')
-        val blockValue = parseForBlockValue()
+        source.increment(' ')
+        val blockValue = this@parseIterableForLoopAfterVariable.parseForBlockValue(source)
         if (referencedValue != null) {
             return ForLoop.IterableFor(
                 indexConstName = secondVariableName,
@@ -233,30 +236,33 @@ private fun SourceStream.parseIterableForLoopAfterVariable(variableName: String)
     return null
 }
 
-private fun SourceStream.parseNumberedForLoopAfterVariable(variableName: String): ForLoop.NumberedFor? {
-    if (increment('=')) {
-        escapeSpaces()
-        val initializer = parseForLoopNumberProperty()
-            ?: throw IllegalStateException("unexpected $currentChar , expected a number or property")
-        if (increment(';')) {
-            val conditionalConst = parseTextWhile { currentChar.isConstantVariableName() }
+private fun LazyBlock.parseNumberedForLoopAfterVariable(
+    source: SourceStream,
+    variableName: String
+): ForLoop.NumberedFor? {
+    if (source.increment('=')) {
+        source.escapeSpaces()
+        val initializer = source.parseForLoopNumberProperty()
+            ?: throw IllegalStateException("unexpected ${source.currentChar} , expected a number or property")
+        if (source.increment(';')) {
+            val conditionalConst = source.parseTextWhile { currentChar.isConstantVariableName() }
             if (conditionalConst == variableName) {
-                val conditionType = parseConditionType()
-                    ?: throw IllegalStateException("expected conditional operator , got $currentChar")
-                val conditional = parseForLoopNumberProperty()
-                    ?: throw IllegalStateException("expected number property of value got $currentChar")
-                if (increment(';')) {
-                    val incrementalConst = parseTextWhile { currentChar.isConstantVariableName() }
+                val conditionType = source.parseConditionType()
+                    ?: throw IllegalStateException("expected conditional operator , got ${source.currentChar}")
+                val conditional = source.parseForLoopNumberProperty()
+                    ?: throw IllegalStateException("expected number property of value got ${source.currentChar}")
+                if (source.increment(';')) {
+                    val incrementalConst = source.parseTextWhile { currentChar.isConstantVariableName() }
                     if (incrementalConst == variableName) {
-                        val operator = parseArithmeticOperator()
+                        val operator = source.parseArithmeticOperator()
                         if (operator != null) {
-                            val incrementer = parseForLoopNumberProperty()
-                                ?: throw IllegalStateException("expected number property of value got $currentChar")
-                            if (!increment(')')) {
-                                throw IllegalStateException("expected ) , got $currentChar")
+                            val incrementer = source.parseForLoopNumberProperty()
+                                ?: throw IllegalStateException("expected number property of value got ${source.currentChar}")
+                            if (!source.increment(')')) {
+                                throw IllegalStateException("expected ) , got ${source.currentChar}")
                             }
-                            increment(' ')
-                            val blockValue = parseForBlockValue()
+                            source.increment(' ')
+                            val blockValue = this@parseNumberedForLoopAfterVariable.parseForBlockValue(source)
                             return ForLoop.NumberedFor(
                                 variableName = variableName,
                                 initializer = initializer,
@@ -273,33 +279,33 @@ private fun SourceStream.parseNumberedForLoopAfterVariable(variableName: String)
                         throw IllegalStateException("incremental variable is different : $incrementalConst != $variableName")
                     }
                 } else {
-                    throw IllegalStateException("unexpected $currentChar , expected ';'")
+                    throw IllegalStateException("unexpected ${source.currentChar} , expected ';'")
                 }
             } else {
                 throw IllegalStateException("conditional variable is different : $conditionalConst != $variableName")
             }
         } else {
-            throw IllegalStateException("unexpected $currentChar , expected ';'")
+            throw IllegalStateException("unexpected ${source.currentChar} , expected ';'")
         }
     }
     return null
 }
 
-internal fun SourceStream.parseForLoop(): ForLoop? {
-    if (currentChar == '@' && increment("@for(")) {
+internal fun LazyBlock.parseForLoop(source: SourceStream): ForLoop? {
+    if (source.currentChar == '@' && source.increment("@for(")) {
 
-        parseConditionalFor()?.let { return it }
+        parseConditionalFor(source)?.let { return it }
 
-        val variableName = parseConstantVariableName()
+        val variableName = source.parseConstantVariableName()
         if (variableName != null) {
 
-            escapeSpaces()
+            source.escapeSpaces()
 
             // Parsing the numbered loop
-            parseNumberedForLoopAfterVariable(variableName)?.let { return it }
+            parseNumberedForLoopAfterVariable(source, variableName)?.let { return it }
 
             // Parsing the iterable loop
-            parseIterableForLoopAfterVariable(variableName)?.let { return it }
+            parseIterableForLoopAfterVariable(source, variableName)?.let { return it }
 
         }
 
