@@ -18,16 +18,18 @@
 
 `@embed ./template-path.kte`
 
-This directly copies and pastes the template into the current template , Its global scoped constants can be used inside
+This directly copies and pastes the template into the current template , Its global scoped variables can be used inside
 the current template.
 
 > Embed statements can only be used at the top of the template
 
-## Constants
+## Variables
 
-`@const variableName = "My Name"`
+`@var variableName = "My Name"`
 
-The value of the constant can only be
+To reassign the variable to a different value , same expression is used
+
+The value of the variable can only be one of these
 
 | Value                               | Supported |
 |-------------------------------------|-----------|
@@ -35,15 +37,15 @@ The value of the constant can only be
 | Integer (12345)                     | &check;   |
 | Float (1.0f)                        | &check;   |
 | Boolean (true,false)                | &check;   |
-| Another Constant's Value            | &check;   |
-| Expressions                         | &cross;   |
+| Another Variable's Value            | &check;   |
+| [Expressions](#expressions)         | &check;   |
 | Value Returned from a function call | &cross;   |
 | List Element                        | &cross;   |
-| A model's property                  | &cross;   |
+| A model's property                  | &check;   |
 
 ## References & Function Calls
 
-`@const(variableName)` to get value of the variable defined earlier
+`@var(variableName)` to get value of the variable defined earlier
 
 `@model.property` To get a property from the model
 
@@ -52,6 +54,18 @@ The value of the constant can only be
 Explicit property , so compiler won't think it's a function name
 
 `@model.@property()` in this case
+
+## Expressions
+
+`2 @+ 2` is an expression
+
+Expressions should be assigned to a variable , Otherwise they would just
+output to template like a string
+
+so to evaluate above expression
+
+`@var exp = 2 @+ 2@var(exp)` is used `@var exp = 2 @+ 2` will save the result of expression in the variable
+then referencing it `@var(exp)` will output it to template
 
 ## Conditional Rendering
 
@@ -79,15 +93,15 @@ This loop will run until the condition is true
 
 For each on every element of the list
 
-`@for(@const element : @model.list) @endfor`
+`@for(@var element : @model.list) @endfor`
 
 To get the index of every element in the list
 
-`@for(@const element,index : @model.list) @endfor`
+`@for(@var element,index : @model.list) @endfor`
 
 To loop using a number
 
-`@for(@const i=0;i<5;i++) @endfor`
+`@for(@var i=0;i<5;i++) @endfor`
 
 To break a parent loop , You can use
 

@@ -3,6 +3,7 @@ package com.wakaztahir.kte.model
 import com.wakaztahir.kte.model.model.ModelList
 import com.wakaztahir.kte.dsl.UnresolvedValueException
 import com.wakaztahir.kte.model.model.TemplateModel
+import com.wakaztahir.kte.parser.ArithmeticOperatorType
 import com.wakaztahir.kte.parser.stream.DestinationStream
 import com.wakaztahir.kte.parser.stream.SourceStream
 
@@ -19,6 +20,40 @@ interface PrimitiveValue<T> : CodeGen, ReferencedValue {
 
     override fun getValue(model: TemplateModel): PrimitiveValue<*> {
         return this
+    }
+
+    fun operate(operatorType: ArithmeticOperatorType, value2: PrimitiveValue<*>): PrimitiveValue<*> {
+
+        if (this is StringValue || value2 is StringValue) {
+            if (operatorType == ArithmeticOperatorType.Plus) {
+                return StringValue(value.toString() + value2.value.toString())
+            } else {
+                throw IllegalStateException("operator '${operatorType.char}' cannot be applied with a string value")
+            }
+        }
+
+        if (this is BooleanValue || value2 is BooleanValue) {
+            throw IllegalStateException("operator '${operatorType.char}' cannot be applied with a boolean value")
+        }
+
+        val resultIsFloat: Boolean = ((this as? FloatValue) ?: (value2 as? FloatValue)) != null
+
+        return if (resultIsFloat) {
+            FloatValue(
+                operatorType.operate(
+                    value1 = (this as? FloatValue)?.value ?: (this as IntValue).value.toFloat(),
+                    value2 = (value2 as? FloatValue)?.value ?: (value2 as IntValue).value.toFloat()
+                )
+            )
+        } else {
+            IntValue(
+                operatorType.operate(
+                    value1 = (this as IntValue).value,
+                    value2 = (value2 as IntValue).value
+                )
+            )
+        }
+
     }
 
     override fun getIterable(model: TemplateModel): ModelList<KTEValue> {

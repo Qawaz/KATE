@@ -4,7 +4,6 @@ import com.wakaztahir.kte.model.*
 import com.wakaztahir.kte.parser.stream.*
 import com.wakaztahir.kte.parser.stream.escapeSpaces
 import com.wakaztahir.kte.parser.stream.increment
-import com.wakaztahir.kte.parser.stream.incrementUntil
 
 internal fun SourceStream.parseConditionType(): ConditionType? {
     if (increment("==")) {
@@ -30,7 +29,7 @@ internal fun SourceStream.parseConditionType(): ConditionType? {
 
 internal fun SourceStream.parseCondition(): Condition? {
 
-    val propertyFirst = parseDynamicProperty() ?: run {
+    val propertyFirst = this.parseExpression() ?: run {
         return null
     }
 
@@ -51,7 +50,7 @@ internal fun SourceStream.parseCondition(): Condition? {
     }
 
     escapeSpaces()
-    val propertySecond = parseDynamicProperty() ?: run {
+    val propertySecond = this.parseExpression() ?: run {
         throw IllegalStateException("condition's right hand side cannot be found")
     }
 

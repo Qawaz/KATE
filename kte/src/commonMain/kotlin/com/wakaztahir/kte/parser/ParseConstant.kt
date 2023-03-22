@@ -1,6 +1,5 @@
 package com.wakaztahir.kte.parser
 
-import com.wakaztahir.kte.dsl.UnresolvedValueException
 import com.wakaztahir.kte.model.model.MutableTemplateModel
 import com.wakaztahir.kte.model.*
 import com.wakaztahir.kte.parser.stream.*
@@ -62,7 +61,7 @@ internal fun SourceStream.parseConstantDeclaration(): ConstantDeclaration? {
             escapeSpaces()
             increment('=')
             escapeSpaces()
-            val property = parseDynamicProperty()
+            val property = this.parseExpression()
             return if (property != null) {
                 ConstantDeclaration(variableName = variableName, variableValue = property)
             } else {

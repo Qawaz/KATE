@@ -1,10 +1,8 @@
-import com.wakaztahir.kte.KTEDelicateFunction
 import com.wakaztahir.kte.TemplateContext
 import com.wakaztahir.kte.model.StringValue
-import com.wakaztahir.kte.parser.*
 import com.wakaztahir.kte.parser.parseConstantDeclaration
 import com.wakaztahir.kte.parser.parseConstantReference
-import com.wakaztahir.kte.parser.parseDynamicProperty
+import com.wakaztahir.kte.parser.parseExpression
 import com.wakaztahir.kte.parser.parseStringValue
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -40,6 +38,31 @@ class ConstantsTest {
         assertEquals(text.length, context.stream.pointer)
     }
 
+    private fun evaluate(i : String,j : String,char : Char) : String {
+        val context = TemplateContext("@const i = $i@const j = @const(i) @$char $j@const(j)")
+        return context.getDestinationAsString()
+    }
+
+    @Test
+    fun testExpressions(){
+        assertEquals("2",evaluate("0","2",'+'))
+        assertEquals("2",evaluate("2","0",'+'))
+        assertEquals("5",evaluate("10","5",'-'))
+        assertEquals("-5",evaluate("5","10",'-'))
+        assertEquals("10",evaluate("5","2",'*'))
+        assertEquals("10",evaluate("2","5",'*'))
+        assertEquals("5",evaluate("10","2",'/'))
+        assertEquals("0",evaluate("2","2",'%'))
+    }
+
+    @Test
+    fun testReassignment(){
+        val context = TemplateContext("@const i=0@const i=2@const(i)")
+        assertEquals("2",context.getDestinationAsString())
+        val context2 = TemplateContext("@const i=10@const i=@const(i) @+ 1@const(i)")
+        assertEquals("11",context2.getDestinationAsString())
+    }
+
     @Test
     fun testParseStringValue() {
         val context = TemplateContext(("\"someValue\""))
@@ -51,7 +74,7 @@ class ConstantsTest {
     fun testParseDynamicProperty() {
         val context = TemplateContext(("@const(myVar)"))
         context.stream.model.putValue("myVar", StringValue("someValue"))
-        val property = context.stream.parseDynamicProperty()
+        val property = context.stream.parseExpression()
         assertEquals(property!!.getValue(context.stream.model).value, "someValue")
     }
 

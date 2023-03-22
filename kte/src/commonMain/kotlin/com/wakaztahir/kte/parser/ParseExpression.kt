@@ -1,5 +1,6 @@
 package com.wakaztahir.kte.parser
 
+import com.wakaztahir.kte.model.PrimitiveValue
 import com.wakaztahir.kte.parser.stream.SourceStream
 import com.wakaztahir.kte.parser.stream.increment
 
@@ -9,9 +10,17 @@ enum class ArithmeticOperatorType(val char: Char) {
         override fun operate(value1: Int, value2: Int): Int {
             return value1 + value2
         }
+
+        override fun operate(value1: Float, value2: Float): Float {
+            return value1 + value2
+        }
     },
     Minus('-') {
         override fun operate(value1: Int, value2: Int): Int {
+            return value1 - value2
+        }
+
+        override fun operate(value1: Float, value2: Float): Float {
             return value1 - value2
         }
     },
@@ -19,9 +28,17 @@ enum class ArithmeticOperatorType(val char: Char) {
         override fun operate(value1: Int, value2: Int): Int {
             return value1 / value2
         }
+
+        override fun operate(value1: Float, value2: Float): Float {
+            return value1 / value2
+        }
     },
     Multiply('*') {
         override fun operate(value1: Int, value2: Int): Int {
+            return value1 * value2
+        }
+
+        override fun operate(value1: Float, value2: Float): Float {
             return value1 * value2
         }
     },
@@ -29,9 +46,14 @@ enum class ArithmeticOperatorType(val char: Char) {
         override fun operate(value1: Int, value2: Int): Int {
             return value1 % value2
         }
+
+        override fun operate(value1: Float, value2: Float): Float {
+            return value1 % value2
+        }
     };
 
     abstract fun operate(value1: Int, value2: Int): Int
+    abstract fun operate(value1: Float, value2: Float): Float
 
     fun parse(stream: SourceStream): ArithmeticOperatorType? {
         return if (stream.increment(char)) this@ArithmeticOperatorType else null

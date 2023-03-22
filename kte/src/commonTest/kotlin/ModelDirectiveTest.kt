@@ -4,7 +4,7 @@ import com.wakaztahir.kte.dsl.ModelValue
 import com.wakaztahir.kte.model.model.TemplateModel
 import com.wakaztahir.kte.model.ModelDirective
 import com.wakaztahir.kte.model.ModelReference
-import com.wakaztahir.kte.parser.parseDynamicProperty
+import com.wakaztahir.kte.parser.parseExpression
 import com.wakaztahir.kte.parser.parseModelDirective
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -14,7 +14,7 @@ class ModelDirectiveTest {
 
     private inline fun TemplateContext.testDirective(block: (ModelDirective) -> Unit) {
         val previous = stream.pointer
-        block(stream.parseDynamicProperty() as ModelDirective)
+        block(stream.parseExpression() as ModelDirective)
         stream.decrementPointer(stream.pointer - previous)
         block(stream.parseModelDirective()!!)
     }
