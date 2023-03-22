@@ -3,7 +3,7 @@ package com.wakaztahir.kte.model.model
 import com.wakaztahir.kte.dsl.ModelObjectImpl
 import com.wakaztahir.kte.model.*
 
-abstract class MutableTemplateModel : TemplateModel {
+abstract class MutableKTEObject : KTEObject {
 
     // Put Functions
 
@@ -46,20 +46,20 @@ abstract class MutableTemplateModel : TemplateModel {
 //    }
 
     interface PutObjectsScope {
-        fun putObject(block: MutableTemplateModel.() -> Unit)
+        fun putObject(block: MutableKTEObject.() -> Unit)
     }
 
     fun putObjects(key: String, block: PutObjectsScope.() -> Unit) {
-        val objects = mutableListOf<TemplateModel>()
+        val objects = mutableListOf<KTEObject>()
         block(object : PutObjectsScope {
-            override fun putObject(block: MutableTemplateModel.() -> Unit) {
+            override fun putObject(block: MutableKTEObject.() -> Unit) {
                 objects.add(ModelObjectImpl().apply(block))
             }
         })
         putValue(key, ModelListImpl(objects))
     }
 
-    fun putObject(key: String, block: MutableTemplateModel.() -> Unit) {
+    fun putObject(key: String, block: MutableKTEObject.() -> Unit) {
         putValue(key, ModelObjectImpl().apply(block))
     }
 

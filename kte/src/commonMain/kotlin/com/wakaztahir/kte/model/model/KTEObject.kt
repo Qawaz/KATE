@@ -3,24 +3,24 @@ package com.wakaztahir.kte.model.model
 import com.wakaztahir.kte.dsl.ModelObjectImpl
 import com.wakaztahir.kte.model.*
 
-interface TemplateModel : KTEValue {
+interface KTEObject : KTEValue {
 
-    override fun getValue(model: TemplateModel): PrimitiveValue<*> {
+    override fun asPrimitive(model: KTEObject): PrimitiveValue<*> {
         throw IllegalStateException("object is not a primitive value")
     }
 
-    override fun getIterable(model: TemplateModel): ModelList<KTEValue> {
+    override fun asList(model: KTEObject): KTEList<KTEValue> {
         throw IllegalStateException("object is not an iterable")
     }
 
-    override fun getObject(model: TemplateModel): TemplateModel {
+    override fun asObject(model: KTEObject): KTEObject {
         return this
     }
 
     fun getModelReference(reference: ModelReference): KTEValue?
 
     fun getModelDirectiveValue(directive: ModelDirective): KTEValue? {
-        var currentObj: TemplateModel = this
+        var currentObj: KTEObject = this
         var currentVal: KTEValue? = null
         for (prop in directive.propertyPath) {
             when (prop) {
@@ -39,7 +39,7 @@ interface TemplateModel : KTEValue {
 
                 is ModelReference.Property -> {
                     val value = currentObj.getModelReference(prop) ?: return null
-                    if (value is TemplateModel) {
+                    if (value is KTEObject) {
                         currentObj = value
                         currentVal = value
                     } else {
@@ -51,15 +51,15 @@ interface TemplateModel : KTEValue {
         return currentVal
     }
 
-    fun getPropertyAsIterable(directive: ModelDirective): ModelList<KTEValue>? {
+    fun getPropertyAsIterable(directive: ModelDirective): KTEList<KTEValue>? {
         val value = getModelDirectiveValue(directive = directive)
         @Suppress("UNCHECKED_CAST")
-        return value as? ModelList<KTEValue>
+        return value as? KTEList<KTEValue>
     }
 
-    fun getPropertyAsObject(directive: ModelDirective): TemplateModel? {
+    fun getPropertyAsObject(directive: ModelDirective): KTEObject? {
         val value = getModelDirectiveValue(directive = directive)
-        return value as? TemplateModel
+        return value as? KTEObject
     }
 
     fun getModelDirectiveAsPrimitive(directive: ModelDirective): PrimitiveValue<*>? {
@@ -68,7 +68,7 @@ interface TemplateModel : KTEValue {
 
 }
 
-fun TemplateModel(block: MutableTemplateModel.() -> Unit): MutableTemplateModel {
+fun TemplateModel(block: MutableKTEObject.() -> Unit): MutableKTEObject {
     val modelObj = ModelObjectImpl()
     block(modelObj)
     return modelObj

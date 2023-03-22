@@ -1,12 +1,11 @@
 package com.wakaztahir.kte.parser.stream
 
 import com.wakaztahir.kte.dsl.ModelObjectImpl
-import com.wakaztahir.kte.model.model.MutableTemplateModel
-import com.wakaztahir.kte.model.model.TemplateModel
+import com.wakaztahir.kte.model.model.MutableKTEObject
 
 class TextSourceStream(
     private val sourceCode: String,
-    override val model: MutableTemplateModel = ModelObjectImpl()
+    override val model: MutableKTEObject = ModelObjectImpl()
 ) : SourceStream() {
 
     override var pointer: Int = 0

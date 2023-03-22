@@ -47,8 +47,8 @@ class IfStatementTest {
     fun testUnequalCondition() {
         val context = TemplateContext(("\"ValueOne\" == \"SecondValue\""))
         val condition = context.stream.parseCondition()!! as LogicalCondition
-        assertEquals("ValueOne", condition.propertyFirst.getValue(context.stream.model).value)
-        assertEquals("SecondValue", condition.propertySecond.getValue(context.stream.model).value)
+        assertEquals("ValueOne", condition.propertyFirst.asPrimitive(context.stream.model).value)
+        assertEquals("SecondValue", condition.propertySecond.asPrimitive(context.stream.model).value)
     }
 
     @Test
@@ -103,8 +103,8 @@ class IfStatementTest {
     fun testConstantsRefs() {
         val context = TemplateContext(("\"ValueOne\" == \"SecondValue\""))
         val condition = context.stream.parseCondition()!! as LogicalCondition
-        assertEquals("ValueOne", condition.propertyFirst.getValue(context.stream.model).value)
-        assertEquals("SecondValue", condition.propertySecond.getValue(context.stream.model).value)
+        assertEquals("ValueOne", condition.propertyFirst.asPrimitive(context.stream.model).value)
+        assertEquals("SecondValue", condition.propertySecond.asPrimitive(context.stream.model).value)
     }
 
     private fun testIfy(firstIf: Boolean, firstElseIf: Boolean, secondElseIf: Boolean): String {

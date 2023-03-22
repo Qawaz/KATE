@@ -1,6 +1,6 @@
 package com.wakaztahir.kte.parser
 
-import com.wakaztahir.kte.model.model.MutableTemplateModel
+import com.wakaztahir.kte.model.model.MutableKTEObject
 import com.wakaztahir.kte.model.*
 import com.wakaztahir.kte.parser.stream.*
 import com.wakaztahir.kte.parser.stream.increment
@@ -31,9 +31,9 @@ internal fun SourceStream.parseVariableReference(): ModelDirective? {
 //-------------- Declaration
 
 internal data class VariableDeclaration(val variableName: String, val variableValue: ReferencedValue) : AtDirective {
-    fun storeValue(model: MutableTemplateModel) {
+    fun storeValue(model: MutableKTEObject) {
         val value = try {
-            variableValue.getValue(model)
+            variableValue.asPrimitive(model)
         } catch (e: Exception) {
             println("Couldn't get value of the constant to save it")
             throw e

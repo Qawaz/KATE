@@ -18,7 +18,7 @@ class VariablesTest {
         assertNotEquals(null, ref)
         assertEquals(ref!!.propertyPath[0].name, "myVar")
         context.stream.model.putValue("myVar", StringValue("someValue"))
-        assertEquals("someValue", ref.getValue(context.stream.model).value)
+        assertEquals("someValue", ref.asPrimitive(context.stream.model).value)
     }
 
     @Test
@@ -27,7 +27,7 @@ class VariablesTest {
         val ref = context.stream.parseVariableDeclaration()
         assertNotEquals(null, ref)
         assertEquals("myVar", ref!!.variableName)
-        assertEquals("someValue", ref.variableValue.getValue(context.stream.model).value)
+        assertEquals("someValue", ref.variableValue.asPrimitive(context.stream.model).value)
     }
 
     @Test
@@ -75,20 +75,20 @@ class VariablesTest {
         val context = TemplateContext(("@var(myVar)"))
         context.stream.model.putValue("myVar", StringValue("someValue"))
         val property = context.stream.parseExpression()
-        assertEquals(property!!.getValue(context.stream.model).value, "someValue")
+        assertEquals(property!!.asPrimitive(context.stream.model).value, "someValue")
     }
 
     @Test
     fun testDeclarationAndReference() {
         val decContext = TemplateContext(("@var myVar = \"someValue\""))
         val dec = decContext.stream.parseVariableDeclaration()
-        assertEquals("someValue", dec!!.variableValue.getValue(decContext.stream.model).value)
+        assertEquals("someValue", dec!!.variableValue.asPrimitive(decContext.stream.model).value)
         decContext.updateStream("@var myVar2 = @var(myVar)")
         dec.storeValue(decContext.stream.model)
         val refDec = decContext.stream.parseVariableDeclaration()
         assertEquals(
-            dec.variableValue.getValue(decContext.stream.model).value,
-            refDec!!.variableValue.getValue(decContext.stream.model).value
+            dec.variableValue.asPrimitive(decContext.stream.model).value,
+            refDec!!.variableValue.asPrimitive(decContext.stream.model).value
         )
     }
 

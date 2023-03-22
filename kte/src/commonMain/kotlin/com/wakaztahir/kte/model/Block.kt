@@ -2,7 +2,7 @@ package com.wakaztahir.kte.model
 
 import com.wakaztahir.kte.KTEDelicateFunction
 import com.wakaztahir.kte.dsl.ScopedModelObject
-import com.wakaztahir.kte.model.model.MutableTemplateModel
+import com.wakaztahir.kte.model.model.MutableKTEObject
 import com.wakaztahir.kte.parser.*
 import com.wakaztahir.kte.parser.stream.DestinationStream
 import com.wakaztahir.kte.parser.stream.SourceStream
@@ -10,7 +10,7 @@ import com.wakaztahir.kte.parser.stream.TextDestinationStream
 
 interface LazyBlock {
 
-    val model: MutableTemplateModel
+    val model: MutableKTEObject
 
     fun canIterate(stream: SourceStream): Boolean
 
@@ -67,10 +67,10 @@ open class LazyBlockSlice(
     val startPointer: Int,
     val length: Int,
     val blockEndPointer: Int,
-    parent: MutableTemplateModel
+    parent: MutableKTEObject
 ) : LazyBlock {
 
-    override val model: MutableTemplateModel = ScopedModelObject(parent = parent)
+    override val model: MutableKTEObject = ScopedModelObject(parent = parent)
 
     override fun canIterate(stream: SourceStream): Boolean {
         return stream.pointer < startPointer + length

@@ -1,14 +1,13 @@
 package com.wakaztahir.kte.dsl
 
-import com.wakaztahir.kte.model.KTEFunction
 import com.wakaztahir.kte.model.KTEValue
 import com.wakaztahir.kte.model.ModelReference
 import com.wakaztahir.kte.model.PrimitiveValue
-import com.wakaztahir.kte.model.model.ModelList
-import com.wakaztahir.kte.model.model.MutableTemplateModel
-import com.wakaztahir.kte.model.model.TemplateModel
+import com.wakaztahir.kte.model.model.KTEList
+import com.wakaztahir.kte.model.model.MutableKTEObject
+import com.wakaztahir.kte.model.model.KTEObject
 
-open class ModelObjectImpl : MutableTemplateModel() {
+open class ModelObjectImpl : MutableKTEObject() {
 
     private val container: MutableMap<String, KTEValue> = hashMapOf()
 
@@ -34,14 +33,14 @@ open class ModelObjectImpl : MutableTemplateModel() {
 
     override fun toString(): String {
         fun Any.toValue(): KTEValue? {
-            return (this as? PrimitiveValue<*>) ?: (this as? TemplateModel) ?: (this as? ModelList<*>)
+            return (this as? PrimitiveValue<*>) ?: (this as? KTEObject) ?: (this as? KTEList<*>)
         }
         return "{\n" + container.map { item -> "\t${item.key} : ${item.value.toValue()}" }.joinToString("\n") + "\n}"
     }
 
     override fun stringValue(indentationLevel: Int): String {
         fun Any.toValue(): KTEValue? {
-            return (this as? PrimitiveValue<*>) ?: (this as? TemplateModel) ?: (this as? ModelList<*>)
+            return (this as? PrimitiveValue<*>) ?: (this as? KTEObject) ?: (this as? KTEList<*>)
         }
 
         val indent = indentation(indentationLevel)

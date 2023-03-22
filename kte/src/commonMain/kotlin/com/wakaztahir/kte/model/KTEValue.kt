@@ -1,24 +1,25 @@
 package com.wakaztahir.kte.model
 
-import com.wakaztahir.kte.model.model.ModelList
-import com.wakaztahir.kte.model.model.TemplateModel
+import com.wakaztahir.kte.model.model.KTEList
+import com.wakaztahir.kte.model.model.KTEObject
 
 interface KTEValue {
 
-    fun getValue(model: TemplateModel): PrimitiveValue<*> {
-        throw IllegalStateException("KTEValue Stub")
+    fun asPrimitive(model: KTEObject): PrimitiveValue<*> {
+        return this as PrimitiveValue<*>
     }
 
-    fun getIterable(model: TemplateModel): ModelList<KTEValue> {
-        throw IllegalStateException("KTEValue Stub")
+    fun asList(model: KTEObject): KTEList<KTEValue> {
+        @Suppress("UNCHECKED_CAST")
+        return this as KTEList<KTEValue>
     }
 
-    fun getObject(model: TemplateModel): TemplateModel {
-        throw IllegalStateException("KTEValue Stub")
+    fun asObject(model: KTEObject): KTEObject {
+        return this as KTEObject
     }
 
-    fun getFunction(model: TemplateModel): KTEFunction {
-        throw IllegalStateException("KTEValue Stub")
+    fun asFunction(model: KTEObject): KTEFunction {
+        return this as KTEFunction
     }
 
     fun indentation(indentationLevel: Int): String {

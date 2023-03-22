@@ -1,8 +1,8 @@
 package com.wakaztahir.kte.model
 
-import com.wakaztahir.kte.model.model.ModelList
+import com.wakaztahir.kte.model.model.KTEList
 import com.wakaztahir.kte.dsl.UnresolvedValueException
-import com.wakaztahir.kte.model.model.TemplateModel
+import com.wakaztahir.kte.model.model.KTEObject
 import com.wakaztahir.kte.parser.ArithmeticOperatorType
 import com.wakaztahir.kte.parser.stream.DestinationStream
 import com.wakaztahir.kte.parser.stream.SourceStream
@@ -18,7 +18,7 @@ interface PrimitiveValue<T> : CodeGen, ReferencedValue {
         return compareTo(other as PrimitiveValue<T>)
     }
 
-    override fun getValue(model: TemplateModel): PrimitiveValue<*> {
+    override fun asPrimitive(model: KTEObject): PrimitiveValue<*> {
         return this
     }
 
@@ -56,11 +56,11 @@ interface PrimitiveValue<T> : CodeGen, ReferencedValue {
 
     }
 
-    override fun getIterable(model: TemplateModel): ModelList<KTEValue> {
+    override fun asList(model: KTEObject): KTEList<KTEValue> {
         throw UnresolvedValueException("primitive value is not iterable")
     }
 
-    override fun getObject(model: TemplateModel): TemplateModel {
+    override fun asObject(model: KTEObject): KTEObject {
         throw UnresolvedValueException("primitive value is not an object")
     }
 

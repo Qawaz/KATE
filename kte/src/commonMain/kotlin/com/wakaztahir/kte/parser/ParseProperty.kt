@@ -2,7 +2,7 @@ package com.wakaztahir.kte.parser
 
 import com.wakaztahir.kte.model.PrimitiveValue
 import com.wakaztahir.kte.model.ReferencedValue
-import com.wakaztahir.kte.model.model.TemplateModel
+import com.wakaztahir.kte.model.model.KTEObject
 import com.wakaztahir.kte.parser.stream.SourceStream
 import com.wakaztahir.kte.parser.stream.increment
 
@@ -24,8 +24,8 @@ private class ExpressionValue(
     val second: ReferencedValue
 ) : ReferencedValue {
 
-    override fun getValue(model: TemplateModel): PrimitiveValue<*> {
-        return first.getValue(model).operate(operatorType, second.getValue(model))
+    override fun asPrimitive(model: KTEObject): PrimitiveValue<*> {
+        return first.asPrimitive(model).operate(operatorType, second.asPrimitive(model))
     }
 
     override fun stringValue(indentationLevel: Int): String {

@@ -1,11 +1,9 @@
 package com.wakaztahir.kte.parser
 
-import com.wakaztahir.kte.model.model.ModelList
-import com.wakaztahir.kte.model.model.MutableTemplateModel
+import com.wakaztahir.kte.model.model.MutableKTEObject
 import com.wakaztahir.kte.model.*
 import com.wakaztahir.kte.model.ConditionType
 import com.wakaztahir.kte.model.ReferencedValue
-import com.wakaztahir.kte.model.model.TemplateModel
 import com.wakaztahir.kte.parser.stream.*
 import com.wakaztahir.kte.parser.stream.increment
 import com.wakaztahir.kte.parser.stream.parseTextWhile
@@ -14,10 +12,10 @@ internal sealed interface ForLoop : AtDirective {
 
     val blockValue: LazyBlockSlice
 
-    val model: MutableTemplateModel
+    val model: MutableKTEObject
         get() = blockValue.model
 
-    fun iterate(context: MutableTemplateModel, block: () -> Unit)
+    fun iterate(context: MutableKTEObject, block: () -> Unit)
 
     override fun generateTo(block: LazyBlock, source: SourceStream, destination: DestinationStream) {
         iterate(model) {
@@ -29,7 +27,7 @@ internal sealed interface ForLoop : AtDirective {
         val condition: Condition,
         override val blockValue: LazyBlockSlice
     ) : ForLoop {
-        override fun iterate(context: MutableTemplateModel, block: () -> Unit) {
+        override fun iterate(context: MutableKTEObject, block: () -> Unit) {
             while (condition.evaluate(context)) {
                 block()
             }
@@ -60,9 +58,9 @@ internal sealed interface ForLoop : AtDirective {
             model.removeKey(elementConstName)
         }
 
-        override fun iterate(context: MutableTemplateModel, block: () -> Unit) {
+        override fun iterate(context: MutableKTEObject, block: () -> Unit) {
             var index = 0
-            val iterable = listProperty.getIterable(context)
+            val iterable = listProperty.asList(context)
             val total = iterable.size
             while (index < total) {
                 store(index)
@@ -86,20 +84,20 @@ internal sealed interface ForLoop : AtDirective {
         override val blockValue: LazyBlockSlice
     ) : ForLoop {
 
-        private fun ReferencedValue.intVal(context: MutableTemplateModel): Int {
-            (getValue(context) as? IntValue)?.value?.let { return it }
+        private fun ReferencedValue.intVal(context: MutableKTEObject): Int {
+            (asPrimitive(context) as? IntValue)?.value?.let { return it }
                 ?: throw IllegalStateException("for loop variable must be an integer")
         }
 
-        private fun MutableTemplateModel.storeIndex(value: Int) {
+        private fun MutableKTEObject.storeIndex(value: Int) {
             putValue(variableName, value)
         }
 
-        private fun MutableTemplateModel.removeIndex() {
+        private fun MutableKTEObject.removeIndex() {
             removeKey(variableName)
         }
 
-        override fun iterate(context: MutableTemplateModel, block: () -> Unit) {
+        override fun iterate(context: MutableKTEObject, block: () -> Unit) {
             var i = initializer.intVal(context)
             val conditionValue = conditional.intVal(context)
             val incrementerValue = incrementer.intVal(context)
@@ -118,7 +116,7 @@ private class ForLoopLazyBlockSlice(
     startPointer: Int,
     length: Int,
     blockEndPointer: Int,
-    parent: MutableTemplateModel,
+    parent: MutableKTEObject,
 ) : LazyBlockSlice(
     startPointer = startPointer,
     length = length,

@@ -1,7 +1,7 @@
 package com.wakaztahir.kte.model
 
 import com.wakaztahir.kte.TemplateContext
-import com.wakaztahir.kte.model.model.TemplateModel
+import com.wakaztahir.kte.model.model.KTEObject
 import com.wakaztahir.kte.parser.stream.DestinationStream
 import com.wakaztahir.kte.parser.stream.SourceStream
 
@@ -32,7 +32,7 @@ internal enum class ConditionType {
 }
 
 interface Condition {
-    fun evaluate(context: TemplateModel): Boolean
+    fun evaluate(context: KTEObject): Boolean
     fun evaluate(context: TemplateContext): Boolean {
         return evaluate(context.stream.model)
     }
@@ -43,14 +43,14 @@ internal class LogicalCondition(
     val type: ConditionType,
     val propertySecond: ReferencedValue
 ) : Condition {
-    override fun evaluate(context: TemplateModel): Boolean {
-        return type.verifyCompare(propertyFirst.getValue(context).compareAny(propertySecond.getValue(context)))
+    override fun evaluate(context: KTEObject): Boolean {
+        return type.verifyCompare(propertyFirst.asPrimitive(context).compareAny(propertySecond.asPrimitive(context)))
     }
 }
 
 internal class ReferencedBoolean(val value: ReferencedValue) : Condition {
-    override fun evaluate(context: TemplateModel): Boolean {
-        val value = value.getValue(context)
+    override fun evaluate(context: KTEObject): Boolean {
+        val value = value.asPrimitive(context)
         if (value is BooleanValue) {
             return value.value
         } else {
@@ -60,7 +60,7 @@ internal class ReferencedBoolean(val value: ReferencedValue) : Condition {
 }
 
 internal class EvaluatedCondition(val value: Boolean) : Condition {
-    override fun evaluate(context: TemplateModel): Boolean {
+    override fun evaluate(context: KTEObject): Boolean {
         return value
     }
 }
@@ -94,7 +94,7 @@ internal class IfStatement(private val ifs: MutableList<SingleIf>) : AtDirective
         return evaluate(context.stream.model)
     }
 
-    fun evaluate(context: TemplateModel): SingleIf? {
+    fun evaluate(context: KTEObject): SingleIf? {
         sortByOrder()
         for (iffy in ifs) {
             if (iffy.condition.evaluate(context)) {

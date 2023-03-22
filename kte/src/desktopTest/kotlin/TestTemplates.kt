@@ -1,7 +1,7 @@
 import com.wakaztahir.kte.OutputStreamDestination
 import com.wakaztahir.kte.TemplateContext
 import com.wakaztahir.kte.model.model.TemplateModel
-import com.wakaztahir.kte.model.model.MutableTemplateModel
+import com.wakaztahir.kte.model.model.MutableKTEObject
 import com.wakaztahir.kte.parser.generateTo
 import com.wakaztahir.kte.parser.stream.DestinationStream
 import com.wakaztahir.kte.parser.stream.SourceStream
@@ -11,7 +11,7 @@ import java.io.File
 
 class TestTemplates {
 
-    private fun sourcePath(path: String, model: MutableTemplateModel): SourceStream {
+    private fun sourcePath(path: String, model: MutableKTEObject): SourceStream {
         return TextSourceStream(object {}.javaClass.getResource(path)!!.readText(), model)
     }
 

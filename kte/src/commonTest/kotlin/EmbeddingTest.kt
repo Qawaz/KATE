@@ -14,6 +14,6 @@ class EmbeddingTest {
         context.embedStream(path, TextSourceStream("@var var1 = \"hello-world\"",))
         val ref = context.getEmbeddedStream(path)!!.parseVariableDeclaration()!!
         assertEquals("var1", ref.variableName)
-        assertEquals("hello-world", ref.variableValue.getValue(context.stream.model).value)
+        assertEquals("hello-world", ref.variableValue.asPrimitive(context.stream.model).value)
     }
 }

@@ -1,8 +1,8 @@
-import com.wakaztahir.kte.KTEDelicateFunction
 import com.wakaztahir.kte.TemplateContext
 import com.wakaztahir.kte.dsl.ModelValue
 import com.wakaztahir.kte.model.KTEFunction
 import com.wakaztahir.kte.model.model.TemplateModel
+import com.wakaztahir.kte.model.model.KTEObject
 import com.wakaztahir.kte.model.ModelDirective
 import com.wakaztahir.kte.model.ModelReference
 import com.wakaztahir.kte.model.ReferencedValue
@@ -31,8 +31,8 @@ class ModelDirectiveTest {
             assertEquals("fourthProp", directive.propertyPath[3].name)
             val call = directive.propertyPath[4] as ModelReference.FunctionCall
             assertEquals("fifthProp", call.name)
-            assertEquals(true, call.parametersList[0].getValue(context.stream.model).value)
-            assertEquals(false, call.parametersList[1].getValue(context.stream.model).value)
+            assertEquals(true, call.parametersList[0].asPrimitive(context.stream.model).value)
+            assertEquals(false, call.parametersList[1].asPrimitive(context.stream.model).value)
         }
     }
 
@@ -53,8 +53,8 @@ class ModelDirectiveTest {
                     putValue("property3", "123")
                 }
                 putValue("callSum", object : KTEFunction {
-                    override fun invoke(model: TemplateModel, parameters: List<ReferencedValue>): ModelValue {
-                        return ModelValue(parameters.map { it.getValue(model) }.sumOf { it.value as Int })
+                    override fun invoke(model: KTEObject, parameters: List<ReferencedValue>): ModelValue {
+                        return ModelValue(parameters.map { it.asPrimitive(model) }.sumOf { it.value as Int })
                     }
 
                     override fun toString(): String = "callSum(integers) : Int"

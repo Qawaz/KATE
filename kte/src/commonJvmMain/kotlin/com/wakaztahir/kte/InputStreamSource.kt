@@ -1,6 +1,6 @@
 package com.wakaztahir.kte
 
-import com.wakaztahir.kte.model.model.MutableTemplateModel
+import com.wakaztahir.kte.model.model.MutableKTEObject
 import com.wakaztahir.kte.parser.stream.SourceStream
 import java.io.InputStream
 
@@ -48,7 +48,7 @@ class InputStreamSource(val stream: InputStream) : SourceStream() {
         TODO("")
     }
 
-    override val model: MutableTemplateModel
+    override val model: MutableKTEObject
         get() = TODO("Not yet implemented")
 
 }
