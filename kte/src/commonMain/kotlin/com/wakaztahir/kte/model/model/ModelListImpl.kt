@@ -1,38 +1,44 @@
 package com.wakaztahir.kte.model.model
 
 import com.wakaztahir.kte.dsl.ModelValue
-import com.wakaztahir.kte.model.KTEValue
-import com.wakaztahir.kte.model.PrimitiveValue
+import com.wakaztahir.kte.model.*
 
-class ModelListImpl<T : KTEValue>(val collection: List<T>) : List<T> by collection, ModelList<T> {
+class ModelListImpl<T : KTEValue>(val collection: List<T>) : List<T> by collection, ModelList<T>() {
 
-    private val props: MutableMap<String, (List<Any>?) -> ModelValue> by lazy {
-        hashMapOf<String, (List<Any>?) -> ModelValue>().apply {
-            put("size") { ModelValue(collection.size) }
-            put("contains") {
-                if (it == null || it.size > 1) {
-                    throw IllegalStateException("contains expect's a single parameter")
+    private val props: MutableMap<String, KTEValue> by lazy {
+        hashMapOf<String, KTEValue>().apply {
+            put("get", object : KTEFunction {
+                override fun invoke(model: TemplateModel, parameters: List<ReferencedValue>): ModelValue {
+                    require(parameters.size == 1) {
+                        "Unknown parameters to get function"
+                    }
+                    return ModelValue(collection[parameters[0].getValue(model).value as Int].getValue(model))
                 }
-                @Suppress("UNCHECKED_CAST")
-                (ModelValue(collection.contains(it[0] as T)))
-            }
+
+                override fun toString(): String = "get(number) : KTEValue"
+
+            })
+            put("size", object : ReferencedValue {
+                override fun getValue(model: TemplateModel): PrimitiveValue<*> {
+                    return IntValue(collection.size)
+                }
+                override fun stringValue(indentationLevel: Int): String = toString()
+                override fun toString(): String = "size : Int"
+            })
+            put("contains", object : KTEFunction {
+                override fun invoke(model: TemplateModel, parameters: List<ReferencedValue>): ModelValue {
+                    @Suppress("UNCHECKED_CAST")
+                    return ModelValue(collection.containsAll(parameters as List<T>))
+                }
+
+                override fun toString(): String = "contains(parameter) : Boolean"
+
+            })
         }
     }
 
-    override fun getValue(key: String): PrimitiveValue<*>? {
-        return props[key]?.let { return it(null).value }
-    }
-
-    override fun getIterable(key: String): ModelList<KTEValue>? {
-        return null
-    }
-
-    override fun getFunction(key: String): ((List<Any>) -> ModelValue)? {
-        return props[key]
-    }
-
-    override fun getObject(key: String): TemplateModel? {
-        return null
+    override fun getModelReference(reference: ModelReference): KTEValue? {
+        return props[reference.name]
     }
 
     override fun toString(): String {

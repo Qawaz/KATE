@@ -1,9 +1,11 @@
 import com.wakaztahir.kte.KTEDelicateFunction
 import com.wakaztahir.kte.TemplateContext
 import com.wakaztahir.kte.dsl.ModelValue
+import com.wakaztahir.kte.model.KTEFunction
 import com.wakaztahir.kte.model.model.TemplateModel
 import com.wakaztahir.kte.model.ModelDirective
 import com.wakaztahir.kte.model.ModelReference
+import com.wakaztahir.kte.model.ReferencedValue
 import com.wakaztahir.kte.parser.parseExpression
 import com.wakaztahir.kte.parser.parseModelDirective
 import kotlin.test.Test
@@ -41,7 +43,6 @@ class ModelDirectiveTest {
         assertTrue(directive.propertyPath[0] is ModelReference.FunctionCall)
     }
 
-    @OptIn(KTEDelicateFunction::class)
     @Test
     fun testParseModelDirectiveCodeGen() {
         val context = TemplateContext(
@@ -51,9 +52,13 @@ class ModelDirectiveTest {
                 putObject("property2") {
                     putValue("property3", "123")
                 }
-                putFunction("callSum") {
-                    ModelValue(it[0] as Int + it[1] as Int)
-                }
+                putValue("callSum", object : KTEFunction {
+                    override fun invoke(model: TemplateModel, parameters: List<ReferencedValue>): ModelValue {
+                        return ModelValue(parameters.map { it.getValue(model) }.sumOf { it.value as Int })
+                    }
+
+                    override fun toString(): String = "callSum(integers) : Int"
+                })
             }
         )
         assertEquals("true1233", context.getDestinationAsStringWithReset())

@@ -1,20 +1,15 @@
 package com.wakaztahir.kte.model.model
 
 import com.wakaztahir.kte.dsl.ModelObjectImpl
-import com.wakaztahir.kte.dsl.ModelValue
 import com.wakaztahir.kte.model.*
 
-interface MutableTemplateModel : TemplateModel {
+abstract class MutableTemplateModel : TemplateModel {
 
     // Put Functions
 
-    fun putValue(key: String, value: PrimitiveValue<*>)
+    abstract fun contains(key : String) : Boolean
 
-    fun putObject(key: String, obj: TemplateModel)
-
-    fun putFunction(key: String, block: (parameters: List<Any>) -> ModelValue)
-
-    fun putIterable(key: String, value: ModelList<KTEValue>)
+    abstract fun putValue(key: String, value: KTEValue)
 
     // Extensions
 
@@ -61,17 +56,13 @@ interface MutableTemplateModel : TemplateModel {
                 objects.add(ModelObjectImpl().apply(block))
             }
         })
-        putIterable(key, ModelListImpl(objects))
+        putValue(key, ModelListImpl(objects))
     }
 
     fun putObject(key: String, block: MutableTemplateModel.() -> Unit) {
-        putObject(key, ModelObjectImpl().apply(block))
+        putValue(key, ModelObjectImpl().apply(block))
     }
 
-    fun putValue(key: String, value: ReferencedValue) {
-        putValue(key, value.getValue(this))
-    }
-
-    fun removeKey(key: String)
+    abstract fun removeKey(key: String)
 
 }

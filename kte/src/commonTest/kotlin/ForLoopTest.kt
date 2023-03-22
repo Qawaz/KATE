@@ -1,4 +1,7 @@
+import com.wakaztahir.kte.GenerateCode
 import com.wakaztahir.kte.TemplateContext
+import com.wakaztahir.kte.dsl.ScopedModelObject
+import com.wakaztahir.kte.dsl.UnresolvedValueException
 import com.wakaztahir.kte.model.model.ModelListImpl
 import com.wakaztahir.kte.model.ModelDirective
 import com.wakaztahir.kte.model.StringValue
@@ -8,6 +11,7 @@ import com.wakaztahir.kte.parser.ForLoop
 import com.wakaztahir.kte.parser.parseForLoop
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 class ForLoopTest {
     @Test
@@ -41,32 +45,50 @@ class ForLoopTest {
         assertEquals(5, loop.conditional.getValue(context.stream.model).value)
         assertEquals(operatorType, loop.arithmeticOperatorType)
         assertEquals(1, loop.incrementer.getValue(context.stream.model).value)
-        assertEquals(code.length,loop.blockValue.blockEndPointer)
+        assertEquals(code.length, loop.blockValue.blockEndPointer)
         assertEquals("blockValue", loop.blockValue.getValueAsString(context.stream))
     }
 
     @Test
     fun testForLoopGeneration() {
         val context = TemplateContext("@var var1 = 3@for(@var i = @var(var1);i>0;i-1) @var(var1) @endfor")
-        assertEquals("333", context.getDestinationAsStringWithReset())
+        assertEquals("333", context.getDestinationAsString())
+    }
+
+    @Test
+    fun testModelHierarchy() {
+        val model = TemplateModel { }
+        val scoped = ScopedModelObject(model)
+        val scopedAnother = ScopedModelObject(scoped)
+        model.putValue("hello", "yes")
+        assertEquals("yes", TemplateContext("@var(hello)", scopedAnother).getDestinationAsString())
     }
 
     @Test
     fun testForLoopGeneration1() {
         val context = TemplateContext("@for(@var i=0;i<3;i+1) @if(@var(i)==2) @var(i) @endif @endfor")
-        assertEquals("2", context.getDestinationAsStringWithReset())
+        assertEquals("2", context.getDestinationAsString())
     }
 
     @Test
-    fun testForLoopRuns(){
-        val context = TemplateContext("@var runs = 0@for(@var i=0;i<3;i+1) @var runs = @var(runs) @+ 1 @endfor@var(runs)")
-        assertEquals("2", context.getDestinationAsStringWithReset())
+    fun testForLoopRuns() {
+        val context = TemplateContext("@var runs = 0@for(@var i=0;i<3;i+1) @var runs = @var(i) @endfor@var(runs)")
+        assertEquals("2", context.getDestinationAsString())
     }
 
     @Test
-    fun testMultiForLoop(){
-        val context = TemplateContext("@for(@var i=0;i<3;i+1) @for(@var j=0;j<3;j++) 0 @endfor @endfor")
-        assertEquals("000000000", context.getDestinationAsStringWithReset())
+    fun testLoopVariables() {
+        assertFailsWith(UnresolvedValueException::class) {
+            GenerateCode("@for(@var i=0;i<3;i+1)@endfor@var(i)")
+        }
+        assertEquals("3", GenerateCode("@var x=3@for(@var i=0;i<3;i+1)@endfor@var(x)"))
+        assertFailsWith(UnresolvedValueException::class) {
+            GenerateCode("@for(@var i=0;i<3;i+1)@var f = 4@endfor@var(f)")
+        }
+        assertEquals(
+            expected = "000111222",
+            GenerateCode("@for(@var i=0;i<3;i+1) @var g = 0@for(@var j=0;j<3;j++) @var(g) @endfor @endfor")
+        )
     }
 
     @Test
@@ -85,7 +107,7 @@ class ForLoopTest {
     @Test
     fun testForLoopGeneration4() {
         val context = TemplateContext("@for(@var elem : @model.list) @var(elem) @endfor", TemplateModel {
-            putIterable("list", ModelListImpl(listOf("H", "e", "ll", "o").map { StringValue(it) }))
+            putValue("list", ModelListImpl(listOf("H", "e", "ll", "o").map { StringValue(it) }))
         })
         assertEquals("Hello", context.getDestinationAsStringWithReset())
     }
@@ -93,7 +115,7 @@ class ForLoopTest {
     @Test
     fun testForLoopGeneration5() {
         val context = TemplateContext("@model.list.size", TemplateModel {
-            putIterable("list", ModelListImpl(listOf("H", "e", "ll", "o").map { StringValue(it) }))
+            putValue("list", ModelListImpl(listOf("H", "e", "ll", "o").map { StringValue(it) }))
         })
         assertEquals("4", context.getDestinationAsStringWithReset())
     }

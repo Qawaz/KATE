@@ -30,11 +30,16 @@ internal fun SourceStream.parseVariableReference(): ModelDirective? {
 
 //-------------- Declaration
 
-internal data class ConstantDeclaration(val variableName: String, val variableValue: ReferencedValue) : AtDirective,
-    DeclarationStatement {
-
-    override fun storeValue(model: MutableTemplateModel) {
-        model.putValue(variableName, variableValue)
+internal data class VariableDeclaration(val variableName: String, val variableValue: ReferencedValue) : AtDirective {
+    fun storeValue(model: MutableTemplateModel) {
+        val value = try {
+            variableValue.getValue(model)
+        } catch (e: Exception) {
+            println("Couldn't get value of the constant to save it")
+            throw e
+        }
+        println("Storing Variable $variableName in model $model")
+        model.putValue(variableName, value)
     }
 
     override fun generateTo(block: LazyBlock, source: SourceStream, destination: DestinationStream) {
@@ -54,7 +59,7 @@ internal fun SourceStream.parseVariableName(): String? {
     return null
 }
 
-internal fun SourceStream.parseVariableDeclaration(): ConstantDeclaration? {
+internal fun SourceStream.parseVariableDeclaration(): VariableDeclaration? {
     val variableName = parseVariableName()
     if (variableName != null) {
         if (variableName.isNotEmpty()) {
@@ -63,7 +68,7 @@ internal fun SourceStream.parseVariableDeclaration(): ConstantDeclaration? {
             escapeSpaces()
             val property = this.parseExpression()
             return if (property != null) {
-                ConstantDeclaration(variableName = variableName, variableValue = property)
+                VariableDeclaration(variableName = variableName, variableValue = property)
             } else {
                 throw VariableDeclarationParseException("constant's value not found")
             }

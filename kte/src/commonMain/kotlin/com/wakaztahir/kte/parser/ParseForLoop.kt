@@ -20,7 +20,7 @@ internal sealed interface ForLoop : AtDirective {
     fun iterate(context: MutableTemplateModel, block: () -> Unit)
 
     override fun generateTo(block: LazyBlock, source: SourceStream, destination: DestinationStream) {
-        iterate(block.model) {
+        iterate(model) {
             blockValue.generateTo(source = source, destination = destination)
         }
     }
@@ -50,14 +50,7 @@ internal sealed interface ForLoop : AtDirective {
         }
 
         private fun store(value: KTEValue) {
-            @Suppress("UNCHECKED_CAST")
-            (value as? TemplateModel)?.let {
-                model.putObject(elementConstName, it)
-            } ?: (value as? ModelList<KTEValue>)?.let {
-                model.putIterable(elementConstName, it)
-            } ?: (value as? PrimitiveValue<*>)?.let {
-                model.putValue(elementConstName, it)
-            } ?: throw IllegalStateException("element of unknown type in for loop")
+            model.putValue(elementConstName, value)
         }
 
         private fun remove() {
@@ -71,7 +64,6 @@ internal sealed interface ForLoop : AtDirective {
             var index = 0
             val iterable = listProperty.getIterable(context)
             val total = iterable.size
-//            println("ITERABLE SIZE : $total")
             while (index < total) {
                 store(index)
                 store(iterable.getOrElse(index) {
@@ -99,12 +91,12 @@ internal sealed interface ForLoop : AtDirective {
                 ?: throw IllegalStateException("for loop variable must be an integer")
         }
 
-        private fun storeIndex(value: Int) {
-            model.putValue(variableName, value)
+        private fun MutableTemplateModel.storeIndex(value: Int) {
+            putValue(variableName, value)
         }
 
-        private fun removeIndex() {
-            model.removeKey(variableName)
+        private fun MutableTemplateModel.removeIndex() {
+            removeKey(variableName)
         }
 
         override fun iterate(context: MutableTemplateModel, block: () -> Unit) {
@@ -112,18 +104,11 @@ internal sealed interface ForLoop : AtDirective {
             val conditionValue = conditional.intVal(context)
             val incrementerValue = incrementer.intVal(context)
             while (conditionType.verifyCompare(i.compareTo(conditionValue))) {
-//                println(
-//                    "INITIALIZER : $i,CONDITIONAL : $conditionValue,INCREMENTER : $incrementerValue,OPERATOR : ${arithmeticOperatorType.char},RESULT : ${
-//                        conditionType.verifyCompare(
-//                            i.compareTo(conditionValue)
-//                        )
-//                    }"
-//                )
-                storeIndex(i)
+                context.storeIndex(i)
                 block()
                 i = arithmeticOperatorType.operate(i, incrementerValue)
             }
-            removeIndex()
+            context.removeIndex()
         }
     }
 

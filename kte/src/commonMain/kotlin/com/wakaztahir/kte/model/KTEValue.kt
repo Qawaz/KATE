@@ -17,6 +17,10 @@ interface KTEValue {
         throw IllegalStateException("KTEValue Stub")
     }
 
+    fun getFunction(model: TemplateModel): KTEFunction {
+        throw IllegalStateException("KTEValue Stub")
+    }
+
     fun indentation(indentationLevel: Int): String {
         var indentation = ""
         repeat(indentationLevel) {
