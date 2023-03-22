@@ -15,10 +15,11 @@ internal sealed interface ForLoop : AtDirective {
     val model: MutableKTEObject
         get() = blockValue.model
 
-    fun iterate(context: MutableKTEObject, block: () -> Unit)
+    fun iterate(block: (iteration : Int) -> Unit)
 
     override fun generateTo(block: LazyBlock, source: SourceStream, destination: DestinationStream) {
-        iterate(model) {
+        iterate {
+            println("CURRENT MODEL $it: $model")
             blockValue.generateTo(source = source, destination = destination)
         }
     }
@@ -27,9 +28,11 @@ internal sealed interface ForLoop : AtDirective {
         val condition: Condition,
         override val blockValue: LazyBlockSlice
     ) : ForLoop {
-        override fun iterate(context: MutableKTEObject, block: () -> Unit) {
-            while (condition.evaluate(context)) {
-                block()
+        override fun iterate(block: (iteration : Int) -> Unit) {
+            var i = 0
+            while (condition.evaluate(model)) {
+                block(i)
+                i++
             }
         }
     }
@@ -58,16 +61,16 @@ internal sealed interface ForLoop : AtDirective {
             model.removeKey(elementConstName)
         }
 
-        override fun iterate(context: MutableKTEObject, block: () -> Unit) {
+        override fun iterate(block: (iteration : Int) -> Unit) {
             var index = 0
-            val iterable = listProperty.asList(context)
+            val iterable = listProperty.asList(model)
             val total = iterable.size
             while (index < total) {
                 store(index)
                 store(iterable.getOrElse(index) {
                     throw IllegalStateException("element at $index in for loop not found")
                 })
-                block()
+                block(index)
                 index++
             }
             remove()
@@ -97,16 +100,16 @@ internal sealed interface ForLoop : AtDirective {
             removeKey(variableName)
         }
 
-        override fun iterate(context: MutableKTEObject, block: () -> Unit) {
-            var i = initializer.intVal(context)
-            val conditionValue = conditional.intVal(context)
-            val incrementerValue = incrementer.intVal(context)
+        override fun iterate(block: (iteration : Int) -> Unit) {
+            var i = initializer.intVal(model)
+            val conditionValue = conditional.intVal(model)
+            val incrementerValue = incrementer.intVal(model)
             while (conditionType.verifyCompare(i.compareTo(conditionValue))) {
-                context.storeIndex(i)
-                block()
+                model.storeIndex(i)
+                block(i)
                 i = arithmeticOperatorType.operate(i, incrementerValue)
             }
-            context.removeIndex()
+            model.removeIndex()
         }
     }
 

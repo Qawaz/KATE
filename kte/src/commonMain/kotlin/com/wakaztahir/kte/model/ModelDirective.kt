@@ -1,5 +1,6 @@
 package com.wakaztahir.kte.model
 
+import com.wakaztahir.kte.dsl.ScopedModelObject
 import com.wakaztahir.kte.model.model.KTEList
 import com.wakaztahir.kte.dsl.UnresolvedValueException
 import com.wakaztahir.kte.model.model.KTEObject
@@ -41,6 +42,7 @@ class ModelDirective(val propertyPath: List<ModelReference>) : ReferencedValue, 
                 value.asPrimitive(block.model).generateTo(block,source,destination)
             }
         } else {
+            println("REQUIRING ${this.propertyPath.joinToString(".")} IN MODEL ${block.model}")
             throwIt(block.model)
         }
     }

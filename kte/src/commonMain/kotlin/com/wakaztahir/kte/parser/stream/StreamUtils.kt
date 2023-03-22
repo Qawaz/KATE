@@ -154,9 +154,9 @@ internal inline fun SourceStream.incrementUntilDirectiveWithSkip(
     skip: String,
     canIncrementDirective: () -> String?,
 ): String? {
-    if (incrementUntil('@')) {
-        var skips = 0
-        while (!hasEnded) {
+    var skips = 0
+    while (!hasEnded) {
+        if(currentChar == '@') {
             if (increment(skip)) {
                 skips++
             } else {
@@ -169,10 +169,8 @@ internal inline fun SourceStream.incrementUntilDirectiveWithSkip(
                     }
                 }
             }
-            incrementPointer()
         }
-    } else {
-        return null
+        incrementPointer()
     }
     return null
 }

@@ -1,17 +1,21 @@
 import com.wakaztahir.kte.GenerateCode
+import com.wakaztahir.kte.KTEDelicateFunction
 import com.wakaztahir.kte.TemplateContext
 import com.wakaztahir.kte.dsl.ScopedModelObject
 import com.wakaztahir.kte.dsl.UnresolvedValueException
 import com.wakaztahir.kte.model.model.ModelListImpl
 import com.wakaztahir.kte.model.ModelDirective
+import com.wakaztahir.kte.model.ModelReference
 import com.wakaztahir.kte.model.StringValue
 import com.wakaztahir.kte.model.model.TemplateModel
 import com.wakaztahir.kte.parser.ArithmeticOperatorType
 import com.wakaztahir.kte.parser.ForLoop
+import com.wakaztahir.kte.parser.VariableDeclaration
 import com.wakaztahir.kte.parser.parseForLoop
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertNotEquals
 
 class ForLoopTest {
     @Test
@@ -55,6 +59,7 @@ class ForLoopTest {
         assertEquals("333", context.getDestinationAsString())
     }
 
+    @OptIn(KTEDelicateFunction::class)
     @Test
     fun testModelHierarchy() {
         val model = TemplateModel { }
@@ -62,6 +67,22 @@ class ForLoopTest {
         val scopedAnother = ScopedModelObject(scoped)
         model.putValue("hello", "yes")
         assertEquals("yes", TemplateContext("@var(hello)", scopedAnother).getDestinationAsString())
+        val context = TemplateContext("@for(@var i=0;i<3;i+1) @var g = 0@for(@var j=0;j<3;j++) @var(g) @endfor @endfor")
+        val forLoop = context.stream.parseForLoop(context.stream)!!
+        context.stream.setPointerAt(forLoop.blockValue.startPointer)
+        val directive = forLoop.blockValue.parseAtDirective(context.stream) as VariableDeclaration
+        val nestedFor = forLoop.blockValue.parseForLoop(context.stream) as ForLoop
+        context.stream.setPointerAt(nestedFor.blockValue.startPointer)
+        assertEquals((forLoop.model as ScopedModelObject).parent, context.stream.model)
+        assertEquals((nestedFor.model as ScopedModelObject).parent, forLoop.model)
+        assertEquals("000000", forLoop.blockValue.getDestinationString(context.stream))
+        forLoop.iterate {
+            directive.storeValue(context.stream.model)
+            nestedFor.iterate {
+                assertNotEquals(null, nestedFor.model.getModelReference(ModelReference.Property("g")))
+            }
+        }
+
     }
 
     @Test

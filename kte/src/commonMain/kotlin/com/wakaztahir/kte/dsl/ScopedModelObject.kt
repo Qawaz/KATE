@@ -4,7 +4,7 @@ import com.wakaztahir.kte.model.KTEValue
 import com.wakaztahir.kte.model.ModelReference
 import com.wakaztahir.kte.model.model.MutableKTEObject
 
-class ScopedModelObject(private val parent: MutableKTEObject) : ModelObjectImpl() {
+class ScopedModelObject(internal val parent: MutableKTEObject) : ModelObjectImpl() {
 
     override fun getModelReference(reference: ModelReference): KTEValue? {
         return super.getModelReference(reference) ?: parent.getModelReference(reference)
