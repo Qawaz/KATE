@@ -14,6 +14,9 @@ internal sealed interface ForLoop : AtDirective {
 
     val blockValue: LazyBlockSlice
 
+    val model: MutableTemplateModel
+        get() = blockValue.model
+
     fun iterate(context: MutableTemplateModel, block: () -> Unit)
 
     override fun generateTo(block: LazyBlock, source: SourceStream, destination: DestinationStream) {
@@ -42,26 +45,26 @@ internal sealed interface ForLoop : AtDirective {
 
         private fun store(value: Int) {
             if (indexConstName != null) {
-                blockValue.model.putValue(indexConstName, value)
+                model.putValue(indexConstName, value)
             }
         }
 
         private fun store(value: KTEValue) {
             @Suppress("UNCHECKED_CAST")
             (value as? TemplateModel)?.let {
-                blockValue.model.putObject(elementConstName, it)
+                model.putObject(elementConstName, it)
             } ?: (value as? ModelList<KTEValue>)?.let {
-                blockValue.model.putIterable(elementConstName, it)
+                model.putIterable(elementConstName, it)
             } ?: (value as? PrimitiveValue<*>)?.let {
-                blockValue.model.putValue(elementConstName, it)
+                model.putValue(elementConstName, it)
             } ?: throw IllegalStateException("element of unknown type in for loop")
         }
 
         private fun remove() {
             if (indexConstName != null) {
-                blockValue.model.removeKey(indexConstName)
+                model.removeKey(indexConstName)
             }
-            blockValue.model.removeKey(elementConstName)
+            model.removeKey(elementConstName)
         }
 
         override fun iterate(context: MutableTemplateModel, block: () -> Unit) {
@@ -97,11 +100,11 @@ internal sealed interface ForLoop : AtDirective {
         }
 
         private fun storeIndex(value: Int) {
-            blockValue.model.putValue(variableName, value)
+            model.putValue(variableName, value)
         }
 
         private fun removeIndex() {
-            blockValue.model.removeKey(variableName)
+            model.removeKey(variableName)
         }
 
         override fun iterate(context: MutableTemplateModel, block: () -> Unit) {
@@ -160,7 +163,7 @@ private class ForLoopLazyBlockSlice(
 
 }
 
-private fun LazyBlock.parseForBlockValue(source: SourceStream): LazyBlockSlice  {
+private fun LazyBlock.parseForBlockValue(source: SourceStream): LazyBlockSlice {
     val previous = source.pointer
 
     val ender: String = source.incrementUntilDirectiveWithSkip("@for") {
@@ -209,7 +212,7 @@ private fun LazyBlock.parseConditionalFor(source: SourceStream): ForLoop.Conditi
 private fun LazyBlock.parseIterableForLoopAfterVariable(
     source: SourceStream,
     variableName: String,
-): ForLoop.IterableFor?  {
+): ForLoop.IterableFor? {
     var secondVariableName: String? = null
     if (source.increment(',')) {
         secondVariableName = source.parseTextWhile { currentChar.isConstantVariableName() }
@@ -236,6 +239,36 @@ private fun LazyBlock.parseIterableForLoopAfterVariable(
     return null
 }
 
+private class NumberedForLoopIncrementer(
+    val operatorType: ArithmeticOperatorType,
+    val incrementerValue: ReferencedValue
+)
+
+private fun SourceStream.parseNumberedForLoopIncrementer(variableName: String): NumberedForLoopIncrementer {
+    val incrementalConst = parseTextWhile { currentChar.isConstantVariableName() }
+    if (incrementalConst == variableName) {
+        val operator = parseArithmeticOperator()
+        if (operator != null) {
+            val singleIncrement =
+                if (operator == ArithmeticOperatorType.Plus || operator == ArithmeticOperatorType.Minus) operator else null
+            val incrementer = if (singleIncrement?.parse(this) != null) {
+                IntValue(1)
+            } else {
+                parseForLoopNumberProperty()
+            }
+                ?: throw IllegalStateException("expected number property or value or '+' or '-' , got $currentChar in for loop incrementer")
+            return NumberedForLoopIncrementer(
+                operatorType = operator,
+                incrementerValue = incrementer
+            )
+        } else {
+            throw IllegalStateException("expected '+','-','/','*','%' , got $currentChar in for loop condition")
+        }
+    } else {
+        throw IllegalStateException("incremental variable is different : $incrementalConst != $variableName")
+    }
+}
+
 private fun LazyBlock.parseNumberedForLoopAfterVariable(
     source: SourceStream,
     variableName: String
@@ -252,32 +285,21 @@ private fun LazyBlock.parseNumberedForLoopAfterVariable(
                 val conditional = source.parseForLoopNumberProperty()
                     ?: throw IllegalStateException("expected number property of value got ${source.currentChar}")
                 if (source.increment(';')) {
-                    val incrementalConst = source.parseTextWhile { currentChar.isConstantVariableName() }
-                    if (incrementalConst == variableName) {
-                        val operator = source.parseArithmeticOperator()
-                        if (operator != null) {
-                            val incrementer = source.parseForLoopNumberProperty()
-                                ?: throw IllegalStateException("expected number property of value got ${source.currentChar}")
-                            if (!source.increment(')')) {
-                                throw IllegalStateException("expected ) , got ${source.currentChar}")
-                            }
-                            source.increment(' ')
-                            val blockValue = this@parseNumberedForLoopAfterVariable.parseForBlockValue(source)
-                            return ForLoop.NumberedFor(
-                                variableName = variableName,
-                                initializer = initializer,
-                                conditionType = conditionType,
-                                conditional = conditional,
-                                arithmeticOperatorType = operator,
-                                incrementer = incrementer,
-                                blockValue = blockValue
-                            )
-                        } else {
-                            throw IllegalStateException("expected '+','-','/','*','%' , got $operator")
-                        }
-                    } else {
-                        throw IllegalStateException("incremental variable is different : $incrementalConst != $variableName")
+                    val incrementer = source.parseNumberedForLoopIncrementer(variableName)
+                    if (!source.increment(')')) {
+                        throw IllegalStateException("expected ) , got ${source.currentChar}")
                     }
+                    source.increment(' ')
+                    val blockValue = this@parseNumberedForLoopAfterVariable.parseForBlockValue(source)
+                    return ForLoop.NumberedFor(
+                        variableName = variableName,
+                        initializer = initializer,
+                        conditionType = conditionType,
+                        conditional = conditional,
+                        arithmeticOperatorType = incrementer.operatorType,
+                        incrementer = incrementer.incrementerValue,
+                        blockValue = blockValue
+                    )
                 } else {
                     throw IllegalStateException("unexpected ${source.currentChar} , expected ';'")
                 }

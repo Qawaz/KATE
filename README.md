@@ -87,9 +87,7 @@ To get the index of every element in the list
 
 To loop using a number
 
-`@for(@const i=0;i<5;i+1) @endfor`
-
-> i++ is not allowed , It must be i+1
+`@for(@const i=0;i<5;i++) @endfor`
 
 To break a parent loop , You can use
 

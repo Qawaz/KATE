@@ -59,7 +59,7 @@ class ForLoopTest {
 
     @Test
     fun testMultiForLoop(){
-        val context = TemplateContext("@for(@const i=0;i<3;i+1) @for(@const j=0;j<3;j+1) 0 @endfor @endfor")
+        val context = TemplateContext("@for(@const i=0;i<3;i+1) @for(@const j=0;j<3;j++) 0 @endfor @endfor")
         assertEquals("000000000", context.getDestinationAsStringWithReset())
     }
 
