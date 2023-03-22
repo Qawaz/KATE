@@ -35,9 +35,9 @@ interface LazyBlock {
 
     fun parseAtDirective(source: SourceStream): AtDirective? = with(source) {
         parseEmbedding()?.let { return it }
-        parseConstantReference()?.let { return it }
-        parseConstantDeclaration()?.let { return it }
-        parseConstantReference()?.let { return it }
+        parseVariableReference()?.let { return it }
+        parseVariableDeclaration()?.let { return it }
+        parseVariableReference()?.let { return it }
         parseModelDirective()?.let { return it }
         parseIfStatement(source)?.let { return it }
         parseForLoop(source)?.let { return it }

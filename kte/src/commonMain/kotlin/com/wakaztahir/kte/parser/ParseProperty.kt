@@ -7,7 +7,7 @@ import com.wakaztahir.kte.parser.stream.SourceStream
 import com.wakaztahir.kte.parser.stream.increment
 
 internal fun SourceStream.parseReferencedValue(): ReferencedValue? {
-    parseConstantReference()?.let { return it }
+    parseVariableReference()?.let { return it }
     parseModelDirective()?.let { return it }
     return null
 }

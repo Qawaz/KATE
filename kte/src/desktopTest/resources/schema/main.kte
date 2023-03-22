@@ -4,17 +4,17 @@
     To generate a kotlin file , for testing purposes
 --%>
 
-@const generateComments = true
+@var generateComments = true
 
 <%-- Generating a maths class with basic arithmetic operations --%>
-@if(@const(generateComments)) // @model.mathTestClassName provides functions for basic math operations @endif
+@if(@var(generateComments)) // @model.mathTestClassName provides functions for basic math operations @endif
 class @model.mathTestClassName {
-    @for(@const arithmetic2 : @model.arithmetic)
-        @if(@const(generateComments)) // @const(arithmetic2).funName performs '@const(arithmetic2).symbolName' between two variables @endif
-        fun @const(arithmetic2).@funName() : @const(arithmetic2).returnType {
-             val variableOne = @const(arithmetic2).first
-             val variableTwo = @const(arithmetic2).second
-             return variableOne @const(arithmetic2).symbolName variableTwo
+    @for(@var arithmetic2 : @model.arithmetic)
+        @if(@var(generateComments)) // @var(arithmetic2).funName performs '@var(arithmetic2).symbolName' between two variables @endif
+        fun @var(arithmetic2).@funName() : @var(arithmetic2).returnType {
+             val variableOne = @var(arithmetic2).first
+             val variableTwo = @var(arithmetic2).second
+             return variableOne @var(arithmetic2).symbolName variableTwo
         }
     @endfor
 }

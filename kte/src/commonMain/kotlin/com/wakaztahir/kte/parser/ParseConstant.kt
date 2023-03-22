@@ -8,19 +8,19 @@ import com.wakaztahir.kte.parser.stream.unexpected
 
 //-------------- Reference
 
-class ConstantReferenceParseException(message: String) : Throwable(message)
+class VariableReferenceParseException(message: String) : Throwable(message)
 
-internal fun SourceStream.parseConstantReference(): ModelDirective? {
-    if (currentChar == '@' && increment("@const(")) {
+internal fun SourceStream.parseVariableReference(): ModelDirective? {
+    if (currentChar == '@' && increment("@var(")) {
         val propertyPath = mutableListOf<ModelReference>()
         val variableName = parseTextWhile { currentChar.isModelDirectiveLetter() }
         if (variableName.isNotEmpty()) {
             propertyPath.add(ModelReference.Property(variableName))
             if (!increment(')')) {
-                throw ConstantReferenceParseException("expected ) got $currentChar")
+                throw VariableReferenceParseException("expected ) got $currentChar")
             }
         } else {
-            throw ConstantReferenceParseException("@const( variable name is empty")
+            throw VariableReferenceParseException("@var( variable name is empty")
         }
         parseDotReferencesInto(propertyPath)
         return ModelDirective(propertyPath)
@@ -42,20 +42,20 @@ internal data class ConstantDeclaration(val variableName: String, val variableVa
     }
 }
 
-class ConstantDeclarationParseException(message: String) : Throwable(message)
+class VariableDeclarationParseException(message: String) : Throwable(message)
 
-internal fun Char.isConstantVariableName(): Boolean = this.isLetterOrDigit() || this == '_'
+internal fun Char.isVariableName(): Boolean = this.isLetterOrDigit() || this == '_'
 
-internal fun SourceStream.parseConstantVariableName(): String? {
-    if (currentChar == '@' && increment("@const")) {
+internal fun SourceStream.parseVariableName(): String? {
+    if (currentChar == '@' && increment("@var")) {
         increment(' ')
-        return parseTextWhile { currentChar.isConstantVariableName() }
+        return parseTextWhile { currentChar.isVariableName() }
     }
     return null
 }
 
-internal fun SourceStream.parseConstantDeclaration(): ConstantDeclaration? {
-    val variableName = parseConstantVariableName()
+internal fun SourceStream.parseVariableDeclaration(): ConstantDeclaration? {
+    val variableName = parseVariableName()
     if (variableName != null) {
         if (variableName.isNotEmpty()) {
             escapeSpaces()
@@ -65,14 +65,14 @@ internal fun SourceStream.parseConstantDeclaration(): ConstantDeclaration? {
             return if (property != null) {
                 ConstantDeclaration(variableName = variableName, variableValue = property)
             } else {
-                throw ConstantDeclarationParseException("constant's value not found")
+                throw VariableDeclarationParseException("constant's value not found")
             }
         } else {
             if (hasEnded) {
                 unexpected()
             } else {
                 printLeft()
-                throw ConstantDeclarationParseException("constant's name not given")
+                throw VariableDeclarationParseException("constant's name not given")
             }
         }
     }

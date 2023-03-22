@@ -3,18 +3,18 @@ import com.wakaztahir.kte.TemplateContext
 import com.wakaztahir.kte.model.LogicalCondition
 import com.wakaztahir.kte.parser.*
 import com.wakaztahir.kte.parser.parseCondition
-import com.wakaztahir.kte.parser.parseConstantDeclaration
+import com.wakaztahir.kte.parser.parseVariableDeclaration
 import com.wakaztahir.kte.parser.parseIfStatement
 import kotlin.test.*
 
 class IfStatementTest {
 
     private fun TemplateContext.evaluateConstants(var1: String, condition: String, var2: String): Boolean {
-        updateStream("@const var1 = $var1")
-        stream.parseConstantDeclaration()!!.storeValue(stream.model)
-        updateStream("@const var2 = $var2")
-        stream.parseConstantDeclaration()!!.storeValue(stream.model)
-        updateStream("@const(var1) $condition @const(var2)")
+        updateStream("@var var1 = $var1")
+        stream.parseVariableDeclaration()!!.storeValue(stream.model)
+        updateStream("@var var2 = $var2")
+        stream.parseVariableDeclaration()!!.storeValue(stream.model)
+        updateStream("@var(var1) $condition @var(var2)")
         return stream.parseCondition()!!.evaluate(stream.model)
     }
 
@@ -27,14 +27,14 @@ class IfStatementTest {
 
     @Test
     fun testConstRef() {
-        val context = TemplateContext("@if(@const(var1)) blockValue @endif")
+        val context = TemplateContext("@if(@var(var1)) blockValue @endif")
         context.stream.model.putValue("var1", true)
         assertEquals("blockValue", context.getDestinationAsStringWithReset())
     }
 
     @Test
     fun testConstRefParsing() {
-        val text = "@if(@const(var1)) blockValue @endif"
+        val text = "@if(@var(var1)) blockValue @endif"
         val context = TemplateContext(text)
         context.stream.model.putValue("var1", true)
         val statement = context.stream.parseIfStatement(context.stream)!!
@@ -53,7 +53,7 @@ class IfStatementTest {
 
     @Test
     fun testNestedIfReference(){
-        val context = TemplateContext("@const i = 4@if(true) @if(true) @const(i) @endif @endif")
+        val context = TemplateContext("@var i = 4@if(true) @if(true) @var(i) @endif @endif")
         assertEquals("4",context.getDestinationAsString())
     }
 

@@ -1,20 +1,20 @@
 import com.wakaztahir.kte.TemplateContext
 import com.wakaztahir.kte.model.StringValue
-import com.wakaztahir.kte.parser.parseConstantDeclaration
-import com.wakaztahir.kte.parser.parseConstantReference
+import com.wakaztahir.kte.parser.parseVariableDeclaration
+import com.wakaztahir.kte.parser.parseVariableReference
 import com.wakaztahir.kte.parser.parseExpression
 import com.wakaztahir.kte.parser.parseStringValue
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 
-class ConstantsTest {
+class VariablesTest {
 
 
     @Test
-    fun testParseConstantReference() {
-        val context = TemplateContext(("@const(myVar)"))
-        val ref = context.stream.parseConstantReference()
+    fun testParseVariableReference() {
+        val context = TemplateContext(("@var(myVar)"))
+        val ref = context.stream.parseVariableReference()
         assertNotEquals(null, ref)
         assertEquals(ref!!.propertyPath[0].name, "myVar")
         context.stream.model.putValue("myVar", StringValue("someValue"))
@@ -22,24 +22,24 @@ class ConstantsTest {
     }
 
     @Test
-    fun testParseConstantDeclaration() {
-        val context = TemplateContext(("@const myVar = \"someValue\""))
-        val ref = context.stream.parseConstantDeclaration()
+    fun testParseVariableDeclaration() {
+        val context = TemplateContext(("@var myVar = \"someValue\""))
+        val ref = context.stream.parseVariableDeclaration()
         assertNotEquals(null, ref)
         assertEquals("myVar", ref!!.variableName)
         assertEquals("someValue", ref.variableValue.getValue(context.stream.model).value)
     }
 
     @Test
-    fun testParseConstantGeneration() {
-        val text = "@const myVar = \"someValue\"@const(myVar)"
+    fun testParseVariableGeneration() {
+        val text = "@var myVar = \"someValue\"@var(myVar)"
         val context = TemplateContext(text)
         assertEquals("someValue", context.getDestinationAsString())
         assertEquals(text.length, context.stream.pointer)
     }
 
     private fun evaluate(i : String,j : String,char : Char) : String {
-        val context = TemplateContext("@const i = $i@const j = @const(i) @$char $j@const(j)")
+        val context = TemplateContext("@var i = $i@var j = @var(i) @$char $j@var(j)")
         return context.getDestinationAsString()
     }
 
@@ -57,9 +57,9 @@ class ConstantsTest {
 
     @Test
     fun testReassignment(){
-        val context = TemplateContext("@const i=0@const i=2@const(i)")
+        val context = TemplateContext("@var i=0@var i=2@var(i)")
         assertEquals("2",context.getDestinationAsString())
-        val context2 = TemplateContext("@const i=10@const i=@const(i) @+ 1@const(i)")
+        val context2 = TemplateContext("@var i=10@var i=@var(i) @+ 1@var(i)")
         assertEquals("11",context2.getDestinationAsString())
     }
 
@@ -72,7 +72,7 @@ class ConstantsTest {
 
     @Test
     fun testParseDynamicProperty() {
-        val context = TemplateContext(("@const(myVar)"))
+        val context = TemplateContext(("@var(myVar)"))
         context.stream.model.putValue("myVar", StringValue("someValue"))
         val property = context.stream.parseExpression()
         assertEquals(property!!.getValue(context.stream.model).value, "someValue")
@@ -80,12 +80,12 @@ class ConstantsTest {
 
     @Test
     fun testDeclarationAndReference() {
-        val decContext = TemplateContext(("@const myVar = \"someValue\""))
-        val dec = decContext.stream.parseConstantDeclaration()
+        val decContext = TemplateContext(("@var myVar = \"someValue\""))
+        val dec = decContext.stream.parseVariableDeclaration()
         assertEquals("someValue", dec!!.variableValue.getValue(decContext.stream.model).value)
-        decContext.updateStream("@const myVar2 = @const(myVar)")
-        dec!!.storeValue(decContext.stream.model)
-        val refDec = decContext.stream.parseConstantDeclaration()
+        decContext.updateStream("@var myVar2 = @var(myVar)")
+        dec.storeValue(decContext.stream.model)
+        val refDec = decContext.stream.parseVariableDeclaration()
         assertEquals(
             dec.variableValue.getValue(decContext.stream.model).value,
             refDec!!.variableValue.getValue(decContext.stream.model).value

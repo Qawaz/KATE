@@ -189,7 +189,7 @@ private fun LazyBlock.parseForBlockValue(source: SourceStream): LazyBlockSlice {
 }
 
 private fun SourceStream.parseForLoopNumberProperty(): ReferencedValue? {
-    parseConstantReference()?.let { return it }
+    parseVariableReference()?.let { return it }
     parseModelDirective()?.let { return it }
     parseNumberValue()?.let { return it }
     return null
@@ -215,7 +215,7 @@ private fun LazyBlock.parseIterableForLoopAfterVariable(
 ): ForLoop.IterableFor? {
     var secondVariableName: String? = null
     if (source.increment(',')) {
-        secondVariableName = source.parseTextWhile { currentChar.isConstantVariableName() }
+        secondVariableName = source.parseTextWhile { currentChar.isVariableName() }
     }
     source.escapeSpaces()
     if (source.increment(':')) {
@@ -245,7 +245,7 @@ private class NumberedForLoopIncrementer(
 )
 
 private fun SourceStream.parseNumberedForLoopIncrementer(variableName: String): NumberedForLoopIncrementer {
-    val incrementalConst = parseTextWhile { currentChar.isConstantVariableName() }
+    val incrementalConst = parseTextWhile { currentChar.isVariableName() }
     if (incrementalConst == variableName) {
         val operator = parseArithmeticOperator()
         if (operator != null) {
@@ -278,7 +278,7 @@ private fun LazyBlock.parseNumberedForLoopAfterVariable(
         val initializer = source.parseForLoopNumberProperty()
             ?: throw IllegalStateException("unexpected ${source.currentChar} , expected a number or property")
         if (source.increment(';')) {
-            val conditionalConst = source.parseTextWhile { currentChar.isConstantVariableName() }
+            val conditionalConst = source.parseTextWhile { currentChar.isVariableName() }
             if (conditionalConst == variableName) {
                 val conditionType = source.parseConditionType()
                     ?: throw IllegalStateException("expected conditional operator , got ${source.currentChar}")
@@ -318,7 +318,7 @@ internal fun LazyBlock.parseForLoop(source: SourceStream): ForLoop? {
 
         parseConditionalFor(source)?.let { return it }
 
-        val variableName = source.parseConstantVariableName()
+        val variableName = source.parseVariableName()
         if (variableName != null) {
 
             source.escapeSpaces()
