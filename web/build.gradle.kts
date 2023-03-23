@@ -2,6 +2,7 @@ import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension
 
 plugins {
     kotlin("multiplatform")
+    id("org.jetbrains.compose")
 }
 
 repositories {
@@ -26,7 +27,9 @@ kotlin {
     sourceSets {
         val jsMain by getting {
             dependencies {
-                implementation(project(":demo:common"))
+                implementation(project(":kte"))
+                implementation(compose.web.core)
+                implementation(compose.runtime)
             }
         }
         val jsTest by getting {
@@ -37,6 +40,9 @@ kotlin {
     }
 }
 
+compose.experimental {
+    web.application {}
+}
 
 afterEvaluate {
     rootProject.extensions.configure<NodeJsRootExtension> {

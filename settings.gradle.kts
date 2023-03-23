@@ -1,25 +1,31 @@
 pluginManagement {
     repositories {
-        google()
         gradlePluginPortal()
+        google()
         mavenCentral()
         maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+        maven("https://maven.pkg.github.com/Qawaz/kte") {
+            credentials {
+                username = (System.getenv("GPR_USER")).toString()
+                password = (System.getenv("GPR_API_KEY")).toString()
+            }
+        }
     }
     plugins {
-        val kotlinVersion = extra["kotlin.version"] as String
-        kotlin("jvm").version(kotlinVersion).apply(false)
+        val kotlinVersion = extra["kotlin_version"] as String
         kotlin("android").version(kotlinVersion).apply(false)
-        kotlin("multiplatform").version(kotlinVersion).apply(false)
-        kotlin("jvm").version(kotlinVersion).apply(false)
-        id("com.android.application").version(extra["agp.version"] as String).apply(false)
-        id("com.android.library").version(extra["agp.version"] as String).apply(false)
-        id("org.jetbrains.compose").version(extra["compose.version"] as String).apply(false)
+        id("com.android.application").version(extra["agp_version"] as String).apply(false)
+        id("com.android.library").version(extra["agp_version"] as String).apply(false)
+        id("org.jetbrains.compose").version(extra["compose.jb.version"] as String).apply(false)
     }
 }
-rootProject.name = "KTE"
-
-include(":demo:android")
-include(":demo:desktop")
-include(":demo:common")
-include(":demo:web")
+dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+rootProject.name = "KTE-DEV"
+include(":desktop")
+include(":web")
 include(":kte")

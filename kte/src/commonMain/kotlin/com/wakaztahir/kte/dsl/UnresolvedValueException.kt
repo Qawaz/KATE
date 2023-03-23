@@ -1,3 +1,3 @@
 package com.wakaztahir.kte.dsl
 
-class UnresolvedValueException(message: String) : Throwable(message)
+class UnresolvedValueException(message: String) : Exception(message)

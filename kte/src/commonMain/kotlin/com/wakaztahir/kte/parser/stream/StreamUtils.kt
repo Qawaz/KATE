@@ -1,6 +1,6 @@
 package com.wakaztahir.kte.parser.stream
 
-internal class UnexpectedEndOfStream(message: String) : Throwable(message)
+internal class UnexpectedEndOfStream(message: String) : Exception(message)
 
 internal fun SourceStream.unexpected(): UnexpectedEndOfStream {
     return UnexpectedEndOfStream("unexpected end of stream at pointer : $pointer")

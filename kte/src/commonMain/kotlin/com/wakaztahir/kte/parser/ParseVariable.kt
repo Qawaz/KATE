@@ -8,7 +8,7 @@ import com.wakaztahir.kte.parser.stream.unexpected
 
 //-------------- Reference
 
-class VariableReferenceParseException(message: String) : Throwable(message)
+class VariableReferenceParseException(message: String) : Exception(message)
 
 internal fun SourceStream.parseVariableReference(): ModelDirective? {
     if (currentChar == '@' && increment("@var(")) {
@@ -45,7 +45,7 @@ internal data class VariableDeclaration(val variableName: String, val variableVa
     }
 }
 
-class VariableDeclarationParseException(message: String) : Throwable(message)
+class VariableDeclarationParseException(message: String) : Exception(message)
 
 internal fun Char.isVariableName(): Boolean = this.isLetterOrDigit() || this == '_'
 

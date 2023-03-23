@@ -4,7 +4,7 @@ import com.wakaztahir.kte.parser.stream.SourceStream
 import com.wakaztahir.kte.parser.stream.increment
 import com.wakaztahir.kte.parser.stream.incrementUntilConsumed
 
-internal class CommentParseException(message: String) : Throwable(message)
+internal class CommentParseException(message: String) : Exception(message)
 
 fun SourceStream.skipMultilineComments(): Boolean {
     return if (increment("<%--")) {
