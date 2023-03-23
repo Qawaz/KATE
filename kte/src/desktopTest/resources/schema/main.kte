@@ -1,13 +1,10 @@
 package output
-
 <%--
     KTE-v1.0
-    A KTE Template that tests the schema of Kotlin KTE Multiplatform
+    A KTE Template that tests the schema
     To generate a kotlin file , for testing purposes
 --%>
-
 @var generateComments = true
-
 <%-- Generating a maths class with basic arithmetic operations --%>
 @if(@var(generateComments)) // @model.mathTestClassName provides functions for basic math operations @endif
 class @model.mathTestClassName {

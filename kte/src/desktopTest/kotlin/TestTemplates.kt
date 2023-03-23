@@ -28,10 +28,31 @@ class TestTemplates {
             putValue("mathTestClassName", "MathsClass")
             putObjects("arithmetic") {
                 putObject {
-                    putValue("funName", "seriouslyHere")
+                    putValue("funName", "sumsTwoVars")
                     putValue("first", 4)
                     putValue("second", 6)
                     putValue("symbolName", "+")
+                    putValue("returnType","Int")
+                }
+                putObject {
+                    putValue("funName", "subtractTwoVars")
+                    putValue("first", 6)
+                    putValue("second", 4)
+                    putValue("symbolName", "-")
+                    putValue("returnType","Int")
+                }
+                putObject {
+                    putValue("funName", "multiplyTwoVars")
+                    putValue("first", 4)
+                    putValue("second", 6)
+                    putValue("symbolName", "*")
+                    putValue("returnType","Int")
+                }
+                putObject {
+                    putValue("funName", "divideTwoVars")
+                    putValue("first", 4)
+                    putValue("second", 2)
+                    putValue("symbolName", "/")
                     putValue("returnType","Int")
                 }
             }

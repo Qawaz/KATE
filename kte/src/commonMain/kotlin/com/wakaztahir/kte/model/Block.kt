@@ -7,6 +7,7 @@ import com.wakaztahir.kte.parser.*
 import com.wakaztahir.kte.parser.stream.DestinationStream
 import com.wakaztahir.kte.parser.stream.SourceStream
 import com.wakaztahir.kte.parser.stream.TextDestinationStream
+import com.wakaztahir.kte.parser.stream.increment
 
 interface LazyBlock {
 
@@ -16,10 +17,8 @@ interface LazyBlock {
 
     fun generateTo(source: SourceStream, destination: DestinationStream) {
         while (canIterate(source)) {
-            if (source.currentChar == '<') {
-                if (source.parseComment()) {
-                    continue
-                }
+            if (source.skipMultilineComments()) {
+                continue
             }
             if (source.currentChar == '@') {
                 val directive = parseAtDirective(source)
