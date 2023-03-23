@@ -44,6 +44,16 @@ class ModelDirectiveTest {
     }
 
     @Test
+    fun testForLoopGeneration6() {
+        val context = TemplateContext("@model.arithmetic.funName", TemplateModel {
+            putObject("arithmetic") {
+                putValue("funName", "seriouslyHere")
+            }
+        })
+        assertEquals("seriouslyHere", context.getDestinationAsString())
+    }
+
+    @Test
     fun testParseModelDirectiveCodeGen() {
         val context = TemplateContext(
             text = "@model.property1@model.property2.property3@model.callSum(1,2)",

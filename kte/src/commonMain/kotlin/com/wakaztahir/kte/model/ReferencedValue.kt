@@ -1,5 +1,5 @@
 package com.wakaztahir.kte.model
 
-interface ReferencedValue : KTEValue {
+interface ReferencedValue : KTEValue, CodeGen {
 
 }

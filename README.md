@@ -38,7 +38,7 @@ The value of the variable can only be one of these
 | Float (1.0f)                        | &check;   |
 | Boolean (true,false)                | &check;   |
 | Another Variable's Value            | &check;   |
-| [gradle-wrapper.properties](..%2F..%2F..%2FJVM%2FUpdateApp%2Fgradle%2Fwrapper%2Fgradle-wrapper.properties)[Expressions](#expressions)         | &check;   |
+| [Expressions](#expressions)         | &check;   |
 | Value Returned from a function call | &check;   |
 | List Element                        | &check;   |
 | A model's property                  | &check;   |
@@ -59,13 +59,13 @@ Explicit property , so compiler won't think it's a function name
 
 `2 @+ 2` is an expression
 
-Expressions should be assigned to a variable , Otherwise they would just
-output to template like a string
+`@+` means resolve it
 
-so to evaluate above expression
+`2 + 2` outputs `2 + 2`
 
-`@var exp = 2 @+ 2@var(exp)` is used `@var exp = 2 @+ 2` will save the result of expression in the variable
-then referencing it `@var(exp)` will output it to template
+`2 @+ 2` outputs `4`
+
+You can use variables in expressions
 
 ## Conditional Rendering
 
@@ -102,6 +102,12 @@ To get the index of every element in the list
 To loop using a number
 
 `@for(@var i=0;i<5;i++) @endfor`
+
+Or
+
+`@for(7) This will run seven times @endfor`
+
+You can use a variable / expression instead of 7
 
 To break a parent loop , You can use
 

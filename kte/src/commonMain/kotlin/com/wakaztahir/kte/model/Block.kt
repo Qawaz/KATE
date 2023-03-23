@@ -20,24 +20,21 @@ interface LazyBlock {
             if (source.skipMultilineComments()) {
                 continue
             }
-            if (source.currentChar == '@') {
-                val directive = parseAtDirective(source)
-                if (directive != null) {
-                    directive.generateTo(this, source, destination)
-                    continue
-                }
+            val directive = parseAtDirective(source)
+            if (directive != null) {
+                directive.generateTo(this, source, destination)
+                continue
             }
             destination.write(source.currentChar)
             source.incrementPointer()
         }
     }
 
-    fun parseAtDirective(source: SourceStream): AtDirective? {
+    fun parseAtDirective(source: SourceStream): CodeGen? {
         source.parseEmbedding()?.let { return it }
         source.parseVariableReference()?.let { return it }
         source.parseVariableDeclaration()?.let { return it }
-        source.parseVariableReference()?.let { return it }
-        source.parseModelDirective()?.let { return it }
+        source.parseExpression()?.let { return it }
         parseIfStatement(source)?.let { return it }
         parseForLoop(source)?.let { return it }
         source.parseRawBlock()?.let { return it }

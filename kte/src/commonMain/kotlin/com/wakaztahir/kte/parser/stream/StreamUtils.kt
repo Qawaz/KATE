@@ -77,20 +77,6 @@ internal inline fun <T> SourceStream.resetIfNull(perform: SourceStream.() -> T?)
     return value
 }
 
-internal inline fun <T> SourceStream.resetIfNullWithText(
-    condition: () -> Boolean,
-    perform: SourceStream.(String) -> T?
-): T? {
-    return resetIfNull {
-        var text = ""
-        while (!hasEnded && condition()) {
-            text += currentChar
-            incrementPointer()
-        }
-        perform(text)
-    }
-}
-
 internal fun SourceStream.escapeSpaces() {
     if (increment(' ')) {
         escapeSpaces()
@@ -124,30 +110,10 @@ internal fun SourceStream.printLeft() = resetIfNull {
     null
 }
 
-internal fun SourceStream.incrementUntil(vararg strings: String): String? {
-    incrementWhile {
-        for (str in strings) {
-            if (currentChar == str[0] && increment(str)) {
-                decrementPointer(str.length)
-                return str
-            }
-        }
-        true
-    }
-    return null
-}
-
 internal fun SourceStream.parseTextUntilConsumed(str: String): String {
     return parseTextWhile {
         currentChar != str[0] || !increment(str)
     }
-}
-
-internal fun SourceStream.incrementUntil(char: Char): Boolean {
-    while (!hasEnded && currentChar != char) {
-        incrementPointer()
-    }
-    return currentChar == char
 }
 
 internal inline fun SourceStream.incrementUntilDirectiveWithSkip(

@@ -2,6 +2,8 @@ package com.wakaztahir.kte.model.model
 
 import com.wakaztahir.kte.dsl.ModelValue
 import com.wakaztahir.kte.model.*
+import com.wakaztahir.kte.parser.stream.DestinationStream
+import com.wakaztahir.kte.parser.stream.SourceStream
 
 class ModelListImpl<T : KTEValue>(val collection: List<T>) : List<T> by collection, KTEList<T>() {
 
@@ -21,6 +23,10 @@ class ModelListImpl<T : KTEValue>(val collection: List<T>) : List<T> by collecti
             put("size", object : ReferencedValue {
                 override fun asPrimitive(model: KTEObject): PrimitiveValue<*> {
                     return IntValue(collection.size)
+                }
+
+                override fun generateTo(block: LazyBlock, source: SourceStream, destination: DestinationStream) {
+                    destination.write(IntValue(collection.size))
                 }
                 override fun stringValue(indentationLevel: Int): String = toString()
                 override fun toString(): String = "size : Int"

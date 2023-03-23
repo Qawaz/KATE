@@ -4,9 +4,9 @@ import com.wakaztahir.kte.model.PrimitiveValue
 import com.wakaztahir.kte.parser.stream.SourceStream
 import com.wakaztahir.kte.parser.stream.increment
 
-enum class ArithmeticOperatorType(val char: Char) {
+enum class ArithmeticOperatorType(val char: Char, val precedence: Int) {
 
-    Plus('+') {
+    Plus('+', 6) {
         override fun operate(value1: Int, value2: Int): Int {
             return value1 + value2
         }
@@ -15,7 +15,7 @@ enum class ArithmeticOperatorType(val char: Char) {
             return value1 + value2
         }
     },
-    Minus('-') {
+    Minus('-', 6) {
         override fun operate(value1: Int, value2: Int): Int {
             return value1 - value2
         }
@@ -24,7 +24,7 @@ enum class ArithmeticOperatorType(val char: Char) {
             return value1 - value2
         }
     },
-    Divide('/') {
+    Divide('/', 4) {
         override fun operate(value1: Int, value2: Int): Int {
             return value1 / value2
         }
@@ -33,7 +33,7 @@ enum class ArithmeticOperatorType(val char: Char) {
             return value1 / value2
         }
     },
-    Multiply('*') {
+    Multiply('*', 4) {
         override fun operate(value1: Int, value2: Int): Int {
             return value1 * value2
         }
@@ -42,7 +42,7 @@ enum class ArithmeticOperatorType(val char: Char) {
             return value1 * value2
         }
     },
-    Mod('%') {
+    Mod('%', 4) {
         override fun operate(value1: Int, value2: Int): Int {
             return value1 % value2
         }
@@ -55,17 +55,17 @@ enum class ArithmeticOperatorType(val char: Char) {
     abstract fun operate(value1: Int, value2: Int): Int
     abstract fun operate(value1: Float, value2: Float): Float
 
-    fun parse(stream: SourceStream): ArithmeticOperatorType? {
-        return if (stream.increment(char)) this@ArithmeticOperatorType else null
-    }
-
 }
 
 internal fun SourceStream.parseArithmeticOperator(): ArithmeticOperatorType? {
-    ArithmeticOperatorType.Plus.parse(this)?.let { return it }
-    ArithmeticOperatorType.Minus.parse(this)?.let { return it }
-    ArithmeticOperatorType.Divide.parse(this)?.let { return it }
-    ArithmeticOperatorType.Multiply.parse(this)?.let { return it }
-    ArithmeticOperatorType.Mod.parse(this)?.let { return it }
-    return null
+    val result = when (currentChar) {
+        '+' -> ArithmeticOperatorType.Plus
+        '-' -> ArithmeticOperatorType.Minus
+        '/' -> ArithmeticOperatorType.Divide
+        '*' -> ArithmeticOperatorType.Multiply
+        '%' -> ArithmeticOperatorType.Mod
+        else -> null
+    }
+    if (result != null) incrementPointer()
+    return result
 }

@@ -117,16 +117,6 @@ class ForLoopTest {
     }
 
     @Test
-    fun testForLoopGeneration6() {
-        val context = TemplateContext("@model.arithmetic.funName", TemplateModel {
-            putObject("arithmetic") {
-                putValue("funName", "seriouslyHere")
-            }
-        })
-        assertEquals("seriouslyHere", context.getDestinationAsStringWithReset())
-    }
-
-    @Test
     fun parseMultilineForLoop() {
         val context = TemplateContext(
             """@for(@var i=0;i<2;i+1)
@@ -134,14 +124,14 @@ class ForLoopTest {
               | Line Number 2
               |@endfor""".trimMargin("|")
         )
-        assertEquals("Line Number 1\nLine Number 2", context.getDestinationAsStringWithReset())
+        assertEquals("Line Number 1\nLine Number 2", context.getDestinationAsString())
         val context2 = TemplateContext(
             """@for(@var i=2;i<2;i+1)
               | Line Number 1
               | Line Number 2
               |@endfor""".trimMargin("|")
         )
-        assertEquals("", context2.getDestinationAsStringWithReset())
+        assertEquals("", context2.getDestinationAsString())
     }
 
 

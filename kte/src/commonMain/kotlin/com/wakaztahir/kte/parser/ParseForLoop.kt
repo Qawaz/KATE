@@ -15,7 +15,7 @@ internal sealed interface ForLoop : AtDirective {
     val model: MutableKTEObject
         get() = blockValue.model
 
-    fun iterate(block: (iteration : Int) -> Unit)
+    fun iterate(block: (iteration: Int) -> Unit)
 
     override fun generateTo(block: LazyBlock, source: SourceStream, destination: DestinationStream) {
         iterate {
@@ -27,7 +27,7 @@ internal sealed interface ForLoop : AtDirective {
         val condition: Condition,
         override val blockValue: LazyBlockSlice
     ) : ForLoop {
-        override fun iterate(block: (iteration : Int) -> Unit) {
+        override fun iterate(block: (iteration: Int) -> Unit) {
             var i = 0
             while (condition.evaluate(model)) {
                 block(i)
@@ -60,7 +60,7 @@ internal sealed interface ForLoop : AtDirective {
             model.removeKey(elementConstName)
         }
 
-        override fun iterate(block: (iteration : Int) -> Unit) {
+        override fun iterate(block: (iteration: Int) -> Unit) {
             var index = 0
             val iterable = listProperty.asList(model)
             val total = iterable.size
@@ -99,7 +99,7 @@ internal sealed interface ForLoop : AtDirective {
             removeKey(variableName)
         }
 
-        override fun iterate(block: (iteration : Int) -> Unit) {
+        override fun iterate(block: (iteration: Int) -> Unit) {
             var i = initializer.intVal(model)
             val conditionValue = conditional.intVal(model)
             val incrementerValue = incrementer.intVal(model)
@@ -141,8 +141,8 @@ private class ForLoopLazyBlockSlice(
         }
     }
 
-    override fun parseAtDirective(source: SourceStream): AtDirective? = with(source) {
-        if (parseBreakForAtDirective()) return null
+    override fun parseAtDirective(source: SourceStream): CodeGen? {
+        if (source.parseBreakForAtDirective()) return null
         return super.parseAtDirective(source)
     }
 
@@ -236,12 +236,11 @@ private fun SourceStream.parseNumberedForLoopIncrementer(variableName: String): 
         if (operator != null) {
             val singleIncrement =
                 if (operator == ArithmeticOperatorType.Plus || operator == ArithmeticOperatorType.Minus) operator else null
-            val incrementer = if (singleIncrement?.parse(this) != null) {
+            val incrementer = if (singleIncrement != null && increment(singleIncrement.char)) {
                 IntValue(1)
             } else {
                 parseForLoopNumberProperty()
-            }
-                ?: throw IllegalStateException("expected number property or value or '+' or '-' , got $currentChar in for loop incrementer")
+            } ?: throw IllegalStateException("expected number property or value or '+' or '-' , got $currentChar in for loop incrementer")
             return NumberedForLoopIncrementer(
                 operatorType = operator,
                 incrementerValue = incrementer

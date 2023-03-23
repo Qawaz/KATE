@@ -34,7 +34,7 @@ class IfStatementTest {
     }
 
     @Test
-    fun testInfamousIssue(){
+    fun testInfamousIssue() {
         assertEquals(
             expected = "45",
             actual = GenerateCode("@var j = 4 @if(true) @var i = 5 @if(true) @var l = 5 @var(j)@var(i) @endif @endif")
@@ -61,9 +61,9 @@ class IfStatementTest {
     }
 
     @Test
-    fun testNestedIfReference(){
+    fun testNestedIfReference() {
         val context = TemplateContext("@var i = 4@if(true) @if(true) @var(i) @endif @endif")
-        assertEquals("4",context.getDestinationAsString())
+        assertEquals("4", context.getDestinationAsString())
     }
 
     @Test
@@ -98,14 +98,39 @@ class IfStatementTest {
 
     @Test
     fun testFloats() {
-        assertTrue(evaluate("1.0f", "==", " 1.0f"))
-        assertTrue(evaluate("1.0000021f", "!=", " 1.222222f"))
-        assertTrue(evaluate("1.0f", "!=", " 0.0f"))
-        assertTrue(evaluate("0.0f", "==", " 0.0f"))
-        assertTrue(evaluate("2.0f", "> ", "1.0f"))
-        assertTrue(evaluate("1.0f", "< ", "2.0f"))
-        assertTrue(evaluate("2.0f", ">=", " 1.0f"))
-        assertTrue(evaluate("1.0f", "<=", " 2.0f"))
+        assertTrue(evaluate("1.0", "==", "1.0"))
+        assertTrue(evaluate("1.0000021", "!=", "1.222222"))
+        assertTrue(evaluate("1.0", "!=", "0.0"))
+        assertTrue(evaluate("0.0", "==", "0.0"))
+        assertTrue(evaluate("2.0", "> ", "1.0"))
+        assertTrue(evaluate("1.0", "< ", "2.0"))
+        assertTrue(evaluate("2.0", ">=", "1.0"))
+        assertTrue(evaluate("1.0", "<=", "2.0"))
+    }
+
+    @Test
+    fun testBodmasRule() {
+        assertEquals("3", GenerateCode("1 @+ 2"))
+        assertEquals("1 + 2", GenerateCode("1 + 2"))
+        assertEquals("6", GenerateCode("1 @+ 2 @+ 3"))
+        assertEquals("4", GenerateCode("2 @+ 4 @/ 2"))
+        assertEquals("4", GenerateCode("4 @/ 2 @+ 2"))
+        // Addition and Subtraction tests
+        assertEquals("3", GenerateCode("1 @+ 2"))
+        assertEquals("-1", GenerateCode("1 @- 2"))
+        assertEquals("0", GenerateCode("1 @+ 2 @- 3"))
+        assertEquals("5", GenerateCode("1 @- 2 @+ 6"))
+        // Multiplication and Division tests
+        assertEquals("4", GenerateCode("2 @* 2"))
+        assertEquals("3", GenerateCode("6 @/ 2"))
+        assertEquals("6", GenerateCode("2 @* 3 @/ 1"))
+        assertEquals("2", GenerateCode("8 @/ 2 @* 2"))
+        // BODMAS rule tests
+        assertEquals("6", GenerateCode("2 @+ 2 @* 2"))
+        assertEquals("8", GenerateCode("2 @* 2 @+ 4"))
+        assertEquals("12", GenerateCode("2 @+ 2 @* 5 @- 2"))
+        assertEquals("-6", GenerateCode("2 @- 2 @* 5 @- 2"))
+        assertEquals("-5", GenerateCode("2 @- 2 @/ 2 @- 3 @* 2"))
     }
 
     @Test

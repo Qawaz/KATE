@@ -1,8 +1,10 @@
 package com.wakaztahir.kte.parser
 
+import com.wakaztahir.kte.model.LazyBlock
 import com.wakaztahir.kte.model.PrimitiveValue
 import com.wakaztahir.kte.model.ReferencedValue
 import com.wakaztahir.kte.model.model.KTEObject
+import com.wakaztahir.kte.parser.stream.DestinationStream
 import com.wakaztahir.kte.parser.stream.SourceStream
 import com.wakaztahir.kte.parser.stream.increment
 
@@ -18,7 +20,7 @@ private fun SourceStream.parseDynamicProperty(): ReferencedValue? {
     return null
 }
 
-private class ExpressionValue(
+internal data class ExpressionValue(
     val first: ReferencedValue,
     val operatorType: ArithmeticOperatorType,
     val second: ReferencedValue
@@ -36,6 +38,10 @@ private class ExpressionValue(
     override fun toString(): String {
         return stringValue(0)
     }
+
+    override fun generateTo(block: LazyBlock, source: SourceStream, destination: DestinationStream) {
+        asPrimitive(block.model).generateTo(block, source, destination)
+    }
 }
 
 internal fun SourceStream.parseExpression(): ReferencedValue? {
@@ -46,9 +52,20 @@ internal fun SourceStream.parseExpression(): ReferencedValue? {
             val arithmeticOperator = parseArithmeticOperator()
             if (arithmeticOperator != null) {
                 increment(' ')
-                val secondValue = parseDynamicProperty()
+                val secondValue = parseExpression()
                 if (secondValue != null) {
-                    ExpressionValue(
+                    if (secondValue is ExpressionValue) {
+                        if (arithmeticOperator.precedence < secondValue.operatorType.precedence) {
+                            return secondValue.copy(
+                                first = ExpressionValue(
+                                    first = firstValue,
+                                    operatorType = arithmeticOperator,
+                                    second = secondValue.first
+                                )
+                            )
+                        }
+                    }
+                    return ExpressionValue(
                         first = firstValue,
                         operatorType = arithmeticOperator,
                         second = secondValue
