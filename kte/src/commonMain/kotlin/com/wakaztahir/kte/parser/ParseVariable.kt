@@ -35,10 +35,8 @@ internal data class VariableDeclaration(val variableName: String, val variableVa
         val value = try {
             variableValue.asPrimitive(model)
         } catch (e: Exception) {
-            println("Couldn't get value of the constant to save it")
             throw e
         }
-        println("Storing Variable $variableName in model $model")
         model.putValue(variableName, value)
     }
 

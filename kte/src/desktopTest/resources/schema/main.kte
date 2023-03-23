@@ -1,3 +1,5 @@
+package output
+
 <%--
     KTE-v1.0
     A KTE Template that tests the schema of Kotlin KTE Multiplatform

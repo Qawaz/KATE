@@ -42,7 +42,6 @@ class ModelDirective(val propertyPath: List<ModelReference>) : ReferencedValue, 
                 value.asPrimitive(block.model).generateTo(block,source,destination)
             }
         } else {
-            println("REQUIRING ${this.propertyPath.joinToString(".")} IN MODEL ${block.model}")
             throwIt(block.model)
         }
     }

@@ -1,9 +1,10 @@
 package com.wakaztahir.kte.parser
 
 import com.wakaztahir.kte.model.*
-import com.wakaztahir.kte.parser.stream.*
+import com.wakaztahir.kte.parser.stream.SourceStream
 import com.wakaztahir.kte.parser.stream.escapeSpaces
 import com.wakaztahir.kte.parser.stream.increment
+import com.wakaztahir.kte.parser.stream.incrementUntilDirectiveWithSkip
 
 internal fun SourceStream.parseConditionType(): ConditionType? {
     if (increment("==")) {

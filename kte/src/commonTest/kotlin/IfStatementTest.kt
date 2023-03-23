@@ -1,3 +1,4 @@
+import com.wakaztahir.kte.GenerateCode
 import com.wakaztahir.kte.KTEDelicateFunction
 import com.wakaztahir.kte.TemplateContext
 import com.wakaztahir.kte.model.LogicalCondition
@@ -30,6 +31,14 @@ class IfStatementTest {
         val context = TemplateContext("@if(@var(var1)) blockValue @endif")
         context.stream.model.putValue("var1", true)
         assertEquals("blockValue", context.getDestinationAsStringWithReset())
+    }
+
+    @Test
+    fun testInfamousIssue(){
+        assertEquals(
+            expected = "45",
+            actual = GenerateCode("@var j = 4 @if(true) @var i = 5 @if(true) @var l = 5 @var(j)@var(i) @endif @endif")
+        )
     }
 
     @Test

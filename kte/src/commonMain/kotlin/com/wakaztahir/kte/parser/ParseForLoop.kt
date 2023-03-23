@@ -19,7 +19,6 @@ internal sealed interface ForLoop : AtDirective {
 
     override fun generateTo(block: LazyBlock, source: SourceStream, destination: DestinationStream) {
         iterate {
-            println("CURRENT MODEL $it: $model")
             blockValue.generateTo(source = source, destination = destination)
         }
     }

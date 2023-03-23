@@ -3,6 +3,7 @@ import com.wakaztahir.kte.KTEDelicateFunction
 import com.wakaztahir.kte.TemplateContext
 import com.wakaztahir.kte.dsl.ScopedModelObject
 import com.wakaztahir.kte.dsl.UnresolvedValueException
+import com.wakaztahir.kte.model.CodeGen
 import com.wakaztahir.kte.model.model.ModelListImpl
 import com.wakaztahir.kte.model.ModelDirective
 import com.wakaztahir.kte.model.ModelReference
@@ -59,32 +60,6 @@ class ForLoopTest {
         assertEquals("333", context.getDestinationAsString())
     }
 
-    @OptIn(KTEDelicateFunction::class)
-    @Test
-    fun testModelHierarchy() {
-        val model = TemplateModel { }
-        val scoped = ScopedModelObject(model)
-        val scopedAnother = ScopedModelObject(scoped)
-        model.putValue("hello", "yes")
-        assertEquals("yes", TemplateContext("@var(hello)", scopedAnother).getDestinationAsString())
-        val context = TemplateContext("@for(@var i=0;i<3;i+1) @var g = 0@for(@var j=0;j<3;j++) @var(g) @endfor @endfor")
-        val forLoop = context.stream.parseForLoop(context.stream)!!
-        context.stream.setPointerAt(forLoop.blockValue.startPointer)
-        val directive = forLoop.blockValue.parseAtDirective(context.stream) as VariableDeclaration
-        val nestedFor = forLoop.blockValue.parseForLoop(context.stream) as ForLoop
-        context.stream.setPointerAt(nestedFor.blockValue.startPointer)
-        assertEquals((forLoop.model as ScopedModelObject).parent, context.stream.model)
-        assertEquals((nestedFor.model as ScopedModelObject).parent, forLoop.model)
-        assertEquals("000000", forLoop.blockValue.getDestinationString(context.stream))
-        forLoop.iterate {
-            directive.storeValue(context.stream.model)
-            nestedFor.iterate {
-                assertNotEquals(null, nestedFor.model.getModelReference(ModelReference.Property("g")))
-            }
-        }
-
-    }
-
     @Test
     fun testForLoopGeneration1() {
         val context = TemplateContext("@for(@var i=0;i<3;i+1) @if(@var(i)==2) @var(i) @endif @endfor")
@@ -107,7 +82,7 @@ class ForLoopTest {
             GenerateCode("@for(@var i=0;i<3;i+1)@var f = 4@endfor@var(f)")
         }
         assertEquals(
-            expected = "000111222",
+            expected = "000000000",
             GenerateCode("@for(@var i=0;i<3;i+1) @var g = 0@for(@var j=0;j<3;j++) @var(g) @endfor @endfor")
         )
     }

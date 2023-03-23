@@ -32,6 +32,7 @@ class TestTemplates {
                     putValue("first", 4)
                     putValue("second", 6)
                     putValue("symbolName", "+")
+                    putValue("returnType","Int")
                 }
             }
         }))
