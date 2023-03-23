@@ -38,9 +38,9 @@ The value of the variable can only be one of these
 | Float (1.0f)                        | &check;   |
 | Boolean (true,false)                | &check;   |
 | Another Variable's Value            | &check;   |
-| [Expressions](#expressions)         | &check;   |
-| Value Returned from a function call | &cross;   |
-| List Element                        | &cross;   |
+| [gradle-wrapper.properties](..%2F..%2F..%2FJVM%2FUpdateApp%2Fgradle%2Fwrapper%2Fgradle-wrapper.properties)[Expressions](#expressions)         | &check;   |
+| Value Returned from a function call | &check;   |
+| List Element                        | &check;   |
 | A model's property                  | &check;   |
 
 ## References & Function Calls

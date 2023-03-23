@@ -1,15 +1,12 @@
 plugins {
     kotlin("multiplatform")
     id("com.android.library")
+    id("org.jetbrains.compose")
 }
 
 kotlin {
     android()
-    jvm("desktop") {
-        compilations.all {
-            kotlinOptions.jvmTarget = "11"
-        }
-    }
+    jvm()
     js(IR) {
         browser()
         binaries.executable()
@@ -18,6 +15,10 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(project(":kte"))
+                api(compose.runtime)
+                api(compose.ui)
+                @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
+                api(compose.material3)
             }
         }
         val commonTest by getting {
@@ -26,8 +27,6 @@ kotlin {
             }
         }
         val androidMain by getting
-        val desktopMain by getting
-        val desktopTest by getting
     }
 }
 

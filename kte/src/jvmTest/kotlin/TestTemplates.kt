@@ -16,7 +16,7 @@ class TestTemplates {
     }
 
     private fun output(path: String): DestinationStream {
-        val file = File("src/desktopTest/resources/$path")
+        val file = File("src/jvmTest/resources/$path")
         println(file.absolutePath)
         val outputStream = file.outputStream()
         return OutputStreamDestination(outputStream)

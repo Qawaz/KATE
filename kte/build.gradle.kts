@@ -13,7 +13,7 @@ kotlin {
     android {
         publishLibraryVariants("release")
     }
-    jvm("desktop") {
+    jvm {
         compilations.all {
             kotlinOptions.jvmTarget = "11"
         }
@@ -45,10 +45,10 @@ kotlin {
                 implementation("androidx.test:core-ktx:1.5.0")
             }
         }
-        val desktopMain by getting {
+        val jvmMain by getting {
             dependsOn(commonJvmMain)
         }
-        val desktopTest by getting {
+        val jvmTest by getting {
 
         }
         val jsMain by getting

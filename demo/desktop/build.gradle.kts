@@ -1,34 +1,25 @@
+import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+
 plugins {
     kotlin("jvm")
-}
-
-kotlin {
-//    jvm {
-//        compilations.all {
-//            kotlinOptions.jvmTarget = "11"
-//        }
-//    }
-//    sourceSets {
-//        val jvmMain by getting {
-//            dependencies {
-//
-//            }
-//        }
-//        val jvmTest by getting
-//    }
+    id("org.jetbrains.compose")
 }
 
 dependencies {
     implementation(project(":demo:common"))
 }
 
-//compose.desktop {
-//    application {
-//        mainClass = "MainKt"
-//        nativeDistributions {
-//            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-//            packageName = "jvm"
-//            packageVersion = "1.0.0"
-//        }
-//    }
-//}
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    kotlinOptions.jvmTarget = "11"
+}
+
+compose.desktop {
+    application {
+        mainClass = "MainKt"
+        nativeDistributions {
+            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+            packageName = "jvm"
+            packageVersion = "1.0.0"
+        }
+    }
+}
