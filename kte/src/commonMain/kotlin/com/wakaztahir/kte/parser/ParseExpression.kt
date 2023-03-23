@@ -1,8 +1,6 @@
 package com.wakaztahir.kte.parser
 
-import com.wakaztahir.kte.model.PrimitiveValue
 import com.wakaztahir.kte.parser.stream.SourceStream
-import com.wakaztahir.kte.parser.stream.increment
 
 enum class ArithmeticOperatorType(val char: Char, val precedence: Int) {
 
@@ -11,7 +9,7 @@ enum class ArithmeticOperatorType(val char: Char, val precedence: Int) {
             return value1 + value2
         }
 
-        override fun operate(value1: Float, value2: Float): Float {
+        override fun operate(value1: Double, value2: Double): Double {
             return value1 + value2
         }
     },
@@ -20,7 +18,7 @@ enum class ArithmeticOperatorType(val char: Char, val precedence: Int) {
             return value1 - value2
         }
 
-        override fun operate(value1: Float, value2: Float): Float {
+        override fun operate(value1: Double, value2: Double): Double {
             return value1 - value2
         }
     },
@@ -29,7 +27,7 @@ enum class ArithmeticOperatorType(val char: Char, val precedence: Int) {
             return value1 / value2
         }
 
-        override fun operate(value1: Float, value2: Float): Float {
+        override fun operate(value1: Double, value2: Double): Double {
             return value1 / value2
         }
     },
@@ -38,7 +36,7 @@ enum class ArithmeticOperatorType(val char: Char, val precedence: Int) {
             return value1 * value2
         }
 
-        override fun operate(value1: Float, value2: Float): Float {
+        override fun operate(value1: Double, value2: Double): Double {
             return value1 * value2
         }
     },
@@ -47,13 +45,13 @@ enum class ArithmeticOperatorType(val char: Char, val precedence: Int) {
             return value1 % value2
         }
 
-        override fun operate(value1: Float, value2: Float): Float {
+        override fun operate(value1: Double, value2: Double): Double {
             return value1 % value2
         }
     };
 
     abstract fun operate(value1: Int, value2: Int): Int
-    abstract fun operate(value1: Float, value2: Float): Float
+    abstract fun operate(value1: Double, value2: Double): Double
 
 }
 

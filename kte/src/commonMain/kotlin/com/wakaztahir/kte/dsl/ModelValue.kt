@@ -6,7 +6,7 @@ class ModelValue constructor(val value: PrimitiveValue<*>) {
 
     constructor(value: Int) : this(IntValue(value))
 
-    constructor(value: Float) : this(FloatValue(value))
+    constructor(value: Double) : this(DoubleValue(value))
 
     constructor(value: String) : this(StringValue(value))
 

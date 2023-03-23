@@ -21,8 +21,8 @@ abstract class MutableKTEObject : KTEObject {
         putValue(key, IntValue(value))
     }
 
-    fun putValue(key: String, value: Float) {
-        putValue(key, FloatValue(value))
+    fun putValue(key: String, value: Double) {
+        putValue(key, DoubleValue(value))
     }
 
     fun putValue(key: String, value: Boolean) {

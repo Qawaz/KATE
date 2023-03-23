@@ -23,7 +23,7 @@ fun SourceStream.parseNumberValue(): PrimitiveValue<*>? {
             textValue += currentChar
             incrementPointer()
         }
-        textValue.toFloatOrNull()?.let { FloatValue(it) }
+        textValue.toDoubleOrNull()?.let { DoubleValue(it) }
     } else {
         textValue.toIntOrNull()?.let { IntValue(it) }
     }

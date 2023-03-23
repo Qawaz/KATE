@@ -36,13 +36,13 @@ interface PrimitiveValue<T> : CodeGen, ReferencedValue {
             throw IllegalStateException("operator '${operatorType.char}' cannot be applied with a boolean value")
         }
 
-        val resultIsFloat: Boolean = ((this as? FloatValue) ?: (value2 as? FloatValue)) != null
+        val resultIsFloat: Boolean = ((this as? DoubleValue) ?: (value2 as? DoubleValue)) != null
 
         return if (resultIsFloat) {
-            FloatValue(
+            DoubleValue(
                 operatorType.operate(
-                    value1 = (this as? FloatValue)?.value ?: (this as IntValue).value.toFloat(),
-                    value2 = (value2 as? FloatValue)?.value ?: (value2 as IntValue).value.toFloat()
+                    value1 = (this as? DoubleValue)?.value ?: (this as IntValue).value.toDouble(),
+                    value2 = (value2 as? DoubleValue)?.value ?: (value2 as IntValue).value.toDouble()
                 )
             )
         } else {
@@ -84,13 +84,13 @@ class IntValue(override val value: Int) : PrimitiveValue<Int> {
 
 }
 
-class FloatValue(override val value: Float) : PrimitiveValue<Float> {
-    override fun compareTo(other: PrimitiveValue<Float>): Int {
+class DoubleValue(override val value: Double) : PrimitiveValue<Double> {
+    override fun compareTo(other: PrimitiveValue<Double>): Int {
         return value.compareTo(other.value)
     }
 
     override fun generateTo(block: LazyBlock, source: SourceStream, destination: DestinationStream) {
-        destination.write(this@FloatValue)
+        destination.write(this@DoubleValue)
     }
 
     override fun toString(): String = value.toString()
