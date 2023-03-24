@@ -47,7 +47,8 @@ internal data class ExpressionValue(
 internal fun SourceStream.parseExpression(): ReferencedValue? {
     val firstValue = parseDynamicProperty()
     if (firstValue != null) {
-        val spaced = increment(' ')
+        val pointerAfterFirstValue = pointer
+        increment(' ')
         return if (increment('@')) {
             val arithmeticOperator = parseArithmeticOperator()
             if (arithmeticOperator != null) {
@@ -74,11 +75,11 @@ internal fun SourceStream.parseExpression(): ReferencedValue? {
                     throw IllegalStateException("expected second value number / property / variable instead got $currentChar")
                 }
             } else {
-                decrementPointer(1)
+                setPointerAt(pointerAfterFirstValue)
                 firstValue
             }
         } else {
-            if (spaced) decrementPointer(1)
+            setPointerAt(pointerAfterFirstValue)
             firstValue
         }
     }
