@@ -62,6 +62,25 @@ interface KTEObject : KTEValue {
         destination.write(this)
     }
 
+    fun traverse(block: (KTEValue) -> Unit) {
+        block(this)
+        for (each in contained) {
+            when (each.value) {
+                is KTEList<*> -> {
+                    for (item in each.value as KTEList<*>) block(item)
+                }
+
+                is KTEObject -> {
+                    (each.value as KTEObject).traverse(block)
+                }
+
+                else -> {
+                    block(each.value)
+                }
+            }
+        }
+    }
+
 }
 
 fun TemplateModel(name: String = "Global", block: MutableKTEObject.() -> Unit): MutableKTEObject {

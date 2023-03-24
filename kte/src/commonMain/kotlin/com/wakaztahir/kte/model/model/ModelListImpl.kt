@@ -13,10 +13,11 @@ class ModelListImpl<T : KTEValue>(override val objectName: String, val collectio
         hashMapOf<String, KTEValue>().apply {
             put("get", object : KTEFunction() {
                 override fun invoke(model: KTEObject, parameters: List<ReferencedValue>): ModelValue {
-                    require(parameters.size == 1) {
-                        "Unknown parameters to get function"
+                    return if (parameters.size == 1) {
+                        ModelValue(collection[parameters[0].asPrimitive(model).value as Int])
+                    } else {
+                        ModelValue("function")
                     }
-                    return ModelValue(collection[parameters[0].asPrimitive(model).value as Int])
                 }
 
                 override fun toString(): String = "get(number) : KTEValue"
@@ -54,7 +55,8 @@ class ModelListImpl<T : KTEValue>(override val objectName: String, val collectio
     }
 
     override fun writeTo(model: KTEObject, destination: LanguageDestination) {
-        destination.write(this)
+        @Suppress("UNCHECKED_CAST")
+        destination.write(this,this as KTEList<KTEValue>)
     }
 
     override fun toString(): String {

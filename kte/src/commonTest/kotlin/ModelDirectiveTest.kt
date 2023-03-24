@@ -1,11 +1,9 @@
 import com.wakaztahir.kte.TemplateContext
 import com.wakaztahir.kte.dsl.ModelValue
-import com.wakaztahir.kte.model.KTEFunction
+import com.wakaztahir.kte.model.*
 import com.wakaztahir.kte.model.model.TemplateModel
 import com.wakaztahir.kte.model.model.KTEObject
-import com.wakaztahir.kte.model.ModelDirective
-import com.wakaztahir.kte.model.ModelReference
-import com.wakaztahir.kte.model.ReferencedValue
+import com.wakaztahir.kte.model.model.ModelListImpl
 import com.wakaztahir.kte.parser.parseExpression
 import com.wakaztahir.kte.parser.parseModelDirective
 import kotlin.test.Test
@@ -19,6 +17,33 @@ class ModelDirectiveTest {
         block(stream.parseExpression() as ModelDirective)
         stream.decrementPointer(stream.pointer - previous)
         block(stream.parseModelDirective()!!)
+    }
+
+    @Test
+    fun testObjectGeneration() {
+        val context = TemplateContext("@model.myObject")
+        context.stream.model.apply {
+            this.putObject("myObject") {
+                this.putValue("myInt", 15)
+                this.putValue("myDouble", 16.000)
+                this.putValue("myStr", "something is here")
+                this.putValue(
+                    key = "myList", value = ModelListImpl<IntValue>(
+                        objectName = "myList", collection = listOf(
+                            IntValue(10),
+                            IntValue(20),
+                            IntValue(30),
+                            IntValue(40),
+                        )
+                    )
+                )
+                this.putObject(key = "myNestedObject") {
+                    copy(this@apply)
+                }
+            }
+        }
+        println(context.getDestinationAsString())
+        assertTrue(false)
     }
 
     @Test
