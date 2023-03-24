@@ -103,7 +103,7 @@ class ForLoopTest {
     @Test
     fun testForLoopGeneration4() {
         val context = TemplateContext("@for(@var elem : @model.list) @var(elem) @endfor", TemplateModel {
-            putValue("list", ModelListImpl(listOf("H", "e", "ll", "o").map { StringValue(it) }))
+            putValue("list", ModelListImpl("list",listOf("H", "e", "ll", "o").map { StringValue(it) }))
         })
         assertEquals("Hello", context.getDestinationAsStringWithReset())
     }
@@ -111,7 +111,7 @@ class ForLoopTest {
     @Test
     fun testForLoopGeneration5() {
         val context = TemplateContext("@model.list.size", TemplateModel {
-            putValue("list", ModelListImpl(listOf("H", "e", "ll", "o").map { StringValue(it) }))
+            putValue("list", ModelListImpl("list",listOf("H", "e", "ll", "o").map { StringValue(it) }))
         })
         assertEquals("4", context.getDestinationAsStringWithReset())
     }

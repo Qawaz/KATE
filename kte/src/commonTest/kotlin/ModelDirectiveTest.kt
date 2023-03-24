@@ -62,7 +62,7 @@ class ModelDirectiveTest {
                 putObject("property2") {
                     putValue("property3", "123")
                 }
-                putValue("callSum", object : KTEFunction {
+                putValue("callSum", object : KTEFunction() {
                     override fun invoke(model: KTEObject, parameters: List<ReferencedValue>): ModelValue {
                         return ModelValue(parameters.map { it.asPrimitive(model) }.sumOf { it.value as Int })
                     }

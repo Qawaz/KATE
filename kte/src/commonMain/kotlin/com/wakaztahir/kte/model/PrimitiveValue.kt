@@ -4,8 +4,7 @@ import com.wakaztahir.kte.model.model.KTEList
 import com.wakaztahir.kte.dsl.UnresolvedValueException
 import com.wakaztahir.kte.model.model.KTEObject
 import com.wakaztahir.kte.parser.ArithmeticOperatorType
-import com.wakaztahir.kte.parser.stream.DestinationStream
-import com.wakaztahir.kte.parser.stream.SourceStream
+import com.wakaztahir.kte.parser.stream.LanguageDestination
 
 interface PrimitiveValue<T> : CodeGen, ReferencedValue {
 
@@ -76,7 +75,7 @@ class IntValue(override val value: Int) : PrimitiveValue<Int> {
         return value.compareTo(other.value)
     }
 
-    override fun generateTo(block: LazyBlock, source: SourceStream, destination: DestinationStream) {
+    override fun writeTo(model: KTEObject, destination: LanguageDestination) {
         destination.write(this@IntValue)
     }
 
@@ -85,11 +84,12 @@ class IntValue(override val value: Int) : PrimitiveValue<Int> {
 }
 
 class DoubleValue(override val value: Double) : PrimitiveValue<Double> {
+
     override fun compareTo(other: PrimitiveValue<Double>): Int {
         return value.compareTo(other.value)
     }
 
-    override fun generateTo(block: LazyBlock, source: SourceStream, destination: DestinationStream) {
+    override fun writeTo(model: KTEObject, destination: LanguageDestination) {
         destination.write(this@DoubleValue)
     }
 
@@ -106,7 +106,7 @@ class BooleanValue(override val value: Boolean) : PrimitiveValue<Boolean> {
         }
     }
 
-    override fun generateTo(block: LazyBlock, source: SourceStream, destination: DestinationStream) {
+    override fun writeTo(model: KTEObject, destination: LanguageDestination) {
         destination.write(this@BooleanValue)
     }
 
@@ -115,6 +115,7 @@ class BooleanValue(override val value: Boolean) : PrimitiveValue<Boolean> {
 }
 
 class StringValue(override val value: String) : PrimitiveValue<String> {
+
     override fun compareTo(other: PrimitiveValue<String>): Int {
         return if (value == other.value) {
             0
@@ -123,7 +124,7 @@ class StringValue(override val value: String) : PrimitiveValue<String> {
         }
     }
 
-    override fun generateTo(block: LazyBlock, source: SourceStream, destination: DestinationStream) {
+    override fun writeTo(model: KTEObject, destination: LanguageDestination) {
         destination.write(this@StringValue)
     }
 

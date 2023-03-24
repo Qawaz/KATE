@@ -1,10 +1,9 @@
 package com.wakaztahir.kte.parser
 
-import com.wakaztahir.kte.model.LazyBlock
 import com.wakaztahir.kte.model.PrimitiveValue
 import com.wakaztahir.kte.model.ReferencedValue
 import com.wakaztahir.kte.model.model.KTEObject
-import com.wakaztahir.kte.parser.stream.DestinationStream
+import com.wakaztahir.kte.parser.stream.LanguageDestination
 import com.wakaztahir.kte.parser.stream.SourceStream
 import com.wakaztahir.kte.parser.stream.increment
 
@@ -39,9 +38,10 @@ internal data class ExpressionValue(
         return stringValue(0)
     }
 
-    override fun generateTo(block: LazyBlock, source: SourceStream, destination: DestinationStream) {
-        asPrimitive(block.model).generateTo(block, source, destination)
+    override fun writeTo(model: KTEObject, destination: LanguageDestination) {
+        asPrimitive(model).writeTo(model,destination)
     }
+
 }
 
 internal fun SourceStream.parseExpression(): ReferencedValue? {

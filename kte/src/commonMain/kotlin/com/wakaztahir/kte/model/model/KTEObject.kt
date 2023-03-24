@@ -2,20 +2,12 @@ package com.wakaztahir.kte.model.model
 
 import com.wakaztahir.kte.dsl.ModelObjectImpl
 import com.wakaztahir.kte.model.*
+import com.wakaztahir.kte.parser.stream.LanguageDestination
 
 interface KTEObject : KTEValue {
 
-    override fun asPrimitive(model: KTEObject): PrimitiveValue<*> {
-        throw IllegalStateException("object is not a primitive value")
-    }
-
-    override fun asList(model: KTEObject): KTEList<KTEValue> {
-        throw IllegalStateException("object is not an iterable")
-    }
-
-    override fun asObject(model: KTEObject): KTEObject {
-        return this
-    }
+    val objectName: String
+    val contained: Map<String, KTEValue>
 
     fun getModelReference(reference: ModelReference): KTEValue?
 
@@ -66,10 +58,14 @@ interface KTEObject : KTEValue {
         return getModelDirectiveValue(directive) as? PrimitiveValue<*>
     }
 
+    override fun writeTo(model: KTEObject, destination: LanguageDestination) {
+        destination.write(this)
+    }
+
 }
 
-fun TemplateModel(block: MutableKTEObject.() -> Unit): MutableKTEObject {
-    val modelObj = ModelObjectImpl()
+fun TemplateModel(name: String = "Global", block: MutableKTEObject.() -> Unit): MutableKTEObject {
+    val modelObj = ModelObjectImpl(objectName = name)
     block(modelObj)
     return modelObj
 }

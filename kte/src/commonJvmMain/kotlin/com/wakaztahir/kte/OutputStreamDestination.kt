@@ -1,9 +1,11 @@
 package com.wakaztahir.kte
 
 import com.wakaztahir.kte.parser.stream.DestinationStream
+import com.wakaztahir.kte.parser.stream.WritableStream
 import java.io.OutputStream
 
-class OutputStreamDestination(private val outputStream: OutputStream) : DestinationStream() {
+class OutputStreamDestination(private val outputStream: OutputStream) : WritableStream {
+
     override fun write(char: Char) {
         outputStream.write(char.code)
     }

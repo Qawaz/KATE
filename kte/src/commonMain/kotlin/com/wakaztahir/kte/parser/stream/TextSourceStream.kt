@@ -5,7 +5,7 @@ import com.wakaztahir.kte.model.model.MutableKTEObject
 
 class TextSourceStream(
     private val sourceCode: String,
-    override val model: MutableKTEObject = ModelObjectImpl()
+    override val model: MutableKTEObject = ModelObjectImpl("Global")
 ) : SourceStream() {
 
     override var pointer: Int = 0

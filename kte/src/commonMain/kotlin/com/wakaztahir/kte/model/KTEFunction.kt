@@ -3,25 +3,16 @@ package com.wakaztahir.kte.model
 import com.wakaztahir.kte.dsl.ModelValue
 import com.wakaztahir.kte.model.model.KTEList
 import com.wakaztahir.kte.model.model.KTEObject
+import com.wakaztahir.kte.parser.stream.LanguageDestination
 
-interface KTEFunction : KTEValue {
+abstract class KTEFunction : KTEValue {
 
-    fun invoke(model: KTEObject, parameters: List<ReferencedValue>): ModelValue
+    val parameters = mutableListOf<ReferencedValue>()
 
-    override fun asPrimitive(model: KTEObject): PrimitiveValue<*> {
-        throw IllegalStateException("KTEFunction is not a primitive value")
-    }
+    protected abstract fun invoke(model: KTEObject, parameters: List<ReferencedValue>): ModelValue
 
-    override fun asObject(model: KTEObject): KTEObject {
-        throw IllegalStateException("KTEFunction is not an object")
-    }
-
-    override fun asList(model: KTEObject): KTEList<KTEValue> {
-        throw IllegalStateException("KTEFunction is not an iterable")
-    }
-
-    override fun asFunction(model: KTEObject): KTEFunction {
-        return this
+    override fun writeTo(model: KTEObject, destination: LanguageDestination) {
+        invoke(model, parameters).value.writeTo(model, destination)
     }
 
     override fun stringValue(indentationLevel: Int): String {

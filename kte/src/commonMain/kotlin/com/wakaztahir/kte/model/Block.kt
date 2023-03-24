@@ -8,6 +8,7 @@ import com.wakaztahir.kte.parser.stream.DestinationStream
 import com.wakaztahir.kte.parser.stream.SourceStream
 import com.wakaztahir.kte.parser.stream.TextDestinationStream
 import com.wakaztahir.kte.parser.stream.increment
+import com.wakaztahir.kte.parser.stream.languages.KotlinLanguageDestination
 
 interface LazyBlock {
 
@@ -25,7 +26,7 @@ interface LazyBlock {
                 directive.generateTo(this, source, destination)
                 continue
             }
-            destination.write(source.currentChar)
+            destination.stream.write(source.currentChar)
             source.incrementPointer()
         }
     }
@@ -43,9 +44,9 @@ interface LazyBlock {
 
     @KTEDelicateFunction
     fun getDestinationString(source: SourceStream): String {
-        val destination = TextDestinationStream()
+        val destination = KotlinLanguageDestination(TextDestinationStream())
         generateTo(source, destination)
-        return destination.getValue()
+        return (destination.stream as TextDestinationStream).getValue()
     }
 
     @KTEDelicateFunction

@@ -7,7 +7,7 @@ import com.wakaztahir.kte.parser.stream.TextSourceStream
 
 class TemplateContext(stream: SourceStream){
 
-    constructor(text: String, model: MutableKTEObject = ModelObjectImpl()) : this(TextSourceStream(text, model))
+    constructor(text: String, model: MutableKTEObject = ModelObjectImpl("Global")) : this(TextSourceStream(text, model))
 
     var stream: SourceStream = stream
         private set

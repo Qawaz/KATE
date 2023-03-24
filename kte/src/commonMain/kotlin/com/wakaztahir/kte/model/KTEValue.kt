@@ -2,24 +2,16 @@ package com.wakaztahir.kte.model
 
 import com.wakaztahir.kte.model.model.KTEList
 import com.wakaztahir.kte.model.model.KTEObject
+import com.wakaztahir.kte.parser.stream.DestinationStream
+import com.wakaztahir.kte.parser.stream.LanguageDestination
+import com.wakaztahir.kte.parser.stream.SourceStream
 
-interface KTEValue {
+interface KTEValue : CodeGen {
 
-    fun asPrimitive(model: KTEObject): PrimitiveValue<*> {
-        return this as PrimitiveValue<*>
-    }
+    fun writeTo(model: KTEObject, destination: LanguageDestination)
 
-    fun asList(model: KTEObject): KTEList<KTEValue> {
-        @Suppress("UNCHECKED_CAST")
-        return this as KTEList<KTEValue>
-    }
-
-    fun asObject(model: KTEObject): KTEObject {
-        return this as KTEObject
-    }
-
-    fun asFunction(model: KTEObject): KTEFunction {
-        return this as KTEFunction
+    override fun generateTo(block: LazyBlock, source: SourceStream, destination: DestinationStream) {
+        writeTo(block.model, destination)
     }
 
     fun indentation(indentationLevel: Int): String {

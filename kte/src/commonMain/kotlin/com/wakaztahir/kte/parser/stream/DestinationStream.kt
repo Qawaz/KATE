@@ -5,14 +5,7 @@ import com.wakaztahir.kte.model.DoubleValue
 import com.wakaztahir.kte.model.IntValue
 import com.wakaztahir.kte.model.StringValue
 
-abstract class DestinationStream {
+interface DestinationStream : LanguageDestination {
 
-    abstract fun write(char: Char)
-    abstract fun write(str: String)
-
-    open fun write(value: IntValue) = write(value.value.toString())
-    open fun write(value: DoubleValue) = write(value.value.toString() + 'f')
-    open fun write(value: BooleanValue) = write(if (value.value) "true" else "false")
-    open fun write(value: StringValue) = write(value.value)
 
 }

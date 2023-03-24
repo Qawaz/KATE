@@ -2,7 +2,7 @@ package com.wakaztahir.kte.dsl
 
 import com.wakaztahir.kte.model.*
 
-class ModelValue constructor(val value: PrimitiveValue<*>) {
+class ModelValue constructor(val value: KTEValue) {
 
     constructor(value: Int) : this(IntValue(value))
 

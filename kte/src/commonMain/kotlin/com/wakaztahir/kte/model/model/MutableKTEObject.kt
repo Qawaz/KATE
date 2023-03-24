@@ -7,7 +7,7 @@ abstract class MutableKTEObject : KTEObject {
 
     // Put Functions
 
-    abstract fun contains(key : String) : Boolean
+    abstract fun contains(key: String): Boolean
 
     abstract fun putValue(key: String, value: KTEValue)
 
@@ -53,14 +53,14 @@ abstract class MutableKTEObject : KTEObject {
         val objects = mutableListOf<KTEObject>()
         block(object : PutObjectsScope {
             override fun putObject(block: MutableKTEObject.() -> Unit) {
-                objects.add(ModelObjectImpl().apply(block))
+                objects.add(ModelObjectImpl("$key${objects.size}").apply(block))
             }
         })
-        putValue(key, ModelListImpl(objects))
+        putValue(key, ModelListImpl(key, objects))
     }
 
     fun putObject(key: String, block: MutableKTEObject.() -> Unit) {
-        putValue(key, ModelObjectImpl().apply(block))
+        putValue(key, ModelObjectImpl(key).apply(block))
     }
 
     abstract fun removeKey(key: String)

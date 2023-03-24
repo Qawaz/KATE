@@ -5,6 +5,7 @@ import com.wakaztahir.kte.model.model.KTEList
 import com.wakaztahir.kte.dsl.UnresolvedValueException
 import com.wakaztahir.kte.model.model.KTEObject
 import com.wakaztahir.kte.parser.stream.DestinationStream
+import com.wakaztahir.kte.parser.stream.LanguageDestination
 import com.wakaztahir.kte.parser.stream.SourceStream
 
 sealed interface ModelReference {
@@ -30,19 +31,18 @@ sealed interface ModelReference {
 
 class ModelDirective(val propertyPath: List<ModelReference>) : ReferencedValue, AtDirective {
 
-    override fun generateTo(block: LazyBlock, source: SourceStream, destination: DestinationStream) {
-        val value = block.model.getModelDirectiveValue(this)
+    override fun writeTo(model: KTEObject, destination: LanguageDestination) {
+        val value = model.getModelDirectiveValue(this)
         if (value != null) {
+
+            // Adding parameters to function parameters list
             if (value is KTEFunction && propertyPath.lastOrNull() is ModelReference.FunctionCall) {
-                value.invoke(
-                    model = block.model,
-                    parameters = (propertyPath.last() as ModelReference.FunctionCall).parametersList
-                ).value.generateTo(block = block, source = source, destination = destination)
-            } else {
-                value.asPrimitive(block.model).generateTo(block,source,destination)
+                value.parameters.addAll((propertyPath.last() as ModelReference.FunctionCall).parametersList)
             }
+
+            value.writeTo(model, destination)
         } else {
-            throwIt(block.model)
+            throwIt(model)
         }
     }
 
@@ -51,7 +51,7 @@ class ModelDirective(val propertyPath: List<ModelReference>) : ReferencedValue, 
     }
 
     override fun asPrimitive(model: KTEObject): PrimitiveValue<*> {
-        return model.getModelDirectiveValue(this)?.asPrimitive(model) ?: throwIt(model)
+        return model.getModelDirectiveAsPrimitive(this) ?: throwIt(model)
     }
 
     override fun asList(model: KTEObject): KTEList<KTEValue> {
@@ -59,7 +59,7 @@ class ModelDirective(val propertyPath: List<ModelReference>) : ReferencedValue, 
     }
 
     override fun asObject(model: KTEObject): KTEObject {
-        return model.getPropertyAsIterable(this) ?: throwIt(model)
+        return model.getPropertyAsObject(this) ?: throwIt(model)
     }
 
     override fun toString(): String = propertyPath.joinToString(".")

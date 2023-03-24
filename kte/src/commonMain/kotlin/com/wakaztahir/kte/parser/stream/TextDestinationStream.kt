@@ -1,6 +1,6 @@
 package com.wakaztahir.kte.parser.stream
 
-class TextDestinationStream : DestinationStream() {
+class TextDestinationStream : WritableStream {
 
     private var text = ""
 

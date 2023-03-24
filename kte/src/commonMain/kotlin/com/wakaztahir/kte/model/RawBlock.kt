@@ -5,6 +5,6 @@ import com.wakaztahir.kte.parser.stream.SourceStream
 
 class RawBlock(val value: String) : AtDirective {
     override fun generateTo(block: LazyBlock, source: SourceStream, destination: DestinationStream) {
-        destination.write(value)
+        destination.stream.write(value)
     }
 }

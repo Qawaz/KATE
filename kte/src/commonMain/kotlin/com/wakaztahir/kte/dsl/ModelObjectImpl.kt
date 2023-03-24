@@ -7,9 +7,11 @@ import com.wakaztahir.kte.model.model.KTEList
 import com.wakaztahir.kte.model.model.MutableKTEObject
 import com.wakaztahir.kte.model.model.KTEObject
 
-open class ModelObjectImpl : MutableKTEObject() {
+open class ModelObjectImpl(override val objectName: String) : MutableKTEObject() {
 
     private val container: MutableMap<String, KTEValue> = hashMapOf()
+    override val contained: Map<String, KTEValue>
+        get() = container
 
     // ----- Getters
 
