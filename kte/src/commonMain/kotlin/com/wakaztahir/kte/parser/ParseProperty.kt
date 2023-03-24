@@ -39,7 +39,7 @@ internal data class ExpressionValue(
     }
 
     override fun writeTo(model: KTEObject, destination: LanguageDestination) {
-        asPrimitive(model).writeTo(model,destination)
+        asPrimitive(model).writeTo(model, destination)
     }
 
 }

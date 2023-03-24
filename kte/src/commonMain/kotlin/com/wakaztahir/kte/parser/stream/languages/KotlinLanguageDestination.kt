@@ -56,7 +56,7 @@ class KotlinLanguageDestination(override val stream: WritableStream) : Destinati
     }
 
     private fun writeObjectAsDataClass(value: KTEObject) {
-        stream.write("data class ${value.objectName.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }}(\n")
+        stream.write("data class ${value.objectName}(\n")
         var first = true
         for (each in value.contained) {
             if (!first) stream.write(",\n")
@@ -70,7 +70,7 @@ class KotlinLanguageDestination(override val stream: WritableStream) : Destinati
     }
 
     private fun writeObjectCallOnly(value: KTEObject) {
-        stream.write("${value.objectName.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }}()")
+        stream.write("${value.objectName}()")
     }
 
     override fun write(value: KTEObject) {

@@ -66,6 +66,7 @@ internal fun SourceStream.parseVariableDeclaration(): VariableDeclaration? {
             escapeSpaces()
             val property = this.parseExpression()
             return if (property != null) {
+                increment(' ')
                 VariableDeclaration(variableName = variableName, variableValue = property)
             } else {
                 throw VariableDeclarationParseException("constant's value not found")

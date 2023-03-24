@@ -21,9 +21,9 @@ class ModelDirectiveTest {
 
     @Test
     fun testObjectGeneration() {
-        val context = TemplateContext("@model.myObject")
+        val context = TemplateContext("@model.MyObject")
         context.stream.model.apply {
-            this.putObject("myObject") {
+            this.putObject("MyObject") {
                 this.putValue("myInt", 15)
                 this.putValue("myDouble", 16.000)
                 this.putValue("myStr", "something is here")
@@ -37,13 +37,24 @@ class ModelDirectiveTest {
                         )
                     )
                 )
-                this.putObject(key = "myNestedObject") {
+                this.putObject(key = "MyNestedObject") {
                     copy(this@apply)
                 }
             }
         }
-        println(context.getDestinationAsString())
-        assertTrue(false)
+        assertEquals(
+            """data class MyObject(
+            |	myDouble : Double = 16.0f,
+            |	myList : List<Int> = listOf(10, 20, 30, 40),
+            |	MyNestedObject : Any = MyNestedObject(),
+            |	myInt : Int = 15,
+            |	myStr : String = "something is here"
+            |)
+            |
+            |data class MyNestedObject(
+            |
+            |)""".trimMargin("|"), context.getDestinationAsString()
+        )
     }
 
     @Test

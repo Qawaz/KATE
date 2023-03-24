@@ -1,3 +1,4 @@
+import com.wakaztahir.kte.GenerateCode
 import com.wakaztahir.kte.TemplateContext
 import com.wakaztahir.kte.model.StringValue
 import com.wakaztahir.kte.parser.parseVariableDeclaration
@@ -38,29 +39,31 @@ class VariablesTest {
         assertEquals(text.length, context.stream.pointer)
     }
 
-    private fun evaluate(i : String,j : String,char : Char) : String {
-        val context = TemplateContext("@var i = $i@var j = @var(i) @$char $j@var(j)")
-        return context.getDestinationAsString()
+    private fun evaluate(i: String, j: String, char: Char, expect: String) {
+        assertEquals(expect, GenerateCode("@var i = $i@var j = @var(i) @$char $j@var(j)"))
+        assertEquals(expect, GenerateCode("$i @$char $j"))
+        assertEquals(expect, GenerateCode("@var j = $j $i @$char @var(j)"))
+        assertEquals(expect, GenerateCode("@var i = $i @var(i) @$char $j"))
     }
 
     @Test
-    fun testExpressions(){
-        assertEquals("2",evaluate("0","2",'+'))
-        assertEquals("2",evaluate("2","0",'+'))
-        assertEquals("5",evaluate("10","5",'-'))
-        assertEquals("-5",evaluate("5","10",'-'))
-        assertEquals("10",evaluate("5","2",'*'))
-        assertEquals("10",evaluate("2","5",'*'))
-        assertEquals("5",evaluate("10","2",'/'))
-        assertEquals("0",evaluate("2","2",'%'))
+    fun testExpressions() {
+        evaluate("0", "2", '+', "2")
+        evaluate("2", "0", '+', "2")
+        evaluate("10", "5", '-', "5")
+        evaluate("5", "10", '-', "-5")
+        evaluate("5", "2", '*', "10")
+        evaluate("2", "5", '*', "10")
+        evaluate("10", "2", '/', "5")
+        evaluate("2", "2", '%', "0")
     }
 
     @Test
-    fun testReassignment(){
+    fun testReassignment() {
         val context = TemplateContext("@var i=0@var i=2@var(i)")
-        assertEquals("2",context.getDestinationAsString())
+        assertEquals("2", context.getDestinationAsString())
         val context2 = TemplateContext("@var i=10@var i=@var(i) @+ 1@var(i)")
-        assertEquals("11",context2.getDestinationAsString())
+        assertEquals("11", context2.getDestinationAsString())
     }
 
     @Test
