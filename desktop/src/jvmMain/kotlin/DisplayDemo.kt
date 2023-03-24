@@ -6,7 +6,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import com.wakaztahir.kte.TemplateContext
-import com.wakaztahir.kte.model.model.TemplateModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
@@ -26,7 +25,7 @@ fun DisplayDemo() {
         if(errorText.isNotEmpty()){
             Text(
                 text = errorText,
-                color = MaterialTheme.colorScheme.onError
+                color = MaterialTheme.colorScheme.error
             )
         }
         Row(modifier = Modifier.fillMaxWidth()) {
@@ -37,6 +36,7 @@ fun DisplayDemo() {
                 codeJob = scope.launch {
                     try {
                         output = TemplateContext(text).getDestinationAsString()
+                        errorText = ""
                     } catch (e: Throwable) {
                         errorText = e.message ?: ""
                     }

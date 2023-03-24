@@ -17,9 +17,10 @@ kotlin {
                 implementation(project(":kte"))
                 implementation(compose.runtime)
                 implementation(compose.foundation)
+                implementation(compose.ui)
                 @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
                 implementation(compose.material3)
-                implementation(compose.desktop.currentOs)
+                runtimeOnly(compose.desktop.currentOs)
             }
         }
         val jvmTest by getting
