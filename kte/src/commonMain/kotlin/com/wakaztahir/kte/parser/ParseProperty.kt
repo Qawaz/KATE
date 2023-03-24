@@ -13,7 +13,7 @@ internal fun SourceStream.parseReferencedValue(): ReferencedValue? {
     return null
 }
 
-private fun SourceStream.parseDynamicProperty(): ReferencedValue? {
+fun SourceStream.parseDynamicProperty(): ReferencedValue? {
     parseReferencedValue()?.let { return it }
     parsePrimitiveValue()?.let { return it }
     return null
@@ -44,44 +44,44 @@ internal data class ExpressionValue(
 
 }
 
-internal fun SourceStream.parseExpression(): ReferencedValue? {
-    val firstValue = parseDynamicProperty()
-    if (firstValue != null) {
-        val pointerAfterFirstValue = pointer
-        increment(' ')
-        return if (increment('@')) {
-            val arithmeticOperator = parseArithmeticOperator()
-            if (arithmeticOperator != null) {
-                increment(' ')
-                val secondValue = parseExpression()
-                if (secondValue != null) {
-                    if (secondValue is ExpressionValue) {
-                        if (arithmeticOperator.precedence < secondValue.operatorType.precedence) {
-                            return secondValue.copy(
-                                first = ExpressionValue(
-                                    first = firstValue,
-                                    operatorType = arithmeticOperator,
-                                    second = secondValue.first
-                                )
-                            )
-                        }
-                    }
-                    return ExpressionValue(
-                        first = firstValue,
-                        operatorType = arithmeticOperator,
-                        second = secondValue
-                    )
-                } else {
-                    throw IllegalStateException("expected second value number / property / variable instead got $currentChar")
-                }
-            } else {
-                setPointerAt(pointerAfterFirstValue)
-                firstValue
-            }
-        } else {
-            setPointerAt(pointerAfterFirstValue)
-            firstValue
-        }
-    }
-    return null
-}
+//internal fun SourceStream.parseExpression(): ReferencedValue? {
+//    val firstValue = parseDynamicProperty()
+//    if (firstValue != null) {
+//        val pointerAfterFirstValue = pointer
+//        increment(' ')
+//        return if (increment('@')) {
+//            val arithmeticOperator = parseArithmeticOperator()
+//            if (arithmeticOperator != null) {
+//                increment(' ')
+//                val secondValue = parseExpression()
+//                if (secondValue != null) {
+//                    if (secondValue is ExpressionValue) {
+//                        if (arithmeticOperator.precedence < secondValue.operatorType.precedence) {
+//                            return secondValue.copy(
+//                                first = ExpressionValue(
+//                                    first = firstValue,
+//                                    operatorType = arithmeticOperator,
+//                                    second = secondValue.first
+//                                )
+//                            )
+//                        }
+//                    }
+//                    return ExpressionValue(
+//                        first = firstValue,
+//                        operatorType = arithmeticOperator,
+//                        second = secondValue
+//                    )
+//                } else {
+//                    throw IllegalStateException("expected second value number / property / variable instead got $currentChar")
+//                }
+//            } else {
+//                setPointerAt(pointerAfterFirstValue)
+//                firstValue
+//            }
+//        } else {
+//            setPointerAt(pointerAfterFirstValue)
+//            firstValue
+//        }
+//    }
+//    return null
+//}

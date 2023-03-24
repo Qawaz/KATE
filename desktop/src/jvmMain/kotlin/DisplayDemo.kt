@@ -6,6 +6,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import com.wakaztahir.kte.TemplateContext
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
@@ -13,7 +15,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun DisplayDemo() {
 
-    val scope = rememberCoroutineScope()
+    val scope = remember { CoroutineScope(Dispatchers.IO) }
     var codeJob by remember { mutableStateOf<Job?>(null) }
 
 
@@ -22,7 +24,7 @@ fun DisplayDemo() {
     var errorText by remember { mutableStateOf("") }
 
     Column {
-        if(errorText.isNotEmpty()){
+        if (errorText.isNotEmpty()) {
             Text(
                 text = errorText,
                 color = MaterialTheme.colorScheme.error
@@ -38,6 +40,7 @@ fun DisplayDemo() {
                         output = TemplateContext(text).getDestinationAsString()
                         errorText = ""
                     } catch (e: Throwable) {
+                        e.printStackTrace()
                         errorText = e.message ?: ""
                     }
                 }
@@ -52,7 +55,8 @@ fun DisplayDemo() {
             )
             Text(
                 modifier = Modifier.weight(1f).fillMaxHeight(),
-                text = output
+                text = output,
+                color = MaterialTheme.colorScheme.onBackground
             )
         }
     }
