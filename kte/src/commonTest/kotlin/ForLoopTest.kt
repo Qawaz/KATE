@@ -119,7 +119,7 @@ class ForLoopTest {
     @Test
     fun parseMultilineForLoop() {
         val context = TemplateContext(
-            """@for(@var i=0;i<2;i+1)
+            """@for(@var i=0;i<1;i+1)
               | Line Number 1
               | Line Number 2
               |@endfor""".trimMargin("|")

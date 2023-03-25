@@ -149,6 +149,9 @@ private class ForLoopLazyBlockSlice(
 }
 
 private fun LazyBlock.parseForBlockValue(source: SourceStream): LazyBlockSlice {
+
+    source.escapeBlockSpacesForward()
+
     val previous = source.pointer
 
     val ender: String = source.incrementUntilDirectiveWithSkip("@for") {
@@ -157,17 +160,17 @@ private fun LazyBlock.parseForBlockValue(source: SourceStream): LazyBlockSlice {
 
     source.decrementPointer(ender.length)
 
+    val pointerBeforeEnder = source.pointer
+
+    source.escapeBlockSpacesBackward()
+
     val length = source.pointer - previous
 
-    source.decrementPointer()
-    val spaceDecrement = if (source.currentChar == ' ') 1 else 0
-    source.incrementPointer()
-
-    source.increment(ender)
+    source.setPointerAt(pointerBeforeEnder + ender.length)
 
     return ForLoopLazyBlockSlice(
         startPointer = previous,
-        length = length - spaceDecrement,
+        length = length,
         parent = this@parseForBlockValue.model,
         blockEndPointer = source.pointer
     )
@@ -240,7 +243,8 @@ private fun SourceStream.parseNumberedForLoopIncrementer(variableName: String): 
                 IntValue(1)
             } else {
                 parseForLoopNumberProperty()
-            } ?: throw IllegalStateException("expected number property or value or '+' or '-' , got $currentChar in for loop incrementer")
+            }
+                ?: throw IllegalStateException("expected number property or value or '+' or '-' , got $currentChar in for loop incrementer")
             return NumberedForLoopIncrementer(
                 operatorType = operator,
                 incrementerValue = incrementer

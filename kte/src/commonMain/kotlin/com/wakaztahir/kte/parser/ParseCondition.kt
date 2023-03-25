@@ -1,7 +1,7 @@
 package com.wakaztahir.kte.parser
 
 import com.wakaztahir.kte.model.*
-import com.wakaztahir.kte.parser.stream.SourceStream
+import com.wakaztahir.kte.parser.stream.*
 import com.wakaztahir.kte.parser.stream.escapeSpaces
 import com.wakaztahir.kte.parser.stream.increment
 import com.wakaztahir.kte.parser.stream.incrementUntilDirectiveWithSkip
@@ -63,6 +63,9 @@ internal fun SourceStream.parseCondition(): Condition? {
 }
 
 private fun LazyBlock.parseIfBlockValue(ifType: IfType, source: SourceStream): LazyBlockSlice {
+
+    source.escapeBlockSpacesForward()
+
     val previous = source.pointer
 
     val blockEnder: String? = if (ifType == IfType.Else) {
@@ -87,15 +90,17 @@ private fun LazyBlock.parseIfBlockValue(ifType: IfType, source: SourceStream): L
 
     source.decrementPointer(blockEnder.length)
 
+    val pointerBeforeEnder = source.pointer
+
+    source.escapeBlockSpacesBackward()
+
     val length = source.pointer - previous
 
-    source.decrementPointer()
-    val spaceDecrement = if (source.currentChar == ' ') 1 else 0
-    source.incrementPointer()
+    source.setPointerAt(pointerBeforeEnder)
 
     return LazyBlockSlice(
         startPointer = previous,
-        length = length - spaceDecrement,
+        length = length,
         parent = this@parseIfBlockValue.model,
         blockEndPointer = source.pointer + blockEnder.length
     )

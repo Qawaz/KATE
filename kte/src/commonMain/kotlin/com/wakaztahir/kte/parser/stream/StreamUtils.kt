@@ -122,7 +122,7 @@ internal inline fun SourceStream.incrementUntilDirectiveWithSkip(
 ): String? {
     var skips = 0
     while (!hasEnded) {
-        if(currentChar == '@') {
+        if (currentChar == '@') {
             if (increment(skip)) {
                 skips++
             } else {
@@ -139,4 +139,64 @@ internal inline fun SourceStream.incrementUntilDirectiveWithSkip(
         incrementPointer()
     }
     return null
+}
+
+internal fun SourceStream.escapeBlockSpacesForward() {
+
+    var pointerAfterFirstSpace = pointer
+    if (currentChar == ' ') {
+        incrementPointer()
+        pointerAfterFirstSpace = pointer
+    }
+
+    var foundNewLine = false
+    while (!hasEnded) {
+        if (currentChar == ' ') {
+            incrementPointer()
+        } else if (currentChar == '\n') {
+            incrementPointer()
+            foundNewLine = true
+            break
+        } else {
+            break
+        }
+    }
+
+    if (!foundNewLine) {
+        setPointerAt(pointerAfterFirstSpace)
+    }
+
+}
+
+internal fun SourceStream.escapeBlockSpacesBackward() {
+
+    var fallbackPointer = pointer
+    decrementPointer()
+
+    if (currentChar != ' ') {
+        if (currentChar == '\n') {
+            return
+        }
+    } else {
+        fallbackPointer = pointer
+    }
+
+    var foundNewLine = false
+    while (!hasEnded) {
+        decrementPointer()
+        if (currentChar != ' ') {
+            if (currentChar == '\n') {
+                foundNewLine = true
+                break
+            } else {
+                incrementPointer()
+                break
+            }
+        }
+    }
+
+    if (!foundNewLine) {
+        setPointerAt(fallbackPointer)
+    }
+
 }
