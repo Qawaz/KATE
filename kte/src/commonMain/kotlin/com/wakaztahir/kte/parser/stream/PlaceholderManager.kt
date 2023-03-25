@@ -33,6 +33,10 @@ interface PlaceholderManager {
         }
     }
 
+    fun checkIsBeingUsed(placeholderName: String, definitionName: String): Boolean {
+        return placeholders.any { it.placeholderName == placeholderName && it.definitionName == definitionName }
+    }
+
     fun usePlaceholder(placeholderName: String, definitionName: String): Boolean {
         val index = undefinedPlaceholders.indexOfFirst {
             it.placeholderName == placeholderName && it.definitionName == definitionName
@@ -41,7 +45,7 @@ interface PlaceholderManager {
             definePlaceholder(undefinedPlaceholders.removeAt(index))
             true
         } else {
-            false
+            return checkIsBeingUsed(placeholderName, definitionName)
         }
     }
 

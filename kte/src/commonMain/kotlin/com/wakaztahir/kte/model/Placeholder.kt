@@ -1,6 +1,7 @@
 package com.wakaztahir.kte.model
 
 import com.wakaztahir.kte.dsl.ScopedModelObject
+import com.wakaztahir.kte.model.model.KTEObject
 import com.wakaztahir.kte.model.model.MutableKTEObject
 import com.wakaztahir.kte.parser.stream.DestinationStream
 import com.wakaztahir.kte.parser.stream.SourceStream
@@ -39,27 +40,23 @@ class PlaceholderBlock(
 
 }
 
-class PlaceholderDefinition(val placeholder: PlaceholderBlock) : CodeGen {
+class PlaceholderDefinition(val blockValue: PlaceholderBlock) : BlockContainer {
     override fun generateTo(block: LazyBlock, source: SourceStream, destination: DestinationStream) {
-        source.definePlaceholder(placeholder)
-        println("PLACEHOLDER_DEFINED")
+        source.definePlaceholder(blockValue)
     }
+    override fun getBlockValue(model: KTEObject): LazyBlock = blockValue
 }
 
 class PlaceholderInvocation(
     val placeholderName: String,
-    val invocationEndPointer : Int
+    val invocationEndPointer: Int
 ) : CodeGen {
     override fun generateTo(block: LazyBlock, source: SourceStream, destination: DestinationStream) {
         val placeholder = source.getPlaceholder(placeholderName = placeholderName)
             ?: throw IllegalStateException("placeholder with name $placeholderName not found")
-        println("PLACEHOLDER_FOR_INVOCATION_FOUND")
         placeholder.setGenerationModel(block.model)
-        println("SET_PLACEHOLDER_GENERATION_MODEL")
         placeholder.generateTo(source, destination)
-        println("PLACEHOLDER_GENNED")
         source.setPointerAt(invocationEndPointer)
-        println("SET_POINTER_AFTER_GENNED")
     }
 }
 

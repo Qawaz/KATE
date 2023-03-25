@@ -82,7 +82,11 @@ internal class SingleIf(
 }
 
 
-internal class IfStatement(private val ifs: MutableList<SingleIf>) : AtDirective {
+internal class IfStatement(private val ifs: MutableList<SingleIf>) : AtDirective, BlockContainer {
+
+    override fun getBlockValue(model: KTEObject): LazyBlock? {
+        return evaluate(model)?.blockValue
+    }
 
     val singleIfs: List<SingleIf> get() = ifs
 

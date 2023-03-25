@@ -81,7 +81,7 @@ fun SourceStream.parsePlaceholderDefinition(): PlaceholderDefinition? {
         if (nameAndDef != null) {
             val blockValue = parsePlaceholderBlock(nameAndDef = nameAndDef)
             return PlaceholderDefinition(
-                placeholder = blockValue
+                blockValue = blockValue
             )
         } else {
             throw IllegalStateException("placeholder name is required when defining a placeholder using @define_placeholder")

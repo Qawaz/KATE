@@ -142,7 +142,7 @@ the placeholder and its definition
 
 ### Invocation
 
-To call / invoke a placeholder You use `@placeholder` with Placeholder name as the parameter
+To invoke / call a placeholder You use `@placeholder` with Placeholder name as the parameter
 
 ```
 @placeholder(WelcomeText)
@@ -173,23 +173,21 @@ the definition name when calling `@use_placeholder`
 
 Now when you invoke / call the placeholder , `GreetingText` will be used again , instead of `NewsText`
 
-### Placeholder Model Inheritance
+### Placeholder Parameters
 
-Keep in mind these things when using placeholders
+Placeholders are like functions in template engines , But they don't have parameters instead they
+have something more powerful which is that they inherit scope of invocation directive
 
-1 - Placeholder Definitions don't have access to variables / objects in its parent scope of definition
-- > This means that this code won't work
-  > ```
-     > @var i=0
-     > @define_placeholder(WelcomeText,GreetingText)
-     > @var(i)
-     > @end_define_placeholder
-     > ```
-  > It doesn't know that variable 'i' exists
+Because of this, this code is possible
 
-2 - Placeholders inherit definition of parent where ever called
-- > ```
-     > @var i=0
-     > @placeholder(WelcomeText)
-  > ```
-  > `WelcomeText` knows that variable 'i' exists
+```
+@define_placeholder(Varible)
+@var(i)
+@end_define_placeholder
+
+@for(@var i=0;i<5;i++)
+@placeholder(Variable)
+@endfor
+```
+
+In this case , Variable placeholder expects `i` variable to be defined in scope

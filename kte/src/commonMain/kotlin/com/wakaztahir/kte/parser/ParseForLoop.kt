@@ -4,16 +4,21 @@ import com.wakaztahir.kte.model.model.MutableKTEObject
 import com.wakaztahir.kte.model.*
 import com.wakaztahir.kte.model.ConditionType
 import com.wakaztahir.kte.model.ReferencedValue
+import com.wakaztahir.kte.model.model.KTEObject
 import com.wakaztahir.kte.parser.stream.*
 import com.wakaztahir.kte.parser.stream.increment
 import com.wakaztahir.kte.parser.stream.parseTextWhile
 
-internal sealed interface ForLoop : AtDirective {
+internal sealed interface ForLoop : AtDirective, BlockContainer {
 
     val blockValue: LazyBlockSlice
 
     val model: MutableKTEObject
         get() = blockValue.model
+
+    override fun getBlockValue(model: KTEObject): LazyBlock {
+        return blockValue
+    }
 
     fun iterate(block: (iteration: Int) -> Unit)
 
@@ -236,7 +241,8 @@ private fun SourceStream.parseNumberedForLoopIncrementer(variableName: String): 
                 IntValue(1)
             } else {
                 parseNumberReference()
-            } ?: throw IllegalStateException("expected number property or value or '+' or '-' , got $currentChar in for loop incrementer")
+            }
+                ?: throw IllegalStateException("expected number property or value or '+' or '-' , got $currentChar in for loop incrementer")
             return NumberedForLoopIncrementer(
                 operatorType = operator,
                 incrementerValue = incrementer

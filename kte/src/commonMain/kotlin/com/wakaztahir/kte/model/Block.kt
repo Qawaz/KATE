@@ -7,6 +7,7 @@ import com.wakaztahir.kte.parser.*
 import com.wakaztahir.kte.parser.stream.DestinationStream
 import com.wakaztahir.kte.parser.stream.SourceStream
 import com.wakaztahir.kte.parser.stream.TextDestinationStream
+import com.wakaztahir.kte.parser.stream.increment
 import com.wakaztahir.kte.parser.stream.languages.KotlinLanguageDestination
 
 interface LazyBlock {
@@ -23,6 +24,9 @@ interface LazyBlock {
             val directive = parseAtDirective(source)
             if (directive != null) {
                 directive.generateTo(this, source, destination)
+                if (!source.hasEnded && directive is BlockContainer) {
+                    source.increment('\n')
+                }
                 continue
             }
             destination.stream.write(source.currentChar)
