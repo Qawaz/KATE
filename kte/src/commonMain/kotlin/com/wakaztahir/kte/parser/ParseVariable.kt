@@ -40,7 +40,7 @@ internal data class VariableDeclaration(val variableName: String, val variableVa
         model.putValue(variableName, value)
     }
 
-    override fun generateTo(block: LazyBlock, source: SourceStream, destination: DestinationStream) {
+    override fun generateTo(block: LazyBlock, destination: DestinationStream) {
         storeValue(block.model)
     }
 }

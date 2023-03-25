@@ -24,13 +24,13 @@ class PlaceholderTest {
 
         assertEquals("Name", definition.blockValue.placeholderName)
         assertEquals("Name", definition.blockValue.definitionName)
-        assertEquals("ElonMusk", definition.blockValue.getValueAsString(context.stream))
+        assertEquals("ElonMusk", definition.blockValue.getValueAsString())
         assertEquals("Name", invocation.placeholderName)
 
         val destination = KotlinLanguageDestination(TextDestinationStream())
-        definition.generateTo(context.stream, context.stream, destination)
+        definition.generateTo(context.stream, destination)
         assertEquals(definition.blockValue, context.stream.placeholders[0])
-        invocation.generateTo(context.stream, context.stream, destination)
+        invocation.generateTo(context.stream, destination)
         assertEquals("ElonMusk", (destination.stream as TextDestinationStream).getValue())
 
         assertEquals(expected = "ElonMusk", actual = GenerateCode(code = code))

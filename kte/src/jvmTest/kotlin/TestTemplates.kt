@@ -2,7 +2,6 @@ import com.wakaztahir.kte.OutputStreamDestination
 import com.wakaztahir.kte.TemplateContext
 import com.wakaztahir.kte.model.model.TemplateModel
 import com.wakaztahir.kte.model.model.MutableKTEObject
-import com.wakaztahir.kte.parser.generateTo
 import com.wakaztahir.kte.parser.stream.DestinationStream
 import com.wakaztahir.kte.parser.stream.SourceStream
 import com.wakaztahir.kte.parser.stream.TextSourceStream

@@ -62,7 +62,7 @@ internal fun SourceStream.parseCondition(): Condition? {
     )
 }
 
-private fun LazyBlock.parseIfBlockValue(ifType: IfType, source: SourceStream): LazyBlockSlice {
+private fun LazyBlock.parseIfBlockValue(ifType: IfType): LazyBlockSlice {
 
     source.escapeBlockSpacesForward()
 
@@ -99,6 +99,7 @@ private fun LazyBlock.parseIfBlockValue(ifType: IfType, source: SourceStream): L
     source.setPointerAt(pointerBeforeEnder)
 
     return LazyBlockSlice(
+        source = source,
         startPointer = previous,
         length = length,
         parent = this@parseIfBlockValue.model,
@@ -106,14 +107,14 @@ private fun LazyBlock.parseIfBlockValue(ifType: IfType, source: SourceStream): L
     )
 }
 
-internal fun LazyBlock.parseSingleIf(source: SourceStream, start: String, ifType: IfType): SingleIf? {
+internal fun LazyBlock.parseSingleIf(start: String, ifType: IfType): SingleIf? {
     if (source.currentChar == '@' && source.increment(start)) {
         if (ifType != IfType.Else) {
             val condition = source.parseCondition()
             if (condition != null) {
                 if (source.increment(')')) {
                     source.increment(' ')
-                    val value = parseIfBlockValue(source = source, ifType = ifType)
+                    val value = parseIfBlockValue(ifType = ifType)
                     return SingleIf(
                         condition = condition,
                         type = ifType,
@@ -125,7 +126,7 @@ internal fun LazyBlock.parseSingleIf(source: SourceStream, start: String, ifType
             }
         } else {
             source.increment(' ')
-            val value = parseIfBlockValue(source = source, ifType = ifType)
+            val value = parseIfBlockValue(ifType = ifType)
             return SingleIf(
                 condition = EvaluatedCondition(true),
                 type = IfType.Else,
@@ -136,28 +137,28 @@ internal fun LazyBlock.parseSingleIf(source: SourceStream, start: String, ifType
     return null
 }
 
-internal fun LazyBlock.parseFirstIf(source: SourceStream): SingleIf? =
-    parseSingleIf(source = source, start = "@if(", ifType = IfType.If)
+internal fun LazyBlock.parseFirstIf(): SingleIf? =
+    parseSingleIf(start = "@if(", ifType = IfType.If)
 
-internal fun LazyBlock.parseElseIf(source: SourceStream): SingleIf? =
-    parseSingleIf(source = source, start = "@elseif(", ifType = IfType.ElseIf)
+internal fun LazyBlock.parseElseIf(): SingleIf? =
+    parseSingleIf(start = "@elseif(", ifType = IfType.ElseIf)
 
-internal fun LazyBlock.parseElse(source: SourceStream): SingleIf? =
-    parseSingleIf(source = source, start = "@else", ifType = IfType.Else)
+internal fun LazyBlock.parseElse(): SingleIf? =
+    parseSingleIf(start = "@else", ifType = IfType.Else)
 
-internal fun LazyBlock.parseIfStatement(source: SourceStream): IfStatement? {
-    val singleIf = parseFirstIf(source = source) ?: return null
+internal fun LazyBlock.parseIfStatement(): IfStatement? {
+    val singleIf = parseFirstIf() ?: return null
     if (source.increment("@endif")) {
         return IfStatement(mutableListOf(singleIf))
     }
     val ifs = mutableListOf<SingleIf>()
     ifs.add(singleIf)
     while (true) {
-        val elseIf = parseElseIf(source = source) ?: break
+        val elseIf = parseElseIf() ?: break
         ifs.add(elseIf)
         if (source.increment("@endif")) return IfStatement(ifs)
     }
-    parseElse(source = source)?.let { ifs.add(it) }
+    parseElse()?.let { ifs.add(it) }
     if (source.increment("@endif")) {
         return IfStatement(ifs)
     } else {

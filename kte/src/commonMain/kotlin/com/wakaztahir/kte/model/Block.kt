@@ -12,52 +12,57 @@ import com.wakaztahir.kte.parser.stream.languages.KotlinLanguageDestination
 
 interface LazyBlock {
 
+    val source: SourceStream
     val model: MutableKTEObject
 
-    fun canIterate(stream: SourceStream): Boolean
+    fun canIterate(): Boolean
 
-    fun generateTo(source: SourceStream, destination: DestinationStream) {
-        while (canIterate(source)) {
+    fun generateTo(destination: DestinationStream) {
+        while (canIterate()) {
             if (source.skipMultilineComments()) {
                 continue
             }
-            val directive = parseAtDirective(source)
+            val directive = parseAtDirective()
             if (directive != null) {
-                directive.generateTo(this, source, destination)
+                directive.generateTo(this, destination)
                 if (!source.hasEnded && directive is BlockContainer) {
                     source.increment('\n')
                 }
                 continue
             }
-            destination.stream.write(source.currentChar)
+            writeCurrentCharacter(destination = destination)
             source.incrementPointer()
         }
     }
 
-    fun parseAtDirective(source: SourceStream): CodeGen? {
+    fun writeCurrentCharacter(destination: DestinationStream) {
+        destination.stream.write(source.currentChar)
+    }
+
+    fun parseAtDirective(): CodeGen? {
         source.parseRawBlock()?.let { return it }
         source.parseEmbedding()?.let { return it }
         source.parseExpression()?.let { return it }
         source.parseVariableDeclaration()?.let { return it }
-        parseIfStatement(source)?.let { return it }
-        parseForLoop(source)?.let { return it }
-        source.parsePlaceholderDefinition()?.let { return it }
-        source.parsePlaceholderInvocation()?.let { return it }
-        source.parsePlaceholderUse()?.let { return it }
+        parseIfStatement()?.let { return it }
+        parseForLoop()?.let { return it }
+        parsePlaceholderDefinition()?.let { return it }
+        parsePlaceholderInvocation()?.let { return it }
+        parsePlaceholderUse()?.let { return it }
         return null
     }
 
     @KTEDelicateFunction
-    fun getDestinationString(source: SourceStream): String {
+    fun getDestinationString(): String {
         val destination = KotlinLanguageDestination(TextDestinationStream())
-        generateTo(source, destination)
+        generateTo(destination)
         return (destination.stream as TextDestinationStream).getValue()
     }
 
     @KTEDelicateFunction
-    fun getDestinationStringWithReset(source: SourceStream): String {
+    fun getDestinationStringWithReset(): String {
         val previous = source.pointer
-        val value = getDestinationString(source)
+        val value = getDestinationString()
         source.setPointerAt(previous)
         return value
     }
@@ -66,6 +71,7 @@ interface LazyBlock {
 
 
 open class LazyBlockSlice(
+    override val source: SourceStream,
     val startPointer: Int,
     val length: Int,
     val blockEndPointer: Int,
@@ -74,21 +80,21 @@ open class LazyBlockSlice(
 
     override val model: MutableKTEObject = ScopedModelObject(parent = parent)
 
-    override fun canIterate(stream: SourceStream): Boolean {
-        return stream.pointer < startPointer + length
+    override fun canIterate(): Boolean {
+        return source.pointer < startPointer + length
     }
 
-    override fun generateTo(source: SourceStream, destination: DestinationStream) {
+    override fun generateTo(destination: DestinationStream) {
         source.setPointerAt(startPointer)
-        super.generateTo(source, destination)
+        super.generateTo(destination)
         source.setPointerAt(blockEndPointer)
     }
 
-    fun getValueAsString(source: SourceStream): String {
+    fun getValueAsString(): String {
         val previous = source.pointer
         source.setPointerAt(startPointer)
         var text = ""
-        while (canIterate(source)) {
+        while (canIterate()) {
             text += source.currentChar
             source.incrementPointer()
         }

@@ -22,20 +22,20 @@ class ForLoopTest {
     @Test
     fun parseForLoop() {
         val context = TemplateContext("@for(true) blockValue @endfor")
-        val loop = context.stream.parseForLoop(context.stream)!! as ForLoop.ConditionalFor
-        assertEquals("blockValue", loop.blockValue.getValueAsString(context.stream))
+        val loop = context.stream.parseForLoop()!! as ForLoop.ConditionalFor
+        assertEquals("blockValue", loop.blockValue.getValueAsString())
     }
 
     @Test
     fun parseForLoopIterable() {
         val context = TemplateContext("@for(@var listName : @model.mList) blockValue @endfor")
-        var loop = context.stream.parseForLoop(context.stream)!! as ForLoop.IterableFor
+        var loop = context.stream.parseForLoop()!! as ForLoop.IterableFor
         assertEquals("listName", loop.elementConstName)
         assertEquals(null, loop.indexConstName)
-        assertEquals("blockValue", loop.blockValue.getValueAsString(context.stream))
+        assertEquals("blockValue", loop.blockValue.getValueAsString())
         assertEquals("mList", (loop.listProperty as ModelDirective).propertyPath[0].name)
         context.updateStream("@for(@var listName,indexName : @model.list) blockValue @endfor")
-        loop = context.stream.parseForLoop(context.stream)!! as ForLoop.IterableFor
+        loop = context.stream.parseForLoop()!! as ForLoop.IterableFor
         assertEquals("indexName", loop.indexConstName)
     }
 
@@ -44,14 +44,14 @@ class ForLoopTest {
         val operatorType = ArithmeticOperatorType.Plus
         val code = "@for(@var i=0;i<5;i${operatorType.char}1) blockValue @endfor"
         val context = TemplateContext(code)
-        val loop = context.stream.parseForLoop(context.stream)!! as ForLoop.NumberedFor
+        val loop = context.stream.parseForLoop()!! as ForLoop.NumberedFor
         assertEquals("i", loop.variableName)
         assertEquals(0, loop.initializer.asPrimitive(context.stream.model).value)
         assertEquals(5, loop.conditional.asPrimitive(context.stream.model).value)
         assertEquals(operatorType, loop.arithmeticOperatorType)
         assertEquals(1, loop.incrementer.asPrimitive(context.stream.model).value)
         assertEquals(code.length, loop.blockValue.blockEndPointer)
-        assertEquals("blockValue", loop.blockValue.getValueAsString(context.stream))
+        assertEquals("blockValue", loop.blockValue.getValueAsString())
     }
 
     @Test

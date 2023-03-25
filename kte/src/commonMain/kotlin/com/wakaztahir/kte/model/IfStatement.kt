@@ -3,7 +3,6 @@ package com.wakaztahir.kte.model
 import com.wakaztahir.kte.TemplateContext
 import com.wakaztahir.kte.model.model.KTEObject
 import com.wakaztahir.kte.parser.stream.DestinationStream
-import com.wakaztahir.kte.parser.stream.SourceStream
 
 
 internal enum class ConditionType {
@@ -76,8 +75,8 @@ internal class SingleIf(
     val type: IfType,
     val blockValue: LazyBlockSlice,
 ) : CodeGen {
-    override fun generateTo(block: LazyBlock, source: SourceStream, destination: DestinationStream) {
-        blockValue.generateTo(source = source, destination = destination)
+    override fun generateTo(block: LazyBlock, destination: DestinationStream) {
+        blockValue.generateTo(destination = destination)
     }
 }
 
@@ -108,10 +107,10 @@ internal class IfStatement(private val ifs: MutableList<SingleIf>) : AtDirective
         return null
     }
 
-    override fun generateTo(block: LazyBlock, source: SourceStream, destination: DestinationStream) {
-        evaluate(block.model)?.generateTo(block, source, destination)
+    override fun generateTo(block: LazyBlock, destination: DestinationStream) {
+        evaluate(block.model)?.generateTo(block, destination)
         ifs.lastOrNull()?.blockValue?.blockEndPointer?.let { end ->
-            source.setPointerAt(end)
+            block.source.setPointerAt(end)
         }
     }
 }

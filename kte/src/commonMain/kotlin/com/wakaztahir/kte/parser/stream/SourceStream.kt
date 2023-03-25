@@ -5,6 +5,9 @@ import com.wakaztahir.kte.model.PlaceholderBlock
 
 abstract class SourceStream : LazyBlock, PlaceholderManager {
 
+    override val source: SourceStream
+        get() = this
+
     abstract val pointer: Int
 
     abstract val currentChar: Char
@@ -17,7 +20,7 @@ abstract class SourceStream : LazyBlock, PlaceholderManager {
 
     abstract fun setPointerAt(position: Int): Boolean
 
-    override fun canIterate(stream: SourceStream): Boolean {
+    override fun canIterate(): Boolean {
         return !hasEnded
     }
 

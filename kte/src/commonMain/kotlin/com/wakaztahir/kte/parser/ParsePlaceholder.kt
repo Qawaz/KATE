@@ -43,8 +43,7 @@ private fun SourceStream.parsePlaceHolderNameAndDefinition(): Pair<String, Strin
     return null
 }
 
-private fun SourceStream.parsePlaceholderBlock(nameAndDef: Pair<String, String>): PlaceholderBlock {
-    val source = this
+private fun LazyBlock.parsePlaceholderBlock(nameAndDef: Pair<String, String>): PlaceholderBlock {
     source.escapeBlockSpacesForward()
 
     val previous = source.pointer
@@ -64,6 +63,7 @@ private fun SourceStream.parsePlaceholderBlock(nameAndDef: Pair<String, String>)
     source.setPointerAt(pointerBeforeEnder + ender.length)
 
     return PlaceholderBlock(
+        source = source,
         placeholderName = nameAndDef.first,
         definitionName = nameAndDef.second,
         startPointer = previous,
@@ -75,9 +75,9 @@ private fun SourceStream.parsePlaceholderBlock(nameAndDef: Pair<String, String>)
 }
 
 
-fun SourceStream.parsePlaceholderDefinition(): PlaceholderDefinition? {
-    if (currentChar == '@' && increment("@define_placeholder")) {
-        val nameAndDef = parsePlaceHolderNameAndDefinition()
+fun LazyBlock.parsePlaceholderDefinition(): PlaceholderDefinition? {
+    if (source.currentChar == '@' && source.increment("@define_placeholder")) {
+        val nameAndDef = source.parsePlaceHolderNameAndDefinition()
         if (nameAndDef != null) {
             val blockValue = parsePlaceholderBlock(nameAndDef = nameAndDef)
             return PlaceholderDefinition(
@@ -90,11 +90,11 @@ fun SourceStream.parsePlaceholderDefinition(): PlaceholderDefinition? {
     return null
 }
 
-fun SourceStream.parsePlaceholderInvocation(): PlaceholderInvocation? {
-    if (currentChar == '@' && increment("@placeholder")) {
-        val placeholderName = parsePlaceholderNameOnly()
+fun LazyBlock.parsePlaceholderInvocation(): PlaceholderInvocation? {
+    if (source.currentChar == '@' && source.increment("@placeholder")) {
+        val placeholderName = source.parsePlaceholderNameOnly()
         if (placeholderName != null) {
-            return PlaceholderInvocation(placeholderName = placeholderName, invocationEndPointer = pointer)
+            return PlaceholderInvocation(placeholderName = placeholderName, invocationEndPointer = source.pointer)
         } else {
             throw IllegalStateException("placeholder name is required when invoking a placeholder using @placeholder")
         }
@@ -102,9 +102,9 @@ fun SourceStream.parsePlaceholderInvocation(): PlaceholderInvocation? {
     return null
 }
 
-fun SourceStream.parsePlaceholderUse(): PlaceholderUse? {
-    if (currentChar == '@' && increment("@use_placeholder")) {
-        val name = parsePlaceHolderNameAndDefinition()
+fun LazyBlock.parsePlaceholderUse(): PlaceholderUse? {
+    if (source.currentChar == '@' && source.increment("@use_placeholder")) {
+        val name = source.parsePlaceHolderNameAndDefinition()
         if (name != null) {
             return PlaceholderUse(placeholderName = name.first, definitionName = name.second)
         } else {

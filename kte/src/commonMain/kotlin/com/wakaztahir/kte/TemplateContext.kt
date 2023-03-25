@@ -2,10 +2,11 @@ package com.wakaztahir.kte
 
 import com.wakaztahir.kte.dsl.ModelObjectImpl
 import com.wakaztahir.kte.model.model.MutableKTEObject
+import com.wakaztahir.kte.parser.stream.DestinationStream
 import com.wakaztahir.kte.parser.stream.SourceStream
 import com.wakaztahir.kte.parser.stream.TextSourceStream
 
-class TemplateContext(stream: SourceStream){
+class TemplateContext(stream: SourceStream) {
 
     constructor(text: String, model: MutableKTEObject = ModelObjectImpl("Global")) : this(TextSourceStream(text, model))
 
@@ -32,12 +33,16 @@ class TemplateContext(stream: SourceStream){
 
     @OptIn(KTEDelicateFunction::class)
     fun getDestinationAsString(): String {
-        return stream.getDestinationString(stream)
+        return stream.getDestinationString()
     }
 
     @OptIn(KTEDelicateFunction::class)
     fun getDestinationAsStringWithReset(): String {
-        return stream.getDestinationStringWithReset(stream)
+        return stream.getDestinationStringWithReset()
+    }
+
+    fun generateTo(destination: DestinationStream) {
+        stream.generateTo(destination)
     }
 
 }

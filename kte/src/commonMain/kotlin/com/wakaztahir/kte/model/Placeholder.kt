@@ -7,6 +7,7 @@ import com.wakaztahir.kte.parser.stream.DestinationStream
 import com.wakaztahir.kte.parser.stream.SourceStream
 
 class PlaceholderBlock(
+    source: SourceStream,
     val placeholderName: String,
     val definitionName: String,
     startPointer: Int,
@@ -14,6 +15,7 @@ class PlaceholderBlock(
     blockEndPointer: Int,
     parent: MutableKTEObject
 ) : LazyBlockSlice(
+    source = source,
     startPointer = startPointer,
     length = length,
     blockEndPointer = blockEndPointer,
@@ -30,20 +32,21 @@ class PlaceholderBlock(
         this.isGenerationModelSet = true
     }
 
-    override fun generateTo(source: SourceStream, destination: DestinationStream) {
+    override fun generateTo(destination: DestinationStream) {
         require(isGenerationModelSet) {
             "Generation Model should be set using setGenerationModel before calling generateTo"
         }
-        super.generateTo(source, destination)
+        super.generateTo(destination)
         this.isGenerationModelSet = false
     }
 
 }
 
 class PlaceholderDefinition(val blockValue: PlaceholderBlock) : BlockContainer {
-    override fun generateTo(block: LazyBlock, source: SourceStream, destination: DestinationStream) {
-        source.definePlaceholder(blockValue)
+    override fun generateTo(block: LazyBlock, destination: DestinationStream) {
+        block.source.definePlaceholder(blockValue)
     }
+
     override fun getBlockValue(model: KTEObject): LazyBlock = blockValue
 }
 
@@ -51,12 +54,12 @@ class PlaceholderInvocation(
     val placeholderName: String,
     val invocationEndPointer: Int
 ) : CodeGen {
-    override fun generateTo(block: LazyBlock, source: SourceStream, destination: DestinationStream) {
-        val placeholder = source.getPlaceholder(placeholderName = placeholderName)
+    override fun generateTo(block: LazyBlock, destination: DestinationStream) {
+        val placeholder = block.source.getPlaceholder(placeholderName = placeholderName)
             ?: throw IllegalStateException("placeholder with name $placeholderName not found")
         placeholder.setGenerationModel(block.model)
-        placeholder.generateTo(source, destination)
-        source.setPointerAt(invocationEndPointer)
+        placeholder.generateTo(destination)
+        block.source.setPointerAt(invocationEndPointer)
     }
 }
 
@@ -64,8 +67,8 @@ class PlaceholderUse(
     private val placeholderName: String,
     private val definitionName: String
 ) : CodeGen {
-    override fun generateTo(block: LazyBlock, source: SourceStream, destination: DestinationStream) {
-        if (!source.usePlaceholder(placeholderName, definitionName)) {
+    override fun generateTo(block: LazyBlock, destination: DestinationStream) {
+        if (!block.source.usePlaceholder(placeholderName, definitionName)) {
             throw IllegalStateException("placeholder with name $placeholderName and definition name $definitionName not found")
         }
     }

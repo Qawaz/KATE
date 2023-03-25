@@ -22,9 +22,9 @@ internal sealed interface ForLoop : AtDirective, BlockContainer {
 
     fun iterate(block: (iteration: Int) -> Unit)
 
-    override fun generateTo(block: LazyBlock, source: SourceStream, destination: DestinationStream) {
+    override fun generateTo(block: LazyBlock, destination: DestinationStream) {
         iterate {
-            blockValue.generateTo(source = source, destination = destination)
+            blockValue.generateTo(destination = destination)
         }
     }
 
@@ -120,11 +120,13 @@ internal sealed interface ForLoop : AtDirective, BlockContainer {
 }
 
 private class ForLoopLazyBlockSlice(
+    source: SourceStream,
     startPointer: Int,
     length: Int,
     blockEndPointer: Int,
     parent: MutableKTEObject,
 ) : LazyBlockSlice(
+    source = source,
     startPointer = startPointer,
     length = length,
     parent = parent,
@@ -133,8 +135,8 @@ private class ForLoopLazyBlockSlice(
 
     var hasBroken: Boolean = false
 
-    override fun canIterate(stream: SourceStream): Boolean {
-        return super.canIterate(stream) && !hasBroken
+    override fun canIterate(): Boolean {
+        return super.canIterate() && !hasBroken
     }
 
     fun SourceStream.parseBreakForAtDirective(): Boolean {
@@ -146,14 +148,14 @@ private class ForLoopLazyBlockSlice(
         }
     }
 
-    override fun parseAtDirective(source: SourceStream): CodeGen? {
+    override fun parseAtDirective(): CodeGen? {
         if (source.parseBreakForAtDirective()) return null
-        return super.parseAtDirective(source)
+        return super.parseAtDirective()
     }
 
 }
 
-private fun LazyBlock.parseForBlockValue(source: SourceStream): LazyBlockSlice {
+private fun LazyBlock.parseForBlockValue(): LazyBlockSlice {
 
     source.escapeBlockSpacesForward()
 
@@ -174,6 +176,7 @@ private fun LazyBlock.parseForBlockValue(source: SourceStream): LazyBlockSlice {
     source.setPointerAt(pointerBeforeEnder + ender.length)
 
     return ForLoopLazyBlockSlice(
+        source = source,
         startPointer = previous,
         length = length,
         parent = this@parseForBlockValue.model,
@@ -181,12 +184,12 @@ private fun LazyBlock.parseForBlockValue(source: SourceStream): LazyBlockSlice {
     )
 }
 
-private fun LazyBlock.parseConditionalFor(source: SourceStream): ForLoop.ConditionalFor? {
+private fun LazyBlock.parseConditionalFor(): ForLoop.ConditionalFor? {
     val condition = source.parseCondition()
     if (condition != null) {
         source.increment(')')
         source.increment(' ')
-        val blockValue = this@parseConditionalFor.parseForBlockValue(source)
+        val blockValue = this@parseConditionalFor.parseForBlockValue()
         return ForLoop.ConditionalFor(
             condition = condition,
             blockValue = blockValue
@@ -195,10 +198,7 @@ private fun LazyBlock.parseConditionalFor(source: SourceStream): ForLoop.Conditi
     return null
 }
 
-private fun LazyBlock.parseIterableForLoopAfterVariable(
-    source: SourceStream,
-    variableName: String,
-): ForLoop.IterableFor? {
+private fun LazyBlock.parseIterableForLoopAfterVariable(variableName: String): ForLoop.IterableFor? {
     var secondVariableName: String? = null
     if (source.increment(',')) {
         secondVariableName = source.parseTextWhile { currentChar.isVariableName() }
@@ -212,7 +212,7 @@ private fun LazyBlock.parseIterableForLoopAfterVariable(
             throw IllegalStateException("expected ) , got ${source.currentChar}")
         }
         source.increment(' ')
-        val blockValue = this@parseIterableForLoopAfterVariable.parseForBlockValue(source)
+        val blockValue = this@parseIterableForLoopAfterVariable.parseForBlockValue()
         if (referencedValue != null) {
             return ForLoop.IterableFor(
                 indexConstName = secondVariableName,
@@ -255,10 +255,7 @@ private fun SourceStream.parseNumberedForLoopIncrementer(variableName: String): 
     }
 }
 
-private fun LazyBlock.parseNumberedForLoopAfterVariable(
-    source: SourceStream,
-    variableName: String
-): ForLoop.NumberedFor? {
+private fun LazyBlock.parseNumberedForLoopAfterVariable(variableName: String): ForLoop.NumberedFor? {
     if (source.increment('=')) {
         source.escapeSpaces()
         val initializer = source.parseNumberReference()
@@ -276,7 +273,7 @@ private fun LazyBlock.parseNumberedForLoopAfterVariable(
                         throw IllegalStateException("expected ) , got ${source.currentChar}")
                     }
                     source.increment(' ')
-                    val blockValue = this@parseNumberedForLoopAfterVariable.parseForBlockValue(source)
+                    val blockValue = this@parseNumberedForLoopAfterVariable.parseForBlockValue()
                     return ForLoop.NumberedFor(
                         variableName = variableName,
                         initializer = initializer,
@@ -299,10 +296,10 @@ private fun LazyBlock.parseNumberedForLoopAfterVariable(
     return null
 }
 
-internal fun LazyBlock.parseForLoop(source: SourceStream): ForLoop? {
+internal fun LazyBlock.parseForLoop(): ForLoop? {
     if (source.currentChar == '@' && source.increment("@for(")) {
 
-        parseConditionalFor(source)?.let { return it }
+        parseConditionalFor()?.let { return it }
 
         val variableName = source.parseVariableName()
         if (variableName != null) {
@@ -310,10 +307,10 @@ internal fun LazyBlock.parseForLoop(source: SourceStream): ForLoop? {
             source.escapeSpaces()
 
             // Parsing the numbered loop
-            parseNumberedForLoopAfterVariable(source, variableName)?.let { return it }
+            parseNumberedForLoopAfterVariable(variableName)?.let { return it }
 
             // Parsing the iterable loop
-            parseIterableForLoopAfterVariable(source, variableName)?.let { return it }
+            parseIterableForLoopAfterVariable(variableName)?.let { return it }
 
         }
 
