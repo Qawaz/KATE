@@ -83,7 +83,7 @@ Operations that can be performed on an iterable present in the model
 
 `@model.iterable.size` Gets the size of the list
 
-`@model.iterable[0]` Gets the first element where zero can be any number between 0 and list.size - 1
+`@model.iterable.get(0)` Gets the first element where zero can be any number between 0 and list.size - 1
 
 ## For Loop
 
