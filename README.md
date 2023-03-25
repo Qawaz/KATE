@@ -105,12 +105,6 @@ To loop using a number
 
 `@for(@var i=0;i<5;i++) @endfor`
 
-Or
-
-`@for(7) This will run seven times @endfor`
-
-You can use a variable / expression instead of 7
-
 To break a parent loop , You can use
 
 `@breakfor` like this `@if(index > 5) @breakfor`
