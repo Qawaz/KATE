@@ -158,7 +158,7 @@ private class ValueAndOperatorStack {
 }
 
 private fun SourceStream.parseValueAndOperator(): Pair<ReferencedValue, ArithmeticOperatorType?>? {
-    val firstValue = parseDynamicProperty()
+    val firstValue = parseNumberReference()
     if (firstValue != null) {
         val pointerAfterFirstValue = pointer
         increment(' ')
@@ -260,5 +260,12 @@ internal fun SourceStream.parseExpression(): ReferencedValue? {
             valueAndOp.first
         }
     }
+    return null
+}
+
+internal fun SourceStream.parseAnyExpressionOrValue() : ReferencedValue? {
+    parseExpression()?.let { return it }
+    parseBooleanValue()?.let { return it }
+    parseStringValue()?.let { return it }
     return null
 }

@@ -30,7 +30,7 @@ internal fun SourceStream.parseConditionType(): ConditionType? {
 
 internal fun SourceStream.parseCondition(): Condition? {
 
-    val propertyFirst = this.parseExpression() ?: run {
+    val propertyFirst = this.parseAnyExpressionOrValue() ?: run {
         return null
     }
 
@@ -51,7 +51,7 @@ internal fun SourceStream.parseCondition(): Condition? {
     }
 
     escapeSpaces()
-    val propertySecond = this.parseExpression() ?: run {
+    val propertySecond = this.parseAnyExpressionOrValue() ?: run {
         throw IllegalStateException("condition's right hand side cannot be found")
     }
 

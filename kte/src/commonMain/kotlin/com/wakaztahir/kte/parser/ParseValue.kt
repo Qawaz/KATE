@@ -30,11 +30,16 @@ fun SourceStream.parseNumberValue(): PrimitiveValue<*>? {
 
 }
 
+internal fun SourceStream.parseBooleanValue(): PrimitiveValue<*>? {
+    if (increment("true")) return BooleanValue(true)
+    if (increment("false")) return BooleanValue(false)
+    return null
+}
+
 fun SourceStream.parsePrimitiveValue(): PrimitiveValue<*>? {
 
     // Booleans
-    if (increment("true")) return BooleanValue(true)
-    if (increment("false")) return BooleanValue(false)
+    parseBooleanValue()?.let { return it }
 
     // Floats & Ints
     parseNumberValue()?.let { return it }

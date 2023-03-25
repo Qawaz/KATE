@@ -12,7 +12,7 @@ internal fun SourceStream.parseFunctionParameters(): List<ReferencedValue>? {
         }
         val parameters = mutableListOf<ReferencedValue>()
         do {
-            val parameter = this.parseExpression()
+            val parameter = this.parseAnyExpressionOrValue()
             if (parameter != null) {
                 parameters.add(parameter)
             } else {

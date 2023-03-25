@@ -64,7 +64,7 @@ internal fun SourceStream.parseVariableDeclaration(): VariableDeclaration? {
             escapeSpaces()
             increment('=')
             escapeSpaces()
-            val property = this.parseExpression()
+            val property = this.parseAnyExpressionOrValue()
             return if (property != null) {
                 increment(' ')
                 VariableDeclaration(variableName = variableName, variableValue = property)

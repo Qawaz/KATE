@@ -1,3 +1,4 @@
+import com.wakaztahir.kte.GenerateCode
 import com.wakaztahir.kte.KTEDelicateFunction
 import com.wakaztahir.kte.TemplateContext
 import com.wakaztahir.kte.parser.parseRawBlock
@@ -6,6 +7,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 
 class RawTest {
+
     @Test
     fun testRawBlock() {
         val context = TemplateContext("@raw there's something raw here @endraw")
@@ -14,12 +16,23 @@ class RawTest {
         assertEquals("there's something raw here", block!!.value)
         context.updateStream("@rawvalue@endraw")
         context.stream.parseRawBlock()
-        assertEquals(16,context.stream.pointer)
+        assertEquals(16, context.stream.pointer)
     }
-    @OptIn(KTEDelicateFunction::class)
+
     @Test
     fun testRawCodeGen() {
         val context = TemplateContext("@raw there's something raw here @endraw")
-        assertEquals("there's something raw here",context.getDestinationAsStringWithReset())
+        assertEquals("there's something raw here", context.getDestinationAsStringWithReset())
     }
+
+    @Test
+    fun testTextGen() {
+        var text = ""
+        for (i in 0..127) text += i.toChar() + "\n"
+        assertEquals(text, GenerateCode(text))
+        var textInversed = ""
+        for (i in 127 downTo 0) textInversed += i.toChar() + "\n"
+        assertEquals(textInversed, GenerateCode(textInversed))
+    }
+
 }

@@ -176,13 +176,6 @@ private fun LazyBlock.parseForBlockValue(source: SourceStream): LazyBlockSlice {
     )
 }
 
-private fun SourceStream.parseForLoopNumberProperty(): ReferencedValue? {
-    parseVariableReference()?.let { return it }
-    parseModelDirective()?.let { return it }
-    parseNumberValue()?.let { return it }
-    return null
-}
-
 private fun LazyBlock.parseConditionalFor(source: SourceStream): ForLoop.ConditionalFor? {
     val condition = source.parseCondition()
     if (condition != null) {
@@ -242,9 +235,8 @@ private fun SourceStream.parseNumberedForLoopIncrementer(variableName: String): 
             val incrementer = if (singleIncrement != null && increment(singleIncrement.char)) {
                 IntValue(1)
             } else {
-                parseForLoopNumberProperty()
-            }
-                ?: throw IllegalStateException("expected number property or value or '+' or '-' , got $currentChar in for loop incrementer")
+                parseNumberReference()
+            } ?: throw IllegalStateException("expected number property or value or '+' or '-' , got $currentChar in for loop incrementer")
             return NumberedForLoopIncrementer(
                 operatorType = operator,
                 incrementerValue = incrementer
@@ -263,14 +255,14 @@ private fun LazyBlock.parseNumberedForLoopAfterVariable(
 ): ForLoop.NumberedFor? {
     if (source.increment('=')) {
         source.escapeSpaces()
-        val initializer = source.parseForLoopNumberProperty()
+        val initializer = source.parseNumberReference()
             ?: throw IllegalStateException("unexpected ${source.currentChar} , expected a number or property")
         if (source.increment(';')) {
             val conditionalConst = source.parseTextWhile { currentChar.isVariableName() }
             if (conditionalConst == variableName) {
                 val conditionType = source.parseConditionType()
                     ?: throw IllegalStateException("expected conditional operator , got ${source.currentChar}")
-                val conditional = source.parseForLoopNumberProperty()
+                val conditional = source.parseNumberReference()
                     ?: throw IllegalStateException("expected number property of value got ${source.currentChar}")
                 if (source.increment(';')) {
                     val incrementer = source.parseNumberedForLoopIncrementer(variableName)
