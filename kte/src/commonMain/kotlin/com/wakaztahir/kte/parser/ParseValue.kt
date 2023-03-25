@@ -26,6 +26,9 @@ fun SourceStream.parseNumberValue(): PrimitiveValue<*>? {
         textValue.toDoubleOrNull()?.let { DoubleValue(it) }
     } else {
         textValue.toIntOrNull()?.let { IntValue(it) }
+    } ?: run {
+        if (textValue == "." || textValue == "-") decrementPointer()
+        null
     }
 
 }
