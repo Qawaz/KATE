@@ -150,9 +150,9 @@ private class ValueAndOperatorStack {
                 }
             }
         }
-        return stack.peakValue()?.let { it as? ExpressionValue }?.also {
-            println("Expression : $it")
-        }
+        return stack.peakValue()?.let { it as? ExpressionValue }//?.also {
+        //println("Expression : $it")
+        //}
     }
 
 }
@@ -263,7 +263,7 @@ internal fun SourceStream.parseExpression(): ReferencedValue? {
     return null
 }
 
-internal fun SourceStream.parseAnyExpressionOrValue() : ReferencedValue? {
+internal fun SourceStream.parseAnyExpressionOrValue(): ReferencedValue? {
     parseExpression()?.let { return it }
     parseBooleanValue()?.let { return it }
     parseStringValue()?.let { return it }

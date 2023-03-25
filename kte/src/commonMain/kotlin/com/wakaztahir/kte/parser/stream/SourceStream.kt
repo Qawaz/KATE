@@ -1,8 +1,9 @@
 package com.wakaztahir.kte.parser.stream
 
 import com.wakaztahir.kte.model.LazyBlock
+import com.wakaztahir.kte.model.PlaceholderBlock
 
-abstract class SourceStream : LazyBlock {
+abstract class SourceStream : LazyBlock, PlaceholderManager {
 
     abstract val pointer: Int
 
@@ -19,5 +20,8 @@ abstract class SourceStream : LazyBlock {
     override fun canIterate(stream: SourceStream): Boolean {
         return !hasEnded
     }
+
+    override val placeholders = mutableListOf<PlaceholderBlock>()
+    override val undefinedPlaceholders = mutableListOf<PlaceholderBlock>()
 
 }

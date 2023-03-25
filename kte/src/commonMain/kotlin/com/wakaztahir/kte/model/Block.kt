@@ -7,7 +7,6 @@ import com.wakaztahir.kte.parser.*
 import com.wakaztahir.kte.parser.stream.DestinationStream
 import com.wakaztahir.kte.parser.stream.SourceStream
 import com.wakaztahir.kte.parser.stream.TextDestinationStream
-import com.wakaztahir.kte.parser.stream.increment
 import com.wakaztahir.kte.parser.stream.languages.KotlinLanguageDestination
 
 interface LazyBlock {
@@ -38,6 +37,9 @@ interface LazyBlock {
         source.parseVariableDeclaration()?.let { return it }
         parseIfStatement(source)?.let { return it }
         parseForLoop(source)?.let { return it }
+        source.parsePlaceholderDefinition()?.let { return it }
+        source.parsePlaceholderInvocation()?.let { return it }
+        source.parsePlaceholderUse()?.let { return it }
         return null
     }
 

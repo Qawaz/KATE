@@ -158,13 +158,38 @@ We've detected an earthquake
 @end_define_placeholder
 ```
 
-Now when you invoke / call the placeholder , `NewsText` will be used instead of `GreetingText` 
+Now when you invoke / call the placeholder , `NewsText` will be used instead of `GreetingText`
 
-If you'd like to go back to previous implementation , You don't need to provide the definition of the placeholder , just the
+If you'd like to go back to previous implementation , You don't need to provide the definition of the placeholder , just
+the
 definition name that was previously used to define it
 
 ```
 @use_placeholder(WelcomeText,GreetingText)
 ```
 
+If the definition name of the placeholder is same as Placeholder Name , You can skip passing
+the definition name when calling `@use_placeholder`
+
 Now when you invoke / call the placeholder , `GreetingText` will be used again , instead of `NewsText`
+
+### Placeholder Model Inheritance
+
+Keep in mind these things when using placeholders
+
+1 - Placeholder Definitions don't have access to variables / objects in its parent scope of definition
+- > This means that this code won't work
+  > ```
+     > @var i=0
+     > @define_placeholder(WelcomeText,GreetingText)
+     > @var(i)
+     > @end_define_placeholder
+     > ```
+  > It doesn't know that variable 'i' exists
+
+2 - Placeholders inherit definition of parent where ever called
+- > ```
+     > @var i=0
+     > @placeholder(WelcomeText)
+  > ```
+  > `WelcomeText` knows that variable 'i' exists
