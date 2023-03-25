@@ -31,8 +31,8 @@ sealed interface ModelReference {
 
 class ModelDirective(val propertyPath: List<ModelReference>) : ReferencedValue, AtDirective {
 
-    override fun writeTo(model: KTEObject, destination: LanguageDestination) {
-        val value = model.getModelDirectiveValue(this)
+    override fun generateTo(block: LazyBlock, destination: DestinationStream) {
+        val value = block.model.getModelDirectiveValue(this)
         if (value != null) {
 
             // Adding parameters to function parameters list
@@ -40,9 +40,9 @@ class ModelDirective(val propertyPath: List<ModelReference>) : ReferencedValue, 
                 value.parameters.addAll((propertyPath.last() as ModelReference.FunctionCall).parametersList)
             }
 
-            value.writeTo(model, destination)
+            value.generateTo(block, destination)
         } else {
-            throwIt(model)
+            throwIt(block.model)
         }
     }
 

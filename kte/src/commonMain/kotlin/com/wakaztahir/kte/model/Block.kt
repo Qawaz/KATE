@@ -57,7 +57,7 @@ interface LazyBlock {
 
     @KTEDelicateFunction
     fun getDestinationString(): String {
-        val destination = KotlinLanguageDestination(TextDestinationStream())
+        val destination = KotlinLanguageDestination(this, TextDestinationStream())
         generateTo(destination)
         return (destination.stream as TextDestinationStream).getValue()
     }
@@ -78,7 +78,7 @@ open class LazyBlockSlice(
     val startPointer: Int,
     val length: Int,
     val blockEndPointer: Int,
-    override val model : MutableKTEObject
+    override val model: MutableKTEObject
 ) : LazyBlock {
 
     override fun canIterate(): Boolean {
@@ -104,7 +104,7 @@ open class LazyBlockSlice(
 
     }
 
-    fun writeValueTo(destination: DestinationStream){
+    fun writeValueTo(destination: DestinationStream) {
         val previous = source.pointer
         source.setPointerAt(startPointer)
         while (canIterate()) {

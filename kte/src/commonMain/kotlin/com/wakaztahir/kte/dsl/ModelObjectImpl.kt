@@ -1,11 +1,13 @@
 package com.wakaztahir.kte.dsl
 
 import com.wakaztahir.kte.model.KTEValue
+import com.wakaztahir.kte.model.LazyBlock
 import com.wakaztahir.kte.model.ModelReference
 import com.wakaztahir.kte.model.PrimitiveValue
 import com.wakaztahir.kte.model.model.KTEList
 import com.wakaztahir.kte.model.model.MutableKTEObject
 import com.wakaztahir.kte.model.model.KTEObject
+import com.wakaztahir.kte.parser.stream.DestinationStream
 
 open class ModelObjectImpl(override val objectName: String) : MutableKTEObject() {
 

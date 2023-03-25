@@ -4,6 +4,7 @@ import com.wakaztahir.kte.model.model.KTEList
 import com.wakaztahir.kte.dsl.UnresolvedValueException
 import com.wakaztahir.kte.model.model.KTEObject
 import com.wakaztahir.kte.parser.ArithmeticOperatorType
+import com.wakaztahir.kte.parser.stream.DestinationStream
 import com.wakaztahir.kte.parser.stream.LanguageDestination
 
 interface PrimitiveValue<T> : CodeGen, ReferencedValue {
@@ -75,7 +76,7 @@ class IntValue(override val value: Int) : PrimitiveValue<Int> {
         return value.compareTo(other.value)
     }
 
-    override fun writeTo(model: KTEObject, destination: LanguageDestination) {
+    override fun generateTo(block: LazyBlock, destination: DestinationStream) {
         destination.write(this@IntValue)
     }
 
@@ -89,7 +90,7 @@ class DoubleValue(override val value: Double) : PrimitiveValue<Double> {
         return value.compareTo(other.value)
     }
 
-    override fun writeTo(model: KTEObject, destination: LanguageDestination) {
+    override fun generateTo(block: LazyBlock, destination: DestinationStream) {
         destination.write(this@DoubleValue)
     }
 
@@ -106,7 +107,7 @@ class BooleanValue(override val value: Boolean) : PrimitiveValue<Boolean> {
         }
     }
 
-    override fun writeTo(model: KTEObject, destination: LanguageDestination) {
+    override fun generateTo(block: LazyBlock, destination: DestinationStream) {
         destination.write(this@BooleanValue)
     }
 
@@ -124,7 +125,7 @@ class StringValue(override val value: String) : PrimitiveValue<String> {
         }
     }
 
-    override fun writeTo(model: KTEObject, destination: LanguageDestination) {
+    override fun generateTo(block: LazyBlock, destination: DestinationStream) {
         destination.write(this@StringValue)
     }
 

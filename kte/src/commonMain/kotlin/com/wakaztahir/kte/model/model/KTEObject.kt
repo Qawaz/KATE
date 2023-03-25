@@ -2,6 +2,7 @@ package com.wakaztahir.kte.model.model
 
 import com.wakaztahir.kte.dsl.ModelObjectImpl
 import com.wakaztahir.kte.model.*
+import com.wakaztahir.kte.parser.stream.DestinationStream
 import com.wakaztahir.kte.parser.stream.LanguageDestination
 
 interface KTEObject : KTEValue {
@@ -58,7 +59,7 @@ interface KTEObject : KTEValue {
         return getModelDirectiveValue(directive) as? PrimitiveValue<*>
     }
 
-    override fun writeTo(model: KTEObject, destination: LanguageDestination) {
+    override fun generateTo(block: LazyBlock, destination: DestinationStream) {
         destination.write(this)
     }
 

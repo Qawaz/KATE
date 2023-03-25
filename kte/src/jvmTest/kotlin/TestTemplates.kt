@@ -1,5 +1,6 @@
 import com.wakaztahir.kte.OutputStreamDestination
 import com.wakaztahir.kte.TemplateContext
+import com.wakaztahir.kte.model.LazyBlock
 import com.wakaztahir.kte.model.model.TemplateModel
 import com.wakaztahir.kte.model.model.MutableKTEObject
 import com.wakaztahir.kte.parser.stream.DestinationStream
@@ -15,11 +16,11 @@ class TestTemplates {
         return TextSourceStream(object {}.javaClass.getResource(path)!!.readText(), model)
     }
 
-    private fun output(path: String): DestinationStream {
+    private fun output(block: LazyBlock, path: String): DestinationStream {
         val file = File("src/jvmTest/resources/$path")
         println(file.absolutePath)
         val outputStream = file.outputStream()
-        return KotlinLanguageDestination(OutputStreamDestination(outputStream))
+        return KotlinLanguageDestination(block, OutputStreamDestination(outputStream))
     }
 
     @Test
@@ -57,7 +58,7 @@ class TestTemplates {
                 }
             }
         }))
-        context.generateTo(output("output/main.kt"))
+        context.generateTo(output(context.stream, "output/main.kt"))
     }
 
 }

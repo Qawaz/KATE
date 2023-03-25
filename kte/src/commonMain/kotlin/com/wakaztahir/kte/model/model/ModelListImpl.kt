@@ -3,8 +3,6 @@ package com.wakaztahir.kte.model.model
 import com.wakaztahir.kte.dsl.ModelValue
 import com.wakaztahir.kte.model.*
 import com.wakaztahir.kte.parser.stream.DestinationStream
-import com.wakaztahir.kte.parser.stream.LanguageDestination
-import com.wakaztahir.kte.parser.stream.SourceStream
 
 class ModelListImpl<T : KTEValue>(override val objectName: String, val collection: List<T>) : List<T> by collection,
     KTEList<T>() {
@@ -28,7 +26,7 @@ class ModelListImpl<T : KTEValue>(override val objectName: String, val collectio
                     return IntValue(collection.size)
                 }
 
-                override fun writeTo(model: KTEObject, destination: LanguageDestination) {
+                override fun generateTo(block: LazyBlock, destination: DestinationStream) {
                     destination.write(IntValue(collection.size))
                 }
 
@@ -54,9 +52,9 @@ class ModelListImpl<T : KTEValue>(override val objectName: String, val collectio
         return props[reference.name]
     }
 
-    override fun writeTo(model: KTEObject, destination: LanguageDestination) {
+    override fun generateTo(block: LazyBlock, destination: DestinationStream) {
         @Suppress("UNCHECKED_CAST")
-        destination.write(this,this as KTEList<KTEValue>)
+        destination.write(this as KTEList<KTEValue>)
     }
 
     override fun toString(): String {
