@@ -67,6 +67,8 @@ Explicit property , so compiler won't think it's a function name
 
 You can use variables in expressions
 
+> Brackets not supported at the moment
+
 ## Conditional Rendering
 
 `@if(condition) @elseif(condition) @else @endif`
@@ -115,6 +117,60 @@ To break a parent loop , You can use
 
 inside the for loop's block , This won't break the parent's parent loop
 
-## @raw
+## Raw Block
+
+If you need to just output raw text , You should use the raw block
 
 `@raw this text goes directly into the template @endraw`
+
+## Placeholders
+
+Placeholders are great if you would like to Output some content multiple times
+at different places in the template
+
+### Definition
+
+To define a placeholder , You use `@define_placeholder`
+
+`@define_placeholder(PlaceholderName,DefinitionName)`
+
+```
+@define_placeholder(WelcomeText,GreetingText)
+Hello World ! How are you ?
+@end_define_placeholder
+```
+
+Placeholders take two parameters , First the name of the placeholder
+and second the name of the definition of placeholder
+
+If you define a placeholder with a single parameter , The same name will be assigned to both,
+the placeholder and its definition
+
+### Invocation
+
+To call / invoke a placeholder You use `@placeholder` with Placeholder name as the parameter
+
+```
+@placeholder(WelcomeText)
+```
+
+### Redefinition
+
+You can redefine and provide your own implementation for the next code that will be generated
+
+```
+@define_placeholder(WelcomeText,NewsText)
+We've detected an earthquake
+@end_define_placeholder
+```
+
+Now when you invoke / call the placeholder , `NewsText` will be used instead of `GreetingText` 
+
+If you'd like to go back to previous implementation , You don't need to provide the definition of the placeholder , just the
+definition name that was previously used to define it
+
+```
+@use_placeholder(WelcomeText,GreetingText)
+```
+
+Now when you invoke / call the placeholder , `GreetingText` will be used again , instead of `NewsText`

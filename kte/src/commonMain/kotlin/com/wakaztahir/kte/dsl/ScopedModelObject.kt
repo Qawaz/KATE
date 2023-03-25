@@ -10,6 +10,14 @@ class ScopedModelObject(internal val parent: MutableKTEObject) : ModelObjectImpl
         return super.getModelReference(reference) ?: parent.getModelReference(reference)
     }
 
+    override fun contains(key: String): Boolean {
+        return if (super.contains(key)) {
+            true
+        } else {
+            parent.contains(key)
+        }
+    }
+
     override fun putValue(key: String, value: KTEValue) {
         if (parent.contains(key)) {
             parent.putValue(key, value)

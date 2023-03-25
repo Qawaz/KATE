@@ -32,12 +32,12 @@ interface LazyBlock {
     }
 
     fun parseAtDirective(source: SourceStream): CodeGen? {
+        source.parseRawBlock()?.let { return it }
         source.parseEmbedding()?.let { return it }
         source.parseExpression()?.let { return it }
         source.parseVariableDeclaration()?.let { return it }
         parseIfStatement(source)?.let { return it }
         parseForLoop(source)?.let { return it }
-        source.parseRawBlock()?.let { return it }
         return null
     }
 
