@@ -59,6 +59,31 @@ class VariablesTest {
     }
 
     @Test
+    fun testBodmasRule() {
+        assertEquals("3", GenerateCode("1 @+ 2"))
+        assertEquals("1 + 2", GenerateCode("1 + 2"))
+        assertEquals("6", GenerateCode("1 @+ 2 @+ 3"))
+        assertEquals("4", GenerateCode("2 @+ 4 @/ 2"))
+        assertEquals("4", GenerateCode("4 @/ 2 @+ 2"))
+        // Addition and Subtraction tests
+        assertEquals("3", GenerateCode("1 @+ 2"))
+        assertEquals("-1", GenerateCode("1 @- 2"))
+        assertEquals("0", GenerateCode("1 @+ 2 @- 3"))
+        assertEquals("5", GenerateCode("1 @- 2 @+ 6"))
+        // Multiplication and Division tests
+        assertEquals("4", GenerateCode("2 @* 2"))
+        assertEquals("3", GenerateCode("6 @/ 2"))
+        assertEquals("6", GenerateCode("2 @* 3 @/ 1"))
+        assertEquals("8", GenerateCode("8 @/ 2 @* 2"))
+        // BODMAS rule tests
+        assertEquals("6", GenerateCode("2 @+ 2 @* 2"))
+        assertEquals("8", GenerateCode("2 @* 2 @+ 4"))
+        assertEquals("10", GenerateCode("2 @+ 2 @* 5 @- 2"))
+        assertEquals("-10", GenerateCode("2 @- 2 @* 5 @- 2"))
+        assertEquals("-5", GenerateCode("2 @- 2 @/ 2 @- 3 @* 2"))
+    }
+
+    @Test
     fun testReassignment() {
         val context = TemplateContext("@var i=0@var i=2@var(i)")
         assertEquals("2", context.getDestinationAsString())

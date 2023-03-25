@@ -126,8 +126,8 @@ private class ValueAndOperatorStack {
         while (container.isNotEmpty()) {
             when (val item = container.removeFirst()) {
                 is ArithmeticOperatorType -> {
-                    val first = stack.container.removeFirst() as ReferencedValue
-                    val second = stack.container.removeFirst() as ReferencedValue
+                    val second = stack.container.removeLast() as ReferencedValue
+                    val first = stack.container.removeLast() as ReferencedValue
                     stack.putValue(
                         ExpressionValue(
                             first = first,
@@ -150,7 +150,9 @@ private class ValueAndOperatorStack {
                 }
             }
         }
-        return stack.peakValue()?.let { it as? ExpressionValue }
+        return stack.peakValue()?.let { it as? ExpressionValue }?.also {
+            println("Expression : $it")
+        }
     }
 
 }
@@ -190,16 +192,29 @@ private fun SourceStream.parseExpressionWith(
                 if (stack.isEmpty() || stack.peakChar() == '(') {
                     stack.putOperator(operator)
                 } else if (stack.peakOperator() == null || operator.precedence > stack.peakOperator()!!.precedence) {
+                    while (!stack.isEmpty() && stack.peakOperator() != null) {
+                        if (operator.precedence > stack.peakOperator()!!.precedence) {
+                            final.putOperator(stack.popOperator())
+                        } else if (operator.precedence == stack.peakOperator()!!.precedence) {
+                            when (operator.associativity) {
+                                OperatorAssociativity.LeftToRight -> final.putOperator(stack.popOperator())
+                                OperatorAssociativity.RightToLeft -> {
+                                    // do nothing
+                                }
+                            }
+                        }
+                    }
                     stack.putOperator(operator)
                 } else if (operator.precedence < stack.peakOperator()!!.precedence) {
-                    do {
-                        final.putOperator(stack.popOperator())
-                    } while (!stack.isEmpty() && (stack.peakOperator() == null || operator.precedence < stack.peakOperator()!!.precedence))
+                    stack.putOperator(operator)
                 } else if (operator.precedence == stack.peakOperator()!!.precedence) {
                     when (operator.associativity) {
                         OperatorAssociativity.LeftToRight -> final.putOperator(stack.popOperator())
-                        OperatorAssociativity.RightToLeft -> stack.putOperator(operator)
+                        OperatorAssociativity.RightToLeft -> {
+                            // do nothing
+                        }
                     }
+                    stack.putOperator(operator)
                 } else {
                     throw IllegalStateException("no condition satisfied")
                 }
