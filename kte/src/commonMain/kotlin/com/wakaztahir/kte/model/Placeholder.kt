@@ -13,13 +13,13 @@ class PlaceholderBlock(
     startPointer: Int,
     length: Int,
     blockEndPointer: Int,
-    parent: MutableKTEObject
+    parent: ScopedModelObject
 ) : LazyBlockSlice(
     source = source,
     startPointer = startPointer,
     length = length,
     blockEndPointer = blockEndPointer,
-    parent = parent
+    model = parent
 ) {
 
     private var isGenerationModelSet = false

@@ -1,9 +1,11 @@
 package com.wakaztahir.kte.model
 
+import com.wakaztahir.kte.model.model.KTEObject
 import com.wakaztahir.kte.parser.stream.DestinationStream
 
-class RawBlock(val value: String) : AtDirective {
+class RawBlock(val value: LazyBlockSlice) : AtDirective, BlockContainer {
+    override fun getBlockValue(model: KTEObject): LazyBlock = value
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
-        destination.stream.write(value)
+        value.writeValueTo(destination)
     }
 }

@@ -1,5 +1,6 @@
 package com.wakaztahir.kte.parser
 
+import com.wakaztahir.kte.dsl.ScopedModelObject
 import com.wakaztahir.kte.model.*
 import com.wakaztahir.kte.parser.stream.*
 import com.wakaztahir.kte.parser.stream.escapeBlockSpacesForward
@@ -68,7 +69,7 @@ private fun LazyBlock.parsePlaceholderBlock(nameAndDef: Pair<String, String>): P
         definitionName = nameAndDef.second,
         startPointer = previous,
         length = length,
-        parent = this@parsePlaceholderBlock.model,
+        parent = ScopedModelObject(parent = this@parsePlaceholderBlock.model),
         blockEndPointer = source.pointer
     )
 

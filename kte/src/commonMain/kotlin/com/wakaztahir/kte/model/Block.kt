@@ -1,7 +1,6 @@
 package com.wakaztahir.kte.model
 
 import com.wakaztahir.kte.KTEDelicateFunction
-import com.wakaztahir.kte.dsl.ScopedModelObject
 import com.wakaztahir.kte.model.model.MutableKTEObject
 import com.wakaztahir.kte.parser.*
 import com.wakaztahir.kte.parser.stream.DestinationStream
@@ -24,14 +23,18 @@ interface LazyBlock {
             }
             val directive = parseAtDirective()
             if (directive != null) {
-                directive.generateTo(this, destination)
-                if (!source.hasEnded && directive is BlockContainer) {
-                    source.increment('\n')
-                }
+                writeDirective(directive = directive, destination = destination)
                 continue
             }
             writeCurrentCharacter(destination = destination)
             source.incrementPointer()
+        }
+    }
+
+    fun writeDirective(directive: CodeGen, destination: DestinationStream) {
+        directive.generateTo(this, destination)
+        if (!source.hasEnded && directive is BlockContainer) {
+            source.increment('\n')
         }
     }
 
@@ -75,10 +78,8 @@ open class LazyBlockSlice(
     val startPointer: Int,
     val length: Int,
     val blockEndPointer: Int,
-    parent: MutableKTEObject
+    override val model : MutableKTEObject
 ) : LazyBlock {
-
-    override val model: MutableKTEObject = ScopedModelObject(parent = parent)
 
     override fun canIterate(): Boolean {
         return source.pointer < startPointer + length
@@ -102,4 +103,15 @@ open class LazyBlockSlice(
         return text
 
     }
+
+    fun writeValueTo(destination: DestinationStream){
+        val previous = source.pointer
+        source.setPointerAt(startPointer)
+        while (canIterate()) {
+            destination.stream.write(source.currentChar)
+            source.incrementPointer()
+        }
+        source.setPointerAt(previous)
+    }
+
 }

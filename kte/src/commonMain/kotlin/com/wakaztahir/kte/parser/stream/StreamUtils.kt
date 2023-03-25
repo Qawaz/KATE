@@ -171,14 +171,19 @@ internal fun SourceStream.escapeBlockSpacesForward() {
 internal fun SourceStream.escapeBlockSpacesBackward() {
 
     var fallbackPointer = pointer
-    decrementPointer()
-
-    if (currentChar != ' ') {
-        if (currentChar == '\n') {
-            return
+    if (decrementPointer()) {
+        when (currentChar) {
+            ' ' -> {
+                fallbackPointer = pointer
+            }
+            '\n' -> {
+                return
+            }
+            else -> {
+                incrementPointer()
+                return
+            }
         }
-    } else {
-        fallbackPointer = pointer
     }
 
     var foundNewLine = false

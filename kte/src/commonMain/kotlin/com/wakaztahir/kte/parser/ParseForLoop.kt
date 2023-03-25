@@ -1,5 +1,6 @@
 package com.wakaztahir.kte.parser
 
+import com.wakaztahir.kte.dsl.ScopedModelObject
 import com.wakaztahir.kte.model.model.MutableKTEObject
 import com.wakaztahir.kte.model.*
 import com.wakaztahir.kte.model.ConditionType
@@ -124,12 +125,12 @@ private class ForLoopLazyBlockSlice(
     startPointer: Int,
     length: Int,
     blockEndPointer: Int,
-    parent: MutableKTEObject,
+    parent: ScopedModelObject,
 ) : LazyBlockSlice(
     source = source,
     startPointer = startPointer,
     length = length,
-    parent = parent,
+    model = parent,
     blockEndPointer = blockEndPointer
 ) {
 
@@ -179,7 +180,7 @@ private fun LazyBlock.parseForBlockValue(): LazyBlockSlice {
         source = source,
         startPointer = previous,
         length = length,
-        parent = this@parseForBlockValue.model,
+        parent = ScopedModelObject(parent = this@parseForBlockValue.model),
         blockEndPointer = source.pointer
     )
 }

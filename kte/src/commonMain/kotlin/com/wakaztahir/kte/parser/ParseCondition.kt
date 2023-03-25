@@ -1,5 +1,6 @@
 package com.wakaztahir.kte.parser
 
+import com.wakaztahir.kte.dsl.ScopedModelObject
 import com.wakaztahir.kte.model.*
 import com.wakaztahir.kte.parser.stream.*
 import com.wakaztahir.kte.parser.stream.escapeSpaces
@@ -102,7 +103,7 @@ private fun LazyBlock.parseIfBlockValue(ifType: IfType): LazyBlockSlice {
         source = source,
         startPointer = previous,
         length = length,
-        parent = this@parseIfBlockValue.model,
+        model = ScopedModelObject(parent = this@parseIfBlockValue.model),
         blockEndPointer = source.pointer + blockEnder.length
     )
 }

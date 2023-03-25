@@ -13,7 +13,7 @@ class RawTest {
         val context = TemplateContext("@raw there's something raw here @endraw")
         val block = context.stream.parseRawBlock()
         assertNotEquals(null, block)
-        assertEquals("there's something raw here", block!!.value)
+        assertEquals("there's something raw here", block!!.value.getValueAsString())
         context.updateStream("@rawvalue@endraw")
         context.stream.parseRawBlock()
         assertEquals(16, context.stream.pointer)
@@ -21,8 +21,9 @@ class RawTest {
 
     @Test
     fun testRawCodeGen() {
-        val context = TemplateContext("@raw there's something raw here @endraw")
-        assertEquals("there's something raw here", context.getDestinationAsStringWithReset())
+        val text = "there's something raw here"
+        assertEquals(text, GenerateCode("@raw $text @endraw"))
+        assertEquals(text, GenerateCode("@raw${'\n'}$text${'\n'}@endraw"))
     }
 
     @Test
