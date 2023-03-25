@@ -37,9 +37,7 @@ class ModelDirectiveTest {
                         )
                     )
                 )
-                this.putObject(key = "MyNestedObject") {
-                    copy(this@apply)
-                }
+                this.putObject(key = "MyNestedObject") {}
             }
         }
         assertEquals(

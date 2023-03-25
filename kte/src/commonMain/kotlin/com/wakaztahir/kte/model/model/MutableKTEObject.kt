@@ -29,9 +29,10 @@ abstract class MutableKTEObject : KTEObject {
         putValue(key, BooleanValue(value))
     }
 
-    fun copy(other: KTEObject) {
-        for (each in other.contained) putValue(each.key, each.value)
-    }
+// TODO this function doesn't work
+//    fun copy(other: KTEObject) {
+//        for (each in other.contained) putValue(each.key, each.value)
+//    }
 
 //    fun putIterable(key: String, value: List<Int>) {
 //        putIterable(key, ModelListImpl(value.map { IntValue(it) }))
