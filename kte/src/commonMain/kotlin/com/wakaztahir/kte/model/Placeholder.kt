@@ -29,8 +29,8 @@ class PlaceholderBlock(
     override var model: MutableKTEObject = parent
         private set
 
-    fun setGenerationModel(parent: MutableKTEObject) {
-        this.model = ScopedModelObject(parent)
+    fun setGenerationModel(model: MutableKTEObject) {
+        this.model = model
         this.isGenerationModelSet = true
     }
 

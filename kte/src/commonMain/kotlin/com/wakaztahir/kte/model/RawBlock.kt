@@ -42,7 +42,8 @@ class PartialRawLazyBlockSlice(
     }
 }
 
-class PartialRawBlock(val value: PartialRawLazyBlockSlice) : AtDirective {
+class PartialRawBlock(val value: PartialRawLazyBlockSlice) : AtDirective, BlockContainer {
+    override fun getBlockValue(model: KTEObject): LazyBlock = value
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
         value.generateTo(destination)
     }

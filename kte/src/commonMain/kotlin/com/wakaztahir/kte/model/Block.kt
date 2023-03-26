@@ -13,7 +13,7 @@ interface LazyBlock {
 
     val source: SourceStream
     val model: MutableKTEObject
-    val allowTextOut : Boolean
+    val allowTextOut: Boolean
 
     fun canIterate(): Boolean
 
@@ -27,7 +27,7 @@ interface LazyBlock {
                 writeDirective(directive = directive, destination = destination)
                 continue
             }
-            if(allowTextOut) destination.stream.write(source.currentChar)
+            if (allowTextOut) destination.stream.write(source.currentChar)
             source.incrementPointer()
         }
     }
@@ -35,7 +35,9 @@ interface LazyBlock {
     fun writeDirective(directive: CodeGen, destination: DestinationStream) {
         directive.generateTo(this, destination)
         if (!source.hasEnded && directive is BlockContainer) {
-            source.increment('\n')
+            if (!source.increment('\n')) {
+                source.increment(' ')
+            }
         }
     }
 
