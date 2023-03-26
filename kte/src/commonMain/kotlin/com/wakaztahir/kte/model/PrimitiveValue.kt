@@ -23,14 +23,6 @@ interface PrimitiveValue<T> : CodeGen, ReferencedValue {
         return this
     }
 
-    override fun asList(model: KTEObject): KTEList<KTEValue> {
-        throw UnresolvedValueException("primitive value is not iterable")
-    }
-
-    override fun asObject(model: KTEObject): KTEObject {
-        throw UnresolvedValueException("primitive value is not an object")
-    }
-
     override fun stringValue(indentationLevel: Int): String {
         return toString()
     }

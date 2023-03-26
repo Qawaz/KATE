@@ -10,21 +10,21 @@ interface ReferencedValue : KTEValue, CodeGen {
         return this as PrimitiveValue<*>
     }
 
-    fun asList(model: KTEObject): KTEList<KTEValue> {
+    fun asNullableList(model: KTEObject): KTEList<KTEValue>? {
         @Suppress("UNCHECKED_CAST")
-        return this as KTEList<KTEValue>
+        return this as? KTEList<KTEValue>
     }
 
-    fun asObject(model: KTEObject): KTEObject {
-        return this as KTEObject
+    fun asNullableObject(model: KTEObject): KTEObject? {
+        return this as? KTEObject
     }
 
-    fun asNullableMutableObject(model: KTEObject) : MutableKTEObject? {
+    fun asNullableMutableObject(model: KTEObject): MutableKTEObject? {
         return this as? MutableKTEObject
     }
 
-    fun asFunction(model: KTEObject): KTEFunction {
-        return this as KTEFunction
+    fun asNullableFunction(model: KTEObject): KTEFunction? {
+        return this as? KTEFunction
     }
 
 }

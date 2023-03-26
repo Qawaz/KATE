@@ -68,7 +68,7 @@ internal sealed interface ForLoop : AtDirective, BlockContainer {
 
         override fun iterate(block: (iteration: Int) -> Unit) {
             var index = 0
-            val iterable = listProperty.asList(model)
+            val iterable = listProperty.asNullableList(model) ?: throw IllegalStateException("list property is not iterable in for loop")
             val total = iterable.size
             while (index < total) {
                 store(index)
