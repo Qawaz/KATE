@@ -23,10 +23,11 @@ open class KTEListImpl<T : KTEValue>(
     open fun HashMap<String, KTEValue>.putImmutableListFunctions() {
         put("get", object : KTEFunction() {
             override fun invoke(model: KTEObject, parameters: List<ReferencedValue>): KTEValue {
-                require(parameters.size == 1) {
-                    "list.get(int) expects a single parameter instead of ${parameters.size}"
+                val index = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value as? Int
+                require(index != null) {
+                    "list.get(int) expects a single Int parameter instead of ${parameters.size}"
                 }
-                return collection[parameters[0].asPrimitive(model).value as Int]
+                return collection[index]
             }
 
             override fun toString(): String = "get(number) : KTEValue"

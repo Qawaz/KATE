@@ -30,7 +30,7 @@ class IfStatementTest {
     fun testConstRef() {
         val context = TemplateContext("@if(@var(var1)) blockValue @endif")
         context.stream.model.putValue("var1", true)
-        assertEquals("blockValue", context.getDestinationAsStringWithReset())
+        assertEquals("blockValue", context.getDestinationAsString())
     }
 
     @Test

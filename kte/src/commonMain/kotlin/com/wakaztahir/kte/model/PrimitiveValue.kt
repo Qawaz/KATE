@@ -19,7 +19,7 @@ interface PrimitiveValue<T> : CodeGen, ReferencedValue {
 
     fun operateOther(type: ArithmeticOperatorType, value2: PrimitiveValue<*>): PrimitiveValue<*>
 
-    override fun asPrimitive(model: KTEObject): PrimitiveValue<*> {
+    override fun asNullablePrimitive(model: KTEObject): PrimitiveValue<*>? {
         return this
     }
 
