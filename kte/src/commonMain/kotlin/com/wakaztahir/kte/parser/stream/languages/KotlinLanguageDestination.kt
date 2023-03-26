@@ -6,7 +6,7 @@ import com.wakaztahir.kte.model.model.KTEObject
 import com.wakaztahir.kte.parser.stream.DestinationStream
 import com.wakaztahir.kte.parser.stream.WritableStream
 
-class KotlinLanguageDestination(private val block : LazyBlock,override val stream: WritableStream) : DestinationStream {
+class KotlinLanguageDestination(private val block: LazyBlock, override val stream: WritableStream) : DestinationStream {
 
     private var quotesOnString = false
     private var objectCallOnly = false
@@ -31,7 +31,7 @@ class KotlinLanguageDestination(private val block : LazyBlock,override val strea
         }
     }
 
-    override fun write(value: KTEList<KTEValue>) {
+    override fun writeList(value: KTEList<out KTEValue>) {
         stream.write("listOf(")
         var isFirst = true
         for (single in value) {
@@ -81,7 +81,7 @@ class KotlinLanguageDestination(private val block : LazyBlock,override val strea
             value.traverse { it ->
                 if (it is KTEObject) {
                     writeObjectAsDataClass(it)
-                    if(it.contained.any { entry-> entry.value is KTEObject }) stream.write("\n\n")
+                    if (it.contained.any { entry -> entry.value is KTEObject }) stream.write("\n\n")
                 }
             }
             objectCallOnly = false

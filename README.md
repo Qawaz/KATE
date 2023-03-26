@@ -152,7 +152,7 @@ List supports the following properties and functions , You can use
 
 | Value                          | Description                  |
 |--------------------------------|------------------------------|
-| size                           | Returns the size of the list |
+| size() : Int                   | Returns the size of the list |
 | get(index : Int) : Element     | Returns the element at index |
 | add(e : Element)               | Add element at last          |
 | addAt(index : Int,e : Element) | Add element at index         |

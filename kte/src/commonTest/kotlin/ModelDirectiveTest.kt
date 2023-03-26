@@ -1,5 +1,4 @@
 import com.wakaztahir.kte.TemplateContext
-import com.wakaztahir.kte.dsl.ModelValue
 import com.wakaztahir.kte.model.*
 import com.wakaztahir.kte.model.model.KTEObject
 import com.wakaztahir.kte.model.model.MutableKTEObject
@@ -97,8 +96,8 @@ class ModelDirectiveTest {
                     putValue("property3", "123")
                 }
                 putValue("callSum", object : KTEFunction() {
-                    override fun invoke(model: KTEObject, parameters: List<ReferencedValue>): ModelValue {
-                        return ModelValue(parameters.map { it.asPrimitive(model) }.sumOf { it.value as Int })
+                    override fun invoke(model: KTEObject, parameters: List<ReferencedValue>): KTEValue {
+                        return IntValue(parameters.map { it.asPrimitive(model) }.sumOf { it.value as Int })
                     }
 
                     override fun toString(): String = "callSum(integers) : Int"
