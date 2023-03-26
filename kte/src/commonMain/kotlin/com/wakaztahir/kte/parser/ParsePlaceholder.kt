@@ -1,10 +1,8 @@
 package com.wakaztahir.kte.parser
 
-import com.wakaztahir.kte.dsl.ScopedModelObject
 import com.wakaztahir.kte.model.*
 import com.wakaztahir.kte.model.model.MutableKTEObject
 import com.wakaztahir.kte.parser.stream.*
-import com.wakaztahir.kte.parser.stream.escapeBlockSpacesForward
 import com.wakaztahir.kte.parser.stream.increment
 import com.wakaztahir.kte.parser.stream.parseTextWhile
 
@@ -12,21 +10,16 @@ private fun Char.isPlaceholderName() = this.isLetterOrDigit() || this == '_'
 
 private fun Char.isPlaceholderDefName() = this.isPlaceholderName()
 
-private fun SourceStream.parsePlaceholderNameOnly(): String? {
+private fun SourceStream.parsePlaceHolderName(): String? {
     if (increment('(')) {
-        val placeholderName = parseTextWhile { currentChar.isPlaceholderName() }
-        if (increment(')')) {
-            return placeholderName
-        } else {
-            throw IllegalStateException("expected ')' found $currentChar when defining placeholder $placeholderName")
-        }
+        return parseTextWhile { currentChar.isPlaceholderName() }
     }
     return null
 }
 
 private fun SourceStream.parsePlaceHolderNameAndDefinition(): Pair<String, String>? {
-    if (increment('(')) {
-        val placeholderName = parseTextWhile { currentChar.isPlaceholderName() }
+    val placeholderName = parsePlaceHolderName()
+    if (placeholderName != null) {
         return if (increment(',')) {
             val definitionName = parseTextWhile { currentChar.isPlaceholderDefName() }
             if (increment(')')) {
@@ -85,9 +78,31 @@ fun LazyBlock.parsePlaceholderDefinition(): PlaceholderDefinition? {
 
 fun LazyBlock.parsePlaceholderInvocation(): PlaceholderInvocation? {
     if (source.currentChar == '@' && source.increment("@placeholder")) {
-        val placeholderName = source.parsePlaceholderNameOnly()
+        val placeholderName = source.parsePlaceHolderName()
+        val placeholderGenObject: MutableKTEObject = if (source.increment(',')) {
+            val refValue = source.parseReferencedValue()
+            if (refValue != null) {
+                if (source.increment(')')) {
+                    refValue.asNullableMutableObject(model) ?: throw IllegalStateException("value of unknown type cannot be passed placeholder invocation , it expects a mutable object")
+                } else {
+                    throw IllegalStateException("expected ')' found ${source.currentChar} when invoking placeholder $placeholderName")
+                }
+            } else {
+                model
+            }
+        } else {
+            if (source.increment(')')) {
+                model
+            } else {
+                throw IllegalStateException("expected ')' found ${source.currentChar} when invoking placeholder $placeholderName")
+            }
+        }
         if (placeholderName != null) {
-            return PlaceholderInvocation(placeholderName = placeholderName, invocationEndPointer = source.pointer)
+            return PlaceholderInvocation(
+                placeholderName = placeholderName,
+                generationObject = placeholderGenObject,
+                invocationEndPointer = source.pointer
+            )
         } else {
             throw IllegalStateException("placeholder name is required when invoking a placeholder using @placeholder")
         }

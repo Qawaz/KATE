@@ -3,6 +3,7 @@ package com.wakaztahir.kte.model
 import com.wakaztahir.kte.model.model.KTEList
 import com.wakaztahir.kte.dsl.UnresolvedValueException
 import com.wakaztahir.kte.model.model.KTEObject
+import com.wakaztahir.kte.model.model.MutableKTEObject
 import com.wakaztahir.kte.parser.stream.DestinationStream
 
 sealed interface ModelReference {
@@ -57,6 +58,10 @@ class ModelDirective(val propertyPath: List<ModelReference>) : ReferencedValue, 
 
     override fun asObject(model: KTEObject): KTEObject {
         return model.getPropertyAsObject(this) ?: throwIt(model)
+    }
+
+    override fun asNullableMutableObject(model: KTEObject): MutableKTEObject? {
+        return model.getPropertyAsMutableObject(this)
     }
 
     override fun toString(): String = propertyPath.joinToString(".")

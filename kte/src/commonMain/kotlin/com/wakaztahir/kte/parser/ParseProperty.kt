@@ -21,12 +21,6 @@ internal fun SourceStream.parseReferencedValue(): ReferencedValue? {
     return null
 }
 
-fun SourceStream.parseDynamicProperty(): ReferencedValue? {
-    parseReferencedValue()?.let { return it }
-    parsePrimitiveValue()?.let { return it }
-    return null
-}
-
 internal data class ExpressionValue(
     val first: ReferencedValue,
     val operatorType: ArithmeticOperatorType,

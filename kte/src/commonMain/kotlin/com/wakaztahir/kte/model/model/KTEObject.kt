@@ -54,6 +54,11 @@ interface KTEObject : KTEValue {
         return value as? KTEObject
     }
 
+    fun getPropertyAsMutableObject(directive: ModelDirective): MutableKTEObject? {
+        val value = getModelDirectiveValue(directive = directive)
+        return value as? MutableKTEObject
+    }
+
     fun getModelDirectiveAsPrimitive(directive: ModelDirective): PrimitiveValue<*>? {
         return getModelDirectiveValue(directive) as? PrimitiveValue<*>
     }

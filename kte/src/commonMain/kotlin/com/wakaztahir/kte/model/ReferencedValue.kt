@@ -2,6 +2,7 @@ package com.wakaztahir.kte.model
 
 import com.wakaztahir.kte.model.model.KTEList
 import com.wakaztahir.kte.model.model.KTEObject
+import com.wakaztahir.kte.model.model.MutableKTEObject
 
 interface ReferencedValue : KTEValue, CodeGen {
 
@@ -16,6 +17,10 @@ interface ReferencedValue : KTEValue, CodeGen {
 
     fun asObject(model: KTEObject): KTEObject {
         return this as KTEObject
+    }
+
+    fun asNullableMutableObject(model: KTEObject) : MutableKTEObject? {
+        return this as? MutableKTEObject
     }
 
     fun asFunction(model: KTEObject): KTEFunction {

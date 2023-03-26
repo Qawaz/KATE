@@ -38,8 +38,18 @@ class PlaceholderTest {
 
     @Test
     fun testPlaceholderScopeInheritance() {
-        assertEquals("5", GenerateCode("@define_placeholder(Name) @var i = 5 @end_define_placeholder @placeholder(Name)@var(i)"))
-        assertEquals("01234", GenerateCode("@define_placeholder(Name) @var(i) @end_define_placeholder @for(@var i=0;i<5;i++) @placeholder(Name) @endfor"))
+        assertEquals(
+            expected = "5",
+            actual = GenerateCode("@define_placeholder(Name) @var i = 5 @end_define_placeholder @placeholder(Name)@var(i)")
+        )
+        assertEquals(
+            expected = "01234",
+            actual = GenerateCode("@define_placeholder(Name) @var(i) @end_define_placeholder @for(@var i=0;i<5;i++) @placeholder(Name) @endfor")
+        )
+        val objectDefinition = "@define_object(MyObject) @var i = 5 @end_define_object"
+        val placeholderDefinition = "@define_placeholder(MyPH) @var(i) @end_define_placeholder"
+        val invocation = "@placeholder(MyPH,@var(MyObject))"
+        assertEquals("5", GenerateCode("$objectDefinition $placeholderDefinition $invocation"))
     }
 
 }

@@ -54,12 +54,13 @@ class PlaceholderDefinition(val blockValue: PlaceholderBlock) : BlockContainer {
 
 class PlaceholderInvocation(
     val placeholderName: String,
+    val generationObject : MutableKTEObject,
     val invocationEndPointer: Int
 ) : CodeGen {
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
         val placeholder = block.source.getPlaceholder(placeholderName = placeholderName)
             ?: throw IllegalStateException("placeholder with name $placeholderName not found")
-        placeholder.setGenerationModel(block.model)
+        placeholder.setGenerationModel(generationObject)
         placeholder.generateTo(destination)
         block.source.setPointerAt(invocationEndPointer)
     }
