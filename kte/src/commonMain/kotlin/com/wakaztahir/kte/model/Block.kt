@@ -13,6 +13,7 @@ interface LazyBlock {
 
     val source: SourceStream
     val model: MutableKTEObject
+    val allowTextOut : Boolean
 
     fun canIterate(): Boolean
 
@@ -26,7 +27,7 @@ interface LazyBlock {
                 writeDirective(directive = directive, destination = destination)
                 continue
             }
-            writeCurrentCharacter(destination = destination)
+            if(allowTextOut) destination.stream.write(source.currentChar)
             source.incrementPointer()
         }
     }
@@ -36,10 +37,6 @@ interface LazyBlock {
         if (!source.hasEnded && directive is BlockContainer) {
             source.increment('\n')
         }
-    }
-
-    fun writeCurrentCharacter(destination: DestinationStream) {
-        destination.stream.write(source.currentChar)
     }
 
     fun parseAtDirective(): CodeGen? {
@@ -78,7 +75,8 @@ open class LazyBlockSlice(
     val startPointer: Int,
     val length: Int,
     val blockEndPointer: Int,
-    override val model: MutableKTEObject
+    override val model: MutableKTEObject,
+    override val allowTextOut: Boolean
 ) : LazyBlock {
 
     override fun canIterate(): Boolean {

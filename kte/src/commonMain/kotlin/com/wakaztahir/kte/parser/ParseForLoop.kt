@@ -126,12 +126,14 @@ private class ForLoopLazyBlockSlice(
     length: Int,
     blockEndPointer: Int,
     parent: ScopedModelObject,
+    allowTextOut: Boolean
 ) : LazyBlockSlice(
     source = source,
     startPointer = startPointer,
     length = length,
     model = parent,
-    blockEndPointer = blockEndPointer
+    blockEndPointer = blockEndPointer,
+    allowTextOut = allowTextOut
 ) {
 
     var hasBroken: Boolean = false
@@ -157,31 +159,11 @@ private class ForLoopLazyBlockSlice(
 }
 
 private fun LazyBlock.parseForBlockValue(): LazyBlockSlice {
-
-    source.escapeBlockSpacesForward()
-
-    val previous = source.pointer
-
-    val ender: String = source.incrementUntilDirectiveWithSkip("@for") {
-        if (source.increment("@endfor")) "@endfor" else null
-    } ?: throw IllegalStateException("@for must end with @endfor")
-
-    source.decrementPointer(ender.length)
-
-    val pointerBeforeEnder = source.pointer
-
-    source.escapeBlockSpacesBackward()
-
-    val length = source.pointer - previous
-
-    source.setPointerAt(pointerBeforeEnder + ender.length)
-
-    return ForLoopLazyBlockSlice(
-        source = source,
-        startPointer = previous,
-        length = length,
-        parent = ScopedModelObject(parent = this@parseForBlockValue.model),
-        blockEndPointer = source.pointer
+    return parseBlockSlice(
+        startsWith = "@for",
+        endsWith = "@endfor",
+        allowTextOut = allowTextOut,
+        inheritModel = false
     )
 }
 

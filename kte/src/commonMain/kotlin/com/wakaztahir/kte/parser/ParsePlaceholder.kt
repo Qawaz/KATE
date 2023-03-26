@@ -2,6 +2,7 @@ package com.wakaztahir.kte.parser
 
 import com.wakaztahir.kte.dsl.ScopedModelObject
 import com.wakaztahir.kte.model.*
+import com.wakaztahir.kte.model.model.MutableKTEObject
 import com.wakaztahir.kte.parser.stream.*
 import com.wakaztahir.kte.parser.stream.escapeBlockSpacesForward
 import com.wakaztahir.kte.parser.stream.increment
@@ -45,32 +46,23 @@ private fun SourceStream.parsePlaceHolderNameAndDefinition(): Pair<String, Strin
 }
 
 private fun LazyBlock.parsePlaceholderBlock(nameAndDef: Pair<String, String>): PlaceholderBlock {
-    source.escapeBlockSpacesForward()
 
-    val previous = source.pointer
-
-    val ender: String = source.incrementUntilDirectiveWithSkip("@define_placeholder") {
-        if (source.increment("@end_define_placeholder")) "@end_define_placeholder" else null
-    } ?: throw IllegalStateException("@define_placeholder must end with @end_define_placeholder")
-
-    source.decrementPointer(ender.length)
-
-    val pointerBeforeEnder = source.pointer
-
-    source.escapeBlockSpacesBackward()
-
-    val length = source.pointer - previous
-
-    source.setPointerAt(pointerBeforeEnder + ender.length)
+    val blockValue = parseBlockSlice(
+        startsWith = "@define_placeholder",
+        endsWith = "@end_define_placeholder",
+        allowTextOut = allowTextOut,
+        inheritModel = true
+    )
 
     return PlaceholderBlock(
         source = source,
         placeholderName = nameAndDef.first,
         definitionName = nameAndDef.second,
-        startPointer = previous,
-        length = length,
-        parent = ScopedModelObject(parent = this@parsePlaceholderBlock.model),
-        blockEndPointer = source.pointer
+        startPointer = blockValue.startPointer,
+        length = blockValue.length,
+        parent = blockValue.model,
+        blockEndPointer = blockValue.blockEndPointer,
+        allowTextOut = allowTextOut
     )
 
 }

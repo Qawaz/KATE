@@ -104,7 +104,8 @@ private fun LazyBlock.parseIfBlockValue(ifType: IfType): LazyBlockSlice {
         startPointer = previous,
         length = length,
         model = ScopedModelObject(parent = this@parseIfBlockValue.model),
-        blockEndPointer = source.pointer + blockEnder.length
+        blockEndPointer = source.pointer + blockEnder.length,
+        allowTextOut = allowTextOut
     )
 }
 

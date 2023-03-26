@@ -8,6 +8,9 @@ abstract class SourceStream : LazyBlock, PlaceholderManager {
     override val source: SourceStream
         get() = this
 
+    override val allowTextOut: Boolean
+        get() = true
+
     abstract val pointer: Int
 
     abstract val currentChar: Char
