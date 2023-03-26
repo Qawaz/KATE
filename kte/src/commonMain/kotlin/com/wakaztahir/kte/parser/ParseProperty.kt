@@ -1,10 +1,7 @@
 package com.wakaztahir.kte.parser
 
-import com.wakaztahir.kte.model.LazyBlock
-import com.wakaztahir.kte.model.PrimitiveValue
-import com.wakaztahir.kte.model.ReferencedValue
+import com.wakaztahir.kte.model.*
 import com.wakaztahir.kte.model.model.KTEObject
-import com.wakaztahir.kte.model.operateAny
 import com.wakaztahir.kte.parser.stream.DestinationStream
 import com.wakaztahir.kte.parser.stream.SourceStream
 
@@ -37,6 +34,10 @@ internal data class ExpressionValue(
         } ?: run {
             throw IllegalStateException("first value in expression $this is not a primitive")
         }
+    }
+
+    override fun getKTEValue(model: KTEObject): KTEValue {
+        return asNullablePrimitive(model)
     }
 
     override fun stringValue(indentationLevel: Int): String {

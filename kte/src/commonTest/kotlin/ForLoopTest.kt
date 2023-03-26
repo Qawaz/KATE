@@ -4,6 +4,7 @@ import com.wakaztahir.kte.dsl.UnresolvedValueException
 import com.wakaztahir.kte.model.model.KTEListImpl
 import com.wakaztahir.kte.model.ModelDirective
 import com.wakaztahir.kte.model.StringValue
+import com.wakaztahir.kte.model.asPrimitive
 import com.wakaztahir.kte.model.model.MutableKTEObject
 import com.wakaztahir.kte.parser.ArithmeticOperatorType
 import com.wakaztahir.kte.parser.ForLoop

@@ -36,12 +36,7 @@ internal data class VariableDeclaration(val variableName: String, val variableVa
         get() = true
 
     fun storeValue(model: MutableKTEObject) {
-        val value = try {
-            variableValue.asPrimitive(model)
-        } catch (e: Exception) {
-            throw e
-        }
-        model.putValue(variableName, value)
+        model.putValue(variableName, variableValue.getKTEValue(model))
     }
 
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {

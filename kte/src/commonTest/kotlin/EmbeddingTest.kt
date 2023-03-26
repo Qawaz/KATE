@@ -1,4 +1,5 @@
 import com.wakaztahir.kte.TemplateContext
+import com.wakaztahir.kte.model.asPrimitive
 import com.wakaztahir.kte.parser.parseVariableDeclaration
 import com.wakaztahir.kte.parser.parseEmbedding
 import com.wakaztahir.kte.parser.stream.TextSourceStream

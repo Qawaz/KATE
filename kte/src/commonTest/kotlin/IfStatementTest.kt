@@ -2,6 +2,7 @@ import com.wakaztahir.kte.GenerateCode
 import com.wakaztahir.kte.KTEDelicateFunction
 import com.wakaztahir.kte.TemplateContext
 import com.wakaztahir.kte.model.LogicalCondition
+import com.wakaztahir.kte.model.asPrimitive
 import com.wakaztahir.kte.parser.*
 import com.wakaztahir.kte.parser.parseCondition
 import com.wakaztahir.kte.parser.parseVariableDeclaration

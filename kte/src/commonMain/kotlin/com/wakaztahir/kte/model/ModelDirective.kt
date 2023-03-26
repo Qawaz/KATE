@@ -49,6 +49,10 @@ class ModelDirective(val propertyPath: List<ModelReference>) : ReferencedValue, 
         throw UnresolvedValueException(propertyPath.joinToString(".") + " unresolved model directive")
     }
 
+    override fun getKTEValue(model: KTEObject): KTEValue {
+        return model.getModelDirectiveValue(this) ?: throwIt(model)
+    }
+
     override fun asNullablePrimitive(model: KTEObject): PrimitiveValue<*>? {
         return model.getModelDirectiveAsPrimitive(this)
     }

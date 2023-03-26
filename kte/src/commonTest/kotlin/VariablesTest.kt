@@ -1,6 +1,7 @@
 import com.wakaztahir.kte.GenerateCode
 import com.wakaztahir.kte.TemplateContext
 import com.wakaztahir.kte.model.StringValue
+import com.wakaztahir.kte.model.asPrimitive
 import com.wakaztahir.kte.parser.parseVariableDeclaration
 import com.wakaztahir.kte.parser.parseVariableReference
 import com.wakaztahir.kte.parser.parseExpression
