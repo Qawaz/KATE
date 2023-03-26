@@ -107,8 +107,8 @@ class ForLoopTest {
         val kteObject = MutableKTEObject {
             putValue("list", ModelListImpl("list", listOf("H", "e", "ll", "o").map { StringValue(it) }))
         }
-        val context = TemplateContext("@model.list.size@model.list.get(2)", kteObject)
-        assertEquals("4ll", context.getDestinationAsString())
+        val context = TemplateContext("@model.list.size@model.list.get(2)@model.list.contains(\"ll\")@model.list.contains(\"v\")", kteObject)
+        assertEquals("4lltruefalse", context.getDestinationAsString())
     }
 
     @Test
