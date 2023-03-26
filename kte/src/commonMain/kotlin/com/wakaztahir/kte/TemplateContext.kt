@@ -36,11 +36,6 @@ class TemplateContext(stream: SourceStream) {
         return stream.getDestinationString()
     }
 
-    @OptIn(KTEDelicateFunction::class)
-    fun getDestinationAsStringWithReset(): String {
-        return stream.getDestinationStringWithReset()
-    }
-
     fun generateTo(destination: DestinationStream) {
         stream.generateTo(destination)
     }

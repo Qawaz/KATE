@@ -105,7 +105,7 @@ class ModelDirectiveTest {
                 })
             }
         )
-        assertEquals("true1233", context.getDestinationAsStringWithReset())
+        assertEquals("true1233", context.getDestinationAsString())
     }
 
 }

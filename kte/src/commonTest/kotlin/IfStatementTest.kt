@@ -122,11 +122,6 @@ class IfStatementTest {
         return "@if(${firstIf.s()}) MyFirstValue @elseif(${firstElseIf.s()}) MySecondValue @elseif(${secondElseIf.s()}) MyThirdValue @else MyFourthValue @endif"
     }
 
-    private fun codeGenerated(statement: String): String {
-        val context = TemplateContext(statement)
-        return context.getDestinationAsString()
-    }
-
     @Test
     fun testParseIf() {
         val iffy = testIfy(firstIf = true, firstElseIf = false, secondElseIf = false)
@@ -134,13 +129,13 @@ class IfStatementTest {
         val ifStatement = context.stream.parseIfStatement()
         assertEquals(12, ifStatement!!.evaluate(context)!!.blockValue.length)
         assertEquals("MyFirstValue", ifStatement.evaluate(context)!!.blockValue.getValueAsString())
-        assertEquals("MyFirstValue", codeGenerated(iffy))
+        assertEquals("MyFirstValue", GenerateCode(iffy))
         assertEquals(iffy.length, context.stream.pointer)
     }
 
     @Test
     fun testMultiIf() {
-        assertEquals("blockValue", codeGenerated("@if(true) @if(true) @if(true) blockValue @endif @endif @endif"))
+        assertEquals("blockValue", GenerateCode("@if(true) @if(true) @if(true) blockValue @endif @endif @endif"))
     }
 
     @Test
@@ -149,7 +144,7 @@ class IfStatementTest {
         val context = TemplateContext((iffy))
         val ifStatement = context.stream.parseIfStatement()
         assertEquals("MySecondValue", ifStatement!!.evaluate(context)!!.blockValue.getValueAsString())
-        assertEquals("MySecondValue", codeGenerated(iffy))
+        assertEquals("MySecondValue", GenerateCode(iffy))
         assertEquals(iffy.length, context.stream.pointer)
     }
 
@@ -159,7 +154,7 @@ class IfStatementTest {
         val context = TemplateContext((iffy))
         val ifStatement = context.stream.parseIfStatement()
         assertEquals("MyThirdValue", ifStatement!!.evaluate(context)!!.blockValue.getValueAsString())
-        assertEquals("MyThirdValue", codeGenerated(iffy))
+        assertEquals("MyThirdValue", GenerateCode(iffy))
         assertEquals(iffy.length, context.stream.pointer)
     }
 
@@ -169,28 +164,29 @@ class IfStatementTest {
         val context = TemplateContext((iffy))
         val ifStatement = context.stream.parseIfStatement()
         assertNotEquals(null, ifStatement)
-        assertEquals("MyFourthValue", codeGenerated(iffy))
+        assertEquals("MyFourthValue", GenerateCode(iffy))
         assertEquals("MyFourthValue", ifStatement!!.evaluate(context)!!.blockValue.getValueAsString())
         assertEquals(iffy.length, context.stream.pointer)
     }
 
-    @OptIn(KTEDelicateFunction::class)
     @Test
     fun parseMultilineIfBlock() {
-        val context = TemplateContext(
-            """@if(true)
+        assertEquals(
+            "Line Number 1\nLine Number 2", GenerateCode(
+                """@if(true)
               |Line Number 1
               |Line Number 2
               |@endif""".trimMargin("|")
+            )
         )
-        assertEquals("Line Number 1\nLine Number 2", context.getDestinationAsStringWithReset())
-        val context2 = TemplateContext(
-            """@if(false)
+        assertEquals(
+            "", GenerateCode(
+                """@if(false)
               |Line Number 1
               |Line Number 2
               |@endif""".trimMargin("|")
+            )
         )
-        assertEquals("", context2.getDestinationAsStringWithReset())
     }
 
 }

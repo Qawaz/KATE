@@ -84,15 +84,8 @@ class ForLoopTest {
 
     @Test
     fun testForLoopGeneration2() {
-        val context = TemplateContext("@for(@var i=0;i<3;i+1) @var(i) @endfor")
-        assertEquals("012", context.getDestinationAsStringWithReset())
-    }
-
-
-    @Test
-    fun testForLoopGeneration3() {
-        val context = TemplateContext("@for(@var i = 0;i<5;i+1) x @endfor")
-        assertEquals("xxxxx", context.getDestinationAsStringWithReset())
+        assertEquals("012", GenerateCode("@for(@var i=0;i<3;i+1) @var(i) @endfor"))
+        assertEquals("xxxxx", GenerateCode("@for(@var i = 0;i<5;i+1) x @endfor"))
     }
 
     @Test
@@ -100,7 +93,7 @@ class ForLoopTest {
         val context = TemplateContext("@for(@var elem : @model.list) @var(elem) @endfor", MutableKTEObject {
             putValue("list", KTEListImpl("list", listOf("H", "e", "ll", "o").map { StringValue(it) }))
         })
-        assertEquals("Hello", context.getDestinationAsStringWithReset())
+        assertEquals("Hello", context.getDestinationAsString())
     }
 
     @Test

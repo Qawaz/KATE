@@ -65,14 +65,6 @@ interface LazyBlock {
         return (destination.stream as TextDestinationStream).getValue()
     }
 
-    @KTEDelicateFunction
-    fun getDestinationStringWithReset(): String {
-        val previous = source.pointer
-        val value = getDestinationString()
-        source.setPointerAt(previous)
-        return value
-    }
-
 }
 
 

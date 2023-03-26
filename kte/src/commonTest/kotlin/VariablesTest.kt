@@ -34,7 +34,7 @@ class VariablesTest {
 
     @Test
     fun testParseVariableGeneration() {
-        val text = "@var myVar = \"someValue\"@var(myVar)"
+        val text = "@var myVar = \"someValue\" @var(myVar)"
         val context = TemplateContext(text)
         assertEquals("someValue", context.getDestinationAsString())
         assertEquals(text.length, context.stream.pointer)
@@ -86,9 +86,9 @@ class VariablesTest {
 
     @Test
     fun testReassignment() {
-        val context = TemplateContext("@var i=0@var i=2@var(i)")
+        val context = TemplateContext("@var i = 0 @var i = 2 @var(i)")
         assertEquals("2", context.getDestinationAsString())
-        val context2 = TemplateContext("@var i=10@var i=@var(i) @+ 1@var(i)")
+        val context2 = TemplateContext("@var i = 10 @var i = @var(i) @+ 1 @var(i)")
         assertEquals("11", context2.getDestinationAsString())
     }
 
