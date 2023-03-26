@@ -88,6 +88,25 @@ class ModelDirectiveTest {
     }
 
     @Test
+    fun testFunction() {
+        var invocations = 0
+        val myFunc = object : KTEFunction() {
+            override fun invoke(model: KTEObject, parameters: List<ReferencedValue>): KTEValue {
+                invocations++
+                return StringValue("funVal")
+            }
+
+            override fun toString(): String = "funName()"
+        }
+        val context = TemplateContext("@model.funName()@model.@propName()@model.@@funName()", MutableKTEObject {
+            putValue("funName", myFunc)
+            putValue("propName", "propVal")
+        })
+        assertEquals("funValpropVal()", context.getDestinationAsString())
+        assertEquals(2, invocations)
+    }
+
+    @Test
     fun testParseModelDirectiveCodeGen() {
         val context = TemplateContext(
             text = "@model.property1@model.property2.property3@model.callSum(1,2)",

@@ -19,6 +19,7 @@ sealed interface ModelReference {
 
     class FunctionCall(
         override val name: String,
+        val invokeOnly : Boolean = true,
         val parametersList: List<ReferencedValue>
     ) : ModelReference {
         override fun toString(): String {
@@ -35,8 +36,11 @@ class ModelDirective(val propertyPath: List<ModelReference>) : ReferencedValue, 
         if (value != null) {
 
             // Adding parameters to function parameters list
-            if (value is KTEFunction && propertyPath.lastOrNull() is ModelReference.FunctionCall) {
-                value.parameters.addAll((propertyPath.last() as ModelReference.FunctionCall).parametersList)
+            if (value is KTEFunction) {
+                propertyPath.lastOrNull()?.let { it as? ModelReference.FunctionCall }?.let {  call->
+                    value.parameters.addAll(call.parametersList)
+                    value.invokeOnly = call.invokeOnly
+                }
             }
 
             value.generateTo(block, destination)

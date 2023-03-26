@@ -31,15 +31,20 @@ internal fun Char.isModelDirectiveLetter(): Boolean = this.isLetterOrDigit() || 
 
 internal fun SourceStream.parseDotReferencesInto(propertyPath: MutableList<ModelReference>) {
     while (increment('.')) {
+        var invokeOnly = false
         if (increment('@')) {
-            val propertyName = parseTextWhile { currentChar.isModelDirectiveLetter() }
-            propertyPath.add(ModelReference.Property(propertyName))
-            continue
+            if (increment('@')) {
+                invokeOnly = true
+            } else {
+                val propertyName = parseTextWhile { currentChar.isModelDirectiveLetter() }
+                propertyPath.add(ModelReference.Property(propertyName))
+                continue
+            }
         }
         val propertyName = parseTextWhile { currentChar.isModelDirectiveLetter() }
         val parameters = parseFunctionParameters()
         if (parameters != null) {
-            propertyPath.add(ModelReference.FunctionCall(propertyName, parameters))
+            propertyPath.add(ModelReference.FunctionCall(propertyName, invokeOnly = invokeOnly, parameters))
         } else {
             propertyPath.add(ModelReference.Property(propertyName))
         }
