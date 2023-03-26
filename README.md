@@ -123,13 +123,17 @@ Partial Raw , It only outputs the code that is generated via directives
 - By using raw , You output everything without any parsing
 - By using partial_raw , You only output what is parsed i.e. directives
 
-Inside the partial_raw block , To go back to default behaviour , You can use 
+Inside the `@partial_raw` block , To go back to default behaviour , You can use 
 
 ```
 @default_no_raw
 raw text is allowed here and so are the directives
 @end_default_no_raw
 ```
+
+`@partial_raw` and `@default_no_raw` inherit scope of parent
+so any variables / lists / objects created inside these blocks will be
+accessible outside of these blocks
 
 ## Lists
 
@@ -214,6 +218,10 @@ Because of this, this code is possible
 @endfor
 ```
 
+This means that placeholder block inherits the scope of invocation directive , so any 
+variables / lists / objects created inside the placeholder will be
+accessible in the scope of where invocation `@placeholder` took place
+
 You can also provide an object whose variables will be in the scope of placeholder
 
 ```
@@ -224,7 +232,8 @@ You can also provide an object whose variables will be in the scope of placehold
 @placeholder(WelcomeText,MyObject)
 ```
 
-Now welcome text can make a reference to `myVar` and it will be able to access it
+Now welcome text can make a reference to `myVar` and it will be able to access it , If placeholder creates any variables , 
+They'll be present in `MyObject` after the invocation
 
 ### Redefinition
 

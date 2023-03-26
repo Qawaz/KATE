@@ -1,11 +1,10 @@
 package com.wakaztahir.kte.parser
 
 import com.wakaztahir.kte.dsl.ScopedModelObject
-import com.wakaztahir.kte.model.LazyBlock
-import com.wakaztahir.kte.model.LazyBlockSlice
-import com.wakaztahir.kte.model.RawBlock
+import com.wakaztahir.kte.model.*
 import com.wakaztahir.kte.parser.stream.*
 import com.wakaztahir.kte.parser.stream.increment
+import kotlin.random.Random
 
 fun LazyBlock.parseBlockSlice(
     startsWith: String,
@@ -51,6 +50,41 @@ fun LazyBlock.parseRawBlock(): RawBlock? {
                 startsWith = "@raw",
                 endsWith = "@endraw",
                 allowTextOut = false,
+                inheritModel = true
+            )
+        )
+    }
+    return null
+}
+
+fun LazyBlock.parsePartialRaw(): PartialRawBlock? {
+    if (source.currentChar == '@' && source.increment("@partial_raw")) {
+        val slice = parseBlockSlice(
+            startsWith = "@partial_raw",
+            endsWith = "@end_partial_raw",
+            allowTextOut = false,
+            inheritModel = true
+        )
+        return PartialRawBlock(
+            value = PartialRawLazyBlockSlice(
+                source = slice.source,
+                startPointer = slice.startPointer,
+                length = slice.length,
+                blockEndPointer = slice.blockEndPointer,
+                model = slice.model
+            )
+        )
+    }
+    return null
+}
+
+fun PartialRawLazyBlockSlice.parseDefaultNoRaw(): DefaultNoRawBlock? {
+    if (source.currentChar == '@' && source.increment("@default_no_raw")) {
+        return DefaultNoRawBlock(
+            parseBlockSlice(
+                startsWith = "@default_no_raw",
+                endsWith = "@end_default_no_raw",
+                allowTextOut = true,
                 inheritModel = true
             )
         )
