@@ -1,10 +1,7 @@
 package com.wakaztahir.kte.model
 
-import com.wakaztahir.kte.model.model.KTEList
 import com.wakaztahir.kte.dsl.UnresolvedValueException
-import com.wakaztahir.kte.model.model.KTEFunction
-import com.wakaztahir.kte.model.model.KTEObject
-import com.wakaztahir.kte.model.model.MutableKTEObject
+import com.wakaztahir.kte.model.model.*
 import com.wakaztahir.kte.parser.stream.DestinationStream
 
 sealed interface ModelReference {

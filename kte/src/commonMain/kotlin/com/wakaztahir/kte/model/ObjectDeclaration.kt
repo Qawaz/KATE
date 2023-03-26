@@ -2,6 +2,7 @@ package com.wakaztahir.kte.model
 
 import com.wakaztahir.kte.dsl.ModelObjectImpl
 import com.wakaztahir.kte.model.model.KTEObject
+import com.wakaztahir.kte.model.model.KTEValue
 import com.wakaztahir.kte.model.model.MutableKTEObject
 import com.wakaztahir.kte.parser.parseObjectDeclaration
 import com.wakaztahir.kte.parser.parseVariableDeclaration

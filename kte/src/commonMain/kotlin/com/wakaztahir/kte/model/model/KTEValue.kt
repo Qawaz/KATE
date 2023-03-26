@@ -1,4 +1,6 @@
-package com.wakaztahir.kte.model
+package com.wakaztahir.kte.model.model
+
+import com.wakaztahir.kte.model.CodeGen
 
 interface KTEValue : CodeGen {
 

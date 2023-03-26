@@ -1,6 +1,5 @@
 package com.wakaztahir.kte.model.model
 
-import com.wakaztahir.kte.model.KTEValue
 import com.wakaztahir.kte.model.LazyBlock
 import com.wakaztahir.kte.parser.stream.DestinationStream
 

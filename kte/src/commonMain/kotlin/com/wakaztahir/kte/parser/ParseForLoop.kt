@@ -6,6 +6,7 @@ import com.wakaztahir.kte.model.*
 import com.wakaztahir.kte.model.ConditionType
 import com.wakaztahir.kte.model.ReferencedValue
 import com.wakaztahir.kte.model.model.KTEObject
+import com.wakaztahir.kte.model.model.KTEValue
 import com.wakaztahir.kte.parser.stream.*
 import com.wakaztahir.kte.parser.stream.increment
 import com.wakaztahir.kte.parser.stream.parseTextWhile

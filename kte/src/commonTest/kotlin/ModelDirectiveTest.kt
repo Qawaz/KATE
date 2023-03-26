@@ -1,9 +1,6 @@
 import com.wakaztahir.kte.TemplateContext
 import com.wakaztahir.kte.model.*
-import com.wakaztahir.kte.model.model.KTEFunction
-import com.wakaztahir.kte.model.model.KTEObject
-import com.wakaztahir.kte.model.model.MutableKTEObject
-import com.wakaztahir.kte.model.model.KTEListImpl
+import com.wakaztahir.kte.model.model.*
 import com.wakaztahir.kte.parser.parseExpression
 import com.wakaztahir.kte.parser.parseModelDirective
 import kotlin.test.Test

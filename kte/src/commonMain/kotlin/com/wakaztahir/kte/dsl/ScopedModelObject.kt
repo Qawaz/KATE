@@ -1,6 +1,6 @@
 package com.wakaztahir.kte.dsl
 
-import com.wakaztahir.kte.model.KTEValue
+import com.wakaztahir.kte.model.model.KTEValue
 import com.wakaztahir.kte.model.ModelReference
 import com.wakaztahir.kte.model.model.MutableKTEObject
 

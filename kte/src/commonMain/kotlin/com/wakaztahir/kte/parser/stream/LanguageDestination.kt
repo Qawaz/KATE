@@ -3,6 +3,7 @@ package com.wakaztahir.kte.parser.stream
 import com.wakaztahir.kte.model.*
 import com.wakaztahir.kte.model.model.KTEList
 import com.wakaztahir.kte.model.model.KTEObject
+import com.wakaztahir.kte.model.model.KTEValue
 
 interface LanguageDestination {
 

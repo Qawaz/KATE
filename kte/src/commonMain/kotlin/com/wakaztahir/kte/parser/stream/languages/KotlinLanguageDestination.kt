@@ -4,6 +4,7 @@ import com.wakaztahir.kte.model.*
 import com.wakaztahir.kte.model.model.KTEFunction
 import com.wakaztahir.kte.model.model.KTEList
 import com.wakaztahir.kte.model.model.KTEObject
+import com.wakaztahir.kte.model.model.KTEValue
 import com.wakaztahir.kte.parser.stream.DestinationStream
 import com.wakaztahir.kte.parser.stream.WritableStream
 

@@ -1,9 +1,6 @@
 package com.wakaztahir.kte.model
 
-import com.wakaztahir.kte.model.model.KTEFunction
-import com.wakaztahir.kte.model.model.KTEList
-import com.wakaztahir.kte.model.model.KTEObject
-import com.wakaztahir.kte.model.model.MutableKTEObject
+import com.wakaztahir.kte.model.model.*
 
 interface ReferencedValue : KTEValue, CodeGen {
 
