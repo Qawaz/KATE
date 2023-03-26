@@ -178,15 +178,15 @@ class IfStatementTest {
     fun parseMultilineIfBlock() {
         val context = TemplateContext(
             """@if(true)
-              | Line Number 1
-              | Line Number 2
+              |Line Number 1
+              |Line Number 2
               |@endif""".trimMargin("|")
         )
         assertEquals("Line Number 1\nLine Number 2", context.getDestinationAsStringWithReset())
         val context2 = TemplateContext(
             """@if(false)
-              | Line Number 1
-              | Line Number 2
+              |Line Number 1
+              |Line Number 2
               |@endif""".trimMargin("|")
         )
         assertEquals("", context2.getDestinationAsStringWithReset())

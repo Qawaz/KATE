@@ -83,14 +83,18 @@ internal class SingleIf(
 
 internal class IfStatement(private val ifs: MutableList<SingleIf>) : AtDirective, BlockContainer {
 
-    override fun getBlockValue(model: KTEObject): LazyBlock? {
-        return evaluate(model)?.blockValue
-    }
-
     val singleIfs: List<SingleIf> get() = ifs
 
     private fun sortByOrder() {
         ifs.sortBy { it.type.order }
+    }
+
+    init {
+        sortByOrder()
+    }
+
+    override fun getBlockValue(model: KTEObject): LazyBlock? {
+        return evaluate(model)?.blockValue
     }
 
     fun evaluate(context: TemplateContext): SingleIf? {
@@ -98,7 +102,6 @@ internal class IfStatement(private val ifs: MutableList<SingleIf>) : AtDirective
     }
 
     fun evaluate(context: KTEObject): SingleIf? {
-        sortByOrder()
         for (iffy in ifs) {
             if (iffy.condition.evaluate(context)) {
                 return iffy
