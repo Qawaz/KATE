@@ -79,12 +79,12 @@ class ModelDirectiveTest {
 
     @Test
     fun testForLoopGeneration6() {
-        val context = TemplateContext("@model.arithmetic.funName", MutableKTEObject {
+        val context = TemplateContext("@model.arithmetic.funName@var(arithmetic).funName", MutableKTEObject {
             putObject("arithmetic") {
                 putValue("funName", "seriouslyHere")
             }
         })
-        assertEquals("seriouslyHere", context.getDestinationAsString())
+        assertEquals("seriouslyHereseriouslyHere", context.getDestinationAsString())
     }
 
     @Test
