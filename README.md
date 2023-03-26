@@ -51,13 +51,13 @@ The value of the variable can only be one of these
 
 `@model.function(value1,value2)` To call a function in the model
 
-Explicit property , so compiler won't think it's a function name
-
-`@model.@@property()` in this case '(' and ')' will be outputted
-
 Invoking a function without outputting its returned value
 
 `@model.@function()`
+
+Explicit property , so compiler won't think it's a function name
+
+`@model.@@property()` in this case '(' and ')' will be outputted
 
 ## Expressions
 
