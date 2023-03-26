@@ -3,13 +3,13 @@ package com.wakaztahir.kte.model.model
 import com.wakaztahir.kte.dsl.ModelObjectImpl
 import com.wakaztahir.kte.model.*
 
-abstract class MutableKTEObject : KTEObject {
+interface MutableKTEObject : KTEObject {
 
     // Put Functions
 
-    abstract fun contains(key: String): Boolean
+    fun contains(key: String): Boolean
 
-    abstract fun putValue(key: String, value: KTEValue)
+    fun putValue(key: String, value: KTEValue)
 
     // Extensions
 
@@ -68,7 +68,7 @@ abstract class MutableKTEObject : KTEObject {
         putValue(key, ModelObjectImpl(key).apply(block))
     }
 
-    abstract fun removeKey(key: String)
+    fun removeKey(key: String)
 
 }
 

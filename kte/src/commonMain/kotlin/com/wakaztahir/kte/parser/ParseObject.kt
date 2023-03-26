@@ -3,7 +3,7 @@ package com.wakaztahir.kte.parser
 import com.wakaztahir.kte.model.LazyBlock
 import com.wakaztahir.kte.model.ObjectDeclaration
 import com.wakaztahir.kte.model.ObjectDeclarationBlockSlice
-import com.wakaztahir.kte.model.model.MutableKTEObject
+import com.wakaztahir.kte.model.ObjectDeclarationModel
 import com.wakaztahir.kte.parser.stream.SourceStream
 import com.wakaztahir.kte.parser.stream.increment
 import com.wakaztahir.kte.parser.stream.parseTextWhile
@@ -23,7 +23,7 @@ private fun SourceStream.parseObjectName(): String {
     }
 }
 
-private fun LazyBlock.parseObjectDeclarationSlice(): ObjectDeclarationBlockSlice {
+private fun LazyBlock.parseObjectDeclarationSlice(objectName: String): ObjectDeclarationBlockSlice {
     val slice = parseBlockSlice(
         startsWith = "@define_object",
         endsWith = "@end_define_object",
@@ -35,7 +35,7 @@ private fun LazyBlock.parseObjectDeclarationSlice(): ObjectDeclarationBlockSlice
         startPointer = slice.startPointer,
         length = slice.length,
         blockEndPointer = slice.blockEndPointer,
-        model = slice.model
+        model = ObjectDeclarationModel(objectName = objectName, parent = model)
     )
 }
 
@@ -44,7 +44,7 @@ fun LazyBlock.parseObjectDeclaration(): ObjectDeclaration? {
         val objectName = source.parseObjectName()
         return ObjectDeclaration(
             objectName = objectName,
-            declarationBlock = parseObjectDeclarationSlice()
+            declarationBlock = parseObjectDeclarationSlice(objectName)
         )
     }
     return null

@@ -12,6 +12,10 @@ class ObjectTest {
                        |)""".trimMargin(),
             actual = GenerateCode("@define_object(MyObject) @var myVar = 5 @end_define_object @var(MyObject)")
         )
+        assertEquals(
+            expected = "5",
+            actual = GenerateCode("@var another = 5 @define_object(MyObject) @var myVar = @var(another) @end_define_object @var(MyObject).myVar")
+        )
     }
 
 }

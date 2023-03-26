@@ -8,11 +8,16 @@ import com.wakaztahir.kte.parser.stream.DestinationStream
 abstract class KTEFunction : KTEValue {
 
     val parameters = mutableListOf<ReferencedValue>()
+    var invokeOnly = false
 
     protected abstract fun invoke(model: KTEObject, parameters: List<ReferencedValue>): KTEValue
 
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
-        invoke(block.model, parameters).generateTo(block, destination)
+        if (invokeOnly) {
+            invoke(block.model, parameters)
+        } else {
+            invoke(block.model, parameters).generateTo(block, destination)
+        }
     }
 
     override fun stringValue(indentationLevel: Int): String {
