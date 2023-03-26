@@ -71,3 +71,9 @@ abstract class MutableKTEObject : KTEObject {
     abstract fun removeKey(key: String)
 
 }
+
+fun MutableKTEObject(name: String = "Global", block: MutableKTEObject.() -> Unit): MutableKTEObject {
+    val modelObj = ModelObjectImpl(objectName = name)
+    block(modelObj)
+    return modelObj
+}

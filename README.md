@@ -77,14 +77,6 @@ You can use variables in expressions
 
 `==` , `!=` , `>` , `<` , `>=` , `<=`
 
-## List Operations
-
-Operations that can be performed on an iterable present in the model
-
-`@model.iterable.size` Gets the size of the list
-
-`@model.iterable.get(0)` Gets the first element where zero can be any number between 0 and list.size - 1
-
 ## For Loop
 
 There's only one type of loop and that's for loop
@@ -117,6 +109,65 @@ If you need to just output raw text , You should use the raw block
 
 `@raw this text goes directly into the template @endraw`
 
+## Partial Raw
+
+Partial Raw , It only outputs the code that is generated via directives
+
+```
+@partial_raw
+<%--raw text is not allowed here--%>
+@end_partial_raw
+```
+
+- By default , All text is outputted and Directives output after being parsed
+- By using raw , You output everything without any parsing
+- By using partial_raw , You only output what is parsed i.e. directives
+
+Inside the partial_raw block , To go back to default behaviour , You can use 
+
+```
+@default_no_raw
+raw text is allowed here and so are the directives
+@end_default_no_raw
+```
+
+## Lists
+
+List is basically an array like data structure , In KTE , Lists can be created to store objects of a single type.
+
+To create a list
+
+`@var myList = @mutable_list(1,2,3)`
+
+All elements in the list must be of a single type
+
+### List Functions
+
+List supports the following properties and functions , You can use
+`@var(myList).size` to get the size of the list
+
+| Value                          | Description                  |
+|--------------------------------|------------------------------|
+| size                           | Returns the size of the list |
+| get(index : Int) : Element     | Returns the element at index |
+| add(e : Element)               | Add element at last          |
+| addAt(index : Int,e : Element) | Add element at index         |
+| remove(e : Element)            | Remove element from list     |
+| removeAt(index : Int)          | Remove element at index      |     |
+
+## Objects
+
+An object can be created to hold variables of different types , An object block only expects variable declarations
+
+```
+@define_object(MyObject)
+@var i = 5
+@var myList = @mutable_list(1,2,3)
+@end_define_object
+```
+
+And then objects can be referenced just like any other variable `@var(MyObject)`
+
 ## Placeholders
 
 Placeholders are great if you would like to Output some content multiple times
@@ -148,33 +199,6 @@ To invoke / call a placeholder You use `@placeholder` with Placeholder name as t
 @placeholder(WelcomeText)
 ```
 
-### Redefinition
-
-You can redefine and provide your own implementation for the next code that will be generated
-
-```
-@define_placeholder(WelcomeText,NewsText)
-We've detected an earthquake
-@end_define_placeholder
-```
-
-Now when you invoke / call the placeholder , `NewsText` will be used instead of `GreetingText`
-
-If you'd like to go back to previous implementation , You don't need to provide the definition of the placeholder , just
-the
-definition name that was previously used to define it
-
-```
-@use_placeholder(WelcomeText,GreetingText)
-```
-
-If the definition name of the placeholder is same as Placeholder Name , You can skip passing
-the definition name when calling `@use_placeholder`
-
-Now when you invoke / call the placeholder , `GreetingText` will be used again , instead of `NewsText`
-
-### Placeholder Parameters
-
 Placeholders are like functions in template engines , But they don't have parameters instead they
 have something more powerful which is that they inherit scope of invocation directive
 
@@ -190,4 +214,37 @@ Because of this, this code is possible
 @endfor
 ```
 
-In this case , Variable placeholder expects `i` variable to be defined in scope
+You can also provide an object whose variables will be in the scope of placeholder
+
+```
+@define_object(MyObject)
+@var myVar = 5
+@end_define_object
+
+@placeholder(WelcomeText,MyObject)
+```
+
+Now welcome text can make a reference to `myVar` and it will be able to access it
+
+### Redefinition
+
+You can redefine and provide your own implementation for the next code that will be generated
+
+```
+@define_placeholder(WelcomeText,NewsText)
+We've detected an earthquake
+@end_define_placeholder
+```
+
+Now when you invoke / call the placeholder , `NewsText` will be used instead of `GreetingText`
+
+If you'd like to go back to previous implementation , You need the definition name that was previously used to define it
+
+```
+@use_placeholder(WelcomeText,GreetingText)
+```
+
+If the definition name of the placeholder is same as Placeholder Name , You can skip passing
+the definition name when calling `@use_placeholder`
+
+Now when you invoke / call the placeholder , `GreetingText` will be used again , instead of `NewsText`

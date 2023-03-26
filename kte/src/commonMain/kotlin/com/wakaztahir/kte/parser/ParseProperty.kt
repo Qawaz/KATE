@@ -4,10 +4,9 @@ import com.wakaztahir.kte.model.LazyBlock
 import com.wakaztahir.kte.model.PrimitiveValue
 import com.wakaztahir.kte.model.ReferencedValue
 import com.wakaztahir.kte.model.model.KTEObject
+import com.wakaztahir.kte.model.operateAny
 import com.wakaztahir.kte.parser.stream.DestinationStream
-import com.wakaztahir.kte.parser.stream.LanguageDestination
 import com.wakaztahir.kte.parser.stream.SourceStream
-import com.wakaztahir.kte.parser.stream.increment
 
 internal fun SourceStream.parseNumberReference(): ReferencedValue? {
     parseVariableReference()?.let { return it }
@@ -35,7 +34,7 @@ internal data class ExpressionValue(
 ) : ReferencedValue {
 
     override fun asPrimitive(model: KTEObject): PrimitiveValue<*> {
-        return first.asPrimitive(model).operate(operatorType, second.asPrimitive(model))
+        return first.asPrimitive(model).operateAny(operatorType, second.asPrimitive(model))
     }
 
     override fun stringValue(indentationLevel: Int): String {

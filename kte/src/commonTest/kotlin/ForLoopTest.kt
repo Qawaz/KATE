@@ -1,22 +1,16 @@
 import com.wakaztahir.kte.GenerateCode
-import com.wakaztahir.kte.KTEDelicateFunction
 import com.wakaztahir.kte.TemplateContext
-import com.wakaztahir.kte.dsl.ScopedModelObject
 import com.wakaztahir.kte.dsl.UnresolvedValueException
-import com.wakaztahir.kte.model.CodeGen
 import com.wakaztahir.kte.model.model.ModelListImpl
 import com.wakaztahir.kte.model.ModelDirective
-import com.wakaztahir.kte.model.ModelReference
 import com.wakaztahir.kte.model.StringValue
-import com.wakaztahir.kte.model.model.TemplateModel
+import com.wakaztahir.kte.model.model.MutableKTEObject
 import com.wakaztahir.kte.parser.ArithmeticOperatorType
 import com.wakaztahir.kte.parser.ForLoop
-import com.wakaztahir.kte.parser.VariableDeclaration
 import com.wakaztahir.kte.parser.parseForLoop
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
-import kotlin.test.assertNotEquals
 
 class ForLoopTest {
     @Test
@@ -102,7 +96,7 @@ class ForLoopTest {
 
     @Test
     fun testForLoopGeneration4() {
-        val context = TemplateContext("@for(@var elem : @model.list) @var(elem) @endfor", TemplateModel {
+        val context = TemplateContext("@for(@var elem : @model.list) @var(elem) @endfor", MutableKTEObject {
             putValue("list", ModelListImpl("list",listOf("H", "e", "ll", "o").map { StringValue(it) }))
         })
         assertEquals("Hello", context.getDestinationAsStringWithReset())
@@ -110,7 +104,7 @@ class ForLoopTest {
 
     @Test
     fun testForLoopGeneration5() {
-        val context = TemplateContext("@model.list.size", TemplateModel {
+        val context = TemplateContext("@model.list.size", MutableKTEObject {
             putValue("list", ModelListImpl("list",listOf("H", "e", "ll", "o").map { StringValue(it) }))
         })
         assertEquals("4", context.getDestinationAsStringWithReset())

@@ -12,53 +12,62 @@ enum class OperatorAssociativity {
 enum class ArithmeticOperatorType(val char: Char, val associativity: OperatorAssociativity, val precedence: Int) {
 
     Plus('+', associativity = OperatorAssociativity.LeftToRight, precedence = 6) {
-        override fun operate(value1: Int, value2: Int): Int {
-            return value1 + value2
-        }
-
-        override fun operate(value1: Double, value2: Double): Double {
-            return value1 + value2
-        }
+        override fun operate(value1: Int, value2: Int): Int = value1 + value2
+        override fun operate(value1: Double, value2: Double): Double = value1 + value2
+        override fun operate(value1: Int, value2: Double): Double = value1 + value2
+        override fun operate(value1: Double, value2: Int): Double = value1 + value2
+        override fun operate(value1: String, value2: String): String = value1 + value2
+        override fun operate(value1: String, value2: Int): String = value1 + value2
+        override fun operate(value1: String, value2: Double): String = value1 + value2
     },
     Minus('-', associativity = OperatorAssociativity.LeftToRight, precedence = 6) {
-        override fun operate(value1: Int, value2: Int): Int {
-            return value1 - value2
-        }
-
-        override fun operate(value1: Double, value2: Double): Double {
-            return value1 - value2
-        }
+        override fun operate(value1: Int, value2: Int): Int = value1 - value2
+        override fun operate(value1: Double, value2: Double): Double = value1 - value2
+        override fun operate(value1: Int, value2: Double): Double = value1 - value2
+        override fun operate(value1: Double, value2: Int): Double = value1 - value2
+        override fun operate(value1: String, value2: String): String = notPossible("String", "String")
+        override fun operate(value1: String, value2: Int): String = notPossible("String", "Int")
+        override fun operate(value1: String, value2: Double): String = notPossible("String", "Double")
     },
     Divide('/', associativity = OperatorAssociativity.LeftToRight, precedence = 4) {
-        override fun operate(value1: Int, value2: Int): Int {
-            return value1 / value2
-        }
-
-        override fun operate(value1: Double, value2: Double): Double {
-            return value1 / value2
-        }
+        override fun operate(value1: Int, value2: Int): Int = value1 / value2
+        override fun operate(value1: Double, value2: Double): Double = value1 / value2
+        override fun operate(value1: Int, value2: Double): Double = value1 / value2
+        override fun operate(value1: Double, value2: Int): Double = value1 / value2
+        override fun operate(value1: String, value2: String): String = notPossible("String", "String")
+        override fun operate(value1: String, value2: Int): String = notPossible("String", "Int")
+        override fun operate(value1: String, value2: Double): String = notPossible("String", "Double")
     },
     Multiply('*', associativity = OperatorAssociativity.LeftToRight, precedence = 4) {
-        override fun operate(value1: Int, value2: Int): Int {
-            return value1 * value2
-        }
-
-        override fun operate(value1: Double, value2: Double): Double {
-            return value1 * value2
-        }
+        override fun operate(value1: Int, value2: Int): Int = value1 * value2
+        override fun operate(value1: Double, value2: Double): Double = value1 * value2
+        override fun operate(value1: Int, value2: Double): Double = value1 * value2
+        override fun operate(value1: Double, value2: Int): Double = value1 * value2
+        override fun operate(value1: String, value2: String): String = notPossible("String", "String")
+        override fun operate(value1: String, value2: Int): String = notPossible("String", "Int")
+        override fun operate(value1: String, value2: Double): String = notPossible("String", "Double")
     },
     Mod('%', associativity = OperatorAssociativity.LeftToRight, precedence = 4) {
-        override fun operate(value1: Int, value2: Int): Int {
-            return value1 % value2
-        }
-
-        override fun operate(value1: Double, value2: Double): Double {
-            return value1 % value2
-        }
+        override fun operate(value1: Int, value2: Int): Int = value1 % value2
+        override fun operate(value1: Double, value2: Double): Double = value1 % value2
+        override fun operate(value1: Int, value2: Double): Double = value1 % value2
+        override fun operate(value1: Double, value2: Int): Double = value1 % value2
+        override fun operate(value1: String, value2: String): String = notPossible("String", "String")
+        override fun operate(value1: String, value2: Int): String = notPossible("String", "Int")
+        override fun operate(value1: String, value2: Double): String = notPossible("String", "Double")
     };
+
+    fun <T> notPossible(value1: String, value2: String): T {
+        throw IllegalStateException("operation : $char is not possible between $value1 and $value2")
+    }
 
     abstract fun operate(value1: Int, value2: Int): Int
     abstract fun operate(value1: Double, value2: Double): Double
+    abstract fun operate(value1: Int, value2: Double): Double
+    abstract fun operate(value1: Double, value2: Int): Double
+    abstract fun operate(value1: String, value2: String): String
+    abstract fun operate(value1: String, value2: Int): String
+    abstract fun operate(value1: String, value2: Double): String
 
 }
 

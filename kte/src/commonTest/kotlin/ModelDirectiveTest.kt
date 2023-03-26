@@ -1,8 +1,8 @@
 import com.wakaztahir.kte.TemplateContext
 import com.wakaztahir.kte.dsl.ModelValue
 import com.wakaztahir.kte.model.*
-import com.wakaztahir.kte.model.model.TemplateModel
 import com.wakaztahir.kte.model.model.KTEObject
+import com.wakaztahir.kte.model.model.MutableKTEObject
 import com.wakaztahir.kte.model.model.ModelListImpl
 import com.wakaztahir.kte.parser.parseExpression
 import com.wakaztahir.kte.parser.parseModelDirective
@@ -79,7 +79,7 @@ class ModelDirectiveTest {
 
     @Test
     fun testForLoopGeneration6() {
-        val context = TemplateContext("@model.arithmetic.funName", TemplateModel {
+        val context = TemplateContext("@model.arithmetic.funName", MutableKTEObject {
             putObject("arithmetic") {
                 putValue("funName", "seriouslyHere")
             }
@@ -91,7 +91,7 @@ class ModelDirectiveTest {
     fun testParseModelDirectiveCodeGen() {
         val context = TemplateContext(
             text = "@model.property1@model.property2.property3@model.callSum(1,2)",
-            model = TemplateModel {
+            model = MutableKTEObject {
                 putValue("property1", true)
                 putObject("property2") {
                     putValue("property3", "123")

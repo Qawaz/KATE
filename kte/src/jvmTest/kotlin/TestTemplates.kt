@@ -1,7 +1,6 @@
 import com.wakaztahir.kte.OutputStreamDestination
 import com.wakaztahir.kte.TemplateContext
 import com.wakaztahir.kte.model.LazyBlock
-import com.wakaztahir.kte.model.model.TemplateModel
 import com.wakaztahir.kte.model.model.MutableKTEObject
 import com.wakaztahir.kte.parser.stream.DestinationStream
 import com.wakaztahir.kte.parser.stream.SourceStream
@@ -25,7 +24,7 @@ class TestTemplates {
 
     @Test
     fun testMainTemplate() {
-        val context = TemplateContext(sourcePath("schema/main.kte", TemplateModel {
+        val context = TemplateContext(sourcePath("schema/main.kte", MutableKTEObject {
             putValue("mathTestClassName", "MathsClass")
             putObjects("arithmetic") {
                 putObject {

@@ -3,7 +3,6 @@ package com.wakaztahir.kte.model.model
 import com.wakaztahir.kte.dsl.ModelObjectImpl
 import com.wakaztahir.kte.model.*
 import com.wakaztahir.kte.parser.stream.DestinationStream
-import com.wakaztahir.kte.parser.stream.LanguageDestination
 
 interface KTEObject : KTEValue {
 
@@ -82,10 +81,4 @@ interface KTEObject : KTEValue {
         }
     }
 
-}
-
-fun TemplateModel(name: String = "Global", block: MutableKTEObject.() -> Unit): MutableKTEObject {
-    val modelObj = ModelObjectImpl(objectName = name)
-    block(modelObj)
-    return modelObj
 }
