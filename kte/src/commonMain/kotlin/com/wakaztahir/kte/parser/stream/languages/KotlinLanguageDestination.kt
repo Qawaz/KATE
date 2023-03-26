@@ -78,10 +78,10 @@ class KotlinLanguageDestination(private val block : LazyBlock,override val strea
             writeObjectCallOnly(value)
         } else {
             objectCallOnly = true
-            value.traverse {
+            value.traverse { it ->
                 if (it is KTEObject) {
                     writeObjectAsDataClass(it)
-                    if(it.contained.isNotEmpty()) stream.write("\n\n")
+                    if(it.contained.any { entry-> entry.value is KTEObject }) stream.write("\n\n")
                 }
             }
             objectCallOnly = false
