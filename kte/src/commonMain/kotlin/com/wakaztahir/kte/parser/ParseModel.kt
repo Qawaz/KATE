@@ -34,11 +34,11 @@ internal fun SourceStream.parseDotReferencesInto(propertyPath: MutableList<Model
         var invokeOnly = false
         if (increment('@')) {
             if (increment('@')) {
-                invokeOnly = true
-            } else {
                 val propertyName = parseTextWhile { currentChar.isModelDirectiveLetter() }
                 propertyPath.add(ModelReference.Property(propertyName))
                 continue
+            } else {
+                invokeOnly = true
             }
         }
         val propertyName = parseTextWhile { currentChar.isModelDirectiveLetter() }

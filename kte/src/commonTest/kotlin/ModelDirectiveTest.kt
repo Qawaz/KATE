@@ -98,7 +98,7 @@ class ModelDirectiveTest {
 
             override fun toString(): String = "funName()"
         }
-        val context = TemplateContext("@model.funName()@model.@propName()@model.@@funName()", MutableKTEObject {
+        val context = TemplateContext("@model.funName()@model.@@propName()@model.@funName()", MutableKTEObject {
             putValue("funName", myFunc)
             putValue("propName", "propVal")
         })
