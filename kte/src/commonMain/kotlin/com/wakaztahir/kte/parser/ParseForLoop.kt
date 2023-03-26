@@ -4,9 +4,9 @@ import com.wakaztahir.kte.dsl.ScopedModelObject
 import com.wakaztahir.kte.model.model.MutableKTEObject
 import com.wakaztahir.kte.model.*
 import com.wakaztahir.kte.model.ConditionType
-import com.wakaztahir.kte.model.ReferencedValue
-import com.wakaztahir.kte.model.model.KTEObject
+import com.wakaztahir.kte.model.model.KTEList
 import com.wakaztahir.kte.model.model.KTEValue
+import com.wakaztahir.kte.model.model.KTEObject
 import com.wakaztahir.kte.parser.stream.*
 import com.wakaztahir.kte.parser.stream.increment
 import com.wakaztahir.kte.parser.stream.parseTextWhile
@@ -46,7 +46,7 @@ internal sealed interface ForLoop : BlockContainer {
     class IterableFor(
         val indexConstName: String?,
         val elementConstName: String,
-        val listProperty: ReferencedValue,
+        val listProperty: KTEList<KTEValue>,
         override val blockValue: LazyBlockSlice
     ) : ForLoop {
 
@@ -69,7 +69,7 @@ internal sealed interface ForLoop : BlockContainer {
 
         override fun iterate(block: (iteration: Int) -> Unit) {
             var index = 0
-            val iterable = listProperty.asNullableList(model) ?: throw IllegalStateException("list property is not iterable in for loop")
+            val iterable = listProperty
             val total = iterable.collection.size
             while (index < total) {
                 store(index)
@@ -85,15 +85,15 @@ internal sealed interface ForLoop : BlockContainer {
 
     class NumberedFor(
         val variableName: String,
-        val initializer: ReferencedValue,
+        val initializer: KTEValue,
         val conditionType: ConditionType,
-        val conditional: ReferencedValue,
+        val conditional: KTEValue,
         val arithmeticOperatorType: ArithmeticOperatorType,
-        val incrementer: ReferencedValue,
+        val incrementer: KTEValue,
         override val blockValue: LazyBlockSlice
     ) : ForLoop {
 
-        private fun ReferencedValue.intVal(context: MutableKTEObject): Int {
+        private fun KTEValue.intVal(context: MutableKTEObject): Int {
             (asNullablePrimitive(context) as? IntValue)?.value?.let { return it }
                 ?: throw IllegalStateException("for loop variable must be an integer")
         }
@@ -190,21 +190,20 @@ private fun LazyBlock.parseIterableForLoopAfterVariable(variableName: String): F
     source.escapeSpaces()
     if (source.increment(':')) {
         source.escapeSpaces()
-        val referencedValue = source.parseReferencedValue()
+        val referencedValue = source.parseReferencedValue()?.asNullableList(model)
+            ?: throw IllegalStateException("list property is not iterable in for loop")
         source.escapeSpaces()
         if (!source.increment(')')) {
             throw IllegalStateException("expected ) , got ${source.currentChar}")
         }
         source.increment(' ')
-        val blockValue = this@parseIterableForLoopAfterVariable.parseForBlockValue()
-        if (referencedValue != null) {
-            return ForLoop.IterableFor(
-                indexConstName = secondVariableName,
-                elementConstName = variableName,
-                listProperty = referencedValue,
-                blockValue = blockValue
-            )
-        }
+        val blockValue = parseForBlockValue()
+        return ForLoop.IterableFor(
+            indexConstName = secondVariableName,
+            elementConstName = variableName,
+            listProperty = referencedValue,
+            blockValue = blockValue
+        )
     }
     return null
 }
@@ -214,25 +213,25 @@ private class NumberedForLoopIncrementer(
     val incrementerValue: ReferencedValue
 )
 
-private fun SourceStream.parseNumberedForLoopIncrementer(variableName: String): NumberedForLoopIncrementer {
-    val incrementalConst = parseTextWhile { currentChar.isVariableName() }
+private fun LazyBlock.parseNumberedForLoopIncrementer(variableName: String): NumberedForLoopIncrementer {
+    val incrementalConst = source.parseTextWhile { currentChar.isVariableName() }
     if (incrementalConst == variableName) {
-        val operator = parseArithmeticOperator()
+        val operator = source.parseArithmeticOperator()
         if (operator != null) {
             val singleIncrement =
                 if (operator == ArithmeticOperatorType.Plus || operator == ArithmeticOperatorType.Minus) operator else null
-            val incrementer = if (singleIncrement != null && increment(singleIncrement.char)) {
+            val incrementer = if (singleIncrement != null && source.increment(singleIncrement.char)) {
                 IntValue(1)
             } else {
                 parseNumberReference()
             }
-                ?: throw IllegalStateException("expected number property or value or '+' or '-' , got $currentChar in for loop incrementer")
+                ?: throw IllegalStateException("expected number property or value or '+' or '-' , got ${source.currentChar} in for loop incrementer")
             return NumberedForLoopIncrementer(
                 operatorType = operator,
                 incrementerValue = incrementer
             )
         } else {
-            throw IllegalStateException("expected '+','-','/','*','%' , got $currentChar in for loop condition")
+            throw IllegalStateException("expected '+','-','/','*','%' , got $source.currentChar in for loop condition")
         }
     } else {
         throw IllegalStateException("incremental variable is different : $incrementalConst != $variableName")

@@ -22,7 +22,7 @@ open class KTEListImpl<T : KTEValue>(
 
     open fun HashMap<String, KTEValue>.putImmutableListFunctions() {
         put("get", object : KTEFunction() {
-            override fun invoke(model: KTEObject, parameters: List<ReferencedValue>): KTEValue {
+            override fun invoke(model: KTEObject, parameters: List<KTEValue>): KTEValue {
                 val index = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value as? Int
                 require(index != null) {
                     "list.get(int) expects a single Int parameter instead of ${parameters.size}"
@@ -34,14 +34,14 @@ open class KTEListImpl<T : KTEValue>(
 
         })
         put("size", object : KTEFunction() {
-            override fun invoke(model: KTEObject, parameters: List<ReferencedValue>): KTEValue {
+            override fun invoke(model: KTEObject, parameters: List<KTEValue>): KTEValue {
                 return IntValue(collection.size)
             }
 
             override fun toString(): String = "size() : Int"
         })
         put("contains", object : KTEFunction() {
-            override fun invoke(model: KTEObject, parameters: List<ReferencedValue>): KTEValue {
+            override fun invoke(model: KTEObject, parameters: List<KTEValue>): KTEValue {
                 @Suppress("UNCHECKED_CAST")
                 return BooleanValue(collection.containsAll(parameters as List<T>))
             }
@@ -80,7 +80,7 @@ open class KTEMutableListImpl<T : KTEValue>(
 
     override fun HashMap<String, KTEValue>.putImmutableListFunctions() {
         put("add", object : KTEFunction() {
-            override fun invoke(model: KTEObject, parameters: List<ReferencedValue>): KTEValue {
+            override fun invoke(model: KTEObject, parameters: List<KTEValue>): KTEValue {
                 require(parameters.size == 1) {
                     "mutable_list.add(e : Element) expects a single parameter instead of ${parameters.size}"
                 }
@@ -91,7 +91,7 @@ open class KTEMutableListImpl<T : KTEValue>(
             override fun toString(): String = "add(e : Element) : KTEValue"
         })
         put("addAt", object : KTEFunction() {
-            override fun invoke(model: KTEObject, parameters: List<ReferencedValue>): KTEValue {
+            override fun invoke(model: KTEObject, parameters: List<KTEValue>): KTEValue {
                 val index = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value as? Int
                 require(parameters.size == 2 && index != null) {
                     "mutable_list.addAt(index : Int,e : Element) expects two parameters instead of ${parameters.size}"
@@ -104,7 +104,7 @@ open class KTEMutableListImpl<T : KTEValue>(
             override fun toString(): String = "addAt(index : Int,e : Element) : Boolean"
         })
         put("remove", object : KTEFunction() {
-            override fun invoke(model: KTEObject, parameters: List<ReferencedValue>): KTEValue {
+            override fun invoke(model: KTEObject, parameters: List<KTEValue>): KTEValue {
                 require(parameters.size == 1) {
                     "mutable_list.remove(e : Element) expects a single parameter instead of ${parameters.size}"
                 }
@@ -115,7 +115,7 @@ open class KTEMutableListImpl<T : KTEValue>(
             override fun toString(): String = "remove(e : Element) : Boolean"
         })
         put("removeAt", object : KTEFunction() {
-            override fun invoke(model: KTEObject, parameters: List<ReferencedValue>): KTEValue {
+            override fun invoke(model: KTEObject, parameters: List<KTEValue>): KTEValue {
                 val index = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value as? Int
                 require(index != null) {
                     "mutable_list.removeAt(index : Int) expects single parameter instead of ${parameters.size}"

@@ -7,19 +7,19 @@ import com.wakaztahir.kte.parser.stream.escapeSpaces
 import com.wakaztahir.kte.parser.stream.increment
 import com.wakaztahir.kte.parser.stream.incrementUntilDirectiveWithSkip
 
-internal fun SourceStream.parseConditionType(): ConditionType? {
-    if (increment("==")) {
+internal fun LazyBlock.parseConditionType(): ConditionType? {
+    if (source.increment("==")) {
         return ConditionType.Equals
-    } else if (increment("!=")) {
+    } else if (source.increment("!=")) {
         return ConditionType.NotEquals
-    } else if (increment('>')) {
-        return if (increment('=')) {
+    } else if (source.increment('>')) {
+        return if (source.increment('=')) {
             ConditionType.GreaterThanEqualTo
         } else {
             ConditionType.GreaterThan
         }
-    } else if (increment('<')) {
-        return if (increment('=')) {
+    } else if (source.increment('<')) {
+        return if (source.increment('=')) {
             ConditionType.LessThanEqualTo
         } else {
             ConditionType.LessThan
@@ -29,13 +29,13 @@ internal fun SourceStream.parseConditionType(): ConditionType? {
     }
 }
 
-internal fun SourceStream.parseCondition(): Condition? {
+internal fun LazyBlock.parseCondition(): Condition? {
 
     val propertyFirst = this.parseAnyExpressionOrValue() ?: run {
         return null
     }
 
-    escapeSpaces()
+    source.escapeSpaces()
     val type = parseConditionType()
 
     if (type == null) {
@@ -51,7 +51,7 @@ internal fun SourceStream.parseCondition(): Condition? {
         }
     }
 
-    escapeSpaces()
+    source.escapeSpaces()
     val propertySecond = this.parseAnyExpressionOrValue() ?: run {
         throw IllegalStateException("condition's right hand side cannot be found")
     }

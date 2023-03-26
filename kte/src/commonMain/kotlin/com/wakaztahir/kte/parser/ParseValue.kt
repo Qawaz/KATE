@@ -4,42 +4,42 @@ import com.wakaztahir.kte.model.*
 import com.wakaztahir.kte.parser.stream.*
 import com.wakaztahir.kte.parser.stream.increment
 
-fun SourceStream.parseNumberValue(): PrimitiveValue<*>? {
+fun LazyBlock.parseNumberValue(): PrimitiveValue<*>? {
 
     var textValue = ""
 
-    if (increment('-')) {
+    if (source.increment('-')) {
         textValue += "-"
     }
 
-    while (!hasEnded && currentChar.isDigit()) {
-        textValue += currentChar
-        incrementPointer()
+    while (!source.hasEnded && source.currentChar.isDigit()) {
+        textValue += source.currentChar
+        source.incrementPointer()
     }
 
-    return if (increment('.')) {
+    return if (source.increment('.')) {
         textValue += '.'
-        while (!hasEnded && currentChar.isDigit()) {
-            textValue += currentChar
-            incrementPointer()
+        while (!source.hasEnded && source.currentChar.isDigit()) {
+            textValue += source.currentChar
+            source.incrementPointer()
         }
         textValue.toDoubleOrNull()?.let { DoubleValue(it) }
     } else {
         textValue.toIntOrNull()?.let { IntValue(it) }
     } ?: run {
-        if (textValue == "." || textValue == "-") decrementPointer()
+        if (textValue == "." || textValue == "-") source.decrementPointer()
         null
     }
 
 }
 
-internal fun SourceStream.parseBooleanValue(): PrimitiveValue<*>? {
-    if (increment("true")) return BooleanValue(true)
-    if (increment("false")) return BooleanValue(false)
+internal fun LazyBlock.parseBooleanValue(): PrimitiveValue<*>? {
+    if (source.increment("true")) return BooleanValue(true)
+    if (source.increment("false")) return BooleanValue(false)
     return null
 }
 
-fun SourceStream.parsePrimitiveValue(): PrimitiveValue<*>? {
+fun LazyBlock.parsePrimitiveValue(): PrimitiveValue<*>? {
 
     // Booleans
     parseBooleanValue()?.let { return it }
@@ -54,10 +54,10 @@ fun SourceStream.parsePrimitiveValue(): PrimitiveValue<*>? {
 
 }
 
-internal fun SourceStream.parseStringValue(): StringValue? {
-    if (currentChar == '\"' && increment('\"')) {
-        val value = StringValue(parseTextWhile { currentChar != '\"' })
-        increment('\"')
+internal fun LazyBlock.parseStringValue(): StringValue? {
+    if (source.currentChar == '\"' && source.increment('\"')) {
+        val value = StringValue(source.parseTextWhile { currentChar != '\"' })
+        source.increment('\"')
         return value
     }
     return null

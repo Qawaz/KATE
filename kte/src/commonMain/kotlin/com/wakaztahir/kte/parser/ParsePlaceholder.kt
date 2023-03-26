@@ -10,28 +10,28 @@ private fun Char.isPlaceholderName() = this.isLetterOrDigit() || this == '_'
 
 private fun Char.isPlaceholderDefName() = this.isPlaceholderName()
 
-private fun SourceStream.parsePlaceHolderName(): String? {
-    if (increment('(')) {
-        return parseTextWhile { currentChar.isPlaceholderName() }
+private fun LazyBlock.parsePlaceHolderName(): String? {
+    if (source.increment('(')) {
+        return source.parseTextWhile { currentChar.isPlaceholderName() }
     }
     return null
 }
 
-private fun SourceStream.parsePlaceHolderNameAndDefinition(): Pair<String, String>? {
+private fun LazyBlock.parsePlaceHolderNameAndDefinition(): Pair<String, String>? {
     val placeholderName = parsePlaceHolderName()
     if (placeholderName != null) {
-        return if (increment(',')) {
-            val definitionName = parseTextWhile { currentChar.isPlaceholderDefName() }
-            if (increment(')')) {
+        return if (source.increment(',')) {
+            val definitionName = source.parseTextWhile { currentChar.isPlaceholderDefName() }
+            if (source.increment(')')) {
                 Pair(placeholderName, definitionName)
             } else {
-                throw IllegalStateException("expected ')' found $currentChar when defining placeholder $placeholderName,$definitionName")
+                throw IllegalStateException("expected ')' found ${source.currentChar} when defining placeholder $placeholderName,$definitionName")
             }
         } else {
-            if (increment(')')) {
+            if (source.increment(')')) {
                 Pair(placeholderName, placeholderName)
             } else {
-                throw IllegalStateException("expected ')' found $currentChar when defining placeholder $placeholderName")
+                throw IllegalStateException("expected ')' found ${source.currentChar} when defining placeholder $placeholderName")
             }
         }
     }

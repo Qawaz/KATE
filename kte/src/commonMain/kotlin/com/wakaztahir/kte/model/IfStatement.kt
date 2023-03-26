@@ -2,6 +2,7 @@ package com.wakaztahir.kte.model
 
 import com.wakaztahir.kte.TemplateContext
 import com.wakaztahir.kte.model.model.KTEObject
+import com.wakaztahir.kte.model.model.KTEValue
 import com.wakaztahir.kte.parser.stream.DestinationStream
 
 
@@ -38,9 +39,9 @@ interface Condition {
 }
 
 internal class LogicalCondition(
-    val propertyFirst: ReferencedValue,
+    val propertyFirst: KTEValue,
     val type: ConditionType,
-    val propertySecond: ReferencedValue
+    val propertySecond: KTEValue
 ) : Condition {
     override fun evaluate(context: KTEObject): Boolean {
         propertyFirst.asNullablePrimitive(context)?.let { first ->
@@ -55,7 +56,7 @@ internal class LogicalCondition(
     }
 }
 
-internal class ReferencedBoolean(val value: ReferencedValue) : Condition {
+internal class ReferencedBoolean(val value: KTEValue) : Condition {
     override fun evaluate(context: KTEObject): Boolean {
         val value = value.asNullablePrimitive(context)
         if (value != null && value is BooleanValue) {

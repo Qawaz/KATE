@@ -1,6 +1,7 @@
 package com.wakaztahir.kte.parser
 
-import com.wakaztahir.kte.model.ReferencedValue
+import com.wakaztahir.kte.model.LazyBlock
+import com.wakaztahir.kte.model.model.KTEValue
 import com.wakaztahir.kte.parser.stream.SourceStream
 import com.wakaztahir.kte.parser.stream.increment
 
@@ -95,8 +96,8 @@ enum class ArithmeticOperatorType(val char: Char, val associativity: OperatorAss
 
 }
 
-internal fun SourceStream.parseArithmeticOperator(): ArithmeticOperatorType? {
-    val result = when (currentChar) {
+internal fun LazyBlock.parseArithmeticOperator(): ArithmeticOperatorType? {
+    val result = when (source.currentChar) {
         '+' -> ArithmeticOperatorType.Plus
         '-' -> ArithmeticOperatorType.Minus
         '/' -> ArithmeticOperatorType.Divide
@@ -104,7 +105,7 @@ internal fun SourceStream.parseArithmeticOperator(): ArithmeticOperatorType? {
         '%' -> ArithmeticOperatorType.Mod
         else -> null
     }
-    if (result != null) incrementPointer()
+    if (result != null) source.incrementPointer()
     return result
 }
 
@@ -118,7 +119,7 @@ private class ValueAndOperatorStack {
         for (i in container.size - 1 downTo 0) other.container.add(container[i])
     }
 
-    fun putValue(value: ReferencedValue) {
+    fun putValue(value: KTEValue) {
         container.add(value)
     }
 
@@ -134,8 +135,8 @@ private class ValueAndOperatorStack {
         return container.lastOrNull()?.let { it as? ArithmeticOperatorType }
     }
 
-    fun peakValue(): ReferencedValue? {
-        return container.lastOrNull()?.let { it as? ReferencedValue }
+    fun peakValue(): KTEValue? {
+        return container.lastOrNull()?.let { it as? KTEValue }
     }
 
     fun peakChar(): Char? {
@@ -146,8 +147,8 @@ private class ValueAndOperatorStack {
         return container.removeLast() as ArithmeticOperatorType
     }
 
-    fun popValue(): ReferencedValue {
-        return container.removeLast() as ReferencedValue
+    fun popValue(): KTEValue {
+        return container.removeLast() as KTEValue
     }
 
     fun popChar(): Char {
@@ -159,8 +160,8 @@ private class ValueAndOperatorStack {
         while (container.isNotEmpty()) {
             when (val item = container.removeFirst()) {
                 is ArithmeticOperatorType -> {
-                    val second = stack.container.removeLast() as ReferencedValue
-                    val first = stack.container.removeLast() as ReferencedValue
+                    val second = stack.container.removeLast() as KTEValue
+                    val first = stack.container.removeLast() as KTEValue
                     stack.putValue(
                         ExpressionValue(
                             first = first,
@@ -174,7 +175,7 @@ private class ValueAndOperatorStack {
 
                 }
 
-                is ReferencedValue -> {
+                is KTEValue -> {
                     stack.putValue(item)
                 }
 
@@ -190,33 +191,33 @@ private class ValueAndOperatorStack {
 
 }
 
-private fun SourceStream.parseValueAndOperator(): Pair<ReferencedValue, ArithmeticOperatorType?>? {
+private fun LazyBlock.parseValueAndOperator(): Pair<KTEValue, ArithmeticOperatorType?>? {
     val firstValue = parseNumberReference()
     if (firstValue != null) {
-        val pointerAfterFirstValue = pointer
-        increment(' ')
-        return if (increment('@')) {
+        val pointerAfterFirstValue = source.pointer
+        source.increment(' ')
+        return if (source.increment('@')) {
             val arithmeticOperator = parseArithmeticOperator()
             if (arithmeticOperator != null) {
-                increment(' ')
+                source.increment(' ')
                 Pair(firstValue, arithmeticOperator)
             } else {
-                setPointerAt(pointerAfterFirstValue)
+                source.setPointerAt(pointerAfterFirstValue)
                 Pair(firstValue, null)
             }
         } else {
-            setPointerAt(pointerAfterFirstValue)
+            source.setPointerAt(pointerAfterFirstValue)
             Pair(firstValue, null)
         }
     }
     return null
 }
 
-private fun SourceStream.parseExpressionWith(
+private fun LazyBlock.parseExpressionWith(
     stack: ValueAndOperatorStack,
     final: ValueAndOperatorStack
 ) {
-    while (!hasEnded) {
+    while (!source.hasEnded) {
         val valueAndOp = parseValueAndOperator()
         if (valueAndOp != null) {
             final.putValue(valueAndOp.first)
@@ -255,10 +256,10 @@ private fun SourceStream.parseExpressionWith(
                 break
             }
         } else {
-            if (currentChar == '(') {
-                stack.putCharacter(currentChar)
-                incrementPointer()
-            } else if (currentChar == ')') {
+            if (source.currentChar == '(') {
+                stack.putCharacter(source.currentChar)
+                source.incrementPointer()
+            } else if (source.currentChar == ')') {
                 var found = false
                 while (!found) {
                     if (stack.peakOperator() != null) {
@@ -268,7 +269,7 @@ private fun SourceStream.parseExpressionWith(
                         final.putCharacter(stack.popChar())
                     }
                 }
-                incrementPointer()
+                source.incrementPointer()
             } else {
                 break
             }
@@ -277,7 +278,7 @@ private fun SourceStream.parseExpressionWith(
     stack.putAllInto(final)
 }
 
-internal fun SourceStream.parseExpression(): ReferencedValue? {
+internal fun LazyBlock.parseExpression(): KTEValue? {
     val valueAndOp = parseValueAndOperator()
     if (valueAndOp != null) {
         return if (valueAndOp.second != null) {
@@ -296,7 +297,7 @@ internal fun SourceStream.parseExpression(): ReferencedValue? {
     return null
 }
 
-internal fun SourceStream.parseAnyExpressionOrValue(): ReferencedValue? {
+internal fun LazyBlock.parseAnyExpressionOrValue(): KTEValue? {
     parseExpression()?.let { return it }
     parseBooleanValue()?.let { return it }
     parseStringValue()?.let { return it }

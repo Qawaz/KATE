@@ -46,9 +46,9 @@ interface LazyBlock {
     fun parseAtDirective(): CodeGen? {
         parseRawBlock()?.let { return it }
         parsePartialRaw()?.let { return it }
-        source.parseEmbedding()?.let { return it }
-        source.parseExpression()?.let { return it }
-        source.parseVariableDeclaration()?.let { return it }
+        parseEmbedding()?.let { return it }
+        parseExpression()?.let { return it }
+        parseVariableDeclaration()?.let { return it }
         parseObjectDeclaration()?.let { return it }
         parseIfStatement()?.let { return it }
         parseForLoop()?.let { return it }

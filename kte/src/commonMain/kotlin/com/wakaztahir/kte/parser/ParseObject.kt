@@ -10,16 +10,16 @@ import com.wakaztahir.kte.parser.stream.parseTextWhile
 
 private fun Char.isObjectName(): Boolean = isLetterOrDigit() || this == '_'
 
-private fun SourceStream.parseObjectName(): String {
-    if (increment('(')) {
-        val text = parseTextWhile { currentChar.isObjectName() }
-        if (increment(')')) {
+private fun LazyBlock.parseObjectName(): String {
+    if (source.increment('(')) {
+        val text = source.parseTextWhile { currentChar.isObjectName() }
+        if (source.increment(')')) {
             return text
         } else {
-            throw IllegalStateException("expected ')' while declaring object $text got $currentChar")
+            throw IllegalStateException("expected ')' while declaring object $text got ${source.currentChar}")
         }
     } else {
-        throw IllegalStateException("expected ')' while declaring object got $currentChar")
+        throw IllegalStateException("expected ')' while declaring object got ${source.currentChar}")
     }
 }
 

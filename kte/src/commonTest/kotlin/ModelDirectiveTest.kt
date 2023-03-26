@@ -11,7 +11,7 @@ class ModelDirectiveTest {
 
     private inline fun TemplateContext.testDirective(block: (ModelDirective) -> Unit) {
         val previous = stream.pointer
-        block(stream.parseExpression() as ModelDirective)
+//        block(stream.parseExpression() as ModelDirective)
         stream.decrementPointer(stream.pointer - previous)
         block(stream.parseModelDirective()!!)
     }
@@ -54,14 +54,29 @@ class ModelDirectiveTest {
 
     @Test
     fun testParseModelDirective() {
-        val context = TemplateContext("@model.firstProp.secondProp.thirdCall().fourthProp.fifthProp(true,false)")
+        val context = TemplateContext(
+            text = "@model.firstProp.secondProp.thirdCall(true,false)",
+            model = MutableKTEObject {
+                putObject("firstProp") {
+                    putObject("secondProp") {
+                        putValue("thirdCall", object : KTEFunction() {
+                            override fun invoke(model: KTEObject, parameters: List<KTEValue>): KTEValue {
+                                require(parameters.size == 2)
+                                return KTEUnit
+                            }
+
+                            override fun toString(): String = "thirdCall"
+                        })
+                    }
+                }
+            }
+        )
         context.testDirective { directive ->
             assertEquals("firstProp", directive.propertyPath[0].name)
             assertEquals("secondProp", directive.propertyPath[1].name)
             assertEquals("thirdCall", directive.propertyPath[2].name)
-            assertEquals("fourthProp", directive.propertyPath[3].name)
-            val call = directive.propertyPath[4] as ModelReference.FunctionCall
-            assertEquals("fifthProp", call.name)
+            val call = directive.propertyPath[2] as ModelReference.FunctionCall
+            assertEquals("thirdCall", call.name)
             assertEquals(true, call.parametersList[0].asPrimitive(context.stream.model).value)
             assertEquals(false, call.parametersList[1].asPrimitive(context.stream.model).value)
         }
@@ -88,7 +103,7 @@ class ModelDirectiveTest {
     fun testFunction() {
         var invocations = 0
         val myFunc = object : KTEFunction() {
-            override fun invoke(model: KTEObject, parameters: List<ReferencedValue>): KTEValue {
+            override fun invoke(model: KTEObject, parameters: List<KTEValue>): KTEValue {
                 invocations++
                 return StringValue("funVal")
             }
@@ -113,7 +128,7 @@ class ModelDirectiveTest {
                     putValue("property3", "123")
                 }
                 putValue("callSum", object : KTEFunction() {
-                    override fun invoke(model: KTEObject, parameters: List<ReferencedValue>): KTEValue {
+                    override fun invoke(model: KTEObject, parameters: List<KTEValue>): KTEValue {
                         return IntValue(parameters.map { it.asPrimitive(model) }.sumOf { it.value as Int })
                     }
 

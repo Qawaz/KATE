@@ -2,6 +2,8 @@ package com.wakaztahir.kte.parser
 
 import com.wakaztahir.kte.model.model.MutableKTEObject
 import com.wakaztahir.kte.model.*
+import com.wakaztahir.kte.model.model.KTEFunction
+import com.wakaztahir.kte.model.model.KTEValue
 import com.wakaztahir.kte.parser.stream.*
 import com.wakaztahir.kte.parser.stream.increment
 import com.wakaztahir.kte.parser.stream.unexpected
@@ -10,14 +12,14 @@ import com.wakaztahir.kte.parser.stream.unexpected
 
 class VariableReferenceParseException(message: String) : Exception(message)
 
-internal fun SourceStream.parseVariableReference(): ModelDirective? {
-    if (currentChar == '@' && increment("@var(")) {
+internal fun LazyBlock.parseVariableReference(): ModelDirective? {
+    if (source.currentChar == '@' && source.increment("@var(")) {
         val propertyPath = mutableListOf<ModelReference>()
-        val variableName = parseTextWhile { currentChar.isModelDirectiveLetter() }
+        val variableName = source.parseTextWhile { currentChar.isModelDirectiveLetter() }
         if (variableName.isNotEmpty()) {
             propertyPath.add(ModelReference.Property(variableName))
-            if (!increment(')')) {
-                throw VariableReferenceParseException("expected ) got $currentChar")
+            if (!source.increment(')')) {
+                throw VariableReferenceParseException("expected ) got ${source.currentChar}")
             }
         } else {
             throw VariableReferenceParseException("@var( variable name is empty")
@@ -30,13 +32,17 @@ internal fun SourceStream.parseVariableReference(): ModelDirective? {
 
 //-------------- Declaration
 
-internal data class VariableDeclaration(val variableName: String, val variableValue: ReferencedValue) : AtDirective {
+internal data class VariableDeclaration(val variableName: String, val variableValue: KTEValue) : AtDirective {
 
     override val isEmptyWriter: Boolean
         get() = true
 
     fun storeValue(model: MutableKTEObject) {
-        model.putValue(variableName, variableValue.getKTEValue(model))
+        if (variableValue is KTEFunction) {
+            model.putValue(variableName, variableValue.invoke(model, parameters = variableValue.parameters))
+        } else {
+            model.putValue(variableName, variableValue)
+        }
     }
 
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
@@ -48,21 +54,21 @@ class VariableDeclarationParseException(message: String) : Exception(message)
 
 internal fun Char.isVariableName(): Boolean = this.isLetterOrDigit() || this == '_'
 
-internal fun SourceStream.parseVariableName(): String? {
-    if (currentChar == '@' && increment("@var")) {
-        increment(' ')
-        return parseTextWhile { currentChar.isVariableName() }
+internal fun LazyBlock.parseVariableName(): String? {
+    if (source.currentChar == '@' && source.increment("@var")) {
+        source.increment(' ')
+        return source.parseTextWhile { currentChar.isVariableName() }
     }
     return null
 }
 
-internal fun SourceStream.parseVariableDeclaration(): VariableDeclaration? {
+internal fun LazyBlock.parseVariableDeclaration(): VariableDeclaration? {
     val variableName = parseVariableName()
     if (variableName != null) {
         if (variableName.isNotEmpty()) {
-            escapeSpaces()
-            increment('=')
-            escapeSpaces()
+            source.escapeSpaces()
+            source.increment('=')
+            source.escapeSpaces()
             val property = this.parseAnyExpressionOrValue()
             return if (property != null) {
                 VariableDeclaration(variableName = variableName, variableValue = property)
@@ -70,10 +76,10 @@ internal fun SourceStream.parseVariableDeclaration(): VariableDeclaration? {
                 throw VariableDeclarationParseException("constant's value not found")
             }
         } else {
-            if (hasEnded) {
-                unexpected()
+            if (source.hasEnded) {
+                source.unexpected()
             } else {
-                printLeft()
+                source.printLeft()
                 throw VariableDeclarationParseException("constant's name not given")
             }
         }

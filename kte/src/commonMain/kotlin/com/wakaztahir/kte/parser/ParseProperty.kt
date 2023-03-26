@@ -6,24 +6,24 @@ import com.wakaztahir.kte.model.model.KTEValue
 import com.wakaztahir.kte.parser.stream.DestinationStream
 import com.wakaztahir.kte.parser.stream.SourceStream
 
-internal fun SourceStream.parseNumberReference(): ReferencedValue? {
+internal fun LazyBlock.parseNumberReference(): ReferencedValue? {
     parseVariableReference()?.let { return it }
     parseModelDirective()?.let { return it }
     parseNumberValue()?.let { return it }
     return null
 }
 
-internal fun SourceStream.parseReferencedValue(): ReferencedValue? {
+internal fun LazyBlock.parseReferencedValue(): ReferencedValue? {
     parseVariableReference()?.let { return it }
     parseModelDirective()?.let { return it }
     return null
 }
 
 internal data class ExpressionValue(
-    val first: ReferencedValue,
+    val first: KTEValue,
     val operatorType: ArithmeticOperatorType,
-    val second: ReferencedValue
-) : ReferencedValue {
+    val second: KTEValue
+) : KTEValue {
 
     override fun asNullablePrimitive(model: KTEObject): PrimitiveValue<*> {
         return first.asNullablePrimitive(model)?.let { first ->
@@ -35,10 +35,6 @@ internal data class ExpressionValue(
         } ?: run {
             throw IllegalStateException("first value in expression $this is not a primitive")
         }
-    }
-
-    override fun getKTEValue(model: KTEObject): KTEValue {
-        return asNullablePrimitive(model)
     }
 
     override fun stringValue(indentationLevel: Int): String {

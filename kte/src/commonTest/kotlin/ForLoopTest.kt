@@ -1,6 +1,7 @@
 import com.wakaztahir.kte.GenerateCode
 import com.wakaztahir.kte.TemplateContext
 import com.wakaztahir.kte.dsl.UnresolvedValueException
+import com.wakaztahir.kte.model.IntValue
 import com.wakaztahir.kte.model.model.KTEListImpl
 import com.wakaztahir.kte.model.ModelDirective
 import com.wakaztahir.kte.model.StringValue
@@ -23,13 +24,14 @@ class ForLoopTest {
 
     @Test
     fun parseForLoopIterable() {
-        val context = TemplateContext("@for(@var listName : @model.mList) blockValue @endfor")
+        val context = TemplateContext("@for(@var listName : @model.mList) blockValue @endfor", MutableKTEObject {
+            putValue("mList", KTEListImpl("mList", listOf(1, 2, 3).map { IntValue(it) }))
+        })
         var loop = context.stream.parseForLoop()!! as ForLoop.IterableFor
         assertEquals("listName", loop.elementConstName)
         assertEquals(null, loop.indexConstName)
         assertEquals("blockValue", loop.blockValue.getValueAsString())
-        assertEquals("mList", (loop.listProperty as ModelDirective).propertyPath[0].name)
-        context.updateStream("@for(@var listName,indexName : @model.list) blockValue @endfor")
+        context.updateStream("@for(@var listName,indexName : @model.mList) blockValue @endfor")
         loop = context.stream.parseForLoop()!! as ForLoop.IterableFor
         assertEquals("indexName", loop.indexConstName)
     }
@@ -51,20 +53,17 @@ class ForLoopTest {
 
     @Test
     fun testForLoopGeneration() {
-        val context = TemplateContext("@var var1 = 3@for(@var i = @var(var1);i>0;i-1) @var(var1) @endfor")
-        assertEquals("333", context.getDestinationAsString())
+        assertEquals("333", GenerateCode("@var var1 = 3@for(@var i = @var(var1);i>0;i-1) @var(var1) @endfor"))
     }
 
     @Test
     fun testForLoopGeneration1() {
-        val context = TemplateContext("@for(@var i=0;i<3;i+1) @if(@var(i)==2) @var(i) @endif @endfor")
-        assertEquals("2", context.getDestinationAsString())
+        assertEquals("2", GenerateCode("@for(@var i = 0;i<3;i+1) @if(@var(i)==2) @var(i) @endif @endfor"))
     }
 
     @Test
     fun testForLoopRuns() {
-        val context = TemplateContext("@var runs = 0@for(@var i=0;i<3;i+1) @var runs = @var(i) @endfor@var(runs)")
-        assertEquals("2", context.getDestinationAsString())
+        assertEquals("2", GenerateCode("@var runs = 0@for(@var i=0;i<3;i+1) @var runs = @var(i) @endfor@var(runs)"))
     }
 
     @Test
@@ -101,7 +100,10 @@ class ForLoopTest {
         val kteObject = MutableKTEObject {
             putValue("list", KTEListImpl("list", listOf("H", "e", "ll", "o").map { StringValue(it) }))
         }
-        val context = TemplateContext("@model.list.size()@model.list.get(2)@model.list.contains(\"ll\")@model.list.contains(\"v\")", kteObject)
+        val context = TemplateContext(
+            "@model.list.size()@model.list.get(2)@model.list.contains(\"ll\")@model.list.contains(\"v\")",
+            kteObject
+        )
         assertEquals("4lltruefalse", context.getDestinationAsString())
     }
 

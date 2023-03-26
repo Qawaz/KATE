@@ -20,7 +20,7 @@ class VariablesTest {
         assertNotEquals(null, ref)
         assertEquals(ref!!.propertyPath[0].name, "myVar")
         context.stream.model.putValue("myVar", StringValue("someValue"))
-        assertEquals("someValue", ref.asPrimitive(context.stream.model).value)
+        assertEquals("someValue", ref.getKTEValue(context.stream.model).asPrimitive(context.stream.model).value)
     }
 
     @Test
