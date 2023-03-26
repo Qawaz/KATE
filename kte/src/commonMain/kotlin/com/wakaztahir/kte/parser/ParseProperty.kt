@@ -31,6 +31,10 @@ internal data class ExpressionValue(
         return first.asPrimitive(model).operateAny(operatorType, second.asPrimitive(model))
     }
 
+    override fun asNullablePrimitive(model: KTEObject): PrimitiveValue<*>? {
+        return first.asPrimitive(model).operateAny(operatorType, second.asPrimitive(model))
+    }
+
     override fun stringValue(indentationLevel: Int): String {
         return indentation(indentationLevel) +
                 first.stringValue(0) + ' ' + operatorType.char + ' ' + second.stringValue(0)

@@ -49,8 +49,8 @@ internal class LogicalCondition(
 
 internal class ReferencedBoolean(val value: ReferencedValue) : Condition {
     override fun evaluate(context: KTEObject): Boolean {
-        val value = value.asPrimitive(context)
-        if (value is BooleanValue) {
+        val value = value.asNullablePrimitive(context)
+        if (value != null && value is BooleanValue) {
             return value.value
         } else {
             throw IllegalStateException("referenced value is not a boolean value inside the conditions")

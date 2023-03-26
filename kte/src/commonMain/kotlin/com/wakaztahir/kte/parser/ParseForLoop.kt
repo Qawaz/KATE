@@ -93,7 +93,7 @@ internal sealed interface ForLoop : BlockContainer {
     ) : ForLoop {
 
         private fun ReferencedValue.intVal(context: MutableKTEObject): Int {
-            (asPrimitive(context) as? IntValue)?.value?.let { return it }
+            (asNullablePrimitive(context) as? IntValue)?.value?.let { return it }
                 ?: throw IllegalStateException("for loop variable must be an integer")
         }
 

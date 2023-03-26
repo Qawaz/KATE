@@ -53,6 +53,10 @@ class ModelDirective(val propertyPath: List<ModelReference>) : ReferencedValue, 
         return model.getModelDirectiveAsPrimitive(this) ?: throwIt(model)
     }
 
+    override fun asNullablePrimitive(model: KTEObject): PrimitiveValue<*>? {
+        return model.getModelDirectiveAsPrimitive(this)
+    }
+
     override fun asNullableList(model: KTEObject): KTEList<KTEValue>? {
         return model.getPropertyAsIterable(this)
     }
