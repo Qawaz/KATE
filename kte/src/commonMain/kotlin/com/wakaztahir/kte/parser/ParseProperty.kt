@@ -27,12 +27,16 @@ internal data class ExpressionValue(
     val second: ReferencedValue
 ) : ReferencedValue {
 
-    override fun asPrimitive(model: KTEObject): PrimitiveValue<*> {
-        return first.asPrimitive(model).operateAny(operatorType, second.asPrimitive(model))
-    }
-
-    override fun asNullablePrimitive(model: KTEObject): PrimitiveValue<*>? {
-        return first.asPrimitive(model).operateAny(operatorType, second.asPrimitive(model))
+    override fun asNullablePrimitive(model: KTEObject): PrimitiveValue<*> {
+        return first.asNullablePrimitive(model)?.let { first ->
+            second.asNullablePrimitive(model)?.let { second ->
+                first.operateAny(operatorType, second)
+            } ?: run {
+                throw IllegalStateException("second value in expression $this is not a primitive")
+            }
+        } ?: run {
+            throw IllegalStateException("first value in expression $this is not a primitive")
+        }
     }
 
     override fun stringValue(indentationLevel: Int): String {
@@ -45,7 +49,7 @@ internal data class ExpressionValue(
     }
 
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
-        asPrimitive(block.model).generateTo(block, destination)
+        asNullablePrimitive(block.model).generateTo(block, destination)
     }
 
 }

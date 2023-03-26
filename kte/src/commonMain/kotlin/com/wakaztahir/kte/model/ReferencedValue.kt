@@ -7,12 +7,12 @@ import com.wakaztahir.kte.model.model.MutableKTEObject
 
 interface ReferencedValue : KTEValue, CodeGen {
 
-    fun asPrimitive(model: KTEObject): PrimitiveValue<*> {
-        return this as PrimitiveValue<*>
+    fun asNullablePrimitive(model: KTEObject): PrimitiveValue<*>? {
+        return this as? PrimitiveValue<*>
     }
 
-    fun asNullablePrimitive(model : KTEObject) : PrimitiveValue<*>? {
-        return this as? PrimitiveValue<*>
+    fun asPrimitive(model: KTEObject): PrimitiveValue<*> {
+        return asNullablePrimitive(model) ?: throw IllegalStateException("value is not a primitive")
     }
 
     fun asNullableList(model: KTEObject): KTEList<KTEValue>? {

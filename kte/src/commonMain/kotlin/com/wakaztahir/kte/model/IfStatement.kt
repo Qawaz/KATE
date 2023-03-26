@@ -43,7 +43,15 @@ internal class LogicalCondition(
     val propertySecond: ReferencedValue
 ) : Condition {
     override fun evaluate(context: KTEObject): Boolean {
-        return type.verifyCompare(propertyFirst.asPrimitive(context).compareAny(propertySecond.asPrimitive(context)))
+        propertyFirst.asNullablePrimitive(context)?.let { first ->
+            propertySecond.asNullablePrimitive(context)?.let { second ->
+                return type.verifyCompare(first.compareAny(second))
+            } ?: run {
+                throw IllegalStateException("second value in condition $this is not a primitive")
+            }
+        } ?: run {
+            throw IllegalStateException("first value in condition $this is not a primitive")
+        }
     }
 }
 
