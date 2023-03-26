@@ -15,7 +15,7 @@ interface PrimitiveValue<T> : CodeGen, ReferencedValue {
 
     fun compareOther(other: PrimitiveValue<*>): Int
 
-    fun operate(type: ArithmeticOperatorType, value2: PrimitiveValue<T>): PrimitiveValue<T>
+    fun operate(type: ArithmeticOperatorType, value2: PrimitiveValue<T>): PrimitiveValue<*>
 
     fun operateOther(type: ArithmeticOperatorType, value2: PrimitiveValue<*>): PrimitiveValue<*>
 
@@ -42,6 +42,43 @@ inline fun <T> PrimitiveValue<T>.operateAny(
 inline fun <T> PrimitiveValue<T>.compareAny(other: PrimitiveValue<*>): Int {
     (other as? PrimitiveValue<T>)?.let { return compareTo(it) }
     return compareOther(other)
+}
+
+@JvmInline
+value class CharValue(override val value: Char) : PrimitiveValue<Char> {
+
+    override fun compareTo(other: PrimitiveValue<Char>): Int {
+        return value.compareTo(other.value)
+    }
+
+    override fun compareOther(other: PrimitiveValue<*>): Int {
+        throw IllegalStateException("a character value can only be compared with other character values")
+    }
+
+    override fun operateOther(type: ArithmeticOperatorType, value2: PrimitiveValue<*>): PrimitiveValue<*> {
+        return when (value2) {
+            is StringValue -> {
+                StringValue(type.operate(value, value2.value))
+            }
+
+            is IntValue -> {
+                CharValue(type.operate(value, value2.value))
+            }
+
+            else -> {
+                throw IllegalStateException("operation ${type.char} is not possible between char value and an unknown value")
+            }
+        }
+    }
+
+    override fun operate(type: ArithmeticOperatorType, value2: PrimitiveValue<Char>): PrimitiveValue<*> {
+        return IntValue(type.operate(value, value2.value))
+    }
+
+    override fun generateTo(block: LazyBlock, destination: DestinationStream) {
+        destination.write(this)
+    }
+
 }
 
 @JvmInline
@@ -175,6 +212,10 @@ value class StringValue(override val value: String) : PrimitiveValue<String> {
             }
 
             is DoubleValue -> {
+                StringValue(type.operate(value, value2.value))
+            }
+
+            is CharValue -> {
                 StringValue(type.operate(value, value2.value))
             }
 

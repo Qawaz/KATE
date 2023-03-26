@@ -8,6 +8,7 @@ interface LanguageDestination {
 
     val stream: WritableStream
 
+    fun write(value : CharValue)
     fun write(value: IntValue)
     fun write(value: DoubleValue)
     fun write(value: BooleanValue)

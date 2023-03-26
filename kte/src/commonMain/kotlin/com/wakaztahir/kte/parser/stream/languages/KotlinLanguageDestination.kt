@@ -17,11 +17,17 @@ class KotlinLanguageDestination(private val block: LazyBlock, override val strea
     }
 
     override fun write(value: DoubleValue) {
-        stream.write(value.value.toString() + 'f')
+        stream.write(value.value.toString())
     }
 
     override fun write(value: BooleanValue) {
         stream.write(if (value.value) "true" else "false")
+    }
+
+    override fun write(value: CharValue) {
+        stream.write('\'')
+        stream.write(value.value)
+        stream.write('\'')
     }
 
     override fun write(value: StringValue) {

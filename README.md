@@ -35,7 +35,7 @@ The value of the variable can only be one of these
 |-------------------------------------|-----------|
 | String ("HelloWorld")               | &check;   |
 | Integer (12345)                     | &check;   |
-| Float (1.0f)                        | &check;   |
+| Double (1.0)                        | &check;   |
 | Boolean (true,false)                | &check;   |
 | Another Variable's Value            | &check;   |
 | [Expressions](#expressions)         | &check;   |

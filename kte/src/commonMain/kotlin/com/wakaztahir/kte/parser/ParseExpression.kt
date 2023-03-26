@@ -19,6 +19,10 @@ enum class ArithmeticOperatorType(val char: Char, val associativity: OperatorAss
         override fun operate(value1: String, value2: String): String = value1 + value2
         override fun operate(value1: String, value2: Int): String = value1 + value2
         override fun operate(value1: String, value2: Double): String = value1 + value2
+        override fun operate(value1: String, value2: Char): String = value1 + value2
+        override fun operate(value1: Char, value2: Char): Int = notPossible("Char", "Char")
+        override fun operate(value1: Char, value2: Int): Char = value1 + value2
+        override fun operate(value1: Char, value2: String): String = value1 + value2
     },
     Minus('-', associativity = OperatorAssociativity.LeftToRight, precedence = 6) {
         override fun operate(value1: Int, value2: Int): Int = value1 - value2
@@ -28,6 +32,10 @@ enum class ArithmeticOperatorType(val char: Char, val associativity: OperatorAss
         override fun operate(value1: String, value2: String): String = notPossible("String", "String")
         override fun operate(value1: String, value2: Int): String = notPossible("String", "Int")
         override fun operate(value1: String, value2: Double): String = notPossible("String", "Double")
+        override fun operate(value1: String, value2: Char): String = notPossible("String", "Char")
+        override fun operate(value1: Char, value2: Char): Int = value1 - value2
+        override fun operate(value1: Char, value2: Int): Char = notPossible("Char", "Int")
+        override fun operate(value1: Char, value2: String): String = notPossible("Char", "String")
     },
     Divide('/', associativity = OperatorAssociativity.LeftToRight, precedence = 4) {
         override fun operate(value1: Int, value2: Int): Int = value1 / value2
@@ -37,6 +45,10 @@ enum class ArithmeticOperatorType(val char: Char, val associativity: OperatorAss
         override fun operate(value1: String, value2: String): String = notPossible("String", "String")
         override fun operate(value1: String, value2: Int): String = notPossible("String", "Int")
         override fun operate(value1: String, value2: Double): String = notPossible("String", "Double")
+        override fun operate(value1: String, value2: Char): String = notPossible("String", "Char")
+        override fun operate(value1: Char, value2: Char): Int = notPossible("Char", "Char")
+        override fun operate(value1: Char, value2: Int): Char = notPossible("Char", "Int")
+        override fun operate(value1: Char, value2: String): String = notPossible("Char", "String")
     },
     Multiply('*', associativity = OperatorAssociativity.LeftToRight, precedence = 4) {
         override fun operate(value1: Int, value2: Int): Int = value1 * value2
@@ -46,6 +58,10 @@ enum class ArithmeticOperatorType(val char: Char, val associativity: OperatorAss
         override fun operate(value1: String, value2: String): String = notPossible("String", "String")
         override fun operate(value1: String, value2: Int): String = notPossible("String", "Int")
         override fun operate(value1: String, value2: Double): String = notPossible("String", "Double")
+        override fun operate(value1: String, value2: Char): String = notPossible("String", "Char")
+        override fun operate(value1: Char, value2: Char): Int = notPossible("Char", "Char")
+        override fun operate(value1: Char, value2: Int): Char = notPossible("Char", "Int")
+        override fun operate(value1: Char, value2: String): String = notPossible("Char", "String")
     },
     Mod('%', associativity = OperatorAssociativity.LeftToRight, precedence = 4) {
         override fun operate(value1: Int, value2: Int): Int = value1 % value2
@@ -55,6 +71,10 @@ enum class ArithmeticOperatorType(val char: Char, val associativity: OperatorAss
         override fun operate(value1: String, value2: String): String = notPossible("String", "String")
         override fun operate(value1: String, value2: Int): String = notPossible("String", "Int")
         override fun operate(value1: String, value2: Double): String = notPossible("String", "Double")
+        override fun operate(value1: String, value2: Char): String = notPossible("String", "Char")
+        override fun operate(value1: Char, value2: Char): Int = notPossible("Char", "Char")
+        override fun operate(value1: Char, value2: Int): Char = notPossible("Char", "Int")
+        override fun operate(value1: Char, value2: String): String = notPossible("Char", "String")
     };
 
     fun <T> notPossible(value1: String, value2: String): T {
@@ -68,6 +88,10 @@ enum class ArithmeticOperatorType(val char: Char, val associativity: OperatorAss
     abstract fun operate(value1: String, value2: String): String
     abstract fun operate(value1: String, value2: Int): String
     abstract fun operate(value1: String, value2: Double): String
+    abstract fun operate(value1: String, value2: Char): String
+    abstract fun operate(value1: Char, value2: Char): Int
+    abstract fun operate(value1: Char, value2: Int): Char
+    abstract fun operate(value1: Char, value2: String): String
 
 }
 
