@@ -1,5 +1,6 @@
 package com.wakaztahir.kte.model
 
+import com.wakaztahir.kte.model.model.KTEFunction
 import com.wakaztahir.kte.model.model.KTEList
 import com.wakaztahir.kte.model.model.KTEObject
 import com.wakaztahir.kte.model.model.MutableKTEObject
@@ -8,6 +9,10 @@ interface ReferencedValue : KTEValue, CodeGen {
 
     fun asPrimitive(model: KTEObject): PrimitiveValue<*> {
         return this as PrimitiveValue<*>
+    }
+
+    fun asNullablePrimitive(model : KTEObject) : PrimitiveValue<*>? {
+        return this as? PrimitiveValue<*>
     }
 
     fun asNullableList(model: KTEObject): KTEList<KTEValue>? {

@@ -31,6 +31,10 @@ internal fun SourceStream.parseVariableReference(): ModelDirective? {
 //-------------- Declaration
 
 internal data class VariableDeclaration(val variableName: String, val variableValue: ReferencedValue) : AtDirective {
+
+    override val isEmptyWriter: Boolean
+        get() = true
+
     fun storeValue(model: MutableKTEObject) {
         val value = try {
             variableValue.asPrimitive(model)
@@ -66,7 +70,6 @@ internal fun SourceStream.parseVariableDeclaration(): VariableDeclaration? {
             escapeSpaces()
             val property = this.parseAnyExpressionOrValue()
             return if (property != null) {
-                increment(' ')
                 VariableDeclaration(variableName = variableName, variableValue = property)
             } else {
                 throw VariableDeclarationParseException("constant's value not found")

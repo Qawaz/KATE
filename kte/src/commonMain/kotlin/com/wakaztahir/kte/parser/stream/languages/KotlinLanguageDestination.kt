@@ -1,6 +1,7 @@
 package com.wakaztahir.kte.parser.stream.languages
 
 import com.wakaztahir.kte.model.*
+import com.wakaztahir.kte.model.model.KTEFunction
 import com.wakaztahir.kte.model.model.KTEList
 import com.wakaztahir.kte.model.model.KTEObject
 import com.wakaztahir.kte.parser.stream.DestinationStream
@@ -34,7 +35,7 @@ class KotlinLanguageDestination(private val block: LazyBlock, override val strea
     override fun writeList(value: KTEList<out KTEValue>) {
         stream.write("listOf(")
         var isFirst = true
-        for (single in value) {
+        for (single in value.collection) {
             if (!isFirst) stream.write(", ")
             single.generateTo(block, this)
             isFirst = false
@@ -48,7 +49,7 @@ class KotlinLanguageDestination(private val block: LazyBlock, override val strea
             is DoubleValue -> "Double"
             is BooleanValue -> "Boolean"
             is StringValue -> "String"
-            is KTEList<*> -> "List<" + (this.firstOrNull()?.getType() ?: "Any") + ">"
+            is KTEList<*> -> "List<" + (this.collection.firstOrNull()?.getType() ?: "Any") + ">"
             is KTEObject -> "Any"
             is KTEFunction -> "Any"
             else -> "Any"

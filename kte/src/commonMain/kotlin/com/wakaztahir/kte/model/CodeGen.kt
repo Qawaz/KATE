@@ -4,6 +4,8 @@ import com.wakaztahir.kte.parser.stream.DestinationStream
 
 interface CodeGen {
 
-    fun generateTo(block: LazyBlock,destination: DestinationStream)
+    val isEmptyWriter get() = false
+
+    fun generateTo(block: LazyBlock, destination: DestinationStream)
 
 }

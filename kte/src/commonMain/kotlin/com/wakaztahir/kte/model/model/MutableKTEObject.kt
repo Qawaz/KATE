@@ -61,7 +61,7 @@ abstract class MutableKTEObject : KTEObject {
                 objects.add(ModelObjectImpl("$key${objects.size}").apply(block))
             }
         })
-        putValue(key, ModelListImpl(key, objects))
+        putValue(key, KTEMutableListImpl(key, objects))
     }
 
     fun putObject(key: String, block: MutableKTEObject.() -> Unit) {

@@ -1,6 +1,5 @@
 package com.wakaztahir.kte.model.model
 
-import com.wakaztahir.kte.dsl.ModelObjectImpl
 import com.wakaztahir.kte.model.*
 import com.wakaztahir.kte.parser.stream.DestinationStream
 
@@ -72,7 +71,7 @@ interface KTEObject : KTEValue {
         for (each in contained) {
             when (each.value) {
                 is KTEList<*> -> {
-                    for (item in each.value as KTEList<*>) block(item)
+                    for (item in (each.value as KTEList<*>).collection) block(item)
                 }
 
                 is KTEObject -> {

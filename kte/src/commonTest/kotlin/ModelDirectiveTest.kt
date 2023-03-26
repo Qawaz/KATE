@@ -1,8 +1,9 @@
 import com.wakaztahir.kte.TemplateContext
 import com.wakaztahir.kte.model.*
+import com.wakaztahir.kte.model.model.KTEFunction
 import com.wakaztahir.kte.model.model.KTEObject
 import com.wakaztahir.kte.model.model.MutableKTEObject
-import com.wakaztahir.kte.model.model.ModelListImpl
+import com.wakaztahir.kte.model.model.KTEListImpl
 import com.wakaztahir.kte.parser.parseExpression
 import com.wakaztahir.kte.parser.parseModelDirective
 import kotlin.test.Test
@@ -27,7 +28,7 @@ class ModelDirectiveTest {
                 this.putValue("myDouble", 16.000)
                 this.putValue("myStr", "something is here")
                 this.putValue(
-                    key = "myList", value = ModelListImpl<IntValue>(
+                    key = "myList", value = KTEListImpl<IntValue>(
                         objectName = "myList", collection = listOf(
                             IntValue(10),
                             IntValue(20),

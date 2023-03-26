@@ -143,22 +143,33 @@ To create a list
 
 `@var myList = @mutable_list(1,2,3)`
 
+`@var myList2 = @list(1,2,3)`
+
 All elements in the list must be of a single type
 
 ### List Functions
 
 List supports the following properties and functions , You can use
-`@var(myList).size` to get the size of the list
+`@var(myList).size()` to get the size of the list
+
+#### Immutable List Functions
 
 | Value                           | Description                    |
 |---------------------------------|--------------------------------|
 | size() : Int                    | Returns the size of the list   |
 | get(index : Int) : Element      | Returns the element at index   |
 | contains(e : Element) : Boolean | Returns true if element exists |
-| add(e : Element)                | Add element at last            |
-| addAt(index : Int,e : Element)  | Add element at index           |
-| remove(e : Element)             | Remove element from list       |
-| removeAt(index : Int)           | Remove element at index        |
+
+#### Mutable List Functions
+
+Mutable List also has functions of Immutable List
+
+| Value                                 | Description              |
+|---------------------------------------|--------------------------|
+| add(e : Element) : Boolean            | Add element at last      |
+| addAt(index : Int,e : Element) : Unit | Add element at index     |
+| remove(e : Element) : Boolean         | Remove element from list |
+| removeAt(index : Int) : Element       | Remove element at index  |
 
 ## Objects
 

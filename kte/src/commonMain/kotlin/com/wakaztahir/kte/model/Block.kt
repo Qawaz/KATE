@@ -38,6 +38,8 @@ interface LazyBlock {
             if (!source.increment('\n')) {
                 source.increment(' ')
             }
+        } else if (directive.isEmptyWriter) {
+            source.increment(' ')
         }
     }
 
