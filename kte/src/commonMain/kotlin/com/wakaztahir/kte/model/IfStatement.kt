@@ -81,7 +81,7 @@ internal class SingleIf(
 }
 
 
-internal class IfStatement(private val ifs: MutableList<SingleIf>) : AtDirective, BlockContainer {
+internal class IfStatement(private val ifs: MutableList<SingleIf>) : BlockContainer {
 
     val singleIfs: List<SingleIf> get() = ifs
 

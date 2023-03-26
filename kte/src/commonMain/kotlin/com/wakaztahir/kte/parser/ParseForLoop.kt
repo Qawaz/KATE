@@ -10,7 +10,7 @@ import com.wakaztahir.kte.parser.stream.*
 import com.wakaztahir.kte.parser.stream.increment
 import com.wakaztahir.kte.parser.stream.parseTextWhile
 
-internal sealed interface ForLoop : AtDirective, BlockContainer {
+internal sealed interface ForLoop : BlockContainer {
 
     val blockValue: LazyBlockSlice
 

@@ -7,14 +7,14 @@ import com.wakaztahir.kte.parser.stream.DestinationStream
 import com.wakaztahir.kte.parser.stream.SourceStream
 import com.wakaztahir.kte.parser.stream.increment
 
-class DefaultNoRawBlock(val value: LazyBlockSlice) : AtDirective, BlockContainer {
+class DefaultNoRawBlock(val value: LazyBlockSlice) : BlockContainer {
     override fun getBlockValue(model: KTEObject): LazyBlock = value
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
         value.generateTo(destination)
     }
 }
 
-class RawBlock(val value: LazyBlockSlice) : AtDirective, BlockContainer {
+class RawBlock(val value: LazyBlockSlice) : BlockContainer {
     override fun getBlockValue(model: KTEObject): LazyBlock = value
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
         value.writeValueTo(destination)
@@ -42,7 +42,7 @@ class PartialRawLazyBlockSlice(
     }
 }
 
-class PartialRawBlock(val value: PartialRawLazyBlockSlice) : AtDirective, BlockContainer {
+class PartialRawBlock(val value: PartialRawLazyBlockSlice) : BlockContainer {
     override fun getBlockValue(model: KTEObject): LazyBlock = value
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
         value.generateTo(destination)

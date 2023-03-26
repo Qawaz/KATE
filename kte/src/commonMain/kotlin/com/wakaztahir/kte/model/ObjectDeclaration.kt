@@ -3,6 +3,7 @@ package com.wakaztahir.kte.model
 import com.wakaztahir.kte.dsl.ModelObjectImpl
 import com.wakaztahir.kte.model.model.KTEObject
 import com.wakaztahir.kte.model.model.MutableKTEObject
+import com.wakaztahir.kte.parser.parseObjectDeclaration
 import com.wakaztahir.kte.parser.parseVariableDeclaration
 import com.wakaztahir.kte.parser.stream.DestinationStream
 import com.wakaztahir.kte.parser.stream.SourceStream
@@ -41,12 +42,17 @@ class ObjectDeclarationBlockSlice(
     }
 
     override fun parseAtDirective(): CodeGen? {
-        return source.parseVariableDeclaration()
+        source.parseVariableDeclaration()?.let { return it }
+        parseObjectDeclaration()?.let { return it }
+        return null
     }
 }
 
-class ObjectDeclaration(val objectName: String, val declarationBlock: ObjectDeclarationBlockSlice) : AtDirective,
-    BlockContainer {
+class ObjectDeclaration(val objectName: String, val declarationBlock: ObjectDeclarationBlockSlice) : BlockContainer {
+
+    override val isEmptyWriter: Boolean
+        get() = true
+
     override fun getBlockValue(model: KTEObject): LazyBlock = declarationBlock
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
         val mutableObject = ModelObjectImpl(objectName)
