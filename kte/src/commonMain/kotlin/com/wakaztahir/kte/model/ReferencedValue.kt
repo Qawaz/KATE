@@ -8,24 +8,24 @@ interface ReferencedValue : KTEValue, CodeGen {
         return this
     }
 
-    fun asNullablePrimitive(model: KTEObject): PrimitiveValue<*>? {
+    override fun asNullablePrimitive(model: KTEObject): PrimitiveValue<*>? {
         return getKTEValue(model) as? PrimitiveValue<*>
     }
 
-    fun asNullableList(model: KTEObject): KTEList<KTEValue>? {
+    override fun asNullableList(model: KTEObject): KTEList<KTEValue>? {
         @Suppress("UNCHECKED_CAST")
         return getKTEValue(model) as? KTEList<KTEValue>
     }
 
-    fun asNullableObject(model: KTEObject): KTEObject? {
+    override fun asNullableObject(model: KTEObject): KTEObject? {
         return getKTEValue(model) as? KTEObject
     }
 
-    fun asNullableMutableObject(model: KTEObject): MutableKTEObject? {
+    override fun asNullableMutableObject(model: KTEObject): MutableKTEObject? {
         return getKTEValue(model) as? MutableKTEObject
     }
 
-    fun asNullableFunction(model: KTEObject): KTEFunction? {
+    override fun asNullableFunction(model: KTEObject): KTEFunction? {
         return getKTEValue(model) as? KTEFunction
     }
 

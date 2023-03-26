@@ -42,26 +42,6 @@ interface KTEObject : KTEValue {
         return currentVal
     }
 
-    fun getPropertyAsIterable(directive: ModelDirective): KTEList<KTEValue>? {
-        val value = getModelDirectiveValue(directive = directive)
-        @Suppress("UNCHECKED_CAST")
-        return value as? KTEList<KTEValue>
-    }
-
-    fun getPropertyAsObject(directive: ModelDirective): KTEObject? {
-        val value = getModelDirectiveValue(directive = directive)
-        return value as? KTEObject
-    }
-
-    fun getPropertyAsMutableObject(directive: ModelDirective): MutableKTEObject? {
-        val value = getModelDirectiveValue(directive = directive)
-        return value as? MutableKTEObject
-    }
-
-    fun getModelDirectiveAsPrimitive(directive: ModelDirective): PrimitiveValue<*>? {
-        return getModelDirectiveValue(directive) as? PrimitiveValue<*>
-    }
-
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
         destination.write(this)
     }

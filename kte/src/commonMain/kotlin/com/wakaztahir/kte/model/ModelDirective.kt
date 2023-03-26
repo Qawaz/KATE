@@ -16,7 +16,7 @@ sealed interface ModelReference {
 
     class FunctionCall(
         override val name: String,
-        val invokeOnly : Boolean = true,
+        val invokeOnly: Boolean = true,
         val parametersList: List<ReferencedValue>
     ) : ModelReference {
         override fun toString(): String {
@@ -34,7 +34,7 @@ class ModelDirective(val propertyPath: List<ModelReference>) : ReferencedValue, 
 
             // Adding parameters to function parameters list
             if (value is KTEFunction) {
-                propertyPath.lastOrNull()?.let { it as? ModelReference.FunctionCall }?.let {  call->
+                propertyPath.lastOrNull()?.let { it as? ModelReference.FunctionCall }?.let { call ->
                     value.parameters.addAll(call.parametersList)
                     value.invokeOnly = call.invokeOnly
                 }
@@ -47,27 +47,11 @@ class ModelDirective(val propertyPath: List<ModelReference>) : ReferencedValue, 
     }
 
     private fun <T> throwIt(model: KTEObject): T {
-        throw UnresolvedValueException(propertyPath.joinToString(".") + " unresolved model directive")
+        throw UnresolvedValueException("could not resolve '" + propertyPath.joinToString(".") + "' model directive in model $model")
     }
 
     override fun getKTEValue(model: KTEObject): KTEValue {
         return model.getModelDirectiveValue(this) ?: throwIt(model)
-    }
-
-    override fun asNullablePrimitive(model: KTEObject): PrimitiveValue<*>? {
-        return model.getModelDirectiveAsPrimitive(this)
-    }
-
-    override fun asNullableList(model: KTEObject): KTEList<KTEValue>? {
-        return model.getPropertyAsIterable(this)
-    }
-
-    override fun asNullableObject(model: KTEObject): KTEObject? {
-        return model.getPropertyAsObject(this)
-    }
-
-    override fun asNullableMutableObject(model: KTEObject): MutableKTEObject? {
-        return model.getPropertyAsMutableObject(this)
     }
 
     override fun toString(): String = propertyPath.joinToString(".")

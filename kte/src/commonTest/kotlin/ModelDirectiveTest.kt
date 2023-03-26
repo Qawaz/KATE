@@ -39,7 +39,7 @@ class ModelDirectiveTest {
         }
         assertEquals(
             """data class MyObject(
-            |	myDouble : Double = 16.0f,
+            |	myDouble : Double = 16.0,
             |	myList : List<Int> = listOf(10, 20, 30, 40),
             |	MyNestedObject : Any = MyNestedObject(),
             |	myInt : Int = 15,
