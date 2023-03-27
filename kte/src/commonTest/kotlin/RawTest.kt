@@ -37,16 +37,46 @@ class RawTest {
     }
 
     @Test
-    fun testPartialRaw(){
-        assertEquals("",GenerateCode("@partial_raw BlockValue @end_partial_raw"))
+    fun testPartialRaw() {
+        assertEquals("", GenerateCode("@partial_raw BlockValue @end_partial_raw"))
         assertEquals("5", GenerateCode("@partial_raw @var i=5 @var(i) @end_partial_raw"))
-        assertEquals("Here", GenerateCode("@partial_raw @if(true) @default_no_raw Here @end_default_no_raw @endif @end_partial_raw"))
+        assertEquals(
+            "Here",
+            GenerateCode("@partial_raw @if(true) @default_no_raw Here @end_default_no_raw @endif @end_partial_raw")
+        )
         assertEquals("Here", GenerateCode("@partial_raw @default_no_raw Here @end_default_no_raw @end_partial_raw"))
-        assertEquals("5", GenerateCode("@partial_raw @default_no_raw @var i=5 @var(i) @end_default_no_raw @end_partial_raw"))
-        assertEquals("Text @var i=5 @var(i)", GenerateCode("@partial_raw @raw Text @var i=5 @var(i) @endraw @end_partial_raw"))
-        assertEquals("@default_no_raw Text 5 @end_default_no_raw", GenerateCode("@default_no_raw Text @var i=5 @var(i) @end_default_no_raw"))
+        assertEquals(
+            "5",
+            GenerateCode("@partial_raw @default_no_raw @var i=5 @var(i) @end_default_no_raw @end_partial_raw")
+        )
+        assertEquals(
+            "Text @var i=5 @var(i)",
+            GenerateCode("@partial_raw @raw Text @var i=5 @var(i) @endraw @end_partial_raw")
+        )
+        assertEquals(
+            "@default_no_raw Text 5 @end_default_no_raw",
+            GenerateCode("@default_no_raw Text @var i=5 @var(i) @end_default_no_raw")
+        )
         assertEquals("5", GenerateCode("@partial_raw @var i = 5 @end_partial_raw @var(i)"))
-        assertEquals("5", GenerateCode("@partial_raw @default_no_raw @var i = 5 @end_default_no_raw @end_partial_raw @var(i)"))
+        assertEquals(
+            "5",
+            GenerateCode("@partial_raw @default_no_raw @var i = 5 @end_default_no_raw @end_partial_raw @var(i)")
+        )
+    }
+
+    @Test
+    fun testPartialRaw2() {
+        assertEquals(
+            expected = """package output""",
+            actual = GenerateCode(
+                """@partial_raw
+                |@raw
+                |package output
+                |@endraw
+                |@end_partial_raw
+                """.trimMargin()
+            )
+        )
     }
 
 }

@@ -8,7 +8,7 @@ interface EmbeddingManager {
 
     fun provideStream(block: LazyBlock, path: String): SourceStream?
 
-    fun embedStream(block: LazyBlock, path: String, destination: DestinationStream) {
+    fun embedGenerateStream(block: LazyBlock, path: String, destination: DestinationStream) {
         val stream = provideStream(block, path)
         if (stream != null) {
             embeddedStreams[path] = true
@@ -18,9 +18,9 @@ interface EmbeddingManager {
         }
     }
 
-    fun embedOnceStream(block: LazyBlock, path: String, destination: DestinationStream) {
+    fun embedOnceGenerateStream(block: LazyBlock, path: String, destination: DestinationStream) {
         if (embeddedStreams[path] == true) return
-        embedStream(block, path, destination)
+        embedGenerateStream(block, path, destination)
     }
 
 }

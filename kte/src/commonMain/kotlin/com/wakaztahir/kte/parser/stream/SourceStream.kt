@@ -3,7 +3,22 @@ package com.wakaztahir.kte.parser.stream
 import com.wakaztahir.kte.model.LazyBlock
 import com.wakaztahir.kte.model.PlaceholderBlock
 
-abstract class SourceStream : LazyBlock, PlaceholderManager, EmbeddingManager {
+abstract class SourceStream : LazyBlock {
+
+    protected object NoEmbeddings : EmbeddingManager {
+        override val embeddedStreams: MutableMap<String, Boolean> = mutableMapOf()
+        override fun provideStream(block: LazyBlock, path: String): SourceStream? {
+            return null
+        }
+    }
+
+    protected class DefaultPlaceholderManager : PlaceholderManager {
+        override val placeholders: MutableList<PlaceholderBlock> = mutableListOf()
+        override val undefinedPlaceholders: MutableList<PlaceholderBlock> = mutableListOf()
+    }
+
+    abstract val embeddingManager: EmbeddingManager
+    abstract val placeholderManager: PlaceholderManager
 
     override val source: SourceStream
         get() = this
@@ -24,10 +39,5 @@ abstract class SourceStream : LazyBlock, PlaceholderManager, EmbeddingManager {
     abstract fun setPointerAt(position: Int): Boolean
 
     override fun canIterate(): Boolean = !hasEnded
-
-
-    override val placeholders = mutableListOf<PlaceholderBlock>()
-    override val undefinedPlaceholders = mutableListOf<PlaceholderBlock>()
-    override val embeddedStreams = mutableMapOf<String, Boolean>()
 
 }

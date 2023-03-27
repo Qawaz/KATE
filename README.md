@@ -21,7 +21,10 @@
 This directly copies and pastes the template into the current template , Its global scoped variables can be used inside
 the current template.
 
-> Embed statements can only be used at the top of the template
+`@embed_once ./template-path.kte`
+
+embed template once , If it has been embedded in the template indirectly (embedding a template that also embeds
+this template), It won't be embedded again
 
 ## Variables
 

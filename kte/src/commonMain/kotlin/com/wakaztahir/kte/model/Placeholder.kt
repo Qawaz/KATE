@@ -46,7 +46,7 @@ class PlaceholderBlock(
 
 class PlaceholderDefinition(val blockValue: PlaceholderBlock) : BlockContainer {
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
-        block.source.definePlaceholder(blockValue)
+        block.source.placeholderManager.definePlaceholder(blockValue)
     }
 
     override fun getBlockValue(model: KTEObject): LazyBlock = blockValue
@@ -58,7 +58,7 @@ class PlaceholderInvocation(
     val invocationEndPointer: Int
 ) : CodeGen {
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
-        val placeholder = block.source.getPlaceholder(placeholderName = placeholderName)
+        val placeholder = block.source.placeholderManager.getPlaceholder(placeholderName = placeholderName)
             ?: throw IllegalStateException("placeholder with name $placeholderName not found")
         placeholder.setGenerationModel(generationObject)
         placeholder.generateTo(destination)
@@ -71,7 +71,7 @@ class PlaceholderUse(
     private val definitionName: String
 ) : CodeGen {
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
-        if (!block.source.usePlaceholder(placeholderName, definitionName)) {
+        if (!block.source.placeholderManager.usePlaceholder(placeholderName, definitionName)) {
             throw IllegalStateException("placeholder with name $placeholderName and definition name $definitionName not found")
         }
     }

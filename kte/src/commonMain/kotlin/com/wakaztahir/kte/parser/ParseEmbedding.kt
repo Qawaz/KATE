@@ -8,11 +8,15 @@ import com.wakaztahir.kte.parser.stream.parseTextWhile
 
 fun LazyBlock.parseEmbedding(): EmbeddingDirective? {
     if (source.currentChar == '@' && source.increment("@embed")) {
-        source.increment(' ')
+        val isOnce = source.increment("_once")
+        if (!source.increment(' ')) {
+            throw IllegalStateException("there must be a space between @embed / @embed_once and its path")
+        }
         return EmbeddingDirective(
             path = source.parseTextWhile { currentChar != '\n' }.ifEmpty {
                 throw IllegalStateException("@embed path cannot be empty")
-            }
+            },
+            embedOnce = isOnce
         )
     }
     return null

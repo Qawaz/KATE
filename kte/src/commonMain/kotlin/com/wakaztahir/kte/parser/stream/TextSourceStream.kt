@@ -6,7 +6,9 @@ import com.wakaztahir.kte.model.model.MutableKTEObject
 
 class TextSourceStream(
     private val sourceCode: String,
-    override val model: MutableKTEObject = ModelObjectImpl("Global")
+    override val model: MutableKTEObject = ModelObjectImpl("Global"),
+    override val placeholderManager: PlaceholderManager = DefaultPlaceholderManager(),
+    override val embeddingManager: EmbeddingManager = NoEmbeddings
 ) : SourceStream() {
 
     override var pointer: Int = 0
@@ -32,10 +34,6 @@ class TextSourceStream(
         } else {
             false
         }
-    }
-
-    override fun provideStream(block: LazyBlock, path: String): SourceStream? {
-        TODO("Not yet implemented")
     }
 
 }
