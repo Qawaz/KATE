@@ -199,19 +199,19 @@ A string can be defined like this
 
 Here's a table of functions available
 
-| Function                   | Description                                             |
-|----------------------------|---------------------------------------------------------|
-| `@var(str.size())`         | Returns the size as an int                              |
-| `@var(str[0])`             | Equivalent to .get(0) returns first char                |
-| `@var(str.toInt())`        | Tries to convert to int , or returns Unit               |
-| `@var(str.toDouble())`     | Tries to convert to double , or returns Unit            |
-| `@var(str.substring(0,5))` | Returns a substring from 0 (inclusive) to 5 (exclusive) |
-| `@var(str.uppercase())`    | Convert the whole string to uppercase                   |
-| `@var(str.lowercase())`    | Convert the whole string to lowercase                   |
-| `@var(str.capitalize())`   | Capitalize the first character                          |
-| `@var(str.decapitalize())` | Decapitalize the first character                        |
-| `@var(str.replace("",""))` | Replace the string's with other                         |
-| `@var(str.contains(""))`   | Returns true if contains the string                     |
+| Function                              | Description                                             |
+|---------------------------------------|---------------------------------------------------------|
+| `@var(str.size())`                    | Returns the size as an int                              |
+| `@var(str[0])`                        | Equivalent to .get(0) returns first char                |
+| `@var(str.toInt())`                   | Tries to convert to int , or returns Unit               |
+| `@var(str.toDouble())`                | Tries to convert to double , or returns Unit            |
+| `@var(str.substring(0,5))`            | Returns a substring from 0 (inclusive) to 5 (exclusive) |
+| `@var(str.uppercase())`               | Convert the whole string to uppercase                   |
+| `@var(str.lowercase())`               | Convert the whole string to lowercase                   |
+| `@var(str.capitalize())`              | Capitalize the first character                          |
+| `@var(str.decapitalize())`            | Decapitalize the first character                        |
+| `@var(str.replace("find","replace"))` | Replace the string's find with replace value            |
+| `@var(str.contains(""))`              | Returns true if contains the string                     |
 
 ### Integers
 
