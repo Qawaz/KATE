@@ -1,4 +1,6 @@
-package output
+@partial_raw
+@raw package output
+@endraw
 <%--
     KTE-v1.0
     A KTE Template that tests the schema
@@ -6,14 +8,17 @@ package output
 --%>
 @var generateComments = true
 <%-- Generating a maths class with basic arithmetic operations --%>
+@default_no_raw
 @if(@var(generateComments)) // @model.mathTestClassName provides functions for basic math operations @endif
 class @model.mathTestClassName {
     @for(@var arithmetic2 : @model.arithmetic)
-        @if(@var(generateComments)) // @var(arithmetic2).funName performs '@var(arithmetic2).symbolName' between two variables @endif
-        fun @var(arithmetic2).@@funName() : @var(arithmetic2).returnType {
-             val variableOne = @var(arithmetic2).first
-             val variableTwo = @var(arithmetic2).second
-             return variableOne @var(arithmetic2).symbolName variableTwo
-        }
+    @if(@var(generateComments)) // @var(arithmetic2).funName performs '@var(arithmetic2).symbolName' between two variables @endif
+    fun @var(arithmetic2).@@funName() : @var(arithmetic2).returnType {
+         val variableOne = @var(arithmetic2).first
+         val variableTwo = @var(arithmetic2).second
+         return variableOne @var(arithmetic2).symbolName variableTwo
+    }
     @endfor
 }
+@end_default_no_raw
+@end_partial_raw
