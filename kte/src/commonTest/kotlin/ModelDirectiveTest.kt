@@ -18,11 +18,12 @@ class ModelDirectiveTest {
     }
 
     @Test
-    fun testStringIndexing(){
+    fun testStringFunctions(){
         assertEquals("s", GenerateCode("@var myStr = \"0ishere\" @var(myStr[2])"))
         assertEquals("s", GenerateCode("@model.myStr[2]", MutableKTEObject {
             putValue("myStr","0ishere")
         }))
+        assertEquals("5", GenerateCode("@var myStr = \"hello\" @var(myStr).size()"))
     }
 
     @Test

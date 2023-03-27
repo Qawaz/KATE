@@ -1,6 +1,7 @@
 package com.wakaztahir.kte.model.implentation
 
 import com.wakaztahir.kte.model.CharValue
+import com.wakaztahir.kte.model.IntValue
 import com.wakaztahir.kte.model.StringValue
 import com.wakaztahir.kte.model.model.KTEFunction
 import com.wakaztahir.kte.model.model.KTEObject
@@ -20,7 +21,17 @@ object StringImplementation {
                 require(index != null) { "String.get(Int) expects a single parameter to get the value of string" }
                 return CharValue(string[index])
             }
+
             override fun toString(): String = "get(Int) : Char"
+        })
+        put("size", object : KTEFunction() {
+            override fun invoke(model: KTEObject, parameters: List<ReferencedValue>): KTEValue {
+                val string = invokedOn?.let { it as? StringValue }?.value
+                require(string != null) { "string value is null" }
+                return IntValue(string.length)
+            }
+
+            override fun toString(): String = "size() : Int"
         })
     }
 
