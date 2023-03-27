@@ -1,6 +1,7 @@
 package com.wakaztahir.kte.parser
 
 import com.wakaztahir.kte.model.*
+import com.wakaztahir.kte.model.model.KTEValue
 import com.wakaztahir.kte.model.model.MutableKTEObject
 import com.wakaztahir.kte.parser.stream.*
 import com.wakaztahir.kte.parser.stream.increment
@@ -79,29 +80,31 @@ fun LazyBlock.parsePlaceholderDefinition(): PlaceholderDefinition? {
 fun LazyBlock.parsePlaceholderInvocation(): PlaceholderInvocation? {
     if (source.currentChar == '@' && source.increment("@placeholder")) {
         val placeholderName = source.parsePlaceHolderName()
-        val placeholderGenObject: MutableKTEObject = if (source.increment(',')) {
+        val genValue: KTEValue? = if (source.increment(',')) {
             val refValue = source.parseReferencedValue()
             if (refValue != null) {
                 if (source.increment(')')) {
-                    refValue.asNullableMutableObject(model) ?: throw IllegalStateException("value of unknown type cannot be passed placeholder invocation , it expects a mutable object")
+                    refValue
                 } else {
                     throw IllegalStateException("expected ')' found ${source.currentChar} when invoking placeholder $placeholderName")
                 }
             } else {
-                model
+                null
             }
         } else {
             if (source.increment(')')) {
-                model
+                null
             } else {
                 throw IllegalStateException("expected ')' found ${source.currentChar} when invoking placeholder $placeholderName")
             }
         }
         if (placeholderName != null) {
+            val genModel: MutableKTEObject? = genValue?.asNullableMutableObject(model)
             return PlaceholderInvocation(
                 placeholderName = placeholderName,
-                generationObject = placeholderGenObject,
-                invocationEndPointer = source.pointer
+                generationObject = genModel ?: model,
+                invocationEndPointer = source.pointer,
+                paramValue = if (genModel == null) genValue else null
             )
         } else {
             throw IllegalStateException("placeholder name is required when invoking a placeholder using @placeholder")

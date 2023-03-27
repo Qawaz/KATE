@@ -6,6 +6,16 @@ interface PlaceholderManager {
 
     val placeholders: MutableList<PlaceholderBlock>
     val undefinedPlaceholders: MutableList<PlaceholderBlock>
+    val placeholderListeners: MutableMap<String, PlaceholderEventListener>
+
+    interface PlaceholderEventListener {
+        fun onPlaceholderUndefined()
+        fun onPlaceholderDefined(defined: PlaceholderBlock)
+    }
+
+    fun setPlaceholderEventListener(placeholderName: String, listener: PlaceholderEventListener) {
+        placeholderListeners[placeholderName] = listener
+    }
 
     fun definePlaceholder(placeholder: PlaceholderBlock) {
         val iterator = placeholders.iterator()
@@ -17,9 +27,11 @@ interface PlaceholderManager {
                 }
                 undefinedPlaceholders.add(next)
                 iterator.remove()
+                placeholderListeners[next.placeholderName]?.onPlaceholderUndefined()
             }
         }
         placeholders.add(placeholder)
+        placeholderListeners[placeholder.placeholderName]?.onPlaceholderDefined(placeholder)
     }
 
     fun getPlaceholder(placeholderName: String): PlaceholderBlock? {
@@ -54,7 +66,9 @@ interface PlaceholderManager {
             it.placeholderName == placeholderName && it.definitionName == definitionName
         }
         return if (index > -1) {
-            placeholders.removeAt(index)
+            placeholders.removeAt(index).also {
+                placeholderListeners[it.placeholderName]?.onPlaceholderUndefined()
+            }
             true
         } else {
             val undefinedIndex = undefinedPlaceholders.indexOfFirst {

@@ -1,8 +1,8 @@
 package com.wakaztahir.kte.model.model
 
 import com.wakaztahir.kte.model.*
-import com.wakaztahir.kte.model.implentation.KTEListImplementation
-import com.wakaztahir.kte.model.implentation.KTEMutableListImplementation
+import com.wakaztahir.kte.model.runtime.KTEListImplementation
+import com.wakaztahir.kte.model.runtime.KTEMutableListImplementation
 import com.wakaztahir.kte.parser.stream.DestinationStream
 
 interface KTEList<T : KTEValue> : ReferencedValue {
@@ -24,7 +24,7 @@ open class KTEListImpl<T : KTEValue>(override val collection: List<T>) : List<T>
     }
 
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
-        destination.write(this)
+        destination.write(block, this)
     }
 
     override fun toString(): String {

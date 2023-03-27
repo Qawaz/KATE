@@ -48,6 +48,7 @@ interface LazyBlock {
     }
 
     fun parseAtDirective(): CodeGen? {
+        parseRuntimeGen()?.let { return it }
         parseNestedAtDirective(this)?.let { return it }
         parseRawBlock()?.let { return it }
         parsePartialRaw()?.let { return it }
@@ -95,7 +96,7 @@ open class LazyBlockSlice(
         source.setPointerAt(blockEndPointer)
     }
 
-    override fun parseNestedAtDirective(block : LazyBlock): CodeGen? {
+    override fun parseNestedAtDirective(block: LazyBlock): CodeGen? {
         return parentBlock.parseNestedAtDirective(block)
     }
 

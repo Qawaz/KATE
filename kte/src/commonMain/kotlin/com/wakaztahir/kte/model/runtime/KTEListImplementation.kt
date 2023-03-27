@@ -1,4 +1,4 @@
-package com.wakaztahir.kte.model.implentation
+package com.wakaztahir.kte.model.runtime
 
 import com.wakaztahir.kte.model.BooleanValue
 import com.wakaztahir.kte.model.IntValue

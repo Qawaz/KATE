@@ -9,12 +9,12 @@ interface LanguageDestination {
 
     val stream: WritableStream
 
-    fun write(value : CharValue)
-    fun write(value: IntValue)
-    fun write(value: DoubleValue)
-    fun write(value: BooleanValue)
-    fun write(value: StringValue)
-    fun write(value: KTEList<out KTEValue>)
-    fun write(value: KTEObject)
+    fun write(block: LazyBlock,value : CharValue)
+    fun write(block: LazyBlock,value: IntValue)
+    fun write(block: LazyBlock,value: DoubleValue)
+    fun write(block: LazyBlock,value: BooleanValue)
+    fun write(block: LazyBlock,value: StringValue)
+    fun write(block: LazyBlock,value: KTEList<out KTEValue>)
+    fun write(block: LazyBlock,value: KTEObject)
 
 }

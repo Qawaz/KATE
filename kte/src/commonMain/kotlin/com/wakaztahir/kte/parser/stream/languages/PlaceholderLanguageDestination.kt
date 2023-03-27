@@ -6,46 +6,73 @@ import com.wakaztahir.kte.model.model.KTEList
 import com.wakaztahir.kte.model.model.KTEObject
 import com.wakaztahir.kte.model.model.KTEValue
 import com.wakaztahir.kte.parser.stream.DestinationStream
+import com.wakaztahir.kte.parser.stream.PlaceholderManager
 import com.wakaztahir.kte.parser.stream.WritableStream
 
-class KotlinLanguageDestination(private val block: LazyBlock, override val stream: WritableStream) : DestinationStream {
+class PlaceholderLanguageDestination(
+    private val block: LazyBlock,
+    override val stream: WritableStream
+) : DestinationStream {
+
+    private var doublePlaceholder: PlaceholderBlock? = null
+    private var intPlaceholder: PlaceholderBlock? = null
+    private var stringPlaceholder: PlaceholderBlock? = null
+    private var charPlaceholder: PlaceholderBlock? = null
+    private var booleanPlaceholder: PlaceholderBlock? = null
+    private var listPlaceholder: PlaceholderBlock? = null
+
+    private inline fun getAndOnChange(placeholderName: String, crossinline run: (PlaceholderBlock?) -> Unit) {
+        block.source.placeholderManager.getPlaceholder(placeholderName).also(run)
+        block.source.placeholderManager.setPlaceholderEventListener(placeholderName,
+            object : PlaceholderManager.PlaceholderEventListener {
+                override fun onPlaceholderUndefined() {
+                    run(null)
+                }
+
+                override fun onPlaceholderDefined(defined: PlaceholderBlock) {
+                    run(defined)
+                }
+            })
+    }
+
+    private fun initializePlaceholders() {
+        getAndOnChange("DoubleValue") { doublePlaceholder = it }
+        getAndOnChange("IntValue") { intPlaceholder = it }
+        getAndOnChange("StringValue") { stringPlaceholder = it }
+        getAndOnChange("CharValue") { charPlaceholder = it }
+        getAndOnChange("BooleanValue") { booleanPlaceholder = it }
+        getAndOnChange("ListValue") { listPlaceholder = it }
+    }
+
+    init {
+        initializePlaceholders()
+    }
 
     private var quotesOnString = false
     private var objectCallOnly = false
 
     override fun write(block: LazyBlock, value: IntValue) {
-        stream.write(value.value.toString())
+        intPlaceholder?.generateTo(block.model, value, this)
     }
 
     override fun write(block: LazyBlock, value: DoubleValue) {
-        stream.write(value.value.toString())
+        doublePlaceholder?.generateTo(block.model, value, this)
     }
 
     override fun write(block: LazyBlock, value: BooleanValue) {
-        stream.write(if (value.value) "true" else "false")
+        booleanPlaceholder?.generateTo(block.model, value, this)
     }
 
     override fun write(block: LazyBlock, value: CharValue) {
-        stream.write(value.value)
+        charPlaceholder?.generateTo(block.model, value, this)
     }
 
     override fun write(block: LazyBlock, value: StringValue) {
-        if (quotesOnString) {
-            stream.write('"' + value.value + '"')
-        } else {
-            stream.write(value.value)
-        }
+        stringPlaceholder?.generateTo(block.model, value, this)
     }
 
     override fun write(block: LazyBlock, value: KTEList<out KTEValue>) {
-        stream.write("listOf(")
-        var isFirst = true
-        for (single in value.collection) {
-            if (!isFirst) stream.write(", ")
-            single.generateTo(block, this)
-            isFirst = false
-        }
-        stream.write(')')
+        listPlaceholder?.generateTo(block.model, value, this)
     }
 
     private fun KTEValue.getType(): String {

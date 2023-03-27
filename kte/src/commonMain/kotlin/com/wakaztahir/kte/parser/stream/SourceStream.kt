@@ -15,6 +15,7 @@ abstract class SourceStream : LazyBlock {
     protected class DefaultPlaceholderManager : PlaceholderManager {
         override val placeholders: MutableList<PlaceholderBlock> = mutableListOf()
         override val undefinedPlaceholders: MutableList<PlaceholderBlock> = mutableListOf()
+        override val placeholderListeners = mutableMapOf<String, PlaceholderManager.PlaceholderEventListener>()
     }
 
     abstract val embeddingManager: EmbeddingManager

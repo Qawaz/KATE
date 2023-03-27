@@ -53,7 +53,7 @@ class VariablesTest {
     }
 
     @Test
-    fun testCharacter() {
+    fun testDifferentVariables() {
         assertEquals("x", GenerateCode("@var x = 'x' @var(x)"))
     }
 

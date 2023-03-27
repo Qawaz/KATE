@@ -1,9 +1,11 @@
 package com.wakaztahir.kte.model
 
-import com.wakaztahir.kte.model.implentation.StringImplementation
+import com.wakaztahir.kte.model.runtime.StringImplementation
 import com.wakaztahir.kte.model.model.KTEObject
 import com.wakaztahir.kte.model.model.KTEValue
 import com.wakaztahir.kte.model.model.ReferencedValue
+import com.wakaztahir.kte.model.runtime.DoubleImplementation
+import com.wakaztahir.kte.model.runtime.IntImplementation
 import com.wakaztahir.kte.parser.ArithmeticOperatorType
 import com.wakaztahir.kte.parser.stream.DestinationStream
 import kotlin.jvm.JvmInline
@@ -77,7 +79,7 @@ value class CharValue(override val value: Char) : PrimitiveValue<Char> {
     }
 
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
-        destination.write(this)
+        destination.write(block, this)
     }
 
 }
@@ -109,8 +111,12 @@ value class IntValue(override val value: Int) : PrimitiveValue<Int> {
         }
     }
 
+    override fun getModelReference(reference: ModelReference): KTEValue? {
+        return IntImplementation.propertyMap[reference.name]
+    }
+
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
-        destination.write(this@IntValue)
+        destination.write(block, this@IntValue)
     }
 
     override fun toString(): String = value.toString()
@@ -144,8 +150,12 @@ value class DoubleValue(override val value: Double) : PrimitiveValue<Double> {
         }
     }
 
+    override fun getModelReference(reference: ModelReference): KTEValue? {
+        return DoubleImplementation.propertyMap[reference.name]
+    }
+
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
-        destination.write(this@DoubleValue)
+        destination.write(block, this@DoubleValue)
     }
 
     override fun toString(): String = value.toString()
@@ -176,7 +186,7 @@ value class BooleanValue(override val value: Boolean) : PrimitiveValue<Boolean> 
     }
 
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
-        destination.write(this@BooleanValue)
+        destination.write(block, this@BooleanValue)
     }
 
     override fun toString(): String = value.toString()
@@ -231,7 +241,7 @@ value class StringValue(override val value: String) : PrimitiveValue<String> {
     }
 
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
-        destination.write(this@StringValue)
+        destination.write(block, this@StringValue)
     }
 
     override fun toString(): String = value

@@ -2,12 +2,13 @@ package com.wakaztahir.kte.model
 
 import com.wakaztahir.kte.dsl.ScopedModelObject
 import com.wakaztahir.kte.model.model.KTEObject
+import com.wakaztahir.kte.model.model.KTEValue
 import com.wakaztahir.kte.model.model.MutableKTEObject
 import com.wakaztahir.kte.parser.stream.DestinationStream
 import com.wakaztahir.kte.parser.stream.SourceStream
 
 class PlaceholderBlock(
-    parentBlock : LazyBlock,
+    parentBlock: LazyBlock,
     val placeholderName: String,
     val definitionName: String,
     startPointer: Int,
@@ -29,16 +30,35 @@ class PlaceholderBlock(
     override var model: MutableKTEObject = parent
         private set
 
+    private var paramValue: KTEValue? = null
+
     fun setGenerationModel(model: MutableKTEObject) {
         this.model = model
         this.isGenerationModelSet = true
+    }
+
+    fun setParamValue(value: KTEValue) {
+        this.paramValue = value
+    }
+
+    fun generateTo(model: MutableKTEObject, value: KTEValue?, destination: DestinationStream) {
+        setGenerationModel(model)
+        if (value != null) setParamValue(value)
+        generateTo(destination)
     }
 
     override fun generateTo(destination: DestinationStream) {
         require(isGenerationModelSet) {
             "Generation Model should be set using setGenerationModel before calling generateTo"
         }
+        if (paramValue != null) {
+            require(!model.contains("param")) {
+                "when passing @var(param) value to placeholder invocation , defining value with same name \"param\" is not allowed"
+            }
+            model.putValue("param", paramValue!!)
+        }
         super.generateTo(destination)
+        model.removeKey("param")
         this.isGenerationModelSet = false
     }
 
@@ -54,14 +74,14 @@ class PlaceholderDefinition(val blockValue: PlaceholderBlock) : BlockContainer {
 
 class PlaceholderInvocation(
     val placeholderName: String,
-    val generationObject : MutableKTEObject,
+    val generationObject: MutableKTEObject,
+    var paramValue: KTEValue?,
     val invocationEndPointer: Int
 ) : CodeGen {
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
         val placeholder = block.source.placeholderManager.getPlaceholder(placeholderName = placeholderName)
             ?: throw IllegalStateException("placeholder with name $placeholderName not found")
-        placeholder.setGenerationModel(generationObject)
-        placeholder.generateTo(destination)
+        placeholder.generateTo(generationObject, paramValue, destination)
         block.source.setPointerAt(invocationEndPointer)
     }
 }

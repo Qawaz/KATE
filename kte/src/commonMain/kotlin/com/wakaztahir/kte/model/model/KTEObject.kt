@@ -40,7 +40,7 @@ interface KTEObject : ReferencedValue {
     }
 
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
-        destination.write(this)
+        destination.write(block, this)
     }
 
     fun traverse(block: (KTEValue) -> Unit) {
