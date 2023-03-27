@@ -153,7 +153,7 @@ All elements in the list must be of a single type
 ### List Functions
 
 List supports the following properties and functions , You can use
-`@var(myList).size()` to get the size of the list
+`@var(myList.size())` to get the size of the list
 
 #### Immutable List Functions
 
