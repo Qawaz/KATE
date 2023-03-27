@@ -39,19 +39,16 @@ internal fun SourceStream.parseBooleanValue(): PrimitiveValue<*>? {
     return null
 }
 
-fun SourceStream.parsePrimitiveValue(): PrimitiveValue<*>? {
-
-    // Booleans
-    parseBooleanValue()?.let { return it }
-
-    // Floats & Ints
-    parseNumberValue()?.let { return it }
-
-    // Strings
-    parseStringValue()?.let { return it }
-
+internal fun SourceStream.parseCharacterValue(): CharValue? {
+    if (currentChar == '\'' && increment('\'')) {
+        val value = CharValue(currentChar)
+        incrementPointer()
+        if (!increment('\'')) {
+            throw IllegalStateException("a char ends with '")
+        }
+        return value
+    }
     return null
-
 }
 
 internal fun SourceStream.parseStringValue(): StringValue? {

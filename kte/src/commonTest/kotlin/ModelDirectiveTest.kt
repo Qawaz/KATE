@@ -18,6 +18,14 @@ class ModelDirectiveTest {
     }
 
     @Test
+    fun testStringIndexing(){
+        assertEquals("s", GenerateCode("@var myStr = \"0ishere\" @var(myStr[2])"))
+        assertEquals("s", GenerateCode("@model.myStr[2]", MutableKTEObject {
+            putValue("myStr","0ishere")
+        }))
+    }
+
+    @Test
     fun testObjectGeneration() {
         val context = TemplateContext("@model.MyObject")
         context.stream.model.apply {

@@ -1,6 +1,8 @@
 package com.wakaztahir.kte.model
 
+import com.wakaztahir.kte.model.implentation.StringImplementation
 import com.wakaztahir.kte.model.model.KTEObject
+import com.wakaztahir.kte.model.model.KTEValue
 import com.wakaztahir.kte.model.model.ReferencedValue
 import com.wakaztahir.kte.parser.ArithmeticOperatorType
 import com.wakaztahir.kte.parser.stream.DestinationStream
@@ -190,6 +192,10 @@ value class StringValue(override val value: String) : PrimitiveValue<String> {
         } else {
             -1
         }
+    }
+
+    override fun getModelReference(reference: ModelReference): KTEValue? {
+        return StringImplementation.propertyMap[reference.name]
     }
 
     override fun compareOther(other: PrimitiveValue<*>): Int {

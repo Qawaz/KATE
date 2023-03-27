@@ -17,6 +17,7 @@ internal fun SourceStream.parseVariableReference(): ModelDirective? {
         val variableName = parseTextWhile { currentChar.isModelDirectiveLetter() }
         if (variableName.isNotEmpty()) {
             propertyPath.add(ModelReference.Property(variableName))
+            parseIndexingOperatorCall(false)?.let { propertyPath.add(it) }
             if (!increment(')')) {
                 throw VariableReferenceParseException("expected ) got $currentChar")
             }

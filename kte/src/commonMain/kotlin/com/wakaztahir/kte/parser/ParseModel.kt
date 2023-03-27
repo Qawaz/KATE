@@ -30,6 +30,23 @@ internal fun SourceStream.parseFunctionParameters(): List<ReferencedValue>? {
 
 internal fun Char.isModelDirectiveLetter(): Boolean = this.isLetterOrDigit() || this == '_'
 
+internal fun SourceStream.parseIndexingOperatorCall(invokeOnly: Boolean): ModelReference.FunctionCall? {
+    if (increment('[')) {
+        val indexingValue = parseNumberReference()
+            ?: throw IllegalStateException("couldn't get indexing value inside indexing operator")
+        if (increment(']')) {
+            return ModelReference.FunctionCall(
+                name = "get",
+                invokeOnly = invokeOnly,
+                parametersList = listOf(indexingValue)
+            )
+        } else {
+            throw IllegalStateException("indexing operator must end with ']'")
+        }
+    }
+    return null
+}
+
 internal fun SourceStream.parseDotReferencesInto(propertyPath: MutableList<ModelReference>) {
     while (increment('.')) {
         var invokeOnly = false
@@ -49,6 +66,7 @@ internal fun SourceStream.parseDotReferencesInto(propertyPath: MutableList<Model
         } else {
             propertyPath.add(ModelReference.Property(propertyName))
         }
+        parseIndexingOperatorCall(invokeOnly)?.let { propertyPath.add(it) }
     }
 }
 

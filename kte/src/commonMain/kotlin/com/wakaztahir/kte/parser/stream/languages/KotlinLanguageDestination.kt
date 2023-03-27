@@ -26,9 +26,7 @@ class KotlinLanguageDestination(private val block: LazyBlock, override val strea
     }
 
     override fun write(value: CharValue) {
-        stream.write('\'')
         stream.write(value.value)
-        stream.write('\'')
     }
 
     override fun write(value: StringValue) {

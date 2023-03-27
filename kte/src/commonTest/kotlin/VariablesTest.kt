@@ -41,9 +41,20 @@ class VariablesTest {
     }
 
     @Test
-    fun testListDefinition(){
-        assertEquals("listOf(12, 55, 66, 77, 88, 99)",GenerateCode("@var myList = @list(12,55,66,77,88,99) @var(myList)"))
-        assertEquals("listOf(12, 55, 66, 77, 88, 99)",GenerateCode("@var myList = @mutable_list(12,55,66,77,88,99) @var(myList)"))
+    fun testListDefinition() {
+        assertEquals(
+            "listOf(12, 55, 66, 77, 88, 99)",
+            GenerateCode("@var myList = @list(12,55,66,77,88,99) @var(myList)")
+        )
+        assertEquals(
+            "listOf(12, 55, 66, 77, 88, 99)",
+            GenerateCode("@var myList = @mutable_list(12,55,66,77,88,99) @var(myList)")
+        )
+    }
+
+    @Test
+    fun testCharacter() {
+        assertEquals("x", GenerateCode("@var x = 'x' @var(x)"))
     }
 
     private fun evaluate(i: String, j: String, char: Char, expect: String) {
