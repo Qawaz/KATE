@@ -22,6 +22,15 @@ object DoubleImplementation {
 
             override fun toString(): String = "toString() : String"
         })
+        put("toInt", object : KTEFunction() {
+            override fun invoke(model: KTEObject, parameters: List<ReferencedValue>): KTEValue {
+                val intVal = invokedOn?.let { it as? DoubleValue }?.value
+                require(intVal != null) { "double value is null" }
+                return IntValue(intVal.toInt())
+            }
+
+            override fun toString(): String = "toInt() : Int"
+        })
     }
 
 }

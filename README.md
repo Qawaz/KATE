@@ -157,11 +157,12 @@ List supports the following properties and functions , You can use
 
 #### Immutable List Functions
 
-| Value                           | Description                    |
-|---------------------------------|--------------------------------|
-| size() : Int                    | Returns the size of the list   |
-| get(index : Int) : Element      | Returns the element at index   |
-| contains(e : Element) : Boolean | Returns true if element exists |
+| Value                           | Description                                |
+|---------------------------------|--------------------------------------------|
+| size() : Int                    | Returns the size of the list               |
+| get(index : Int) : Element      | Returns the element at index               |
+| contains(e : Element) : Boolean | Returns true if element exists             |
+| indexOf(e : Element) : Int      | Returns index of element (-1 if not found) |
 
 #### Mutable List Functions
 
@@ -211,8 +212,9 @@ An integer can be defined like this `@var i = 0`
 | Function             | Description                     |
 |----------------------|---------------------------------|
 | `@var(i.toString())` | converts this integer to string |
+| `@var(i.toDouble())` | converts this integer to double |
 
-Same function is available on a `Double`
+Similar functions are available on a `Double`
 
 ## Placeholders
 

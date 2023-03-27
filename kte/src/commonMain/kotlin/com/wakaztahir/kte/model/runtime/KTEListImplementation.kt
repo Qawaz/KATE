@@ -35,7 +35,19 @@ object KTEListImplementation {
             override fun invoke(model: KTEObject, parameters: List<ReferencedValue>): KTEValue {
                 return BooleanValue(invokedOn!!.asNullableList(model)!!.collection.containsAll(parameters))
             }
+
             override fun toString(): String = "contains(parameter) : Boolean"
+
+        })
+        put("indexOf", object : KTEFunction() {
+            override fun invoke(model: KTEObject, parameters: List<ReferencedValue>): KTEValue {
+                require(parameters.size == 1) {
+                    "indexOf requires a single parameter"
+                }
+                return IntValue(invokedOn!!.asNullableList(model)!!.collection.indexOf(parameters[0]))
+            }
+
+            override fun toString(): String = "indexOf(parameter) : Int"
 
         })
     }
