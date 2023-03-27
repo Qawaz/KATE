@@ -1,5 +1,7 @@
-package com.wakaztahir.kte.model
+package com.wakaztahir.kte.model.model
 
+import com.wakaztahir.kte.model.CodeGen
+import com.wakaztahir.kte.model.PrimitiveValue
 import com.wakaztahir.kte.model.model.*
 
 interface ReferencedValue : KTEValue, CodeGen {

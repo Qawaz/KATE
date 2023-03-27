@@ -1,10 +1,9 @@
 package com.wakaztahir.kte.parser
 
 import com.wakaztahir.kte.model.LazyBlock
-import com.wakaztahir.kte.model.ReferencedValue
 import com.wakaztahir.kte.model.model.KTEListImpl
 import com.wakaztahir.kte.model.model.KTEMutableListImpl
-import com.wakaztahir.kte.model.model.KTEValue
+import com.wakaztahir.kte.model.model.ReferencedValue
 import com.wakaztahir.kte.parser.stream.increment
 
 private fun LazyBlock.parseListParameters(list: MutableList<ReferencedValue> = mutableListOf()): MutableList<ReferencedValue> {
@@ -23,17 +22,10 @@ private fun LazyBlock.parseListParameters(list: MutableList<ReferencedValue> = m
     }
 }
 
-private class ListAsReferencedValue<T : KTEValue>(objectName: String, collection: List<T>) :
-    KTEListImpl<T>(objectName = objectName, collection = collection), ReferencedValue
-
-private class MutableListAsReferencedValue<T : KTEValue>(objectName: String, collection: MutableList<T>) :
-    KTEMutableListImpl<T>(objectName = objectName, collection = collection), ReferencedValue
-
-
 fun LazyBlock.parseListDefinition(): ReferencedValue? {
     if (source.currentChar == '@' && source.increment("@list(")) {
         val parameters = parseListParameters()
-        return ListAsReferencedValue(objectName = "", parameters.toList())
+        return KTEListImpl(objectName = "", parameters.toList())
     }
     return null
 }
@@ -41,7 +33,7 @@ fun LazyBlock.parseListDefinition(): ReferencedValue? {
 fun LazyBlock.parseMutableListDefinition(): ReferencedValue? {
     if (source.currentChar == '@' && source.increment("@mutable_list(")) {
         val parameters = parseListParameters()
-        return MutableListAsReferencedValue(objectName = "", parameters)
+        return KTEMutableListImpl(objectName = "", parameters)
     }
     return null
 }

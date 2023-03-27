@@ -3,7 +3,7 @@ package com.wakaztahir.kte.model.model
 import com.wakaztahir.kte.model.*
 import com.wakaztahir.kte.parser.stream.DestinationStream
 
-interface KTEObject : KTEValue {
+interface KTEObject : ReferencedValue {
 
     val objectName: String
     val contained: Map<String, KTEValue>

@@ -3,7 +3,7 @@ package com.wakaztahir.kte.model.model
 import com.wakaztahir.kte.model.LazyBlock
 import com.wakaztahir.kte.parser.stream.DestinationStream
 
-object KTEUnit : KTEValue {
+object KTEUnit : ReferencedValue {
 
     override fun stringValue(indentationLevel: Int): String {
         return "KTEUnit"

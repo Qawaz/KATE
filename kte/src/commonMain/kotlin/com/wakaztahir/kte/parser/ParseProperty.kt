@@ -3,6 +3,7 @@ package com.wakaztahir.kte.parser
 import com.wakaztahir.kte.model.*
 import com.wakaztahir.kte.model.model.KTEObject
 import com.wakaztahir.kte.model.model.KTEValue
+import com.wakaztahir.kte.model.model.ReferencedValue
 import com.wakaztahir.kte.parser.stream.DestinationStream
 import com.wakaztahir.kte.parser.stream.SourceStream
 

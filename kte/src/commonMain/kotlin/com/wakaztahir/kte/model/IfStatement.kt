@@ -2,6 +2,7 @@ package com.wakaztahir.kte.model
 
 import com.wakaztahir.kte.TemplateContext
 import com.wakaztahir.kte.model.model.KTEObject
+import com.wakaztahir.kte.model.model.ReferencedValue
 import com.wakaztahir.kte.parser.stream.DestinationStream
 
 

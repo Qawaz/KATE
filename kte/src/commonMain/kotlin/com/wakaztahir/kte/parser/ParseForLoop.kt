@@ -4,7 +4,7 @@ import com.wakaztahir.kte.dsl.ScopedModelObject
 import com.wakaztahir.kte.model.model.MutableKTEObject
 import com.wakaztahir.kte.model.*
 import com.wakaztahir.kte.model.ConditionType
-import com.wakaztahir.kte.model.ReferencedValue
+import com.wakaztahir.kte.model.model.ReferencedValue
 import com.wakaztahir.kte.model.model.KTEObject
 import com.wakaztahir.kte.model.model.KTEValue
 import com.wakaztahir.kte.parser.stream.*
