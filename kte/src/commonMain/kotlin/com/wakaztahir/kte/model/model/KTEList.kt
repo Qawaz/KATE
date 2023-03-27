@@ -4,6 +4,7 @@ import com.wakaztahir.kte.model.*
 import com.wakaztahir.kte.model.runtime.KTEListImplementation
 import com.wakaztahir.kte.model.runtime.KTEMutableListImplementation
 import com.wakaztahir.kte.parser.stream.DestinationStream
+import kotlin.jvm.JvmInline
 
 interface KTEList<T : KTEValue> : ReferencedValue {
     val collection: List<T>
@@ -13,7 +14,8 @@ interface KTEMutableList<T : KTEValue> : KTEList<T> {
     override val collection: MutableList<T>
 }
 
-open class KTEListImpl<T : KTEValue>(override val collection: List<T>) : List<T> by collection, KTEList<T> {
+@JvmInline
+value class KTEListImpl<T : KTEValue>(override val collection: List<T>) : KTEList<T> {
 
     override fun getModelReference(reference: ModelReference): KTEValue? {
         if (reference is ModelReference.FunctionCall) {
@@ -37,8 +39,8 @@ open class KTEListImpl<T : KTEValue>(override val collection: List<T>) : List<T>
 
 }
 
-open class KTEMutableListImpl<T : KTEValue>(override val collection: MutableList<T>) : KTEMutableList<T>,
-    KTEListImpl<T>(collection = collection) {
+@JvmInline
+value class KTEMutableListImpl<T : KTEValue>(override val collection: MutableList<T>) : KTEMutableList<T> {
 
     override fun getModelReference(reference: ModelReference): KTEValue? {
         if (reference is ModelReference.FunctionCall) {
@@ -47,5 +49,18 @@ open class KTEMutableListImpl<T : KTEValue>(override val collection: MutableList
             throw IllegalStateException("${reference.name} is not a property on list")
         }
     }
+
+    override fun generateTo(block: LazyBlock, destination: DestinationStream) {
+        destination.write(block, this)
+    }
+
+    override fun toString(): String {
+        return stringValue(0)
+    }
+
+    override fun stringValue(indentationLevel: Int): String {
+        return "${indentation(indentationLevel)}[" + collection.joinToString("\n") { it.stringValue(indentationLevel + 1) } + "]"
+    }
+
 
 }

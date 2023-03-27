@@ -177,7 +177,7 @@ Mutable List also has functions of Immutable List
 
 ## Objects
 
-An object can be created to hold variables of different types , An object block only expects variable declarations
+An object can be created to hold variables of different types , An object block only expects variable / function declarations
 
 ```
 @define_object(MyObject)
