@@ -2,6 +2,7 @@ import com.wakaztahir.kte.GenerateCode
 import com.wakaztahir.kte.TemplateContext
 import com.wakaztahir.kte.model.StringValue
 import com.wakaztahir.kte.model.asPrimitive
+import com.wakaztahir.kte.model.model.MutableKTEObject
 import com.wakaztahir.kte.parser.parseVariableDeclaration
 import com.wakaztahir.kte.parser.parseVariableReference
 import com.wakaztahir.kte.parser.parseExpression
@@ -21,6 +22,16 @@ class VariablesTest {
         assertEquals(ref!!.propertyPath[0].name, "myVar")
         context.stream.model.putValue("myVar", StringValue("someValue"))
         assertEquals("someValue", ref.asPrimitive(context.stream.model).value)
+    }
+
+    @Test
+    fun testThisObjectReference() {
+        assertEquals(
+            expected = """data class Global(
+	                    |	var1 : String = "test"
+                        |)""".trimMargin(),
+            actual = GenerateCode("@var(this)", MutableKTEObject { putValue("var1", "test") })
+        )
     }
 
     @Test

@@ -6,10 +6,6 @@
 | Write To Stream / Text  | &check;   |
 | Easy , Fast & Tested    | &check;   |
 
-## Input
-
-`Model = Any Data Structure That Implements Template Model`
-
 ## Comments
 
 `<%-- This won't go in the output --%>`
@@ -36,6 +32,7 @@ The value of the variable can only be one of these
 
 | Value                               | Supported |
 |-------------------------------------|-----------|
+| Char ('a')                          | &check;   |
 | String ("HelloWorld")               | &check;   |
 | Integer (12345)                     | &check;   |
 | Double (1.0)                        | &check;   |
@@ -44,7 +41,6 @@ The value of the variable can only be one of these
 | [Expressions](#expressions)         | &check;   |
 | Value Returned from a function call | &check;   |
 | List Element                        | &check;   |
-| A model's property                  | &check;   |
 
 ## References & Function Calls
 
@@ -57,6 +53,10 @@ The value of the variable can only be one of these
 Invoking a function without outputting its returned value
 
 `@var(@function())`
+
+To access the object of current scope , You can do
+
+`@var(this)`
 
 ## Expressions
 
@@ -218,10 +218,7 @@ To invoke / call a placeholder You use `@placeholder` with Placeholder name as t
 @placeholder(WelcomeText)
 ```
 
-Placeholders are like functions in template engines , But they don't have parameters instead they
-have something more powerful which is that they inherit scope of invocation directive
-
-Because of this, this code is possible
+Placeholders inherit scope of invocation directive , Because of this, this code is possible
 
 ```
 @define_placeholder(Varible)
@@ -234,8 +231,8 @@ Because of this, this code is possible
 ```
 
 This means that placeholder block inherits the scope of invocation directive , so any
-variables / lists / objects created inside the placeholder will be
-accessible in the scope of where invocation `@placeholder` took place
+variables / lists / objects that are in the scope of invocation will be
+accessible inside the placeholder definition
 
 You can also provide an object whose variables will be in the scope of placeholder
 
@@ -250,6 +247,9 @@ You can also provide an object whose variables will be in the scope of placehold
 Now welcome text can make a reference to `myVar` and it will be able to access it
 
 If placeholder creates any variables , They'll be present in `MyObject` after the invocation
+
+Values provided to placeholder can be accessed using `@var(this)` , Values other than objects can
+be accessed this way inside the placeholder
 
 ### Redefinition
 
@@ -273,3 +273,12 @@ If the definition name of the placeholder is same as Placeholder Name , You can 
 the definition name when calling `@use_placeholder`
 
 Now when you invoke / call the placeholder , `GreetingText` will be used again , instead of `NewsText`
+
+### Runtime Directives
+
+Runtime directives call functions in the runtime , Currently these directives are available
+
+| Directive                        | Description                    |
+|----------------------------------|--------------------------------|
+| `@runtime.print_char('x')`       | Prints the character to output |
+| `@runtime.print_string("hello")` | Prints the string to output    |

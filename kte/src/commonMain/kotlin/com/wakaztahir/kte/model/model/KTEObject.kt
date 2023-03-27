@@ -21,17 +21,17 @@ interface KTEObject : ReferencedValue {
                         func.invokeOnly = prop.invokeOnly
                         currentVal = func
                     } ?: run {
-                        throw UnresolvedValueException(
-                            "function ${directive.pathUntil(prop)} does not exist"
-                        )
+                        throw UnresolvedValueException("function ${directive.pathUntil(prop)} does not exist")
                     }
                 }
 
                 is ModelReference.Property -> {
                     currentVal = currentVal.getModelReference(prop) ?: run {
-                        throw UnresolvedValueException(
-                            "property ${directive.pathUntil(prop)} does not exist"
-                        )
+                        if (directive.propertyPath.size == 1 && prop.name == "this") {
+                            currentVal
+                        } else {
+                            throw UnresolvedValueException("property ${directive.pathUntil(prop)} does not exist")
+                        }
                     }
                 }
             }
