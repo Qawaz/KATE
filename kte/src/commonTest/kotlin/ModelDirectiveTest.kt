@@ -3,7 +3,7 @@ import com.wakaztahir.kte.TemplateContext
 import com.wakaztahir.kte.model.*
 import com.wakaztahir.kte.model.model.*
 import com.wakaztahir.kte.parser.parseExpression
-import com.wakaztahir.kte.parser.parseModelDirective
+import com.wakaztahir.kte.parser.parseVariableReference
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -12,23 +12,19 @@ class ModelDirectiveTest {
 
     private inline fun TemplateContext.testDirective(block: (ModelDirective) -> Unit) {
         val previous = stream.pointer
-        block(stream.parseExpression() as ModelDirective)
-        stream.decrementPointer(stream.pointer - previous)
-        block(stream.parseModelDirective()!!)
+        block(stream.parseVariableReference()!!)
+        stream.setPointerAt(previous)
     }
 
     @Test
     fun testStringFunctions(){
         assertEquals("s", GenerateCode("@var myStr = \"0ishere\" @var(myStr[2])"))
-        assertEquals("s", GenerateCode("@model.myStr[2]", MutableKTEObject {
-            putValue("myStr","0ishere")
-        }))
-        assertEquals("5", GenerateCode("@var myStr = \"hello\" @var(myStr).size()"))
+        assertEquals("5", GenerateCode("@var myStr = \"hello\" @var(myStr.size())"))
     }
 
     @Test
     fun testObjectGeneration() {
-        val context = TemplateContext("@model.MyObject")
+        val context = TemplateContext("@var(MyObject)")
         context.stream.model.apply {
             this.putObject("MyObject") {
                 this.putValue("myInt", 15)
@@ -64,7 +60,7 @@ class ModelDirectiveTest {
 
     @Test
     fun testParseModelDirective() {
-        val context = TemplateContext("@model.firstProp.secondProp.thirdCall().fourthProp.fifthProp(true,false)")
+        val context = TemplateContext("@var(firstProp.secondProp.thirdCall().fourthProp.fifthProp(true,false))")
         context.testDirective { directive ->
             assertEquals("firstProp", directive.propertyPath[0].name)
             assertEquals("secondProp", directive.propertyPath[1].name)
@@ -79,14 +75,14 @@ class ModelDirectiveTest {
 
     @Test
     fun testModelFunctionCallWithParameters() {
-        val context = TemplateContext(text = "@model.callSum(1,2)")
-        val directive = context.stream.parseModelDirective()!!
+        val context = TemplateContext(text = "@var(callSum(1,2))")
+        val directive = context.stream.parseVariableReference()!!
         assertTrue(directive.propertyPath[0] is ModelReference.FunctionCall)
     }
 
     @Test
     fun testForLoopGeneration6() {
-        val context = TemplateContext("@model.arithmetic.funName@var(arithmetic).funName", MutableKTEObject {
+        val context = TemplateContext("@var(arithmetic.funName)@var(arithmetic.funName)", MutableKTEObject {
             putObject("arithmetic") {
                 putValue("funName", "seriouslyHere")
             }
@@ -105,7 +101,7 @@ class ModelDirectiveTest {
 
             override fun toString(): String = "funName()"
         }
-        val context = TemplateContext("@model.funName()@model.@@propName()@model.@funName()", MutableKTEObject {
+        val context = TemplateContext("@var(funName())@var(@propName)()@var(@funName())", MutableKTEObject {
             putValue("funName", myFunc)
             putValue("propName", "propVal")
         })
@@ -128,8 +124,8 @@ class ModelDirectiveTest {
                 override fun toString(): String = "callSum(integers) : Int"
             })
         }
-        assertEquals("true1233", GenerateCode("@model.property1@model.property2.property3@model.callSum(1,2)", model))
-        assertEquals("3", GenerateCode("@var sum = @model.callSum(1,2) @var(sum)", model))
+        assertEquals("true1233", GenerateCode("@var(property1)@var(property2.property3)@var(callSum(1,2))", model))
+        assertEquals("3", GenerateCode("@var sum = @var(callSum(1,2)) @var(sum)", model))
     }
 
 }

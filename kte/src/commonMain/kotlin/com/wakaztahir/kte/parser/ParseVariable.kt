@@ -7,31 +7,6 @@ import com.wakaztahir.kte.parser.stream.*
 import com.wakaztahir.kte.parser.stream.increment
 import com.wakaztahir.kte.parser.stream.unexpected
 
-//-------------- Reference
-
-class VariableReferenceParseException(message: String) : Exception(message)
-
-internal fun SourceStream.parseVariableReference(): ModelDirective? {
-    if (currentChar == '@' && increment("@var(")) {
-        val propertyPath = mutableListOf<ModelReference>()
-        val variableName = parseTextWhile { currentChar.isModelDirectiveLetter() }
-        if (variableName.isNotEmpty()) {
-            propertyPath.add(ModelReference.Property(variableName))
-            parseIndexingOperatorCall(false)?.let { propertyPath.add(it) }
-            if (!increment(')')) {
-                throw VariableReferenceParseException("expected ) got $currentChar")
-            }
-        } else {
-            throw VariableReferenceParseException("@var( variable name is empty")
-        }
-        parseDotReferencesInto(propertyPath)
-        return ModelDirective(propertyPath)
-    }
-    return null
-}
-
-//-------------- Declaration
-
 internal data class VariableDeclaration(val variableName: String, val variableValue: ReferencedValue) : AtDirective {
 
     override val isEmptyWriter: Boolean

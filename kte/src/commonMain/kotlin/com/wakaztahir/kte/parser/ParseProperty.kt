@@ -9,14 +9,12 @@ import com.wakaztahir.kte.parser.stream.SourceStream
 
 internal fun SourceStream.parseNumberReference(): ReferencedValue? {
     parseVariableReference()?.let { return it }
-    parseModelDirective()?.let { return it }
     parseNumberValue()?.let { return it }
     return null
 }
 
 internal fun SourceStream.parseReferencedValue(): ReferencedValue? {
     parseVariableReference()?.let { return it }
-    parseModelDirective()?.let { return it }
     parseListDefinition()?.let { return it }
     parseMutableListDefinition()?.let { return it }
     return null

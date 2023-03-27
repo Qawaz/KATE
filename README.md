@@ -50,17 +50,13 @@ The value of the variable can only be one of these
 
 `@var(variableName)` to get value of the variable defined earlier
 
-`@model.property` To get a property from the model
+`@var(property)` To get a property from the model
 
-`@model.function(value1,value2)` To call a function in the model
+`@var(function(value1,value2))` To call a function in the model
 
 Invoking a function without outputting its returned value
 
-`@model.@function()`
-
-Explicit property , so compiler won't think it's a function name
-
-`@model.@@property()` in this case '(' and ')' will be outputted
+`@var(@function())`
 
 ## Expressions
 

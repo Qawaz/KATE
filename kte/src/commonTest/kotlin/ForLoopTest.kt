@@ -23,13 +23,13 @@ class ForLoopTest {
 
     @Test
     fun parseForLoopIterable() {
-        val context = TemplateContext("@for(@var listName : @model.mList) blockValue @endfor")
+        val context = TemplateContext("@for(@var listName : @var(mList)) blockValue @endfor")
         var loop = context.stream.parseForLoop()!! as ForLoop.IterableFor
         assertEquals("listName", loop.elementConstName)
         assertEquals(null, loop.indexConstName)
         assertEquals("blockValue", loop.blockValue.getValueAsString())
         assertEquals("mList", (loop.listProperty as ModelDirective).propertyPath[0].name)
-        context.updateStream("@for(@var listName,indexName : @model.list) blockValue @endfor")
+        context.updateStream("@for(@var listName,indexName : @var(list)) blockValue @endfor")
         loop = context.stream.parseForLoop()!! as ForLoop.IterableFor
         assertEquals("indexName", loop.indexConstName)
     }
@@ -102,7 +102,7 @@ class ForLoopTest {
 
     @Test
     fun testForLoopGeneration4() {
-        val context = TemplateContext("@for(@var elem : @model.list) @var(elem) @endfor", MutableKTEObject {
+        val context = TemplateContext("@for(@var elem : @var(list)) @var(elem) @endfor", MutableKTEObject {
             putValue("list", KTEListImpl(listOf("H", "e", "ll", "o").map { StringValue(it) }))
         })
         assertEquals("Hello", context.getDestinationAsString())
@@ -114,7 +114,7 @@ class ForLoopTest {
             putValue("list", KTEListImpl(listOf("H", "e", "ll", "o").map { StringValue(it) }))
         }
         val context = TemplateContext(
-            "@model.list.size()@model.list.get(2)@model.list.contains(\"ll\")@model.list.contains(\"v\")",
+            "@var(list.size())@var(list.get(2))@var(list.contains(\"ll\"))@var(list.contains(\"v\"))",
             kteObject
         )
         assertEquals("4lltruefalse", context.getDestinationAsString())

@@ -14,7 +14,7 @@ class ObjectTest {
         )
         assertEquals(
             expected = "5",
-            actual = GenerateCode("@var another = 5 @define_object(MyObject) @var myVar = @var(another) @end_define_object @var(MyObject).myVar")
+            actual = GenerateCode("@var another = 5 @define_object(MyObject) @var myVar = @var(another) @end_define_object @var(MyObject.myVar)")
         )
     }
 

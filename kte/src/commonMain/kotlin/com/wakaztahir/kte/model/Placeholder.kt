@@ -52,13 +52,13 @@ class PlaceholderBlock(
             "Generation Model should be set using setGenerationModel before calling generateTo"
         }
         if (paramValue != null) {
-            require(!model.contains("param")) {
-                "when passing @var(param) value to placeholder invocation , defining value with same name \"param\" is not allowed"
+            require(!model.contains("this")) {
+                "when passing @var(this) value to placeholder invocation , defining value with same name \"this\" is not allowed"
             }
-            model.putValue("param", paramValue!!)
+            model.putValue("this", paramValue!!)
         }
         super.generateTo(destination)
-        model.removeKey("param")
+        model.removeKey("this")
         this.isGenerationModelSet = false
     }
 
