@@ -86,6 +86,10 @@ class VariablesTest {
             "listOf(12, 55, 66, 77, 88, 99)",
             GenerateCode("@var myList = @mutable_list(12,55,66,77,88,99) @var(myList)")
         )
+        assertEquals(
+            "66",
+            GenerateCode("@var myList = @mutable_list(12,55,66,77,88,99) @var(myList[2])")
+        )
     }
 
     @Test
