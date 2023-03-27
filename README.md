@@ -32,11 +32,11 @@ The value of the variable can only be one of these
 
 | Value                                                      | Supported |
 |------------------------------------------------------------|-----------|
-| [Primitives](#primitives) (Char,String,Int,Double,Boolean) | &check;   |
+| [Primitives (Char,String,Int,Double,Boolean)](#primitives) | &check;   |
 | Reference to another variable                              | &check;   |
 | [Expressions](#expressions)                                | &check;   |
 | Value Returned from a function call                        | &check;   |
-| List Element                                               | &check;   |
+| [List or Its element](#lists)                              | &check;   |
 
 ## References & Function Calls
 
@@ -177,7 +177,8 @@ Mutable List also has functions of Immutable List
 
 ## Objects
 
-An object can be created to hold variables of different types , An object block only expects variable / function declarations
+An object can be created to hold variables of different types , An object block only expects variable / function
+declarations
 
 ```
 @define_object(MyObject)
@@ -198,12 +199,19 @@ A string can be defined like this
 
 Here's a table of functions available
 
-| Function               | Description                                  |
-|------------------------|----------------------------------------------|
-| `@var(str.size())`     | Returns the size as an int                   |
-| `@var(str[0])`         | Equivalent to .get(0) returns first char     |
-| `@var(str.toInt())`    | Tries to convert to int , or returns Unit    |
-| `@var(str.toDouble())` | Tries to convert to double , or returns Unit |
+| Function                   | Description                                             |
+|----------------------------|---------------------------------------------------------|
+| `@var(str.size())`         | Returns the size as an int                              |
+| `@var(str[0])`             | Equivalent to .get(0) returns first char                |
+| `@var(str.toInt())`        | Tries to convert to int , or returns Unit               |
+| `@var(str.toDouble())`     | Tries to convert to double , or returns Unit            |
+| `@var(str.substring(0,5))` | Returns a substring from 0 (inclusive) to 5 (exclusive) |
+| `@var(str.uppercase())`    | Convert the whole string to uppercase                   |
+| `@var(str.lowercase())`    | Convert the whole string to lowercase                   |
+| `@var(str.capitalize())`   | Capitalize the first character                          |
+| `@var(str.decapitalize())` | Decapitalize the first character                        |
+| `@var(str.replace("",""))` | Replace the string's with other                         |
+| `@var(str.contains(""))`   | Returns true if contains the string                     |
 
 ### Integers
 
@@ -303,7 +311,7 @@ the definition name when calling `@use_placeholder`
 
 Now when you invoke / call the placeholder , `GreetingText` will be used again , instead of `NewsText`
 
-### Runtime Directives
+## Runtime Directives
 
 Runtime directives call functions in the runtime , Currently these directives are available
 
@@ -311,3 +319,37 @@ Runtime directives call functions in the runtime , Currently these directives ar
 |----------------------------------|--------------------------------|
 | `@runtime.print_char('x')`       | Prints the character to output |
 | `@runtime.print_string("hello")` | Prints the string to output    |
+
+## Delete Directive
+
+`@delete_var(myVar)` deletes any value , This can remove objects / lists / primitives and functions from the object
+
+## Function Definition
+
+To define a function
+
+```
+@function
+@return 1
+@end_function
+```
+
+Parameters are available in a function definition using `@var(this)` which is a list of parameters
+
+```
+@function
+@return @var(this[0])
+@end_function
+```
+
+The code above returns the first parameter passed to the function using indexing operator which translates to `get(0)`
+
+#### Keep in mind
+
+When defining a function following rules apply
+
+- in `@default_no_raw` or `@partial_raw` Any variable reference `@var(i)` outputs automatically , In functions however ,
+  that's not the behavior , You can only return a value
+- Nothing is outputted directly like `@partial_raw` , explicit output is required using `@runtime.print_char`
+  and `@runtime.print_string`
+- Function must return something , `@return @Unit` can be used if there is nothing to return
