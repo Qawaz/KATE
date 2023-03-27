@@ -1,12 +1,10 @@
 package com.wakaztahir.kte.model.runtime
 
 import com.wakaztahir.kte.model.CharValue
+import com.wakaztahir.kte.model.DoubleValue
 import com.wakaztahir.kte.model.IntValue
 import com.wakaztahir.kte.model.StringValue
-import com.wakaztahir.kte.model.model.KTEFunction
-import com.wakaztahir.kte.model.model.KTEObject
-import com.wakaztahir.kte.model.model.KTEValue
-import com.wakaztahir.kte.model.model.ReferencedValue
+import com.wakaztahir.kte.model.model.*
 
 object StringImplementation {
 
@@ -32,6 +30,24 @@ object StringImplementation {
             }
 
             override fun toString(): String = "size() : Int"
+        })
+        put("toInt", object : KTEFunction() {
+            override fun invoke(model: KTEObject, parameters: List<ReferencedValue>): KTEValue {
+                val string = invokedOn?.let { it as? StringValue }?.value
+                require(string != null) { "string value is null" }
+                return string.toIntOrNull()?.let { IntValue(it) } ?: KTEUnit
+            }
+
+            override fun toString(): String = "toInt() : Int"
+        })
+        put("toDouble", object : KTEFunction() {
+            override fun invoke(model: KTEObject, parameters: List<ReferencedValue>): KTEValue {
+                val string = invokedOn?.let { it as? StringValue }?.value
+                require(string != null) { "string value is null" }
+                return string.toDoubleOrNull()?.let { DoubleValue(it) } ?: KTEUnit
+            }
+
+            override fun toString(): String = "toDouble() : Double"
         })
     }
 

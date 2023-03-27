@@ -1,8 +1,9 @@
 import com.wakaztahir.kte.GenerateCode
 import com.wakaztahir.kte.TemplateContext
+import com.wakaztahir.kte.model.IntValue
 import com.wakaztahir.kte.model.StringValue
 import com.wakaztahir.kte.model.asPrimitive
-import com.wakaztahir.kte.model.model.MutableKTEObject
+import com.wakaztahir.kte.model.model.*
 import com.wakaztahir.kte.parser.parseVariableDeclaration
 import com.wakaztahir.kte.parser.parseVariableReference
 import com.wakaztahir.kte.parser.parseExpression
@@ -25,6 +26,22 @@ class VariablesTest {
     }
 
     @Test
+    fun testFunctionValue() {
+        assertEquals(
+            expected = "10",
+            actual = GenerateCode("@var i = @var(myFunc()) @var(i)", MutableKTEObject {
+                putValue("myFunc", object : KTEFunction() {
+                    override fun invoke(model: KTEObject, parameters: List<ReferencedValue>): KTEValue {
+                        return IntValue(10)
+                    }
+
+                    override fun toString(): String = "myFunc() : Int"
+                })
+            })
+        )
+    }
+
+    @Test
     fun testThisObjectReference() {
         assertEquals(
             expected = """data class Global(
@@ -41,6 +58,14 @@ class VariablesTest {
         assertNotEquals(null, ref)
         assertEquals("myVar", ref!!.variableName)
         assertEquals("someValue", ref.variableValue.asPrimitive(context.stream.model).value)
+    }
+
+    @Test
+    fun testStringConversions(){
+        assertEquals("123",GenerateCode("@var x = \"123\" @var(x.toInt())"))
+        assertEquals("123.0",GenerateCode("@var x = \"123\" @var(x.toDouble())"))
+        assertEquals("",GenerateCode("@var x = \"abc\" @var(x.toInt())"))
+        assertEquals("123",GenerateCode("@var x = \"123\" @var(x.toInt().toString())"))
     }
 
     @Test

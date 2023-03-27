@@ -30,29 +30,21 @@ To reassign the variable to a different value , same expression is used
 
 The value of the variable can only be one of these
 
-| Value                               | Supported |
-|-------------------------------------|-----------|
-| Char ('a')                          | &check;   |
-| String ("HelloWorld")               | &check;   |
-| Integer (12345)                     | &check;   |
-| Double (1.0)                        | &check;   |
-| Boolean (true,false)                | &check;   |
-| Another Variable's Value            | &check;   |
-| [Expressions](#expressions)         | &check;   |
-| Value Returned from a function call | &check;   |
-| List Element                        | &check;   |
+| Value                                                      | Supported |
+|------------------------------------------------------------|-----------|
+| [Primitives](#primitives) (Char,String,Int,Double,Boolean) | &check;   |
+| Reference to another variable                              | &check;   |
+| [Expressions](#expressions)                                | &check;   |
+| Value Returned from a function call                        | &check;   |
+| List Element                                               | &check;   |
 
 ## References & Function Calls
 
 `@var(variableName)` to get value of the variable defined earlier
 
-`@var(property)` To get a property from the model
+To assign to another variable
 
-`@var(function(value1,value2))` To call a function in the model
-
-Invoking a function without outputting its returned value
-
-`@var(@function())`
+`@var i = @var(j)`
 
 To access the object of current scope , You can do
 
@@ -72,7 +64,7 @@ You can use variables in expressions
 
 > Brackets not supported at the moment
 
-## Conditional Rendering
+## Conditional Output
 
 `@if(condition) @elseif(condition) @else @endif`
 
@@ -186,6 +178,33 @@ An object can be created to hold variables of different types , An object block 
 ```
 
 And then objects can be referenced just like any other variable `@var(MyObject)`
+
+## Primitives
+
+### Strings
+
+A string can be defined like this
+
+`@var str = "my string"`
+
+Here's a table of functions available
+
+| Function               | Description                                  |
+|------------------------|----------------------------------------------|
+| `@var(str.size())`     | Returns the size as an int                   |
+| `@var(str[0])`         | Equivalent to .get(0) returns first char     |
+| `@var(str.toInt())`    | Tries to convert to int , or returns Unit    |
+| `@var(str.toDouble())` | Tries to convert to double , or returns Unit |
+
+### Integers
+
+An integer can be defined like this `@var i = 0`
+
+| Function             | Description                     |
+|----------------------|---------------------------------|
+| `@var(i.toString())` | converts this integer to string |
+
+Same function is available on a `Double`
 
 ## Placeholders
 

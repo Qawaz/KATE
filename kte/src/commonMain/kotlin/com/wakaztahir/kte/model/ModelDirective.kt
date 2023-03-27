@@ -41,13 +41,7 @@ class ModelDirective(val propertyPath: List<ModelReference>) : ReferencedValue, 
     }
 
     override fun getKTEValue(model: KTEObject): KTEValue {
-        return model.getModelDirectiveValue(this).let {
-            if (it is KTEFunction) {
-                it.getKTEValue(model)
-            } else {
-                it
-            }
-        }
+        return model.getModelDirectiveValue(model, this)
     }
 
     override fun toString(): String = propertyPath.joinToString(".")
