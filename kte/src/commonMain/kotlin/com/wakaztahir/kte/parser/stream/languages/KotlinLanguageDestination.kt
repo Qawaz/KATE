@@ -37,7 +37,7 @@ class KotlinLanguageDestination(private val block: LazyBlock, override val strea
         }
     }
 
-    override fun writeList(value: KTEList<out KTEValue>) {
+    override fun write(value: KTEList<out KTEValue>) {
         stream.write("listOf(")
         var isFirst = true
         for (single in value.collection) {

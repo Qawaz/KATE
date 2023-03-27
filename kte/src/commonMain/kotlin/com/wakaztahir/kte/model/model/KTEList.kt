@@ -24,7 +24,7 @@ open class KTEListImpl<T : KTEValue>(override val collection: List<T>) : List<T>
     }
 
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
-        destination.writeList(this)
+        destination.write(this)
     }
 
     override fun toString(): String {

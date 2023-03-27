@@ -14,7 +14,7 @@ interface LanguageDestination {
     fun write(value: DoubleValue)
     fun write(value: BooleanValue)
     fun write(value: StringValue)
-    fun writeList(value: KTEList<out KTEValue>)
+    fun write(value: KTEList<out KTEValue>)
     fun write(value: KTEObject)
 
 }
