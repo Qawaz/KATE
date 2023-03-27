@@ -16,6 +16,8 @@ internal fun SourceStream.parseNumberReference(): ReferencedValue? {
 internal fun SourceStream.parseReferencedValue(): ReferencedValue? {
     parseVariableReference()?.let { return it }
     parseModelDirective()?.let { return it }
+    parseListDefinition()?.let { return it }
+    parseMutableListDefinition()?.let { return it }
     return null
 }
 

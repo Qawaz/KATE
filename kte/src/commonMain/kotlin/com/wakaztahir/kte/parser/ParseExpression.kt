@@ -300,5 +300,7 @@ internal fun SourceStream.parseAnyExpressionOrValue(): ReferencedValue? {
     parseExpression()?.let { return it }
     parseBooleanValue()?.let { return it }
     parseStringValue()?.let { return it }
+    parseListDefinition()?.let { return it }
+    parseMutableListDefinition()?.let { return it }
     return null
 }

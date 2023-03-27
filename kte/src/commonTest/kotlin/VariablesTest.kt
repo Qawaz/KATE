@@ -40,6 +40,12 @@ class VariablesTest {
         assertEquals(text.length, context.stream.pointer)
     }
 
+    @Test
+    fun testListDefinition(){
+        assertEquals("listOf(12, 55, 66, 77, 88, 99)",GenerateCode("@var myList = @list(12,55,66,77,88,99) @var(myList)"))
+        assertEquals("listOf(12, 55, 66, 77, 88, 99)",GenerateCode("@var myList = @mutable_list(12,55,66,77,88,99) @var(myList)"))
+    }
+
     private fun evaluate(i: String, j: String, char: Char, expect: String) {
         assertEquals(expect, GenerateCode("@var i = $i@var j = @var(i) @$char $j@var(j)"))
         assertEquals(expect, GenerateCode("$i @$char $j"))
