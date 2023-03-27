@@ -9,9 +9,16 @@ interface KTEObject : ReferencedValue {
     val objectName: String
     val contained: Map<String, KTEValue>
 
-    fun getModelDirectiveValue(model: KTEObject, directive: ModelDirective): KTEValue {
+    private fun List<ModelReference>.pathUntil(prop: ModelReference): String {
+        return joinToString(
+            separator = ".",
+            limit = indexOf(prop) + 1
+        )
+    }
+
+    fun getModelReferenceValue(model: KTEObject, path: List<ModelReference>): KTEValue {
         var currentVal: KTEValue = this
-        for (prop in directive.propertyPath) {
+        for (prop in path) {
             when (prop) {
                 is ModelReference.FunctionCall -> {
                     (currentVal as? KTEFunction)?.let {
@@ -24,16 +31,16 @@ interface KTEObject : ReferencedValue {
                         func.invokeOnly = prop.invokeOnly
                         currentVal = func.getKTEValue(model)
                     } ?: run {
-                        throw UnresolvedValueException("function ${directive.pathUntil(prop)} does not exist")
+                        throw UnresolvedValueException("function ${path.pathUntil(prop)} does not exist")
                     }
                 }
 
                 is ModelReference.Property -> {
                     currentVal = currentVal.getModelReference(prop) ?: run {
-                        if (directive.propertyPath.size == 1 && prop.name == "this") {
+                        if (path.size == 1 && prop.name == "this") {
                             currentVal
                         } else {
-                            throw UnresolvedValueException("property ${directive.pathUntil(prop)} does not exist")
+                            throw UnresolvedValueException("property ${path.pathUntil(prop)} does not exist")
                         }
                     }
                 }

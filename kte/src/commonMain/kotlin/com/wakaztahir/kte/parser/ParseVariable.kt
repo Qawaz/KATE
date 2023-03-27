@@ -67,3 +67,21 @@ internal fun LazyBlock.parseVariableDeclaration(): VariableDeclaration? {
     }
     return null
 }
+
+private class DeleteVar(val propertyPath: List<ModelReference>) : CodeGen {
+    override fun generateTo(block: LazyBlock, destination: DestinationStream) {
+        block.model.remove(model = block.model, path = propertyPath)
+    }
+}
+
+fun LazyBlock.parseDeleteVarDirective(): CodeGen? {
+    if (source.currentChar == '@' && source.increment("delete_var(")) {
+        val propertyPath = mutableListOf<ModelReference>()
+        source.parseDotReferencesInto(propertyPath)
+        if (!source.increment(')')) {
+            throw VariableReferenceParseException("expected ) got ${source.currentChar} at ${source.pointer}")
+        }
+        return DeleteVar(propertyPath)
+    }
+    return null
+}
