@@ -1,5 +1,6 @@
 package com.wakaztahir.kte.parser
 
+import com.wakaztahir.kte.model.LazyBlock
 import com.wakaztahir.kte.model.model.ReferencedValue
 import com.wakaztahir.kte.parser.stream.SourceStream
 import com.wakaztahir.kte.parser.stream.increment
@@ -190,22 +191,22 @@ private class ValueAndOperatorStack {
 
 }
 
-private fun SourceStream.parseValueAndOperator(): Pair<ReferencedValue, ArithmeticOperatorType?>? {
-    val firstValue = parseNumberReference()
+private fun LazyBlock.parseValueAndOperator(): Pair<ReferencedValue, ArithmeticOperatorType?>? {
+    val firstValue = source.parseNumberReference()
     if (firstValue != null) {
-        val pointerAfterFirstValue = pointer
-        increment(' ')
-        return if (increment('@')) {
-            val arithmeticOperator = parseArithmeticOperator()
+        val pointerAfterFirstValue = source.pointer
+        source.increment(' ')
+        return if (source.increment('@')) {
+            val arithmeticOperator = source.parseArithmeticOperator()
             if (arithmeticOperator != null) {
-                increment(' ')
+                source.increment(' ')
                 Pair(firstValue, arithmeticOperator)
             } else {
-                setPointerAt(pointerAfterFirstValue)
+                source.setPointerAt(pointerAfterFirstValue)
                 Pair(firstValue, null)
             }
         } else {
-            setPointerAt(pointerAfterFirstValue)
+            source.setPointerAt(pointerAfterFirstValue)
             Pair(firstValue, null)
         }
     }
@@ -277,7 +278,7 @@ private fun SourceStream.parseExpressionWith(
     stack.putAllInto(final)
 }
 
-internal fun SourceStream.parseExpression(): ReferencedValue? {
+internal fun LazyBlock.parseExpression(): ReferencedValue? {
     val valueAndOp = parseValueAndOperator()
     if (valueAndOp != null) {
         return if (valueAndOp.second != null) {
@@ -286,7 +287,7 @@ internal fun SourceStream.parseExpression(): ReferencedValue? {
             stack.putOperator(valueAndOp.second!!)
             val final = ValueAndOperatorStack()
             final.putValue(valueAndOp.first)
-            parseExpressionWith(stack = stack, final = final)
+            source.parseExpressionWith(stack = stack, final = final)
             final.toExpression()
 
         } else {

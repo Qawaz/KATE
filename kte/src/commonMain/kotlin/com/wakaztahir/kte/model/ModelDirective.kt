@@ -33,7 +33,7 @@ class ModelDirective(val propertyPath: List<ModelReference>) : ReferencedValue, 
         getKTEValue(block.model).generateTo(block, destination)
     }
 
-    fun pathUntil(reference: ModelReference) : String {
+    fun pathUntil(reference: ModelReference): String {
         return propertyPath.joinToString(
             separator = ".",
             limit = propertyPath.indexOf(reference) + 1
@@ -41,7 +41,13 @@ class ModelDirective(val propertyPath: List<ModelReference>) : ReferencedValue, 
     }
 
     override fun getKTEValue(model: KTEObject): KTEValue {
-        return model.getModelDirectiveValue(this)
+        return model.getModelDirectiveValue(this).let {
+            if (it is KTEFunction) {
+                it.getKTEValue(model)
+            } else {
+                it
+            }
+        }
     }
 
     override fun toString(): String = propertyPath.joinToString(".")

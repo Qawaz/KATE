@@ -33,10 +33,20 @@ internal fun SourceStream.parseVariableName(): String? {
     return null
 }
 
+private fun isTakenVariableName(name: String): Boolean {
+    return when (name) {
+        "this" -> true
+        else -> false
+    }
+}
+
 internal fun LazyBlock.parseVariableDeclaration(): VariableDeclaration? {
     val variableName = source.parseVariableName()
     if (variableName != null) {
         if (variableName.isNotEmpty()) {
+            if (isTakenVariableName(variableName)) {
+                throw IllegalStateException("variable name cannot be $variableName")
+            }
             source.escapeSpaces()
             source.increment('=')
             source.escapeSpaces()

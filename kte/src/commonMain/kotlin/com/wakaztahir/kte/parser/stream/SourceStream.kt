@@ -24,7 +24,7 @@ abstract class SourceStream : LazyBlock {
     override val source: SourceStream
         get() = this
 
-    override val allowTextOut: Boolean
+    override val isWriteUnprocessedTextEnabled: Boolean
         get() = true
 
     abstract val pointer: Int

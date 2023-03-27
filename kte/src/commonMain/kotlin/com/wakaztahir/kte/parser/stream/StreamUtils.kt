@@ -78,9 +78,7 @@ internal inline fun <T> SourceStream.resetIfNull(perform: SourceStream.() -> T?)
 }
 
 internal fun SourceStream.escapeSpaces() {
-    if (increment(' ')) {
-        escapeSpaces()
-    }
+    if (increment(' ')) escapeSpaces()
 }
 
 internal inline fun SourceStream.incrementWhile(block: SourceStream.() -> Boolean) {
@@ -176,9 +174,11 @@ internal fun SourceStream.escapeBlockSpacesBackward() {
             ' ' -> {
                 fallbackPointer = pointer
             }
+
             '\n' -> {
                 return
             }
+
             else -> {
                 incrementPointer()
                 return

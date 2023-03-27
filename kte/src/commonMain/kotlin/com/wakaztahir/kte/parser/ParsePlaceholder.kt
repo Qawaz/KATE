@@ -44,7 +44,7 @@ private fun LazyBlock.parsePlaceholderBlock(nameAndDef: Pair<String, String>): P
     val blockValue = parseBlockSlice(
         startsWith = "@define_placeholder",
         endsWith = "@end_define_placeholder",
-        allowTextOut = allowTextOut,
+        allowTextOut = isWriteUnprocessedTextEnabled,
         inheritModel = true
     )
 
@@ -56,7 +56,7 @@ private fun LazyBlock.parsePlaceholderBlock(nameAndDef: Pair<String, String>): P
         length = blockValue.length,
         parent = blockValue.model,
         blockEndPointer = blockValue.blockEndPointer,
-        allowTextOut = allowTextOut
+        allowTextOut = isWriteUnprocessedTextEnabled
     )
 
 }

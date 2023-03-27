@@ -4,8 +4,6 @@ import com.wakaztahir.kte.model.model.KTEObject
 import com.wakaztahir.kte.model.model.MutableKTEObject
 import com.wakaztahir.kte.parser.parseDefaultNoRaw
 import com.wakaztahir.kte.parser.stream.DestinationStream
-import com.wakaztahir.kte.parser.stream.SourceStream
-import com.wakaztahir.kte.parser.stream.increment
 
 class DefaultNoRawBlock(val value: LazyBlockSlice) : BlockContainer {
     override fun getBlockValue(model: KTEObject): LazyBlock = value
@@ -33,7 +31,7 @@ class PartialRawLazyBlockSlice(
     length = length,
     blockEndPointer = blockEndPointer,
     model = model,
-    allowTextOut = false
+    isWriteUnprocessedTextEnabled = false
 ) {
 
     override fun parseNestedAtDirective(block: LazyBlock): CodeGen? {

@@ -4,7 +4,6 @@ import com.wakaztahir.kte.dsl.ScopedModelObject
 import com.wakaztahir.kte.model.*
 import com.wakaztahir.kte.parser.stream.*
 import com.wakaztahir.kte.parser.stream.increment
-import kotlin.random.Random
 
 fun LazyBlock.parseBlockSlice(
     startsWith: String,
@@ -38,7 +37,7 @@ fun LazyBlock.parseBlockSlice(
         length = length,
         model = if (inheritModel) model else ScopedModelObject(model),
         blockEndPointer = source.pointer,
-        allowTextOut = allowTextOut
+        isWriteUnprocessedTextEnabled = allowTextOut
     )
 
 }

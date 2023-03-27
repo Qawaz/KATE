@@ -105,7 +105,7 @@ private fun LazyBlock.parseIfBlockValue(ifType: IfType): LazyBlockSlice {
         length = length,
         model = ScopedModelObject(parent = this@parseIfBlockValue.model),
         blockEndPointer = source.pointer + blockEnder.length,
-        allowTextOut = allowTextOut
+        isWriteUnprocessedTextEnabled = isWriteUnprocessedTextEnabled
     )
 }
 

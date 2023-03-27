@@ -7,7 +7,6 @@ import com.wakaztahir.kte.model.model.MutableKTEObject
 import com.wakaztahir.kte.parser.parseObjectDeclaration
 import com.wakaztahir.kte.parser.parseVariableDeclaration
 import com.wakaztahir.kte.parser.stream.DestinationStream
-import com.wakaztahir.kte.parser.stream.SourceStream
 
 class ObjectDeclarationModel(
     objectName: String,
@@ -30,7 +29,7 @@ class ObjectDeclarationBlockSlice(
     length = length,
     blockEndPointer = blockEndPointer,
     model = model,
-    allowTextOut = false,
+    isWriteUnprocessedTextEnabled = false,
 ) {
 
     override fun parseAtDirective(): CodeGen? {

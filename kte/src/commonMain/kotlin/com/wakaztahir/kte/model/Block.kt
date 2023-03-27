@@ -13,7 +13,9 @@ interface LazyBlock {
 
     val source: SourceStream
     val model: MutableKTEObject
-    val allowTextOut: Boolean
+
+    // Text that couldn't be processed by the compiler is written to stream as it is
+    val isWriteUnprocessedTextEnabled: Boolean
 
     fun canIterate(): Boolean
 
@@ -27,7 +29,7 @@ interface LazyBlock {
                 writeDirective(directive = directive, destination = destination)
                 continue
             }
-            if (allowTextOut) destination.stream.write(source.currentChar)
+            if (isWriteUnprocessedTextEnabled) destination.stream.write(source.currentChar)
             source.incrementPointer()
         }
     }
@@ -47,13 +49,18 @@ interface LazyBlock {
         return null
     }
 
+    fun parseImplicitDirectives(): CodeGen? {
+        parseExpression()?.let { return it }
+        return null
+    }
+
     fun parseAtDirective(): CodeGen? {
         parseRuntimeGen()?.let { return it }
+        parseImplicitDirectives()?.let { return it }
         parseNestedAtDirective(this)?.let { return it }
         parseRawBlock()?.let { return it }
         parsePartialRaw()?.let { return it }
         parseEmbedding()?.let { return it }
-        source.parseExpression()?.let { return it }
         parseVariableDeclaration()?.let { return it }
         parseObjectDeclaration()?.let { return it }
         parseIfStatement()?.let { return it }
@@ -80,7 +87,7 @@ open class LazyBlockSlice(
     val length: Int,
     val blockEndPointer: Int,
     override val model: MutableKTEObject,
-    override val allowTextOut: Boolean
+    override val isWriteUnprocessedTextEnabled: Boolean
 ) : LazyBlock {
 
     override val source: SourceStream

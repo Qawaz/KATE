@@ -1,11 +1,9 @@
 package com.wakaztahir.kte.model
 
-import com.wakaztahir.kte.dsl.ScopedModelObject
 import com.wakaztahir.kte.model.model.KTEObject
 import com.wakaztahir.kte.model.model.KTEValue
 import com.wakaztahir.kte.model.model.MutableKTEObject
 import com.wakaztahir.kte.parser.stream.DestinationStream
-import com.wakaztahir.kte.parser.stream.SourceStream
 
 class PlaceholderBlock(
     parentBlock: LazyBlock,
@@ -22,7 +20,7 @@ class PlaceholderBlock(
     length = length,
     blockEndPointer = blockEndPointer,
     model = parent,
-    allowTextOut = allowTextOut
+    isWriteUnprocessedTextEnabled = allowTextOut
 ) {
 
     private var isGenerationModelSet = false

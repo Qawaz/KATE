@@ -132,7 +132,7 @@ private class ForLoopLazyBlockSlice(
     length = length,
     model = parent,
     blockEndPointer = blockEndPointer,
-    allowTextOut = allowTextOut
+    isWriteUnprocessedTextEnabled = allowTextOut
 ) {
 
     var hasBroken: Boolean = false
@@ -161,7 +161,7 @@ private fun LazyBlock.parseForBlockValue(): ForLoopLazyBlockSlice {
     val slice = parseBlockSlice(
         startsWith = "@for",
         endsWith = "@endfor",
-        allowTextOut = allowTextOut,
+        allowTextOut = isWriteUnprocessedTextEnabled,
         inheritModel = false
     )
     return ForLoopLazyBlockSlice(
@@ -170,7 +170,7 @@ private fun LazyBlock.parseForBlockValue(): ForLoopLazyBlockSlice {
         length = slice.length,
         blockEndPointer = slice.blockEndPointer,
         parent = slice.model as ScopedModelObject,
-        allowTextOut = slice.allowTextOut
+        allowTextOut = slice.isWriteUnprocessedTextEnabled
     )
 }
 
