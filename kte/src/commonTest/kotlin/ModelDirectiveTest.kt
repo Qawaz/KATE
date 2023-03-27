@@ -1,3 +1,4 @@
+import com.wakaztahir.kte.GenerateCode
 import com.wakaztahir.kte.TemplateContext
 import com.wakaztahir.kte.model.*
 import com.wakaztahir.kte.model.model.*
@@ -105,23 +106,21 @@ class ModelDirectiveTest {
 
     @Test
     fun testParseModelDirectiveCodeGen() {
-        val context = TemplateContext(
-            text = "@model.property1@model.property2.property3@model.callSum(1,2)",
-            model = MutableKTEObject {
-                putValue("property1", true)
-                putObject("property2") {
-                    putValue("property3", "123")
-                }
-                putValue("callSum", object : KTEFunction() {
-                    override fun invoke(model: KTEObject, parameters: List<ReferencedValue>): KTEValue {
-                        return IntValue(parameters.map { it.asPrimitive(model) }.sumOf { it.value as Int })
-                    }
-
-                    override fun toString(): String = "callSum(integers) : Int"
-                })
+        val model = MutableKTEObject {
+            putValue("property1", true)
+            putObject("property2") {
+                putValue("property3", "123")
             }
-        )
-        assertEquals("true1233", context.getDestinationAsString())
+            putValue("callSum", object : KTEFunction() {
+                override fun invoke(model: KTEObject, parameters: List<ReferencedValue>): KTEValue {
+                    return IntValue(parameters.map { it.asPrimitive(model) }.sumOf { it.value as Int })
+                }
+
+                override fun toString(): String = "callSum(integers) : Int"
+            })
+        }
+        assertEquals("true1233", GenerateCode("@model.property1@model.property2.property3@model.callSum(1,2)", model))
+        assertEquals("3", GenerateCode("@var sum = @model.callSum(1,2) @var(sum)", model))
     }
 
 }
