@@ -50,6 +50,14 @@ To access the object of current scope , You can do
 
 `@var(this)`
 
+To invoke a function
+
+`@var(funcName())`
+
+Invoking a function without outputting returned value
+
+`@var(@funcName())`
+
 ## Expressions
 
 `2 @+ 2` is an expression
