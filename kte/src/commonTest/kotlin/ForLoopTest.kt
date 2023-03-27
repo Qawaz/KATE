@@ -73,6 +73,10 @@ class ForLoopTest {
             expected = "0123",
             actual = GenerateCode("@for(@var i = 0;i<7;i++) @if(@var(i)==4) @breakfor @else @var(i) @endif @endfor")
         )
+        assertEquals(
+            expected = "015016017",
+            actual = GenerateCode("@for(@var i = 5;i<8;i++) @for(@var j = 0;j<3;j++) @if(@var(j) == 2) @breakfor @else @var(j) @endif @endfor @var(i) @endfor")
+        )
     }
 
     @Test
