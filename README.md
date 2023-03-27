@@ -124,7 +124,7 @@ Partial Raw , It only outputs the code that is generated via directives
 
 - By default , All text is outputted and Directives output after being parsed
 - By using raw , You output everything without any parsing
-- By using partial_raw , You only output what is parsed i.e. directives
+- By using partial_raw , You output explicitly by using nested `@default_no_raw` or `@raw` block
 
 Inside the `@partial_raw` block , To go back to default behaviour , You can use
 
@@ -348,8 +348,5 @@ The code above returns the first parameter passed to the function using indexing
 
 When defining a function following rules apply
 
-- in `@default_no_raw` or `@partial_raw` Any variable reference `@var(i)` outputs automatically , In functions however ,
-  that's not the behavior , You can only return a value
-- Nothing is outputted directly like `@partial_raw` , explicit output is required using `@runtime.print_char`
-  and `@runtime.print_string`
+- Nothing is outputted directly like `@partial_raw` , explicit output is required
 - Function must return something , `@return @Unit` can be used if there is nothing to return

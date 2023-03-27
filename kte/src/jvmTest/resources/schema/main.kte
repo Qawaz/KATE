@@ -12,11 +12,11 @@
 @if(@var(generateComments)) // @var(mathTestClassName) provides functions for basic math operations @endif
 class @var(mathTestClassName) {
     @for(@var arithmetic2 : @var(arithmetic))
-    @if(@var(generateComments)) // @var(arithmetic2).funName performs '@var(arithmetic2).symbolName' between two variables @endif
-    fun @var(arithmetic2).@@funName() : @var(arithmetic2).returnType {
-         val variableOne = @var(arithmetic2).first
-         val variableTwo = @var(arithmetic2).second
-         return variableOne @var(arithmetic2).symbolName variableTwo
+    @if(@var(generateComments)) // @var(arithmetic2.funName) performs '@var(arithmetic2.symbolName)' between two variables @endif
+    fun @var(arithmetic2.funName)() : @var(arithmetic2.returnType) {
+         val variableOne = @var(arithmetic2.first)
+         val variableTwo = @var(arithmetic2.second)
+         return variableOne @var(arithmetic2.symbolName) variableTwo
     }
     @endfor
 }

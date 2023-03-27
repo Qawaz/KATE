@@ -3,6 +3,7 @@ package com.wakaztahir.kte.model
 import com.wakaztahir.kte.model.model.KTEObject
 import com.wakaztahir.kte.model.model.MutableKTEObject
 import com.wakaztahir.kte.parser.parseDefaultNoRaw
+import com.wakaztahir.kte.parser.parseVariableReference
 import com.wakaztahir.kte.parser.stream.DestinationStream
 
 class DefaultNoRawBlock(val value: LazyBlockSlice) : BlockContainer {
@@ -20,7 +21,7 @@ class RawBlock(val value: LazyBlockSlice) : BlockContainer {
 }
 
 class PartialRawLazyBlockSlice(
-    parentBlock : LazyBlock,
+    parentBlock: LazyBlock,
     startPointer: Int,
     length: Int,
     blockEndPointer: Int,
@@ -33,6 +34,13 @@ class PartialRawLazyBlockSlice(
     model = model,
     isWriteUnprocessedTextEnabled = false
 ) {
+
+    override fun parseImplicitDirectives(): CodeGen? {
+        source.parseVariableReference()?.let {
+            throw IllegalStateException("variable reference $it cannot be used inside @partial_raw")
+        }
+        return null
+    }
 
     override fun parseNestedAtDirective(block: LazyBlock): CodeGen? {
         block.parseDefaultNoRaw()?.let { return it }

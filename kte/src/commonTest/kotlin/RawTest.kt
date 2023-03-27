@@ -4,6 +4,7 @@ import com.wakaztahir.kte.TemplateContext
 import com.wakaztahir.kte.parser.parseRawBlock
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFails
 import kotlin.test.assertNotEquals
 
 class RawTest {
@@ -39,7 +40,9 @@ class RawTest {
     @Test
     fun testPartialRaw() {
         assertEquals("", GenerateCode("@partial_raw BlockValue @end_partial_raw"))
-        assertEquals("5", GenerateCode("@partial_raw @var i=5 @var(i) @end_partial_raw"))
+        assertFails {
+            GenerateCode("@partial_raw @var i=5 @var(i) @end_partial_raw")
+        }
         assertEquals(
             "Here",
             GenerateCode("@partial_raw @if(true) @default_no_raw Here @end_default_no_raw @endif @end_partial_raw")
