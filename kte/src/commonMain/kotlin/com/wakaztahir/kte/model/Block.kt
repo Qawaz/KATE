@@ -43,12 +43,17 @@ interface LazyBlock {
         }
     }
 
+    fun parseNestedAtDirective(block: LazyBlock): CodeGen? {
+        return null
+    }
+
     fun parseAtDirective(): CodeGen? {
+        parseNestedAtDirective(this)?.let { return it }
         parseRawBlock()?.let { return it }
         parsePartialRaw()?.let { return it }
-        source.parseEmbedding()?.let { return it }
+        parseEmbedding()?.let { return it }
         source.parseExpression()?.let { return it }
-        source.parseVariableDeclaration()?.let { return it }
+        parseVariableDeclaration()?.let { return it }
         parseObjectDeclaration()?.let { return it }
         parseIfStatement()?.let { return it }
         parseForLoop()?.let { return it }
@@ -69,13 +74,16 @@ interface LazyBlock {
 
 
 open class LazyBlockSlice(
-    override val source: SourceStream,
+    val parentBlock: LazyBlock,
     val startPointer: Int,
     val length: Int,
     val blockEndPointer: Int,
     override val model: MutableKTEObject,
     override val allowTextOut: Boolean
 ) : LazyBlock {
+
+    override val source: SourceStream
+        get() = parentBlock.source
 
     override fun canIterate(): Boolean {
         return source.pointer < startPointer + length
@@ -85,6 +93,10 @@ open class LazyBlockSlice(
         source.setPointerAt(startPointer)
         super.generateTo(destination)
         source.setPointerAt(blockEndPointer)
+    }
+
+    override fun parseNestedAtDirective(block : LazyBlock): CodeGen? {
+        return parentBlock.parseNestedAtDirective(block)
     }
 
     fun getValueAsString(): String {

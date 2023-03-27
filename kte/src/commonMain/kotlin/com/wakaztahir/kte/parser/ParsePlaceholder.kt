@@ -48,7 +48,7 @@ private fun LazyBlock.parsePlaceholderBlock(nameAndDef: Pair<String, String>): P
     )
 
     return PlaceholderBlock(
-        source = source,
+        parentBlock = this,
         placeholderName = nameAndDef.first,
         definitionName = nameAndDef.second,
         startPointer = blockValue.startPointer,

@@ -31,7 +31,7 @@ private fun LazyBlock.parseObjectDeclarationSlice(objectName: String): ObjectDec
         inheritModel = true
     )
     return ObjectDeclarationBlockSlice(
-        source = slice.source,
+        parentBlock = this,
         startPointer = slice.startPointer,
         length = slice.length,
         blockEndPointer = slice.blockEndPointer,

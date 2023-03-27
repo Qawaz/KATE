@@ -1,5 +1,6 @@
 package com.wakaztahir.kte
 
+import com.wakaztahir.kte.model.LazyBlock
 import com.wakaztahir.kte.model.model.MutableKTEObject
 import com.wakaztahir.kte.parser.stream.SourceStream
 import java.io.InputStream
@@ -46,6 +47,10 @@ class InputStreamSource(val stream: InputStream) : SourceStream() {
 
     override fun setPointerAt(position: Int): Boolean {
         TODO("")
+    }
+
+    override fun provideStream(block: LazyBlock, path: String): SourceStream? {
+        TODO("Not yet implemented")
     }
 
     override val model: MutableKTEObject

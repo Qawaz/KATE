@@ -1,6 +1,7 @@
 package com.wakaztahir.kte.parser.stream
 
 import com.wakaztahir.kte.dsl.ModelObjectImpl
+import com.wakaztahir.kte.model.LazyBlock
 import com.wakaztahir.kte.model.model.MutableKTEObject
 
 class TextSourceStream(
@@ -31,6 +32,10 @@ class TextSourceStream(
         } else {
             false
         }
+    }
+
+    override fun provideStream(block: LazyBlock, path: String): SourceStream? {
+        TODO("Not yet implemented")
     }
 
 }

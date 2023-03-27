@@ -7,7 +7,7 @@ import com.wakaztahir.kte.parser.stream.DestinationStream
 import com.wakaztahir.kte.parser.stream.SourceStream
 
 class PlaceholderBlock(
-    source: SourceStream,
+    parentBlock : LazyBlock,
     val placeholderName: String,
     val definitionName: String,
     startPointer: Int,
@@ -16,7 +16,7 @@ class PlaceholderBlock(
     parent: MutableKTEObject,
     allowTextOut: Boolean
 ) : LazyBlockSlice(
-    source = source,
+    parentBlock = parentBlock,
     startPointer = startPointer,
     length = length,
     blockEndPointer = blockEndPointer,

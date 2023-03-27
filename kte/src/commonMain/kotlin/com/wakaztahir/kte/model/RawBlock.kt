@@ -22,24 +22,25 @@ class RawBlock(val value: LazyBlockSlice) : BlockContainer {
 }
 
 class PartialRawLazyBlockSlice(
-    source: SourceStream,
+    parentBlock : LazyBlock,
     startPointer: Int,
     length: Int,
     blockEndPointer: Int,
     model: MutableKTEObject,
 ) : LazyBlockSlice(
-    source = source,
+    parentBlock = parentBlock,
     startPointer = startPointer,
     length = length,
     blockEndPointer = blockEndPointer,
     model = model,
     allowTextOut = false
 ) {
-    override fun parseAtDirective(): CodeGen? {
-        parseDefaultNoRaw()?.let { return it }
-        super.parseAtDirective()?.let { return it }
-        return null
+
+    override fun parseNestedAtDirective(block: LazyBlock): CodeGen? {
+        block.parseDefaultNoRaw()?.let { return it }
+        return super.parseNestedAtDirective(block)
     }
+
 }
 
 class PartialRawBlock(val value: PartialRawLazyBlockSlice) : BlockContainer {

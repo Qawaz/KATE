@@ -33,7 +33,7 @@ fun LazyBlock.parseBlockSlice(
     source.setPointerAt(pointerBeforeEnder + ender.length)
 
     return LazyBlockSlice(
-        source = source,
+        parentBlock = this,
         startPointer = previous,
         length = length,
         model = if (inheritModel) model else ScopedModelObject(model),
@@ -67,7 +67,7 @@ fun LazyBlock.parsePartialRaw(): PartialRawBlock? {
         )
         return PartialRawBlock(
             value = PartialRawLazyBlockSlice(
-                source = slice.source,
+                parentBlock = this,
                 startPointer = slice.startPointer,
                 length = slice.length,
                 blockEndPointer = slice.blockEndPointer,
@@ -78,7 +78,7 @@ fun LazyBlock.parsePartialRaw(): PartialRawBlock? {
     return null
 }
 
-fun PartialRawLazyBlockSlice.parseDefaultNoRaw(): DefaultNoRawBlock? {
+fun LazyBlock.parseDefaultNoRaw(): DefaultNoRawBlock? {
     if (source.currentChar == '@' && source.increment("@default_no_raw")) {
         return DefaultNoRawBlock(
             parseBlockSlice(

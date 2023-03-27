@@ -57,24 +57,24 @@ internal fun SourceStream.parseVariableName(): String? {
     return null
 }
 
-internal fun SourceStream.parseVariableDeclaration(): VariableDeclaration? {
-    val variableName = parseVariableName()
+internal fun LazyBlock.parseVariableDeclaration(): VariableDeclaration? {
+    val variableName = source.parseVariableName()
     if (variableName != null) {
         if (variableName.isNotEmpty()) {
-            escapeSpaces()
-            increment('=')
-            escapeSpaces()
-            val property = this.parseAnyExpressionOrValue()
+            source.escapeSpaces()
+            source.increment('=')
+            source.escapeSpaces()
+            val property = source.parseAnyExpressionOrValue()
             return if (property != null) {
                 VariableDeclaration(variableName = variableName, variableValue = property)
             } else {
                 throw VariableDeclarationParseException("constant's value not found")
             }
         } else {
-            if (hasEnded) {
-                unexpected()
+            if (source.hasEnded) {
+                source.unexpected()
             } else {
-                printLeft()
+                source.printLeft()
                 throw VariableDeclarationParseException("constant's name not given")
             }
         }

@@ -1,12 +1,9 @@
 package com.wakaztahir.kte.parser
 
 import com.wakaztahir.kte.dsl.ScopedModelObject
-import com.wakaztahir.kte.model.model.MutableKTEObject
 import com.wakaztahir.kte.model.*
 import com.wakaztahir.kte.model.ConditionType
-import com.wakaztahir.kte.model.model.ReferencedValue
-import com.wakaztahir.kte.model.model.KTEObject
-import com.wakaztahir.kte.model.model.KTEValue
+import com.wakaztahir.kte.model.model.*
 import com.wakaztahir.kte.parser.stream.*
 import com.wakaztahir.kte.parser.stream.increment
 import com.wakaztahir.kte.parser.stream.parseTextWhile
@@ -69,7 +66,8 @@ internal sealed interface ForLoop : BlockContainer {
 
         override fun iterate(block: (iteration: Int) -> Unit) {
             var index = 0
-            val iterable = listProperty.asNullableList(model) ?: throw IllegalStateException("list property is not iterable in for loop")
+            val iterable = listProperty.asNullableList(model)
+                ?: throw IllegalStateException("list property is not iterable in for loop")
             val total = iterable.collection.size
             while (index < total) {
                 store(index)
@@ -122,14 +120,14 @@ internal sealed interface ForLoop : BlockContainer {
 }
 
 private class ForLoopLazyBlockSlice(
-    source: SourceStream,
+    parentBlock: LazyBlock,
     startPointer: Int,
     length: Int,
     blockEndPointer: Int,
     parent: ScopedModelObject,
     allowTextOut: Boolean
 ) : LazyBlockSlice(
-    source = source,
+    parentBlock = parentBlock,
     startPointer = startPointer,
     length = length,
     model = parent,
@@ -152,19 +150,27 @@ private class ForLoopLazyBlockSlice(
         }
     }
 
-    override fun parseAtDirective(): CodeGen? {
-        if (source.parseBreakForAtDirective()) return null
-        return super.parseAtDirective()
+    override fun parseNestedAtDirective(block: LazyBlock): CodeGen? {
+        if (source.parseBreakForAtDirective()) return KTEUnit
+        return super.parseNestedAtDirective(block)
     }
 
 }
 
-private fun LazyBlock.parseForBlockValue(): LazyBlockSlice {
-    return parseBlockSlice(
+private fun LazyBlock.parseForBlockValue(): ForLoopLazyBlockSlice {
+    val slice = parseBlockSlice(
         startsWith = "@for",
         endsWith = "@endfor",
         allowTextOut = allowTextOut,
         inheritModel = false
+    )
+    return ForLoopLazyBlockSlice(
+        parentBlock = this,
+        startPointer = slice.startPointer,
+        length = slice.length,
+        blockEndPointer = slice.blockEndPointer,
+        parent = slice.model as ScopedModelObject,
+        allowTextOut = slice.allowTextOut
     )
 }
 

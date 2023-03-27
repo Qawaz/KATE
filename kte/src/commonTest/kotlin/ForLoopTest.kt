@@ -68,6 +68,14 @@ class ForLoopTest {
     }
 
     @Test
+    fun testForLoopBreaking() {
+        assertEquals(
+            expected = "0123",
+            actual = GenerateCode("@for(@var i = 0;i<7;i++) @if(@var(i)==4) @breakfor @else @var(i) @endif @endfor")
+        )
+    }
+
+    @Test
     fun testLoopVariables() {
         assertFailsWith(UnresolvedValueException::class) {
             GenerateCode("@for(@var i=0;i<3;i+1)@endfor@var(i)")
@@ -101,7 +109,10 @@ class ForLoopTest {
         val kteObject = MutableKTEObject {
             putValue("list", KTEListImpl("list", listOf("H", "e", "ll", "o").map { StringValue(it) }))
         }
-        val context = TemplateContext("@model.list.size()@model.list.get(2)@model.list.contains(\"ll\")@model.list.contains(\"v\")", kteObject)
+        val context = TemplateContext(
+            "@model.list.size()@model.list.get(2)@model.list.contains(\"ll\")@model.list.contains(\"v\")",
+            kteObject
+        )
         assertEquals("4lltruefalse", context.getDestinationAsString())
     }
 

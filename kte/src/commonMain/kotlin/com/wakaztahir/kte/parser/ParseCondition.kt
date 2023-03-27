@@ -100,7 +100,7 @@ private fun LazyBlock.parseIfBlockValue(ifType: IfType): LazyBlockSlice {
     source.setPointerAt(pointerBeforeEnder)
 
     return LazyBlockSlice(
-        source = source,
+        parentBlock = this,
         startPointer = previous,
         length = length,
         model = ScopedModelObject(parent = this@parseIfBlockValue.model),
@@ -150,15 +150,10 @@ internal fun LazyBlock.parseElse(): SingleIf? =
 
 internal fun LazyBlock.parseIfStatement(): IfStatement? {
     val singleIf = parseFirstIf() ?: return null
-    if (source.increment("@endif")) {
-        return IfStatement(mutableListOf(singleIf))
-    }
-    val ifs = mutableListOf<SingleIf>()
-    ifs.add(singleIf)
+    val ifs = mutableListOf(singleIf)
     while (true) {
         val elseIf = parseElseIf() ?: break
         ifs.add(elseIf)
-        if (source.increment("@endif")) return IfStatement(ifs)
     }
     parseElse()?.let { ifs.add(it) }
     if (source.increment("@endif")) {

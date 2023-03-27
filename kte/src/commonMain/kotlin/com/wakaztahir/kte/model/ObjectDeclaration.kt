@@ -19,13 +19,13 @@ class ObjectDeclarationModel(
 }
 
 class ObjectDeclarationBlockSlice(
-    source: SourceStream,
+    parentBlock : LazyBlock,
     startPointer: Int,
     length: Int,
     blockEndPointer: Int,
     override val model: ObjectDeclarationModel,
 ) : LazyBlockSlice(
-    source = source,
+    parentBlock = parentBlock,
     startPointer = startPointer,
     length = length,
     blockEndPointer = blockEndPointer,
@@ -34,7 +34,7 @@ class ObjectDeclarationBlockSlice(
 ) {
 
     override fun parseAtDirective(): CodeGen? {
-        source.parseVariableDeclaration()?.let { return it }
+        parseVariableDeclaration()?.let { return it }
         parseObjectDeclaration()?.let { return it }
         return null
     }
