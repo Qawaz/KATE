@@ -29,21 +29,7 @@ sealed interface ModelReference {
 class ModelDirective(val propertyPath: List<ModelReference>) : ReferencedValue, AtDirective {
 
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
-        val value = block.model.getModelDirectiveValue(this)
-        if (value != null) {
-
-            // Adding parameters to function parameters list
-            if (value is KTEFunction) {
-                propertyPath.lastOrNull()?.let { it as? ModelReference.FunctionCall }?.let { call ->
-                    value.parameters.addAll(call.parametersList)
-                    value.invokeOnly = call.invokeOnly
-                }
-            }
-
-            value.generateTo(block, destination)
-        } else {
-            throwIt(block.model)
-        }
+        getKTEValue(block.model).generateTo(block, destination)
     }
 
     private fun <T> throwIt(model: KTEObject): T {

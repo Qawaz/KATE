@@ -16,7 +16,12 @@ interface KTEObject : KTEValue {
         for (prop in directive.propertyPath) {
             when (prop) {
                 is ModelReference.FunctionCall -> {
-                    (currentObj.getModelReference(prop) as? KTEFunction)?.let { currentVal = it } ?: run {
+                    (currentObj.getModelReference(prop) as? KTEFunction)?.let { func ->
+                        currentVal = func
+                        func.parameters.clear()
+                        func.parameters.addAll(prop.parametersList)
+                        func.invokeOnly = prop.invokeOnly
+                    } ?: run {
                         throw IllegalStateException(
                             "function ${
                                 directive.propertyPath.joinToString(
