@@ -25,7 +25,7 @@ private fun LazyBlock.parseListParameters(list: MutableList<ReferencedValue> = m
 fun LazyBlock.parseListDefinition(): ReferencedValue? {
     if (source.currentChar == '@' && source.increment("@list(")) {
         val parameters = parseListParameters()
-        return KTEListImpl(objectName = "", parameters.toList())
+        return KTEListImpl(parameters.toList())
     }
     return null
 }
@@ -33,7 +33,7 @@ fun LazyBlock.parseListDefinition(): ReferencedValue? {
 fun LazyBlock.parseMutableListDefinition(): ReferencedValue? {
     if (source.currentChar == '@' && source.increment("@mutable_list(")) {
         val parameters = parseListParameters()
-        return KTEMutableListImpl(objectName = "", parameters)
+        return KTEMutableListImpl(parameters)
     }
     return null
 }

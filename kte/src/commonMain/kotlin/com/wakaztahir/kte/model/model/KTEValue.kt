@@ -1,9 +1,12 @@
 package com.wakaztahir.kte.model.model
 
 import com.wakaztahir.kte.model.CodeGen
+import com.wakaztahir.kte.model.ModelReference
 import com.wakaztahir.kte.model.PrimitiveValue
 
 interface KTEValue : CodeGen {
+
+    fun getModelReference(reference: ModelReference): KTEValue?
 
     fun indentation(indentationLevel: Int): String {
         var indentation = ""
@@ -24,6 +27,11 @@ interface KTEValue : CodeGen {
     fun asNullableList(model: KTEObject): KTEList<KTEValue>? {
         @Suppress("UNCHECKED_CAST")
         return this as? KTEList<KTEValue>
+    }
+
+    fun asNullableMutableList(model: KTEObject): KTEMutableList<KTEValue>? {
+        @Suppress("UNCHECKED_CAST")
+        return this as? KTEMutableList<KTEValue>
     }
 
     fun asNullableObject(model: KTEObject): KTEObject? {

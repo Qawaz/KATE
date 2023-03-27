@@ -61,7 +61,7 @@ interface MutableKTEObject : KTEObject {
                 objects.add(ModelObjectImpl("$key${objects.size}").apply(block))
             }
         })
-        putValue(key, KTEMutableListImpl(key, objects))
+        putValue(key, KTEMutableListImpl(objects))
     }
 
     fun putObject(key: String, block: MutableKTEObject.() -> Unit) {

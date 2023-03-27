@@ -8,6 +8,7 @@ sealed interface ModelReference {
 
     val name: String
 
+
     class Property(override val name: String) : ModelReference {
         override fun toString(): String {
             return name
@@ -32,12 +33,15 @@ class ModelDirective(val propertyPath: List<ModelReference>) : ReferencedValue, 
         getKTEValue(block.model).generateTo(block, destination)
     }
 
-    private fun <T> throwIt(model: KTEObject): T {
-        throw UnresolvedValueException("could not resolve '" + propertyPath.joinToString(".") + "' model directive in model $model")
+    fun pathUntil(reference: ModelReference) : String {
+        return propertyPath.joinToString(
+            separator = ".",
+            limit = propertyPath.indexOf(reference) + 1
+        )
     }
 
     override fun getKTEValue(model: KTEObject): KTEValue {
-        return model.getModelDirectiveValue(this) ?: throwIt(model)
+        return model.getModelDirectiveValue(this)
     }
 
     override fun toString(): String = propertyPath.joinToString(".")

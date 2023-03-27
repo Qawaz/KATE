@@ -103,7 +103,7 @@ class ForLoopTest {
     @Test
     fun testForLoopGeneration4() {
         val context = TemplateContext("@for(@var elem : @model.list) @var(elem) @endfor", MutableKTEObject {
-            putValue("list", KTEListImpl("list", listOf("H", "e", "ll", "o").map { StringValue(it) }))
+            putValue("list", KTEListImpl(listOf("H", "e", "ll", "o").map { StringValue(it) }))
         })
         assertEquals("Hello", context.getDestinationAsString())
     }
@@ -111,7 +111,7 @@ class ForLoopTest {
     @Test
     fun testForLoopGeneration5() {
         val kteObject = MutableKTEObject {
-            putValue("list", KTEListImpl("list", listOf("H", "e", "ll", "o").map { StringValue(it) }))
+            putValue("list", KTEListImpl(listOf("H", "e", "ll", "o").map { StringValue(it) }))
         }
         val context = TemplateContext(
             "@model.list.size()@model.list.get(2)@model.list.contains(\"ll\")@model.list.contains(\"v\")",

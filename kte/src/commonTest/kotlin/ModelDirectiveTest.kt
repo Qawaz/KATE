@@ -27,7 +27,7 @@ class ModelDirectiveTest {
                 this.putValue("myStr", "something is here")
                 this.putValue(
                     key = "myList", value = KTEListImpl<IntValue>(
-                        objectName = "myList", collection = listOf(
+                        collection = listOf(
                             IntValue(10),
                             IntValue(20),
                             IntValue(30),

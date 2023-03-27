@@ -7,6 +7,7 @@ abstract class KTEFunction : ReferencedValue {
 
     val parameters = mutableListOf<ReferencedValue>()
     var invokeOnly = false
+    var invokedOn : KTEValue? = null
 
     protected abstract fun invoke(model: KTEObject, parameters: List<ReferencedValue>): KTEValue
 

@@ -1,5 +1,6 @@
 package com.wakaztahir.kte.model.model
 
+import com.wakaztahir.kte.dsl.UnresolvedValueException
 import com.wakaztahir.kte.model.*
 import com.wakaztahir.kte.parser.stream.DestinationStream
 
@@ -8,38 +9,29 @@ interface KTEObject : ReferencedValue {
     val objectName: String
     val contained: Map<String, KTEValue>
 
-    fun getModelReference(reference: ModelReference): KTEValue?
-
-    fun getModelDirectiveValue(directive: ModelDirective): KTEValue? {
-        var currentObj: KTEObject = this
-        var currentVal: KTEValue? = null
+    fun getModelDirectiveValue(directive: ModelDirective): KTEValue {
+        var currentVal: KTEValue = this
         for (prop in directive.propertyPath) {
             when (prop) {
                 is ModelReference.FunctionCall -> {
-                    (currentObj.getModelReference(prop) as? KTEFunction)?.let { func ->
-                        currentVal = func
+                    (currentVal.getModelReference(prop) as? KTEFunction)?.let { func ->
                         func.parameters.clear()
                         func.parameters.addAll(prop.parametersList)
+                        func.invokedOn = currentVal
                         func.invokeOnly = prop.invokeOnly
+                        currentVal = func
                     } ?: run {
-                        throw IllegalStateException(
-                            "function ${
-                                directive.propertyPath.joinToString(
-                                    separator = ".",
-                                    limit = directive.propertyPath.indexOf(prop) + 1
-                                )
-                            } does not exist"
+                        throw UnresolvedValueException(
+                            "function ${directive.pathUntil(prop)} does not exist"
                         )
                     }
                 }
 
                 is ModelReference.Property -> {
-                    val value = currentObj.getModelReference(prop) ?: return null
-                    if (value is KTEObject) {
-                        currentObj = value
-                        currentVal = value
-                    } else {
-                        currentVal = value
+                    currentVal = currentVal.getModelReference(prop) ?: run {
+                        throw UnresolvedValueException(
+                            "property ${directive.pathUntil(prop)} does not exist"
+                        )
                     }
                 }
             }

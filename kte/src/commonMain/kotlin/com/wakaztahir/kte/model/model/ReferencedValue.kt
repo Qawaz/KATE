@@ -1,6 +1,7 @@
 package com.wakaztahir.kte.model.model
 
 import com.wakaztahir.kte.model.CodeGen
+import com.wakaztahir.kte.model.ModelReference
 import com.wakaztahir.kte.model.PrimitiveValue
 import com.wakaztahir.kte.model.model.*
 
@@ -8,6 +9,10 @@ interface ReferencedValue : KTEValue, CodeGen {
 
     fun getKTEValue(model: KTEObject): KTEValue {
         return this
+    }
+
+    override fun getModelReference(reference: ModelReference): KTEValue? {
+        return null
     }
 
     override fun asNullablePrimitive(model: KTEObject): PrimitiveValue<*>? {
