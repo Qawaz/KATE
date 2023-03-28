@@ -1,5 +1,4 @@
-package output
-
+package output
 // MathsClass provides functions for basic math operations
 class MathsClass {
     

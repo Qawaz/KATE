@@ -145,27 +145,29 @@ internal inline fun SourceStream.incrementUntilDirectiveWithSkip(
 
 internal fun LazyBlock.escapeBlockSpacesForward() {
 
-    var pointerAfterFirstSpace = source.pointer
-    if (source.currentChar == ' ') {
-        source.incrementPointer()
-        pointerAfterFirstSpace = source.pointer
-    }
-
-    var foundNewLine = false
+    val previous = source.pointer
     while (!source.hasEnded) {
-        if (source.currentChar == ' ') {
-            source.incrementPointer()
-        } else if (source.currentChar == '\n') {
-            source.incrementPointer()
-            foundNewLine = true
-            break
-        } else {
-            break
+        when (source.currentChar) {
+            '\n' -> {
+                source.incrementPointer()
+                return
+            }
+
+            ' ' -> {
+                source.incrementPointer()
+                continue
+            }
+
+            else -> {
+                break
+            }
         }
     }
 
-    if (!foundNewLine) {
-        source.setPointerAt(pointerAfterFirstSpace)
+    source.setPointerAt(previous)
+    if (source.currentChar == ' ') {
+        source.incrementPointer()
+        return
     }
 
 }
@@ -194,8 +196,7 @@ internal fun LazyBlock.escapeBlockSpacesBackward() {
             }
 
             else -> {
-                source.incrementPointer()
-                return
+                break
             }
         }
     }

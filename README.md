@@ -320,7 +320,13 @@ Runtime directives call functions in the runtime , Currently these directives ar
 | `@runtime.print_char('x')`       | Prints the character to output |
 | `@runtime.print_string("hello")` | Prints the string to output    |
 
-## Delete Directive
+## Var Directives
+
+### Exists Directive
+
+`@exists_var(myVar)` deletes any value , This can remove objects / lists / primitives and functions from the object
+
+### Delete Directive
 
 `@delete_var(myVar)` deletes any value , This can remove objects / lists / primitives and functions from the object
 

@@ -25,6 +25,7 @@ class RawTest {
         val text = "there's something raw here"
         assertEquals(text, GenerateCode("@raw $text @endraw"))
         assertEquals(text, GenerateCode("@raw${'\n'}$text${'\n'}@endraw"))
+        assertEquals(" $text ", GenerateCode("@raw  $text  @endraw"))
     }
 
     @Test

@@ -55,7 +55,7 @@ interface LazyBlock {
         var x = 0
         var consumed = 0
         while (x < indentationLevel) {
-            if (source.increment('\t')) consumed++
+            if (source.increment('\t') || source.increment("    ")) consumed++
             x++
         }
         return consumed
@@ -153,10 +153,23 @@ open class LazyBlockSlice(
 
     fun writeValueTo(destination: DestinationStream) {
         val previous = source.pointer
+        var blockLineNumber = 1
+        var hasConsumedFirstLineIndentation = false
         source.setPointerAt(startPointer)
         while (canIterate()) {
-            destination.stream.write(source.currentChar)
+            if (blockLineNumber == 1 && source.currentChar == '\t' && indentationLevel > 0 && !hasConsumedFirstLineIndentation) {
+                consumeLineIndentation()
+                hasConsumedFirstLineIndentation = true
+                continue
+            } else {
+                destination.stream.write(source.currentChar)
+            }
+            val isNewLine = source.currentChar == '\n'
             source.incrementPointer()
+            if (isNewLine) {
+                consumeLineIndentation()
+                blockLineNumber++
+            }
         }
         source.setPointerAt(previous)
     }

@@ -20,7 +20,7 @@ class RawBlock(val value: LazyBlockSlice) : BlockContainer {
     }
 }
 
-class PartialRawLazyBlockSlice(
+open class PartialRawLazyBlockSlice(
     parentBlock: LazyBlock,
     startPointer: Int,
     length: Int,
