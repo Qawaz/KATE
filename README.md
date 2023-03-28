@@ -118,7 +118,7 @@ Partial Raw , It only outputs the code that is generated via directives
 
 ```
 @partial_raw
-<%--raw text is not allowed here--%>
+    <%--raw text is not allowed here--%>
 @end_partial_raw
 ```
 
@@ -130,7 +130,7 @@ Inside the `@partial_raw` block , To go back to default behaviour , You can use
 
 ```
 @default_no_raw
-raw text is allowed here and so are the directives
+    raw text is allowed here and so are the directives
 @end_default_no_raw
 ```
 
@@ -182,8 +182,8 @@ declarations
 
 ```
 @define_object(MyObject)
-@var i = 5
-@var myList = @mutable_list(1,2,3)
+    @var i = 5
+    @var myList = @mutable_list(1,2,3)
 @end_define_object
 ```
 
@@ -237,7 +237,7 @@ To define a placeholder , You use `@define_placeholder`
 
 ```
 @define_placeholder(WelcomeText,GreetingText)
-Hello World ! How are you ?
+    Hello World ! How are you ?
 @end_define_placeholder
 ```
 
@@ -259,11 +259,11 @@ Placeholders inherit scope of invocation directive , Because of this, this code 
 
 ```
 @define_placeholder(Varible)
-@var(i)
+    @var(i)
 @end_define_placeholder
 
 @for(@var i=0;i<5;i++)
-@placeholder(Variable)
+    @placeholder(Variable)
 @endfor
 ```
 
@@ -275,7 +275,7 @@ You can also provide an object whose variables will be in the scope of placehold
 
 ```
 @define_object(MyObject)
-@var myVar = 5
+    @var myVar = 5
 @end_define_object
 
 @placeholder(WelcomeText,@var(MyObject))
@@ -294,7 +294,7 @@ You can redefine and provide your own implementation for the next code that will
 
 ```
 @define_placeholder(WelcomeText,NewsText)
-We've detected an earthquake
+    We've detected an earthquake
 @end_define_placeholder
 ```
 
@@ -330,7 +330,7 @@ To define a function
 
 ```
 @function
-@return 1
+    @return 1
 @end_function
 ```
 
@@ -338,7 +338,7 @@ Parameters are available in a function definition using `@var(this)` which is a 
 
 ```
 @function
-@return @var(this[0])
+    @return @var(this[0])
 @end_function
 ```
 
