@@ -8,14 +8,6 @@ interface KTEValue : CodeGen {
 
     fun getModelReference(reference: ModelReference): KTEValue?
 
-    fun indentation(indentationLevel: Int): String {
-        var indentation = ""
-        repeat(indentationLevel) {
-            indentation += '\t'
-        }
-        return indentation
-    }
-
     fun stringValue(indentationLevel: Int): String
 
     override fun toString(): String
@@ -46,5 +38,6 @@ interface KTEValue : CodeGen {
         return this as? KTEFunction
     }
 
+    fun compareTo(model: KTEObject,other: KTEValue): Int
 
 }

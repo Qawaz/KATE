@@ -23,9 +23,6 @@ interface KTEObject : ReferencedValue {
         for (prop in path) {
             when (prop) {
                 is ModelReference.FunctionCall -> {
-                    (currentVal as? KTEFunction)?.let {
-                        currentVal = it.getKTEValue(model)
-                    }
                     (currentVal.getModelReference(prop) as? KTEFunction)?.let { func ->
                         currentVal = if (callFunctions) {
                             if (prop.invokeOnly) {

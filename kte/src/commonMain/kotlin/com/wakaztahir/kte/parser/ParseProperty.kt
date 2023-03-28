@@ -4,6 +4,7 @@ import com.wakaztahir.kte.model.*
 import com.wakaztahir.kte.model.model.KTEObject
 import com.wakaztahir.kte.model.model.KTEValue
 import com.wakaztahir.kte.model.model.ReferencedValue
+import com.wakaztahir.kte.model.indentation
 import com.wakaztahir.kte.parser.stream.DestinationStream
 import com.wakaztahir.kte.parser.stream.SourceStream
 
@@ -29,6 +30,10 @@ internal data class ExpressionValue(
         } ?: run {
             throw IllegalStateException("first value in expression $this is not a primitive")
         }
+    }
+
+    override fun compareTo(model: KTEObject, other: KTEValue): Int {
+        return asNullablePrimitive(model).compareTo(model, other)
     }
 
     override fun getKTEValue(model: KTEObject): KTEValue {

@@ -9,7 +9,11 @@ import com.wakaztahir.kte.parser.stream.incrementUntilDirectiveWithSkip
 
 internal fun SourceStream.parseConditionType(): ConditionType? {
     if (increment("==")) {
-        return ConditionType.Equals
+        return if (increment('=')) {
+            ConditionType.ReferentiallyEquals
+        } else {
+            ConditionType.Equals
+        }
     } else if (increment("!=")) {
         return ConditionType.NotEquals
     } else if (increment('>')) {

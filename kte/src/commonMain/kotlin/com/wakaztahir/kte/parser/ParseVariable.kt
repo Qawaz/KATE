@@ -88,6 +88,10 @@ class ExistsVar(private val propertyPath: List<ModelReference>) : ReferencedValu
         getKTEValue(block.model).generateTo(block, destination)
     }
 
+    override fun compareTo(model: KTEObject, other: KTEValue): Int {
+        return getKTEValue(model).compareTo(model,other)
+    }
+
 }
 
 fun LazyBlock.parseExistsVarDirective(): ReferencedValue? {

@@ -18,6 +18,13 @@ interface PrimitiveValue<T> : CodeGen, ReferencedValue {
 
     fun compareOther(other: PrimitiveValue<*>): Int
 
+    override fun compareTo(model: KTEObject, other: KTEValue): Int {
+        @Suppress("UNCHECKED_CAST")
+        (other.asNullablePrimitive(model) as? PrimitiveValue<T>)?.let { return compareTo(it) }
+        other.asNullablePrimitive(model)?.let { return compareOther(it) }
+        throw IllegalStateException("couldn't compare $this with value $other")
+    }
+
     fun operate(type: ArithmeticOperatorType, value2: PrimitiveValue<T>): PrimitiveValue<*>
 
     fun operateOther(type: ArithmeticOperatorType, value2: PrimitiveValue<*>): PrimitiveValue<*>
@@ -39,12 +46,6 @@ inline fun <T> PrimitiveValue<T>.operateAny(
 ): PrimitiveValue<*> {
     (other as? PrimitiveValue<T>)?.let { return operate(operatorType, it) }
     return operateOther(operatorType, other)
-}
-
-@Suppress("UNCHECKED_CAST", "NOTHING_TO_INLINE")
-inline fun <T> PrimitiveValue<T>.compareAny(other: PrimitiveValue<*>): Int {
-    (other as? PrimitiveValue<T>)?.let { return compareTo(it) }
-    return compareOther(other)
 }
 
 @JvmInline

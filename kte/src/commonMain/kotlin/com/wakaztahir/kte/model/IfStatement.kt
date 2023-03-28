@@ -2,31 +2,56 @@ package com.wakaztahir.kte.model
 
 import com.wakaztahir.kte.TemplateContext
 import com.wakaztahir.kte.model.model.KTEObject
+import com.wakaztahir.kte.model.model.KTEValue
 import com.wakaztahir.kte.model.model.ReferencedValue
 import com.wakaztahir.kte.parser.stream.DestinationStream
 
 
 internal enum class ConditionType {
+    ReferentiallyEquals {
+        override fun compare(model: KTEObject, first: KTEValue, second: KTEValue): Boolean =
+            first === second
 
+        override fun verifyCompare(result: Int) = result == 0
+    },
     Equals {
+        override fun compare(model: KTEObject, first: KTEValue, second: KTEValue) =
+            first.compareTo(model, second) == 0
+
         override fun verifyCompare(result: Int) = result == 0
     },
     NotEquals {
+        override fun compare(model: KTEObject, first: KTEValue, second: KTEValue) =
+            first.compareTo(model, second) != 0
+
         override fun verifyCompare(result: Int) = result != 0
     },
     GreaterThan {
+        override fun compare(model: KTEObject, first: KTEValue, second: KTEValue) =
+            first.compareTo(model, second) > 0
+
         override fun verifyCompare(result: Int) = result == 1
     },
     LessThan {
+        override fun compare(model: KTEObject, first: KTEValue, second: KTEValue) =
+            first.compareTo(model, second) < 0
+
         override fun verifyCompare(result: Int) = result == -1
     },
     GreaterThanEqualTo {
+        override fun compare(model: KTEObject, first: KTEValue, second: KTEValue) =
+            first.compareTo(model, second).let { it > 0 || it == 0 }
+
         override fun verifyCompare(result: Int) = result == 1 || result == 0
     },
     LessThanEqualTo {
+        override fun compare(model: KTEObject, first: KTEValue, second: KTEValue) =
+            first.compareTo(model, second).let { it < 0 || it == 0 }
+
         override fun verifyCompare(result: Int) = result == -1 || result == 0
     };
 
+    abstract fun compare(model: KTEObject, first: KTEValue, second: KTEValue): Boolean
     abstract fun verifyCompare(result: Int): Boolean
 
 }
@@ -44,15 +69,7 @@ internal class LogicalCondition(
     val propertySecond: ReferencedValue
 ) : Condition {
     override fun evaluate(context: KTEObject): Boolean {
-        propertyFirst.asNullablePrimitive(context)?.let { first ->
-            propertySecond.asNullablePrimitive(context)?.let { second ->
-                return type.verifyCompare(first.compareAny(second))
-            } ?: run {
-                throw IllegalStateException("second value in condition $this is not a primitive")
-            }
-        } ?: run {
-            throw IllegalStateException("first value in condition $this is not a primitive")
-        }
+        return type.compare(context, propertyFirst, propertySecond)
     }
 }
 

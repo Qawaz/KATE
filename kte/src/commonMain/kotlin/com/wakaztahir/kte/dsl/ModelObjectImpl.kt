@@ -1,15 +1,14 @@
 package com.wakaztahir.kte.dsl
 
-import com.wakaztahir.kte.model.model.KTEValue
 import com.wakaztahir.kte.model.ModelReference
 import com.wakaztahir.kte.model.PrimitiveValue
-import com.wakaztahir.kte.model.model.KTEList
-import com.wakaztahir.kte.model.model.MutableKTEObject
-import com.wakaztahir.kte.model.model.KTEObject
+import com.wakaztahir.kte.model.indentation
+import com.wakaztahir.kte.model.model.*
 
 open class ModelObjectImpl(override val objectName: String) : MutableKTEObject {
 
     private val container: MutableMap<String, KTEValue> = hashMapOf()
+
     override val contained: Map<String, KTEValue>
         get() = container
 
@@ -38,6 +37,10 @@ open class ModelObjectImpl(override val objectName: String) : MutableKTEObject {
             return (this as? PrimitiveValue<*>) ?: (this as? KTEObject) ?: (this as? KTEList<*>)
         }
         return "{\n" + container.map { item -> "\t${item.key} : ${item.value.toValue()}" }.joinToString("\n") + "\n}"
+    }
+
+    override fun compareTo(model: KTEObject, other: KTEValue): Int {
+        throw IllegalStateException("object $this cannot be compared with $other")
     }
 
     override fun stringValue(indentationLevel: Int): String {

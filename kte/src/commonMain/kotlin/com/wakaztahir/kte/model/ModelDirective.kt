@@ -1,6 +1,5 @@
 package com.wakaztahir.kte.model
 
-import com.wakaztahir.kte.dsl.UnresolvedValueException
 import com.wakaztahir.kte.model.model.*
 import com.wakaztahir.kte.parser.stream.DestinationStream
 
@@ -33,11 +32,8 @@ class ModelDirective(val propertyPath: List<ModelReference>) : ReferencedValue, 
         getKTEValue(block.model).generateTo(block, destination)
     }
 
-    fun pathUntil(reference: ModelReference): String {
-        return propertyPath.joinToString(
-            separator = ".",
-            limit = propertyPath.indexOf(reference) + 1
-        )
+    override fun compareTo(model: KTEObject, other: KTEValue): Int {
+        return getKTEValue(model).compareTo(model,other)
     }
 
     override fun getKTEValue(model: KTEObject): KTEValue {

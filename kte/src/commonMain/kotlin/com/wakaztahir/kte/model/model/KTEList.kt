@@ -29,6 +29,10 @@ value class KTEListImpl<T : KTEValue>(override val collection: List<T>) : KTELis
         destination.write(block, this)
     }
 
+    override fun compareTo(model: KTEObject, other: KTEValue): Int {
+        throw IllegalStateException("list $this cannot be compared to $other")
+    }
+
     override fun toString(): String {
         return stringValue(0)
     }
@@ -52,6 +56,10 @@ value class KTEMutableListImpl<T : KTEValue>(override val collection: MutableLis
 
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
         destination.write(block, this)
+    }
+
+    override fun compareTo(model: KTEObject, other: KTEValue): Int {
+        throw IllegalStateException("list $this cannot be compared to $other")
     }
 
     override fun toString(): String {

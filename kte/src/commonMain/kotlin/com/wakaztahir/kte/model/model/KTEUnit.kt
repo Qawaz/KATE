@@ -17,4 +17,8 @@ object KTEUnit : ReferencedValue {
         // Generates nothing
     }
 
+    override fun compareTo(model: KTEObject, other: KTEValue): Int {
+        throw IllegalStateException("$this cannot be compared to $other")
+    }
+
 }
