@@ -34,7 +34,21 @@ open class ModelObjectImpl(override val objectName: String) : MutableKTEObject {
     }
 
     override fun toString(): String {
-        return "{\n" + container.map { item -> "\t${item.key} : ${item.value}" }.joinToString("\n") + "\n}"
+        if (container.isEmpty()) return "{}"
+        var str = "{"
+        for (item in container) {
+            if(item.value == this) continue
+            str += "\n\t"
+            str += item.key
+            str += " : "
+            str += if (item.value is KTEObject) {
+                item.value.toString().replace("\n", "\n\t")
+            } else {
+                item.value.toString()
+            }
+        }
+        str += "\n}"
+        return str
     }
 
     override fun compareTo(model: KTEObject, other: KTEValue): Int {

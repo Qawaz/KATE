@@ -16,7 +16,7 @@ class ModelDirectiveTest {
     }
 
     @Test
-    fun testStringFunctions(){
+    fun testStringFunctions() {
         assertEquals("s", GenerateCode("@var myStr = \"0ishere\" @var(myStr[2])"))
         assertEquals("5", GenerateCode("@var myStr = \"hello\" @var(myStr.size())"))
     }
@@ -39,21 +39,35 @@ class ModelDirectiveTest {
                         )
                     )
                 )
-                this.putObject(key = "MyNestedObject") {}
+                this.putObject(key = "MyNestedObject") {
+                    this.putValue("myInt", 15)
+                    this.putValue("myDouble", 16.000)
+                    this.putValue("myStr", "something is here")
+                    this.putObject(key = "MoreNestedObject") {
+                        this.putValue("myInt", 15)
+                        this.putValue("myDouble", 16.000)
+                        this.putValue("myStr", "something is here")
+                    }
+                }
             }
         }
         assertEquals(
-            """data class MyObject(
-            |	myDouble : Double = 16.0,
-            |	myList : List<Int> = listOf(10, 20, 30, 40),
-            |	MyNestedObject : Any = MyNestedObject(),
-            |	myInt : Int = 15,
-            |	myStr : String = "something is here"
-            |)
-            |
-            |data class MyNestedObject(
-            |
-            |)""".trimMargin("|"), context.getDestinationAsString()
+            """{
+                |	myDouble : 16.0
+                |	myList : 10,20,30,40
+                |	MyNestedObject : {
+                |		myDouble : 16.0
+                |		MoreNestedObject : {
+                |			myDouble : 16.0
+                |			myInt : 15
+                |			myStr : something is here
+                |		}
+                |		myInt : 15
+                |		myStr : something is here
+                |	}
+                |	myInt : 15
+                |	myStr : something is here
+            |}""".trimMargin("|"), context.getDestinationAsString()
         )
     }
 
@@ -106,7 +120,11 @@ class ModelDirectiveTest {
                 putValue("property3", "123")
             }
             putValue("callSum", object : KTEFunction() {
-                override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
+                override fun invoke(
+                    model: KTEObject,
+                    invokedOn: KTEValue,
+                    parameters: List<ReferencedValue>
+                ): KTEValue {
                     return IntValue(parameters.map { it.asPrimitive(model) }.sumOf { it.value as Int })
                 }
 

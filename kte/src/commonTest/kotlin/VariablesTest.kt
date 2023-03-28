@@ -44,9 +44,9 @@ class VariablesTest {
     @Test
     fun testThisObjectReference() {
         assertEquals(
-            expected = """data class Global(
-	                    |	var1 : String = "test"
-                        |)""".trimMargin(),
+            expected = """{
+	                    |	var1 : test
+                        |}""".trimMargin(),
             actual = GenerateCode("@var(this)", MutableKTEObject { putValue("var1", "test") })
         )
     }
@@ -79,11 +79,11 @@ class VariablesTest {
     @Test
     fun testListDefinition() {
         assertEquals(
-            "listOf(12, 55, 66, 77, 88, 99)",
+            "12,55,66,77,88,99",
             GenerateCode("@var myList = @list(12,55,66,77,88,99) @var(myList)")
         )
         assertEquals(
-            "listOf(12, 55, 66, 77, 88, 99)",
+            "12,55,66,77,88,99",
             GenerateCode("@var myList = @mutable_list(12,55,66,77,88,99) @var(myList)")
         )
         assertEquals(

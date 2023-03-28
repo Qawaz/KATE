@@ -48,7 +48,7 @@ object KTEListImplementation {
             override fun toString(): String = "indexOf(parameter) : Int"
 
         })
-        put("toString", object : KTEFunction() {
+        put("joinToString", object : KTEFunction() {
             override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
                 val list = invokedOn.asNullableList(model)
                 require(list != null) { "list is null" }
@@ -56,7 +56,7 @@ object KTEListImplementation {
                 return StringValue(list.collection.joinToString(separator))
             }
 
-            override fun toString(): String = "toString() : String"
+            override fun toString(): String = "joinToString(separator : string?) : String"
 
         })
     }

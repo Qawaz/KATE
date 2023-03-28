@@ -52,13 +52,13 @@ class PlaceholderLanguageDestination(
         definitionName = BooleanPlaceholderName
     )
     private var listPlaceholder: PlaceholderBlock = TextPlaceholderBlock(
-        text = "@runtime.print_string(@var(__param__.toString()))",
+        text = "@runtime.print_string(@var(__param__.joinToString()))",
         parent = block,
         placeholderName = ListPlaceholderName,
         definitionName = ListPlaceholderName
     )
     private var mutableListPlaceholder: PlaceholderBlock = TextPlaceholderBlock(
-        text = "@runtime.print_string(@var(__param__.toString()))",
+        text = "@runtime.print_string(@var(__param__.joinToString()))",
         parent = block,
         placeholderName = MutableListPlaceholderName,
         definitionName = MutableListPlaceholderName

@@ -62,9 +62,9 @@ class PlaceholderTest {
         assertEquals("f", PlaceholderGen("@var i = 'f' @var(i)"))
         assertEquals("true", PlaceholderGen("@var i = true @var(i)"))
         assertEquals("false", PlaceholderGen("@var i = false @var(i)"))
-        assertEquals("1,2,3", PlaceholderGen("@var i = @list(1,2,3) @var(i.toString())"))
+        assertEquals("1,2,3", PlaceholderGen("@var i = @list(1,2,3) @var(i.joinToString())"))
         assertEquals("1,2,3", PlaceholderGen("@var i = @list(1,2,3) @var(i)"))
-        assertEquals("1.2.3", PlaceholderGen("@var i = @mutable_list(1,2,3) @var(i.toString(\".\"))"))
+        assertEquals("1.2.3", PlaceholderGen("@var i = @mutable_list(1,2,3) @var(i.joinToString(\".\"))"))
         assertEquals("1,2,3", PlaceholderGen("@var i = @mutable_list(1,2,3) @var(i)"))
         assertEquals(
             expected = "{\n\ti : 5\n\tl : 1,2,3\n}",

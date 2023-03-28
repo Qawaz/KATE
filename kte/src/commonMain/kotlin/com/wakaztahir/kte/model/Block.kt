@@ -6,6 +6,7 @@ import com.wakaztahir.kte.parser.*
 import com.wakaztahir.kte.parser.stream.*
 import com.wakaztahir.kte.parser.stream.increment
 import com.wakaztahir.kte.parser.stream.languages.KotlinLanguageDestination
+import com.wakaztahir.kte.parser.stream.languages.PlaceholderLanguageDestination
 
 interface LazyBlock {
 
@@ -103,7 +104,7 @@ interface LazyBlock {
 
     @KTEDelicateFunction
     fun getDestinationString(): String {
-        val destination = KotlinLanguageDestination(this, TextDestinationStream())
+        val destination = PlaceholderLanguageDestination(this, TextDestinationStream())
         generateTo(destination)
         return (destination.stream as TextDestinationStream).getValue()
     }
