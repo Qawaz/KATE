@@ -40,7 +40,13 @@ open class ModelObjectImpl(override val objectName: String) : MutableKTEObject {
     }
 
     override fun compareTo(model: KTEObject, other: KTEValue): Int {
-        throw IllegalStateException("object $this cannot be compared with $other")
+        if (other is ModelObjectImpl) {
+            if (this.container.isEmpty() && other.container.isEmpty()) return -1
+            if (this.container.size != other.container.size) return -1
+            if (this.container != other.container) return -1
+            return 0
+        }
+        return -1
     }
 
     override fun stringValue(indentationLevel: Int): String {
