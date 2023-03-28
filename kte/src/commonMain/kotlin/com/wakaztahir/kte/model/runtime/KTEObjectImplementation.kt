@@ -55,10 +55,9 @@ object KTEObjectImplementation {
         })
         put("toString", object : KTEFunction() {
             override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
-                val list = invokedOn.asNullableObject(model)
-                require(list != null) { "list is null" }
-                val separator = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as? String } ?: ","
-                return StringValue("")
+                val obj = invokedOn.asNullableObject(model)
+                require(obj != null) { "object is null" }
+                return StringValue(obj.toString())
             }
 
             override fun toString(): String = "toString() : String"

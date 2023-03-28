@@ -3,6 +3,7 @@ package com.wakaztahir.kte.model
 import com.wakaztahir.kte.model.model.KTEObject
 import com.wakaztahir.kte.model.model.KTEValue
 import com.wakaztahir.kte.model.model.MutableKTEObject
+import com.wakaztahir.kte.model.model.ReferencedValue
 import com.wakaztahir.kte.parser.stream.DestinationStream
 import com.wakaztahir.kte.parser.stream.TextSourceStream
 
@@ -61,7 +62,7 @@ open class PlaceholderBlock(
                 "when passing @var(this) value to placeholder invocation , defining value with same name \"__param__\" is not allowed"
             }
             (paramValue as? ModelDirective)?.propertyPath?.lastOrNull()?.name?.let {
-                model.putValue("__KTE_PARAM_NAME", it)
+                model.putValue("__kte_param_name__", it)
             }
             model.putValue("__param__", paramValue!!)
         }
@@ -70,7 +71,7 @@ open class PlaceholderBlock(
             model.removeKey("__param__")
             if (paramValue is ModelDirective) {
                 (paramValue as? ModelDirective)?.propertyPath?.lastOrNull()?.name?.let {
-                    model.removeKey("__KTE_PARAM_NAME")
+                    model.removeKey("__kte_param_name__")
                 }
             }
         }

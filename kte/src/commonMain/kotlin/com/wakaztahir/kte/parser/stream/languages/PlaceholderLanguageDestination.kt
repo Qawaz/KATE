@@ -64,7 +64,7 @@ class PlaceholderLanguageDestination(
         definitionName = MutableListPlaceholderName
     )
     private var objectPlaceholder: PlaceholderBlock = TextPlaceholderBlock(
-        text = "@runtime.print_string(\"NOT DONE YET\")",
+        text = "@runtime.print_string(@var(__param__.toString()))",
         parent = block,
         placeholderName = ObjectPlaceholderName,
         definitionName = ObjectPlaceholderName

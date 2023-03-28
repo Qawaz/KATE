@@ -67,7 +67,7 @@ class PlaceholderTest {
         assertEquals("1.2.3", PlaceholderGen("@var i = @mutable_list(1,2,3) @var(i.toString(\".\"))"))
         assertEquals("1,2,3", PlaceholderGen("@var i = @mutable_list(1,2,3) @var(i)"))
         assertEquals(
-            expected = "",
+            expected = "{\n\ti : 5\n\tl : 1,2,3\n}",
             PlaceholderGen("@define_object(MyObj) @var i = 5 @var l = @list(1,2,3) @end_define_object @var(MyObj)")
         )
     }

@@ -40,7 +40,7 @@ value class KTEListImpl<T : KTEValue>(override val collection: List<T>) : KTELis
     }
 
     override fun toString(): String {
-        return stringValue(0)
+        return collection.joinToString(",")
     }
 
     override fun stringValue(indentationLevel: Int): String {

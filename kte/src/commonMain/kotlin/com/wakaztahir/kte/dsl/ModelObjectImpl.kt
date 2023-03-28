@@ -4,6 +4,7 @@ import com.wakaztahir.kte.model.ModelReference
 import com.wakaztahir.kte.model.PrimitiveValue
 import com.wakaztahir.kte.model.indentation
 import com.wakaztahir.kte.model.model.*
+import com.wakaztahir.kte.model.runtime.KTEObjectImplementation
 
 open class ModelObjectImpl(override val objectName: String) : MutableKTEObject {
 
@@ -19,7 +20,7 @@ open class ModelObjectImpl(override val objectName: String) : MutableKTEObject {
     }
 
     override fun getModelReference(reference: ModelReference): KTEValue? {
-        return container[reference.name]
+        return container[reference.name] ?: KTEObjectImplementation.propertyMap[reference.name]
     }
 
     // ----- Putters
@@ -33,10 +34,7 @@ open class ModelObjectImpl(override val objectName: String) : MutableKTEObject {
     }
 
     override fun toString(): String {
-        fun Any.toValue(): KTEValue? {
-            return (this as? PrimitiveValue<*>) ?: (this as? KTEObject) ?: (this as? KTEList<*>)
-        }
-        return "{\n" + container.map { item -> "\t${item.key} : ${item.value.toValue()}" }.joinToString("\n") + "\n}"
+        return "{\n" + container.map { item -> "\t${item.key} : ${item.value}" }.joinToString("\n") + "\n}"
     }
 
     override fun compareTo(model: KTEObject, other: KTEValue): Int {
