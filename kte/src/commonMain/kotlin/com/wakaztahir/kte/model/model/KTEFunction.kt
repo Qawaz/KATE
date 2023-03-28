@@ -1,28 +1,20 @@
 package com.wakaztahir.kte.model.model
 
 import com.wakaztahir.kte.model.LazyBlock
-import com.wakaztahir.kte.model.ModelReference
 import com.wakaztahir.kte.parser.stream.DestinationStream
 
 abstract class KTEFunction : ReferencedValue {
 
     val parameters = mutableListOf<ReferencedValue>()
-    var invokeOnly = false
-    var invokedOn: KTEValue? = null
 
-    protected abstract fun invoke(model: KTEObject, parameters: List<ReferencedValue>): KTEValue
+    abstract fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue
 
     override fun getKTEValue(model: KTEObject): KTEValue {
-        return if (invokeOnly) {
-            invoke(model, parameters)
-            KTEUnit
-        } else {
-            invoke(model, parameters)
-        }
+        throw IllegalStateException("KTEFunction should be invoked to get the value")
     }
 
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
-        getKTEValue(block.model).generateTo(block, destination)
+        throw IllegalStateException("KTEFunction should be invoked to get the value")
     }
 
     override fun stringValue(indentationLevel: Int): String {

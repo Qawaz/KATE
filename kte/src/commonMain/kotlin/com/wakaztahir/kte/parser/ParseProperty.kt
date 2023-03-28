@@ -13,13 +13,6 @@ internal fun SourceStream.parseNumberReference(): ReferencedValue? {
     return null
 }
 
-internal fun SourceStream.parseReferencedValue(): ReferencedValue? {
-    parseVariableReference()?.let { return it }
-    parseListDefinition()?.let { return it }
-    parseMutableListDefinition()?.let { return it }
-    return null
-}
-
 internal data class ExpressionValue(
     val first: ReferencedValue,
     val operatorType: ArithmeticOperatorType,

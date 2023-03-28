@@ -38,6 +38,16 @@ The value of the variable can only be one of these
 | Value Returned from a function call                        | &check;   |
 | [List or Its element](#lists)                              | &check;   |
 
+### Variable Directives
+
+#### Exists Directive
+
+`@exists_var(myVar)` checks if `myVar` exists , returns true if it does
+
+#### Delete Directive
+
+`@delete_var(myVar)` deletes any value , This can remove objects / lists / primitives and functions from the object
+
 ## References & Function Calls
 
 `@var(variableName)` to get value of the variable defined earlier
@@ -319,16 +329,6 @@ Runtime directives call functions in the runtime , Currently these directives ar
 |----------------------------------|--------------------------------|
 | `@runtime.print_char('x')`       | Prints the character to output |
 | `@runtime.print_string("hello")` | Prints the string to output    |
-
-## Var Directives
-
-### Exists Directive
-
-`@exists_var(myVar)` deletes any value , This can remove objects / lists / primitives and functions from the object
-
-### Delete Directive
-
-`@delete_var(myVar)` deletes any value , This can remove objects / lists / primitives and functions from the object
 
 ## Function Definition
 

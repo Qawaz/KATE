@@ -7,8 +7,6 @@ interface MutableKTEObject : KTEObject {
 
     // Put Functions
 
-    fun contains(key: String): Boolean
-
     fun putValue(key: String, value: KTEValue)
 
     // Extensions
@@ -77,7 +75,7 @@ interface MutableKTEObject : KTEObject {
             return
         }
         val parentPath = path.subList(1, path.size)
-        val parent = getModelReferenceValue(model = model, parentPath)
+        val parent = getModelReferenceValue(model = model, path = parentPath, callFunctions = false)
         if (parent is MutableKTEObject) {
             parent.removeKey(path.last().name)
         }

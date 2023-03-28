@@ -2,6 +2,8 @@ package com.wakaztahir.kte.parser
 
 import com.wakaztahir.kte.model.model.MutableKTEObject
 import com.wakaztahir.kte.model.*
+import com.wakaztahir.kte.model.model.KTEObject
+import com.wakaztahir.kte.model.model.KTEValue
 import com.wakaztahir.kte.model.model.ReferencedValue
 import com.wakaztahir.kte.parser.stream.*
 import com.wakaztahir.kte.parser.stream.increment
@@ -64,6 +66,38 @@ internal fun LazyBlock.parseVariableDeclaration(): VariableDeclaration? {
                 throw VariableDeclarationParseException("constant's name not given")
             }
         }
+    }
+    return null
+}
+
+class ExistsVar(private val propertyPath: List<ModelReference>) : ReferencedValue {
+
+    override fun getKTEValue(model: KTEObject): KTEValue {
+        return BooleanValue(model.exists(model, propertyPath))
+    }
+
+    override fun stringValue(indentationLevel: Int): String {
+        return toString()
+    }
+
+    override fun toString(): String {
+        return "@exists_var(${propertyPath}) : boolean"
+    }
+
+    override fun generateTo(block: LazyBlock, destination: DestinationStream) {
+        getKTEValue(block.model).generateTo(block, destination)
+    }
+
+}
+
+fun LazyBlock.parseExistsVarDirective(): ReferencedValue? {
+    if (source.currentChar == '@' && source.increment("exists_var(")) {
+        val propertyPath = mutableListOf<ModelReference>()
+        source.parseDotReferencesInto(propertyPath)
+        if (!source.increment(')')) {
+            throw VariableReferenceParseException("expected ) got ${source.currentChar} at ${source.pointer}")
+        }
+        return ExistsVar(propertyPath)
     }
     return null
 }

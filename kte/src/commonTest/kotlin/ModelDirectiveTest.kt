@@ -2,7 +2,6 @@ import com.wakaztahir.kte.GenerateCode
 import com.wakaztahir.kte.TemplateContext
 import com.wakaztahir.kte.model.*
 import com.wakaztahir.kte.model.model.*
-import com.wakaztahir.kte.parser.parseExpression
 import com.wakaztahir.kte.parser.parseVariableReference
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -84,7 +83,7 @@ class ModelDirectiveTest {
     fun testFunction() {
         var invocations = 0
         val myFunc = object : KTEFunction() {
-            override fun invoke(model: KTEObject, parameters: List<ReferencedValue>): KTEValue {
+            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
                 invocations++
                 return StringValue("funVal")
             }
@@ -107,7 +106,7 @@ class ModelDirectiveTest {
                 putValue("property3", "123")
             }
             putValue("callSum", object : KTEFunction() {
-                override fun invoke(model: KTEObject, parameters: List<ReferencedValue>): KTEValue {
+                override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
                     return IntValue(parameters.map { it.asPrimitive(model) }.sumOf { it.value as Int })
                 }
 

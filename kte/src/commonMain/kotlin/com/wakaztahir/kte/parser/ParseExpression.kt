@@ -298,11 +298,12 @@ internal fun LazyBlock.parseExpression(): ReferencedValue? {
 }
 
 internal fun SourceStream.parseAnyExpressionOrValue(): ReferencedValue? {
-    parseExpression()?.let { return it }
+    parseListDefinition()?.let { return it }
+    parseMutableListDefinition()?.let { return it }
+    parseExistsVarDirective()?.let { return it }
     parseBooleanValue()?.let { return it }
     parseStringValue()?.let { return it }
     parseCharacterValue()?.let { return it }
-    parseListDefinition()?.let { return it }
-    parseMutableListDefinition()?.let { return it }
+    parseExpression()?.let { return it }
     return null
 }

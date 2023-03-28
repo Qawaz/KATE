@@ -13,7 +13,7 @@ object KTEListImplementation {
 
     fun HashMap<String, KTEValue>.putObjectFunctions() {
         put("get", object : KTEFunction() {
-            override fun invoke(model: KTEObject, parameters: List<ReferencedValue>): KTEValue {
+            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
                 val index = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value as? Int
                 require(invokedOn != null && index != null) {
                     "list.get(int) expects a single Int parameter instead of ${parameters.size}"
@@ -25,14 +25,14 @@ object KTEListImplementation {
 
         })
         put("size", object : KTEFunction() {
-            override fun invoke(model: KTEObject, parameters: List<ReferencedValue>): KTEValue {
+            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
                 return IntValue(invokedOn!!.asNullableList(model)!!.collection.size)
             }
 
             override fun toString(): String = "size() : Int"
         })
         put("contains", object : KTEFunction() {
-            override fun invoke(model: KTEObject, parameters: List<ReferencedValue>): KTEValue {
+            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
                 return BooleanValue(invokedOn!!.asNullableList(model)!!.collection.containsAll(parameters))
             }
 
@@ -40,7 +40,7 @@ object KTEListImplementation {
 
         })
         put("indexOf", object : KTEFunction() {
-            override fun invoke(model: KTEObject, parameters: List<ReferencedValue>): KTEValue {
+            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
                 require(parameters.size == 1) {
                     "indexOf requires a single parameter"
                 }

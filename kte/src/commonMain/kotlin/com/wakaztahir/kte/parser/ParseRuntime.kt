@@ -33,14 +33,14 @@ private value class WriteString(val string: ReferencedValue) : CodeGen {
     }
 }
 
-private fun SourceStream.parseRefCharValue() : ReferencedValue? {
-    parseReferencedValue()?.let { return it }
+private fun SourceStream.parseRefCharValue(): ReferencedValue? {
+    parseVariableReference()?.let { return it }
     parseCharacterValue()?.let { return it }
     return null
 }
 
-private fun SourceStream.parseRefStringValue() : ReferencedValue? {
-    parseReferencedValue()?.let { return it }
+private fun SourceStream.parseRefStringValue(): ReferencedValue? {
+    parseVariableReference()?.let { return it }
     parseStringValue()?.let { return it }
     return null
 }

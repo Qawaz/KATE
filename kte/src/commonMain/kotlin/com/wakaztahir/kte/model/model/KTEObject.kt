@@ -9,6 +9,8 @@ interface KTEObject : ReferencedValue {
     val objectName: String
     val contained: Map<String, KTEValue>
 
+    fun contains(key: String): Boolean
+
     private fun List<ModelReference>.pathUntil(prop: ModelReference): String {
         return joinToString(
             separator = ".",
@@ -16,7 +18,7 @@ interface KTEObject : ReferencedValue {
         )
     }
 
-    fun getModelReferenceValue(model: KTEObject, path: List<ModelReference>): KTEValue {
+    fun getModelReferenceValue(model: KTEObject, path: List<ModelReference>, callFunctions: Boolean): KTEValue {
         var currentVal: KTEValue = this
         for (prop in path) {
             when (prop) {
@@ -25,11 +27,16 @@ interface KTEObject : ReferencedValue {
                         currentVal = it.getKTEValue(model)
                     }
                     (currentVal.getModelReference(prop) as? KTEFunction)?.let { func ->
-                        func.parameters.clear()
-                        func.parameters.addAll(prop.parametersList)
-                        func.invokedOn = currentVal
-                        func.invokeOnly = prop.invokeOnly
-                        currentVal = func.getKTEValue(model)
+                        currentVal = if (callFunctions) {
+                            if (prop.invokeOnly) {
+                                func.invoke(model, currentVal, prop.parametersList)
+                                KTEUnit
+                            } else {
+                                func.invoke(model, currentVal, prop.parametersList)
+                            }
+                        } else {
+                            func
+                        }
                     } ?: run {
                         throw UnresolvedValueException("function ${path.pathUntil(prop)} does not exist")
                     }
@@ -51,6 +58,17 @@ interface KTEObject : ReferencedValue {
 
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
         destination.write(block, this)
+    }
+
+    fun exists(model: KTEObject, path: List<ModelReference>): Boolean {
+        if (path.isEmpty()) return false
+        if (path.size == 1) return contains(path[0].name)
+        val value = try {
+            getModelReferenceValue(model = model, path = path, callFunctions = false)
+        } catch (_: UnresolvedValueException) {
+            null
+        }
+        return value != null
     }
 
     fun traverse(block: (KTEValue) -> Unit) {

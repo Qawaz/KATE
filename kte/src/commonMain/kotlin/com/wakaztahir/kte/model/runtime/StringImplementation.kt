@@ -9,7 +9,7 @@ object StringImplementation {
 
     private fun HashMap<String, KTEValue>.putObjectFunctions() {
         put("get", object : KTEFunction() {
-            override fun invoke(model: KTEObject, parameters: List<ReferencedValue>): KTEValue {
+            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
                 val string = invokedOn?.let { it as? StringValue }?.value
                 val index = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as? Int }
                 require(string != null) { "string value is null" }
@@ -20,7 +20,7 @@ object StringImplementation {
             override fun toString(): String = "get(int) : chat"
         })
         put("size", object : KTEFunction() {
-            override fun invoke(model: KTEObject, parameters: List<ReferencedValue>): KTEValue {
+            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
                 val string = invokedOn?.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
                 return IntValue(string.length)
@@ -29,7 +29,7 @@ object StringImplementation {
             override fun toString(): String = "size() : int"
         })
         put("toInt", object : KTEFunction() {
-            override fun invoke(model: KTEObject, parameters: List<ReferencedValue>): KTEValue {
+            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
                 val string = invokedOn?.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
                 return string.toIntOrNull()?.let { IntValue(it) } ?: KTEUnit
@@ -38,7 +38,7 @@ object StringImplementation {
             override fun toString(): String = "toInt() : int"
         })
         put("toDouble", object : KTEFunction() {
-            override fun invoke(model: KTEObject, parameters: List<ReferencedValue>): KTEValue {
+            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
                 val string = invokedOn?.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
                 return string.toDoubleOrNull()?.let { DoubleValue(it) } ?: KTEUnit
@@ -47,7 +47,7 @@ object StringImplementation {
             override fun toString(): String = "toDouble() : double"
         })
         put("substring", object : KTEFunction() {
-            override fun invoke(model: KTEObject, parameters: List<ReferencedValue>): KTEValue {
+            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
                 val string = invokedOn?.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
                 val firstIndex = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as Int }
@@ -61,7 +61,7 @@ object StringImplementation {
             override fun toString(): String = "substring(int,int) : string"
         })
         put("uppercase", object : KTEFunction() {
-            override fun invoke(model: KTEObject, parameters: List<ReferencedValue>): KTEValue {
+            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
                 val string = invokedOn?.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
                 return StringValue(string.uppercase())
@@ -70,7 +70,7 @@ object StringImplementation {
             override fun toString(): String = "uppercase() : string"
         })
         put("lowercase", object : KTEFunction() {
-            override fun invoke(model: KTEObject, parameters: List<ReferencedValue>): KTEValue {
+            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
                 val string = invokedOn?.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
                 return StringValue(string.lowercase())
@@ -79,7 +79,7 @@ object StringImplementation {
             override fun toString(): String = "lowercase() : string"
         })
         put("capitalize", object : KTEFunction() {
-            override fun invoke(model: KTEObject, parameters: List<ReferencedValue>): KTEValue {
+            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
                 val string = invokedOn?.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
                 return StringValue(string.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() })
@@ -88,7 +88,7 @@ object StringImplementation {
             override fun toString(): String = "capitalize() : string"
         })
         put("decapitalize", object : KTEFunction() {
-            override fun invoke(model: KTEObject, parameters: List<ReferencedValue>): KTEValue {
+            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
                 val string = invokedOn?.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
                 return StringValue(string.replaceFirstChar { it.lowercase() })
@@ -97,7 +97,7 @@ object StringImplementation {
             override fun toString(): String = "decapitalize() : string"
         })
         put("replace", object : KTEFunction() {
-            override fun invoke(model: KTEObject, parameters: List<ReferencedValue>): KTEValue {
+            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
                 val string = invokedOn?.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
                 val find = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
@@ -111,7 +111,7 @@ object StringImplementation {
             override fun toString(): String = "replace(string,string) : string"
         })
         put("contains", object : KTEFunction() {
-            override fun invoke(model: KTEObject, parameters: List<ReferencedValue>): KTEValue {
+            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
                 val string = invokedOn?.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
                 val firstStr = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }

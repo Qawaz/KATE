@@ -31,7 +31,7 @@ class VariablesTest {
             expected = "10",
             actual = GenerateCode("@var i = @var(myFunc()) @var(i)", MutableKTEObject {
                 putValue("myFunc", object : KTEFunction() {
-                    override fun invoke(model: KTEObject, parameters: List<ReferencedValue>): KTEValue {
+                    override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
                         return IntValue(10)
                     }
 
