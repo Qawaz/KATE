@@ -74,9 +74,9 @@ class RawTest {
             expected = """package output""",
             actual = GenerateCode(
                 """@partial_raw
-                |@raw
-                |package output
-                |@endraw
+                |${'\t'}@raw
+                |${'\t'}${'\t'}package output
+                |${'\t'}@endraw
                 |@end_partial_raw
                 """.trimMargin()
             )
