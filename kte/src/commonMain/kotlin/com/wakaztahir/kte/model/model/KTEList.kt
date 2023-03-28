@@ -30,7 +30,19 @@ value class KTEListImpl<T : KTEValue>(override val collection: List<T>) : KTELis
     }
 
     override fun compareTo(model: KTEObject, other: KTEValue): Int {
-        throw IllegalStateException("list $this cannot be compared to $other")
+        if (other is KTEList<*>) {
+            if (this.collection.isEmpty() && other.collection.isEmpty()) return 0
+            if (this.collection.size != other.collection.size) return -1
+            var i = 0
+            while (i < this.collection.size) {
+                if (this.collection[i].compareTo(model, other.collection[i]) != 0) {
+                    return -1
+                }
+                i++
+            }
+            return 0
+        }
+        return -1
     }
 
     override fun toString(): String {

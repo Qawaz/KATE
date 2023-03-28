@@ -20,14 +20,21 @@ interface PrimitiveValue<T> : CodeGen, ReferencedValue {
 
     override fun compareTo(model: KTEObject, other: KTEValue): Int {
         @Suppress("UNCHECKED_CAST")
-        (other.asNullablePrimitive(model) as? PrimitiveValue<T>)?.let { return compareTo(it) }
+        (other as? PrimitiveValue<T>)?.let { return compareTo(it) }
         other.asNullablePrimitive(model)?.let { return compareOther(it) }
-        throw IllegalStateException("couldn't compare $this with value $other")
+        throw IllegalStateException("couldn't compare between $this and $other")
     }
 
     fun operate(type: ArithmeticOperatorType, value2: PrimitiveValue<T>): PrimitiveValue<*>
 
     fun operateOther(type: ArithmeticOperatorType, value2: PrimitiveValue<*>): PrimitiveValue<*>
+
+    fun operateAny(type: ArithmeticOperatorType, other: PrimitiveValue<*>): PrimitiveValue<*> {
+        @Suppress("UNCHECKED_CAST")
+        (other as? PrimitiveValue<T>)?.let { return operate(type, it) }
+        (other as? PrimitiveValue<*>)?.let { return operateOther(type, it) }
+        throw IllegalStateException("couldn't operate ${type.char} between $this and $other")
+    }
 
     override fun asNullablePrimitive(model: KTEObject): PrimitiveValue<*>? {
         return this
@@ -37,15 +44,6 @@ interface PrimitiveValue<T> : CodeGen, ReferencedValue {
         return toString()
     }
 
-}
-
-@Suppress("UNCHECKED_CAST", "NOTHING_TO_INLINE")
-inline fun <T> PrimitiveValue<T>.operateAny(
-    operatorType: ArithmeticOperatorType,
-    other: PrimitiveValue<*>
-): PrimitiveValue<*> {
-    (other as? PrimitiveValue<T>)?.let { return operate(operatorType, it) }
-    return operateOther(operatorType, other)
 }
 
 @JvmInline

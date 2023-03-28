@@ -110,6 +110,15 @@ class IfStatementTest {
     }
 
     @Test
+    fun testCompareLists() {
+        assertEquals(true, evaluate("@list(1,2,3)", "==", "@list(1,2,3)"))
+        assertEquals(false, evaluate("@list(1,2,3)", "==", "@list(1,3,2)"))
+        assertEquals(false, evaluate("@list(1,3,2)", "==", "@list(1,2,3)"))
+        assertEquals(false, evaluate("@list(0,1,3,2)", "==", "@list(1,2,3)"))
+        assertEquals(false, evaluate("@list(1,3,2)", "==", "@list(1,2,3,4)"))
+    }
+
+    @Test
     fun testConstantsRefs() {
         val context = TemplateContext(("\"ValueOne\" == \"SecondValue\""))
         val condition = context.stream.parseCondition()!! as LogicalCondition
