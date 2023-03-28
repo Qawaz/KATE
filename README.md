@@ -335,7 +335,7 @@ Runtime directives call functions in the runtime , Currently these directives ar
 To define a function
 
 ```
-@function
+@function(myFunc)
     @return 1
 @end_function
 ```
@@ -343,10 +343,13 @@ To define a function
 Parameters are available in a function definition using `@var(this)` which is a list of parameters
 
 ```
-@function
+@function(firstParam)
     @return @var(this[0])
 @end_function
 ```
+
+To invoke the function `@var(myFunc)` , `@var(firstParam)` can be used , prefixed with `@` if you don't want to output
+returned value
 
 The code above returns the first parameter passed to the function using indexing operator which translates to `get(0)`
 

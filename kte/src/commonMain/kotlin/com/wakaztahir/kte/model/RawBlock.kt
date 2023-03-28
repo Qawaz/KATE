@@ -5,6 +5,7 @@ import com.wakaztahir.kte.model.model.MutableKTEObject
 import com.wakaztahir.kte.parser.parseDefaultNoRaw
 import com.wakaztahir.kte.parser.parseVariableReference
 import com.wakaztahir.kte.parser.stream.DestinationStream
+import kotlin.jvm.JvmInline
 
 class DefaultNoRawBlock(val value: LazyBlockSlice) : BlockContainer {
     override fun getBlockValue(model: KTEObject): LazyBlock = value
@@ -51,7 +52,8 @@ open class PartialRawLazyBlockSlice(
 
 }
 
-class PartialRawBlock(val value: PartialRawLazyBlockSlice) : BlockContainer {
+@JvmInline
+value class PartialRawBlock(val value: PartialRawLazyBlockSlice) : BlockContainer {
     override fun getBlockValue(model: KTEObject): LazyBlock = value
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
         value.generateTo(destination)

@@ -2,10 +2,7 @@ package com.wakaztahir.kte.model.runtime
 
 import com.wakaztahir.kte.model.BooleanValue
 import com.wakaztahir.kte.model.IntValue
-import com.wakaztahir.kte.model.model.KTEFunction
-import com.wakaztahir.kte.model.model.KTEObject
-import com.wakaztahir.kte.model.model.KTEValue
-import com.wakaztahir.kte.model.model.ReferencedValue
+import com.wakaztahir.kte.model.model.*
 
 object KTEListImplementation {
 
