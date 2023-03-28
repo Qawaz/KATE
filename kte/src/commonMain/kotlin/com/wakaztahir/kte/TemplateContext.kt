@@ -6,7 +6,6 @@ import com.wakaztahir.kte.parser.stream.DestinationStream
 import com.wakaztahir.kte.parser.stream.SourceStream
 import com.wakaztahir.kte.parser.stream.TextDestinationStream
 import com.wakaztahir.kte.parser.stream.TextSourceStream
-import com.wakaztahir.kte.parser.stream.languages.KotlinLanguageDestination
 import com.wakaztahir.kte.parser.stream.languages.PlaceholderLanguageDestination
 
 class TemplateContext(stream: SourceStream) {

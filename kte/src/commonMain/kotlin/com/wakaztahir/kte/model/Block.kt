@@ -5,7 +5,6 @@ import com.wakaztahir.kte.model.model.MutableKTEObject
 import com.wakaztahir.kte.parser.*
 import com.wakaztahir.kte.parser.stream.*
 import com.wakaztahir.kte.parser.stream.increment
-import com.wakaztahir.kte.parser.stream.languages.KotlinLanguageDestination
 import com.wakaztahir.kte.parser.stream.languages.PlaceholderLanguageDestination
 
 interface LazyBlock {

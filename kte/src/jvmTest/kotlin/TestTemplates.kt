@@ -5,7 +5,7 @@ import com.wakaztahir.kte.model.model.MutableKTEObject
 import com.wakaztahir.kte.parser.stream.DestinationStream
 import com.wakaztahir.kte.parser.stream.SourceStream
 import com.wakaztahir.kte.parser.stream.TextSourceStream
-import com.wakaztahir.kte.parser.stream.languages.KotlinLanguageDestination
+import com.wakaztahir.kte.parser.stream.languages.PlaceholderLanguageDestination
 import org.junit.Test
 import java.io.File
 
@@ -19,7 +19,7 @@ class TestTemplates {
         val file = File("src/jvmTest/resources/$path")
         println(file.absolutePath)
         val outputStream = file.outputStream()
-        return KotlinLanguageDestination(block, OutputStreamDestination(outputStream))
+        return PlaceholderLanguageDestination(block, OutputStreamDestination(outputStream))
     }
 
     @Test

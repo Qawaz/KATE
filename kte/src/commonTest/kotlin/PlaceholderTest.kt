@@ -4,7 +4,7 @@ import com.wakaztahir.kte.TemplateContext
 import com.wakaztahir.kte.parser.parsePlaceholderDefinition
 import com.wakaztahir.kte.parser.parsePlaceholderInvocation
 import com.wakaztahir.kte.parser.stream.TextDestinationStream
-import com.wakaztahir.kte.parser.stream.languages.KotlinLanguageDestination
+import com.wakaztahir.kte.parser.stream.languages.PlaceholderLanguageDestination
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -28,7 +28,7 @@ class PlaceholderTest {
         assertEquals("ElonMusk", definition.blockValue.getValueAsString())
         assertEquals("Name", invocation.placeholderName)
 
-        val destination = KotlinLanguageDestination(context.stream, TextDestinationStream())
+        val destination = PlaceholderLanguageDestination(context.stream, TextDestinationStream())
         definition.generateTo(context.stream, destination)
         assertEquals(definition.blockValue, context.stream.placeholderManager.placeholders[0])
         invocation.generateTo(context.stream, destination)
