@@ -4,6 +4,7 @@ import com.wakaztahir.kte.dsl.ModelObjectImpl
 import com.wakaztahir.kte.model.model.KTEObject
 import com.wakaztahir.kte.model.model.KTEValue
 import com.wakaztahir.kte.model.model.MutableKTEObject
+import com.wakaztahir.kte.parser.parseFunctionDefinition
 import com.wakaztahir.kte.parser.parseObjectDeclaration
 import com.wakaztahir.kte.parser.parseVariableDeclaration
 import com.wakaztahir.kte.parser.stream.DestinationStream
@@ -18,7 +19,7 @@ class ObjectDeclarationModel(
 }
 
 class ObjectDeclarationBlockSlice(
-    parentBlock : LazyBlock,
+    parentBlock: LazyBlock,
     startPointer: Int,
     length: Int,
     blockEndPointer: Int,
@@ -36,6 +37,7 @@ class ObjectDeclarationBlockSlice(
 
     override fun parseAtDirective(): CodeGen? {
         parseVariableDeclaration()?.let { return it }
+        parseFunctionDefinition()?.let { return it }
         parseObjectDeclaration()?.let { return it }
         return null
     }
