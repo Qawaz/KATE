@@ -57,13 +57,23 @@ open class PlaceholderBlock(
             "Generation Model should be set using setGenerationModel before calling generateTo"
         }
         if (paramValue != null) {
-            require(!model.contains("this")) {
-                "when passing @var(this) value to placeholder invocation , defining value with same name \"this\" is not allowed"
+            require(!model.contains("__param__")) {
+                "when passing @var(this) value to placeholder invocation , defining value with same name \"__param__\" is not allowed"
             }
-            model.putValue("this", paramValue!!)
+            (paramValue as? ModelDirective)?.propertyPath?.lastOrNull()?.name?.let {
+                model.putValue("__KTE_PARAM_NAME", it)
+            }
+            model.putValue("__param__", paramValue!!)
         }
         generateActual(destination)
-        model.removeKey("this")
+        if (paramValue != null) {
+            model.removeKey("__param__")
+            if (paramValue is ModelDirective) {
+                (paramValue as? ModelDirective)?.propertyPath?.lastOrNull()?.name?.let {
+                    model.removeKey("__KTE_PARAM_NAME")
+                }
+            }
+        }
         this.isGenerationModelSet = false
     }
 

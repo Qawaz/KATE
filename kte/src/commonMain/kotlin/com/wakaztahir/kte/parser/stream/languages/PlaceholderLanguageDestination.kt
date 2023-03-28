@@ -6,48 +6,69 @@ import com.wakaztahir.kte.parser.stream.DestinationStream
 import com.wakaztahir.kte.parser.stream.PlaceholderManager
 import com.wakaztahir.kte.parser.stream.WritableStream
 
+@Suppress("PrivatePropertyName")
 class PlaceholderLanguageDestination(
     private val block: LazyBlock,
     override val stream: WritableStream
 ) : DestinationStream {
 
+    private val DoublePlaceholderName = "Double"
+    private val IntPlaceholderName = "Int"
+    private val StringPlaceholderName = "String"
+    private val CharPlaceholderName = "Char"
+    private val BooleanPlaceholderName = "Boolean"
+    private val ListPlaceholderName = "List"
+    private val MutableListPlaceholderName = "MutableList"
+    private val ObjectPlaceholderName = "Object"
+
     private var doublePlaceholder: PlaceholderBlock = TextPlaceholderBlock(
-        text = "@runtime.print_string(@var(this.toString()))",
+        text = "@runtime.print_string(@var(__param__.toString()))",
         parent = block,
-        placeholderName = "Double",
-        definitionName = "Double"
+        placeholderName = DoublePlaceholderName,
+        definitionName = DoublePlaceholderName
     )
     private var intPlaceholder: PlaceholderBlock = TextPlaceholderBlock(
-        text = "@runtime.print_string(@var(this.toString()))",
+        text = "@runtime.print_string(@var(__param__.toString()))",
         parent = block,
-        placeholderName = "Int",
-        definitionName = "Int"
+        placeholderName = IntPlaceholderName,
+        definitionName = IntPlaceholderName
     )
     private var stringPlaceholder: PlaceholderBlock = TextPlaceholderBlock(
-        text = "@runtime.print_string(@var(this))",
+        text = "@runtime.print_string(@var(__param__))",
         parent = block,
-        placeholderName = "String",
-        definitionName = "String"
+        placeholderName = StringPlaceholderName,
+        definitionName = StringPlaceholderName
     )
     private var charPlaceholder: PlaceholderBlock = TextPlaceholderBlock(
-        text = "@runtime.print_char(@var(this))",
+        text = "@runtime.print_char(@var(__param__))",
         parent = block,
-        placeholderName = "Char",
-        definitionName = "Char"
+        placeholderName = CharPlaceholderName,
+        definitionName = CharPlaceholderName
     )
     private var booleanPlaceholder: PlaceholderBlock = TextPlaceholderBlock(
-        text = "@if(@var(this)) @runtime.print_string(\"true\") @else @runtime.print_string(\"false\") @endif",
+        text = "@if(@var(__param__)) @runtime.print_string(\"true\") @else @runtime.print_string(\"false\") @endif",
         parent = block,
-        placeholderName = "Boolean",
-        definitionName = "Boolean"
+        placeholderName = BooleanPlaceholderName,
+        definitionName = BooleanPlaceholderName
     )
     private var listPlaceholder: PlaceholderBlock = TextPlaceholderBlock(
-        text = "@runtime.print_string(@var(this.toString()))",
+        text = "@runtime.print_string(@var(__param__.toString()))",
         parent = block,
-        placeholderName = "Boolean",
-        definitionName = "Boolean"
+        placeholderName = ListPlaceholderName,
+        definitionName = ListPlaceholderName
     )
-    private var mutableListPlaceholder: PlaceholderBlock? = listPlaceholder
+    private var mutableListPlaceholder: PlaceholderBlock = TextPlaceholderBlock(
+        text = "@runtime.print_string(@var(__param__.toString()))",
+        parent = block,
+        placeholderName = MutableListPlaceholderName,
+        definitionName = MutableListPlaceholderName
+    )
+    private var objectPlaceholder: PlaceholderBlock = TextPlaceholderBlock(
+        text = "@runtime.print_string(\"NOT DONE YET\")",
+        parent = block,
+        placeholderName = ObjectPlaceholderName,
+        definitionName = ObjectPlaceholderName
+    )
 
     private inline fun getAndOnChange(placeholderName: String, crossinline run: (PlaceholderBlock) -> Unit) {
         block.source.placeholderManager.getPlaceholder(placeholderName)?.also(run)
@@ -71,23 +92,19 @@ class PlaceholderLanguageDestination(
     }
 
     private fun initializePlaceholders() {
-        getAndOnChange("DoubleValue") { doublePlaceholder = it }
-        getAndOnChange("IntValue") { intPlaceholder = it }
-        getAndOnChange("StringValue") { stringPlaceholder = it }
-        getAndOnChange("CharValue") { charPlaceholder = it }
-        getAndOnChange("BooleanValue") { booleanPlaceholder = it }
-        getAndOnChange("ListValue") { listPlaceholder = it }
-        getAndOnChange("MutableListValue") {
-            mutableListPlaceholder = if (it.definitionName == "Empty") listPlaceholder else it
-        }
+        getAndOnChange(DoublePlaceholderName) { doublePlaceholder = it }
+        getAndOnChange(IntPlaceholderName) { intPlaceholder = it }
+        getAndOnChange(StringPlaceholderName) { stringPlaceholder = it }
+        getAndOnChange(CharPlaceholderName) { charPlaceholder = it }
+        getAndOnChange(BooleanPlaceholderName) { booleanPlaceholder = it }
+        getAndOnChange(ListPlaceholderName) { listPlaceholder = it }
+        getAndOnChange(MutableListPlaceholderName) { mutableListPlaceholder = it }
+        getAndOnChange(ObjectPlaceholderName) { objectPlaceholder = it }
     }
 
     init {
         initializePlaceholders()
     }
-
-    private var quotesOnString = false
-    private var objectCallOnly = false
 
     override fun write(block: LazyBlock, value: IntValue) {
         intPlaceholder.generateTo(block.model, value, this)
@@ -114,53 +131,11 @@ class PlaceholderLanguageDestination(
     }
 
     override fun write(block: LazyBlock, value: KTEMutableList<out KTEValue>) {
-        (mutableListPlaceholder ?: listPlaceholder).generateTo(block.model, value, this)
-    }
-
-    private fun KTEValue.getType(): String {
-        return when (this) {
-            is IntValue -> "Int"
-            is DoubleValue -> "Double"
-            is BooleanValue -> "Boolean"
-            is StringValue -> "String"
-            is KTEList<*> -> "List<" + (this.collection.firstOrNull()?.getType() ?: "Any") + ">"
-            is KTEObject -> "Any"
-            is KTEFunction -> "Any"
-            else -> "Any"
-        }
-    }
-
-    private fun writeObjectAsDataClass(value: KTEObject) {
-        stream.write("data class ${value.objectName}(\n")
-        var first = true
-        for (each in value.contained) {
-            if (!first) stream.write(",\n")
-            stream.write("\t${each.key} : ${each.value.getType()} = ")
-            quotesOnString = true
-            each.value.generateTo(block, this)
-            quotesOnString = false
-            first = false
-        }
-        stream.write("\n)")
-    }
-
-    private fun writeObjectCallOnly(value: KTEObject) {
-        stream.write("${value.objectName}()")
+        mutableListPlaceholder.generateTo(block.model, value, this)
     }
 
     override fun write(block: LazyBlock, value: KTEObject) {
-        if (objectCallOnly) {
-            writeObjectCallOnly(value)
-        } else {
-            objectCallOnly = true
-            value.traverse { it ->
-                if (it is KTEObject) {
-                    writeObjectAsDataClass(it)
-                    if (it.contained.any { entry -> entry.value is KTEObject }) stream.write("\n\n")
-                }
-            }
-            objectCallOnly = false
-        }
+        objectPlaceholder.generateTo(block.model, value, this)
     }
 
 }

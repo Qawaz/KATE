@@ -26,7 +26,7 @@ sealed interface ModelReference {
 
 }
 
-class ModelDirective(val propertyPath: List<ModelReference>) : ReferencedValue, AtDirective {
+open class ModelDirective(val propertyPath: List<ModelReference>) : ReferencedValue, AtDirective {
 
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
         getKTEValue(block.model).generateTo(block, destination)

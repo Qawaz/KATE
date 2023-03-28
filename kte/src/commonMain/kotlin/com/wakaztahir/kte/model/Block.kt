@@ -98,7 +98,6 @@ interface LazyBlock {
         parsePlaceholderInvocation()?.let { return it }
         parseFunctionDefinition()?.let { return it }
         parsePlaceholderUse()?.let { return it }
-        parseDeleteVarDirective()?.let { return it }
         return null
     }
 

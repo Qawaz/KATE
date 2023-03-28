@@ -38,16 +38,6 @@ The value of the variable can only be one of these
 | Value Returned from a function call                        | &check;   |
 | [List or Its element](#lists)                              | &check;   |
 
-### Variable Directives
-
-#### Exists Directive
-
-`@exists_var(myVar)` checks if `myVar` exists , returns true if it does
-
-#### Delete Directive
-
-`@delete_var(myVar)` deletes any value , This can remove objects / lists / primitives and functions from the object
-
 ## References & Function Calls
 
 `@var(variableName)` to get value of the variable defined earlier
@@ -200,6 +190,15 @@ declarations
 
 And then objects can be referenced just like any other variable `@var(MyObject)`
 
+Here's a table of functions that exist on objects
+
+| Value                             | Description                  |
+|-----------------------------------|------------------------------|
+| getKeys() : List<string>          | Get keys of the object       |
+| getValues() : List<KTEValue>      | Get values of the object     |
+| contains(name : string) : boolean | Returns true if contains key |
+| delete(name : string) : unit      | Removes the key if exists    |
+
 ## Primitives
 
 ### Strings
@@ -296,7 +295,7 @@ Now welcome text can make a reference to `myVar` and it will be able to access i
 
 If placeholder creates any variables , They'll be present in `MyObject` after the invocation
 
-Values provided to placeholder can be accessed using `@var(this)` , Values other than objects can
+Values provided to placeholder can be accessed using `@var(__param__)` , Values other than objects can
 be accessed this way inside the placeholder
 
 ### Redefinition
