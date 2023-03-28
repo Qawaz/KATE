@@ -52,7 +52,8 @@ object KTEListImplementation {
             override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
                 val list = invokedOn.asNullableList(model)
                 require(list != null) { "list is null" }
-                return StringValue('[' + list.collection.joinToString(",") + ']')
+                val separator = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as? String } ?: ","
+                return StringValue(list.collection.joinToString(separator))
             }
 
             override fun toString(): String = "toString() : String"

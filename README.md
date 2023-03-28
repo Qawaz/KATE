@@ -167,12 +167,13 @@ List supports the following properties and functions , You can use
 
 #### Immutable List Functions
 
-| Value                           | Description                                |
-|---------------------------------|--------------------------------------------|
-| size() : Int                    | Returns the size of the list               |
-| get(index : Int) : Element      | Returns the element at index               |
-| contains(e : Element) : Boolean | Returns true if element exists             |
-| indexOf(e : Element) : Int      | Returns index of element (-1 if not found) |
+| Value                                 | Description                                       |
+|---------------------------------------|---------------------------------------------------|
+| size() : int                          | Returns the size of the list                      |
+| get(index : int) : element            | Returns the element at index                      |
+| contains(e : element) : boolean       | Returns true if element exists                    |
+| indexOf(e : element) : int            | Returns index of element (-1 if not found)        |
+| toString(separator : string) : string | converts list to string with separator (optional) |
 
 #### Mutable List Functions
 
@@ -180,10 +181,10 @@ Mutable List also has functions of Immutable List
 
 | Value                                 | Description              |
 |---------------------------------------|--------------------------|
-| add(e : Element) : Boolean            | Add element at last      |
-| addAt(index : Int,e : Element) : Unit | Add element at index     |
-| remove(e : Element) : Boolean         | Remove element from list |
-| removeAt(index : Int) : Element       | Remove element at index  |
+| add(e : element) : boolean            | Add element at last      |
+| addAt(index : int,e : element) : unit | Add element at index     |
+| remove(e : element) : boolean         | Remove element from list |
+| removeAt(index : int) : element       | Remove element at index  |
 
 ## Objects
 

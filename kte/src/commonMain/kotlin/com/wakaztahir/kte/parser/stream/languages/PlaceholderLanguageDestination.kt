@@ -42,7 +42,7 @@ class PlaceholderLanguageDestination(
         definitionName = "Boolean"
     )
     private var listPlaceholder: PlaceholderBlock = TextPlaceholderBlock(
-        text = "@if(@var(this)) @runtime.print_string(\"true\") @else @runtime.print_string(\"false\") @endif",
+        text = "@runtime.print_string(@var(this.toString()))",
         parent = block,
         placeholderName = "Boolean",
         definitionName = "Boolean"
