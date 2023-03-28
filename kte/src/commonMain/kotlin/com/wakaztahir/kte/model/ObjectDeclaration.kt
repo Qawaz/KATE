@@ -23,6 +23,7 @@ class ObjectDeclarationBlockSlice(
     length: Int,
     blockEndPointer: Int,
     override val model: ObjectDeclarationModel,
+    indentationLevel: Int
 ) : LazyBlockSlice(
     parentBlock = parentBlock,
     startPointer = startPointer,
@@ -30,6 +31,7 @@ class ObjectDeclarationBlockSlice(
     blockEndPointer = blockEndPointer,
     model = model,
     isWriteUnprocessedTextEnabled = false,
+    indentationLevel = indentationLevel
 ) {
 
     override fun parseAtDirective(): CodeGen? {

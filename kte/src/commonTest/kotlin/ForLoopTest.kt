@@ -121,21 +121,43 @@ class ForLoopTest {
     }
 
     @Test
-    fun parseMultilineForLoop() {
-        val context = TemplateContext(
-            """@for(@var i=0;i<1;i+1)
-              |Line Number 1
-              |Line Number 2
+    fun testForLoopIndentation() {
+        assertEquals(
+            expected = "Line Number 1\nLine Number 2",
+            actual = GenerateCode(
+                """@for(@var i=0;i<1;i+1)
+              |${'\t'}Line Number 1
+              |${'\t'}Line Number 2
               |@endfor""".trimMargin("|")
-        )
-        assertEquals("Line Number 1\nLine Number 2", context.getDestinationAsString())
-        val context2 = TemplateContext(
-            """@for(@var i=2;i<2;i+1)
-              |Line Number 1
-              |Line Number 2
+            ))
+        assertEquals("",
+            actual = GenerateCode(
+                """@for(@var i=2;i<2;i+1)
+              |${'\t'}Line Number 1
+              |${'\t'}Line Number 2
               |@endfor""".trimMargin("|")
+            )
         )
-        assertEquals("", context2.getDestinationAsString())
+        assertEquals(
+            expected = "\tLine Number 1\n\tLine Number 2",
+            actual = GenerateCode(
+                """@for(@var i=0;i<1;i+1)
+              |${'\t'}${'\t'}Line Number 1
+              |${'\t'}${'\t'}Line Number 2
+              |@endfor""".trimMargin("|")
+            )
+        )
+        assertEquals(
+            expected = "Line Number 1\nLine Number 2",
+            actual = GenerateCode(
+                """@for(@var i=0;i<1;i+1)
+              |${'\t'}@for(@var j=0;j<1;j++)
+              |${'\t'}${'\t'}Line Number 1
+              |${'\t'}${'\t'}Line Number 2
+              |${'\t'}@endfor
+              |@endfor""".trimMargin("|")
+            )
+        )
     }
 
 

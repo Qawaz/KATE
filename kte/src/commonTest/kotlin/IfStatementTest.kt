@@ -174,16 +174,34 @@ class IfStatementTest {
         assertEquals(
             "Line Number 1\nLine Number 2", GenerateCode(
                 """@if(true)
-              |Line Number 1
-              |Line Number 2
+              |${'\t'}Line Number 1
+              |${'\t'}Line Number 2
               |@endif""".trimMargin("|")
             )
         )
         assertEquals(
             "", GenerateCode(
                 """@if(false)
-              |Line Number 1
-              |Line Number 2
+              |${'\t'}Line Number 1
+              |${'\t'}Line Number 2
+              |@endif""".trimMargin("|")
+            )
+        )
+        assertEquals(
+            "\tLine Number 1\n\tLine Number 2", GenerateCode(
+                """@if(true)
+              |${'\t'}${'\t'}Line Number 1
+              |${'\t'}${'\t'}Line Number 2
+              |@endif""".trimMargin("|")
+            )
+        )
+        assertEquals(
+            "Line Number 1\nLine Number 2", GenerateCode(
+                """@if(true)
+              |${'\t'}@if(true)
+              |${'\t'}${'\t'}Line Number 1
+              |${'\t'}${'\t'}Line Number 2
+              |${'\t'}@endif
               |@endif""".trimMargin("|")
             )
         )

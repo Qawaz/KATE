@@ -13,14 +13,16 @@ class PlaceholderBlock(
     length: Int,
     blockEndPointer: Int,
     parent: MutableKTEObject,
-    allowTextOut: Boolean
+    allowTextOut: Boolean,
+    indentationLevel: Int
 ) : LazyBlockSlice(
     parentBlock = parentBlock,
     startPointer = startPointer,
     length = length,
     blockEndPointer = blockEndPointer,
     model = parent,
-    isWriteUnprocessedTextEnabled = allowTextOut
+    isWriteUnprocessedTextEnabled = allowTextOut,
+    indentationLevel = indentationLevel
 ) {
 
     private var isGenerationModelSet = false

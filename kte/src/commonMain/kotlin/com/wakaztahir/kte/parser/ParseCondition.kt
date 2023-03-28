@@ -65,7 +65,7 @@ internal fun SourceStream.parseCondition(): Condition? {
 
 private fun LazyBlock.parseIfBlockValue(ifType: IfType): LazyBlockSlice {
 
-    source.escapeBlockSpacesForward()
+    escapeBlockSpacesForward()
 
     val previous = source.pointer
 
@@ -93,7 +93,7 @@ private fun LazyBlock.parseIfBlockValue(ifType: IfType): LazyBlockSlice {
 
     val pointerBeforeEnder = source.pointer
 
-    source.escapeBlockSpacesBackward()
+    escapeBlockSpacesBackward()
 
     val length = source.pointer - previous
 
@@ -105,7 +105,8 @@ private fun LazyBlock.parseIfBlockValue(ifType: IfType): LazyBlockSlice {
         length = length,
         model = ScopedModelObject(parent = this@parseIfBlockValue.model),
         blockEndPointer = source.pointer + blockEnder.length,
-        isWriteUnprocessedTextEnabled = isWriteUnprocessedTextEnabled
+        isWriteUnprocessedTextEnabled = isWriteUnprocessedTextEnabled,
+        indentationLevel = indentationLevel + 1
     )
 }
 

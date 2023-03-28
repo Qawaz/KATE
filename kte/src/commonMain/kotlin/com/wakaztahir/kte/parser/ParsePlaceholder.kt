@@ -56,7 +56,8 @@ private fun LazyBlock.parsePlaceholderBlock(nameAndDef: Pair<String, String>): P
         length = blockValue.length,
         parent = blockValue.model,
         blockEndPointer = blockValue.blockEndPointer,
-        allowTextOut = isWriteUnprocessedTextEnabled
+        allowTextOut = isWriteUnprocessedTextEnabled,
+        indentationLevel = blockValue.indentationLevel
     )
 
 }

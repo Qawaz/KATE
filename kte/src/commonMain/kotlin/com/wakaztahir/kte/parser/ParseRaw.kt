@@ -12,7 +12,7 @@ fun LazyBlock.parseBlockSlice(
     inheritModel: Boolean
 ): LazyBlockSlice {
 
-    source.escapeBlockSpacesForward()
+    escapeBlockSpacesForward()
 
     val previous = source.pointer
 
@@ -25,7 +25,7 @@ fun LazyBlock.parseBlockSlice(
 
     val pointerBeforeEnder = source.pointer
 
-    source.escapeBlockSpacesBackward()
+    escapeBlockSpacesBackward()
 
     val length = source.pointer - previous
 
@@ -37,7 +37,8 @@ fun LazyBlock.parseBlockSlice(
         length = length,
         model = if (inheritModel) model else ScopedModelObject(model),
         blockEndPointer = source.pointer,
-        isWriteUnprocessedTextEnabled = allowTextOut
+        isWriteUnprocessedTextEnabled = allowTextOut,
+        indentationLevel = indentationLevel + 1
     )
 
 }
@@ -70,7 +71,8 @@ fun LazyBlock.parsePartialRaw(): PartialRawBlock? {
                 startPointer = slice.startPointer,
                 length = slice.length,
                 blockEndPointer = slice.blockEndPointer,
-                model = slice.model
+                model = slice.model,
+                indentationLevel = slice.indentationLevel
             )
         )
     }

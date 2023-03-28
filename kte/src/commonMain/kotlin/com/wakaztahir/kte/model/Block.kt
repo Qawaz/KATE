@@ -3,9 +3,7 @@ package com.wakaztahir.kte.model
 import com.wakaztahir.kte.KTEDelicateFunction
 import com.wakaztahir.kte.model.model.MutableKTEObject
 import com.wakaztahir.kte.parser.*
-import com.wakaztahir.kte.parser.stream.DestinationStream
-import com.wakaztahir.kte.parser.stream.SourceStream
-import com.wakaztahir.kte.parser.stream.TextDestinationStream
+import com.wakaztahir.kte.parser.stream.*
 import com.wakaztahir.kte.parser.stream.increment
 import com.wakaztahir.kte.parser.stream.languages.KotlinLanguageDestination
 
@@ -17,9 +15,14 @@ interface LazyBlock {
     // Text that couldn't be processed by the compiler is written to stream as it is
     val isWriteUnprocessedTextEnabled: Boolean
 
+    // Indentation level should increase , which will be consumed as code is parsed
+    val indentationLevel: Int
+
     fun canIterate(): Boolean
 
     fun generateTo(destination: DestinationStream) {
+        var blockLineNumber = 1
+        var hasConsumedFirstLineIndentation = false
         while (canIterate()) {
             if (source.skipMultilineComments()) {
                 continue
@@ -29,9 +32,33 @@ interface LazyBlock {
                 writeDirective(directive = directive, destination = destination)
                 continue
             }
-            if (isWriteUnprocessedTextEnabled) destination.stream.write(source.currentChar)
+            if (isWriteUnprocessedTextEnabled) {
+                if (blockLineNumber == 1 && source.currentChar == '\t' && indentationLevel > 0 && !hasConsumedFirstLineIndentation) {
+                    consumeLineIndentation()
+                    hasConsumedFirstLineIndentation = true
+                    continue
+                } else {
+                    destination.stream.write(source.currentChar)
+                }
+            }
+            val isNewLine = source.currentChar == '\n'
             source.incrementPointer()
+            if (isNewLine) {
+                consumeLineIndentation()
+                blockLineNumber++
+            }
         }
+    }
+
+    fun consumeLineIndentation(): Int {
+        if (indentationLevel < 1) return indentationLevel
+        var x = 0
+        var consumed = 0
+        while (x < indentationLevel) {
+            if (source.increment('\t')) consumed++
+            x++
+        }
+        return consumed
     }
 
     fun writeDirective(directive: CodeGen, destination: DestinationStream) {
@@ -39,6 +66,8 @@ interface LazyBlock {
         if (!source.hasEnded && directive is BlockContainer) {
             if (!source.increment('\n')) {
                 source.increment(' ')
+            } else {
+                consumeLineIndentation()
             }
         } else if (directive.isEmptyWriter) {
             source.increment(' ')
@@ -88,7 +117,8 @@ open class LazyBlockSlice(
     val length: Int,
     val blockEndPointer: Int,
     override val model: MutableKTEObject,
-    override val isWriteUnprocessedTextEnabled: Boolean
+    override val isWriteUnprocessedTextEnabled: Boolean,
+    override val indentationLevel: Int
 ) : LazyBlock {
 
     override val source: SourceStream

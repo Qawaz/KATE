@@ -1,5 +1,7 @@
 package com.wakaztahir.kte.parser.stream
 
+import com.wakaztahir.kte.model.LazyBlock
+
 internal class UnexpectedEndOfStream(message: String) : Exception(message)
 
 internal fun SourceStream.unexpected(): UnexpectedEndOfStream {
@@ -123,6 +125,7 @@ internal inline fun SourceStream.incrementUntilDirectiveWithSkip(
         if (currentChar == '@') {
             if (increment(skip)) {
                 skips++
+                continue
             } else {
                 val incremented = canIncrementDirective()
                 if (incremented != null) {
@@ -130,6 +133,7 @@ internal inline fun SourceStream.incrementUntilDirectiveWithSkip(
                         return incremented
                     } else {
                         skips--
+                        continue
                     }
                 }
             }
@@ -139,20 +143,20 @@ internal inline fun SourceStream.incrementUntilDirectiveWithSkip(
     return null
 }
 
-internal fun SourceStream.escapeBlockSpacesForward() {
+internal fun LazyBlock.escapeBlockSpacesForward() {
 
-    var pointerAfterFirstSpace = pointer
-    if (currentChar == ' ') {
-        incrementPointer()
-        pointerAfterFirstSpace = pointer
+    var pointerAfterFirstSpace = source.pointer
+    if (source.currentChar == ' ') {
+        source.incrementPointer()
+        pointerAfterFirstSpace = source.pointer
     }
 
     var foundNewLine = false
-    while (!hasEnded) {
-        if (currentChar == ' ') {
-            incrementPointer()
-        } else if (currentChar == '\n') {
-            incrementPointer()
+    while (!source.hasEnded) {
+        if (source.currentChar == ' ') {
+            source.incrementPointer()
+        } else if (source.currentChar == '\n') {
+            source.incrementPointer()
             foundNewLine = true
             break
         } else {
@@ -161,47 +165,47 @@ internal fun SourceStream.escapeBlockSpacesForward() {
     }
 
     if (!foundNewLine) {
-        setPointerAt(pointerAfterFirstSpace)
+        source.setPointerAt(pointerAfterFirstSpace)
     }
 
 }
 
-internal fun SourceStream.escapeBlockSpacesBackward() {
+internal fun LazyBlock.escapeBlockSpacesBackward() {
 
-    var fallbackPointer = pointer
-    if (decrementPointer()) {
-        when (currentChar) {
-            ' ' -> {
-                fallbackPointer = pointer
-            }
-
+    val previous = source.pointer
+    var currentIndentationLevel = indentationLevel
+    while (!source.hasEnded) {
+        source.decrementPointer()
+        when (source.currentChar) {
             '\n' -> {
                 return
             }
 
+            ' ' -> {
+                continue
+            }
+
+            '\t' -> {
+                if (currentIndentationLevel > 0) {
+                    currentIndentationLevel--
+                } else {
+                    return
+                }
+            }
+
             else -> {
-                incrementPointer()
+                source.incrementPointer()
                 return
             }
         }
     }
 
-    var foundNewLine = false
-    while (!hasEnded) {
-        decrementPointer()
-        if (currentChar != ' ') {
-            if (currentChar == '\n') {
-                foundNewLine = true
-                break
-            } else {
-                incrementPointer()
-                break
-            }
-        }
-    }
 
-    if (!foundNewLine) {
-        setPointerAt(fallbackPointer)
+    source.setPointerAt(previous)
+    source.decrementPointer()
+    if (source.currentChar != ' ') {
+        source.incrementPointer()
+        return
     }
 
 }

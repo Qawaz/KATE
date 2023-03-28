@@ -27,6 +27,8 @@ abstract class SourceStream : LazyBlock {
     override val isWriteUnprocessedTextEnabled: Boolean
         get() = true
 
+    override val indentationLevel: Int = 0
+
     abstract val pointer: Int
 
     abstract val currentChar: Char

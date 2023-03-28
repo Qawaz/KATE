@@ -125,14 +125,16 @@ private class ForLoopLazyBlockSlice(
     length: Int,
     blockEndPointer: Int,
     parent: ScopedModelObject,
-    allowTextOut: Boolean
+    allowTextOut: Boolean,
+    indentationLevel: Int
 ) : LazyBlockSlice(
     parentBlock = parentBlock,
     startPointer = startPointer,
     length = length,
     model = parent,
     blockEndPointer = blockEndPointer,
-    isWriteUnprocessedTextEnabled = allowTextOut
+    isWriteUnprocessedTextEnabled = allowTextOut,
+    indentationLevel = indentationLevel
 ) {
 
     var hasBroken: Boolean = false
@@ -170,7 +172,8 @@ private fun LazyBlock.parseForBlockValue(): ForLoopLazyBlockSlice {
         length = slice.length,
         blockEndPointer = slice.blockEndPointer,
         parent = slice.model as ScopedModelObject,
-        allowTextOut = slice.isWriteUnprocessedTextEnabled
+        allowTextOut = slice.isWriteUnprocessedTextEnabled,
+        indentationLevel = indentationLevel + 1
     )
 }
 

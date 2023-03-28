@@ -26,13 +26,15 @@ class PartialRawLazyBlockSlice(
     length: Int,
     blockEndPointer: Int,
     model: MutableKTEObject,
+    indentationLevel: Int
 ) : LazyBlockSlice(
     parentBlock = parentBlock,
     startPointer = startPointer,
     length = length,
     blockEndPointer = blockEndPointer,
     model = model,
-    isWriteUnprocessedTextEnabled = false
+    isWriteUnprocessedTextEnabled = false,
+    indentationLevel = indentationLevel
 ) {
 
     override fun parseImplicitDirectives(): CodeGen? {
