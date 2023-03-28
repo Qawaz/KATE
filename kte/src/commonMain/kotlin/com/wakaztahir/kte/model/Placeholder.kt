@@ -4,8 +4,9 @@ import com.wakaztahir.kte.model.model.KTEObject
 import com.wakaztahir.kte.model.model.KTEValue
 import com.wakaztahir.kte.model.model.MutableKTEObject
 import com.wakaztahir.kte.parser.stream.DestinationStream
+import com.wakaztahir.kte.parser.stream.TextSourceStream
 
-class PlaceholderBlock(
+open class PlaceholderBlock(
     parentBlock: LazyBlock,
     val placeholderName: String,
     val definitionName: String,
@@ -28,7 +29,7 @@ class PlaceholderBlock(
     private var isGenerationModelSet = false
 
     override var model: MutableKTEObject = parent
-        private set
+        protected set
 
     private var paramValue: KTEValue? = null
 
@@ -47,6 +48,10 @@ class PlaceholderBlock(
         generateTo(destination)
     }
 
+    protected open fun generateActual(destination: DestinationStream) {
+        super.generateTo(destination)
+    }
+
     override fun generateTo(destination: DestinationStream) {
         require(isGenerationModelSet) {
             "Generation Model should be set using setGenerationModel before calling generateTo"
@@ -57,11 +62,37 @@ class PlaceholderBlock(
             }
             model.putValue("this", paramValue!!)
         }
-        super.generateTo(destination)
+        generateActual(destination)
         model.removeKey("this")
         this.isGenerationModelSet = false
     }
 
+}
+
+class TextPlaceholderBlock(
+    val text: String,
+    parent: LazyBlock,
+    placeholderName: String,
+    definitionName: String,
+) : PlaceholderBlock(
+    parentBlock = parent,
+    placeholderName = placeholderName,
+    definitionName = definitionName,
+    startPointer = 0,
+    blockEndPointer = 0,
+    length = text.length,
+    parent = parent.model,
+    allowTextOut = false,
+    indentationLevel = 0
+) {
+    override fun generateActual(destination: DestinationStream) {
+        TextSourceStream(
+            sourceCode = text,
+            model = model,
+            placeholderManager = source.placeholderManager,
+            embeddingManager = source.embeddingManager
+        ).generateTo(destination)
+    }
 }
 
 class PlaceholderDefinition(val blockValue: PlaceholderBlock) : BlockContainer {

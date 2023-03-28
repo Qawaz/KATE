@@ -1,4 +1,5 @@
 import com.wakaztahir.kte.GenerateCode
+import com.wakaztahir.kte.PlaceholderGen
 import com.wakaztahir.kte.TemplateContext
 import com.wakaztahir.kte.parser.parsePlaceholderDefinition
 import com.wakaztahir.kte.parser.parsePlaceholderInvocation
@@ -51,6 +52,18 @@ class PlaceholderTest {
         val invocation = "@placeholder(MyPH,@var(MyObject))"
         assertEquals("5", GenerateCode("$placeholderDefinition $objectDefinition $invocation"))
         assertEquals("5", GenerateCode("$objectDefinition $placeholderDefinition $invocation"))
+    }
+
+    @Test
+    fun testPlaceholderLanguage() {
+        assertEquals("5123", PlaceholderGen("@var i = 5123 @var(i)"))
+        assertEquals("12.34", PlaceholderGen("@var i = 12.34 @var(i)"))
+        assertEquals("hello", PlaceholderGen("@var i = \"hello\" @var(i)"))
+        assertEquals("f", PlaceholderGen("@var i = 'f' @var(i)"))
+        assertEquals("true", PlaceholderGen("@var i = true @var(i)"))
+        assertEquals("false", PlaceholderGen("@var i = false @var(i)"))
+        assertEquals("[1,2,3]", PlaceholderGen("@var i = @list(1,2,3) @var(i.toString())"))
+        assertEquals("[1,2,3]", PlaceholderGen("@var i = @mutable_list(1,2,3) @var(i.toString())"))
     }
 
 }

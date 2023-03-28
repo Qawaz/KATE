@@ -12,7 +12,7 @@ object DoubleImplementation {
     private fun HashMap<String, KTEValue>.putObjectFunctions() {
         put("toString", object : KTEFunction() {
             override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
-                val intVal = invokedOn?.let { it as? DoubleValue }?.value
+                val intVal = invokedOn.let { it as? DoubleValue }?.value
                 require(intVal != null) { "double value is null" }
                 return StringValue(intVal.toString())
             }
@@ -21,7 +21,7 @@ object DoubleImplementation {
         })
         put("toInt", object : KTEFunction() {
             override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
-                val intVal = invokedOn?.let { it as? DoubleValue }?.value
+                val intVal = invokedOn.let { it as? DoubleValue }?.value
                 require(intVal != null) { "double value is null" }
                 return IntValue(intVal.toInt())
             }

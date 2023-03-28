@@ -4,7 +4,10 @@ import com.wakaztahir.kte.dsl.ModelObjectImpl
 import com.wakaztahir.kte.model.model.MutableKTEObject
 import com.wakaztahir.kte.parser.stream.DestinationStream
 import com.wakaztahir.kte.parser.stream.SourceStream
+import com.wakaztahir.kte.parser.stream.TextDestinationStream
 import com.wakaztahir.kte.parser.stream.TextSourceStream
+import com.wakaztahir.kte.parser.stream.languages.KotlinLanguageDestination
+import com.wakaztahir.kte.parser.stream.languages.PlaceholderLanguageDestination
 
 class TemplateContext(stream: SourceStream) {
 
@@ -34,6 +37,12 @@ class TemplateContext(stream: SourceStream) {
     @OptIn(KTEDelicateFunction::class)
     fun getDestinationAsString(): String {
         return stream.getDestinationString()
+    }
+
+    fun getPlaceholderDestination(): String {
+        val destination = PlaceholderLanguageDestination(stream, TextDestinationStream())
+        generateTo(destination)
+        return (destination.stream as TextDestinationStream).getValue()
     }
 
     fun generateTo(destination: DestinationStream) {

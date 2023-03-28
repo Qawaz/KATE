@@ -14,7 +14,7 @@ object KTEMutableListImplementation {
                 require(parameters.size == 1) {
                     "mutable_list.add(e : Element) expects a single parameter instead of ${parameters.size}"
                 }
-                return BooleanValue(invokedOn!!.asNullableMutableList(model)!!.collection.add(parameters[0]))
+                return BooleanValue(invokedOn.asNullableMutableList(model)!!.collection.add(parameters[0]))
             }
 
             override fun toString(): String = "add(e : Element) : KTEValue"
@@ -25,7 +25,7 @@ object KTEMutableListImplementation {
                 require(parameters.size == 2 && index != null) {
                     "mutable_list.addAt(index : Int,e : Element) expects two parameters instead of ${parameters.size}"
                 }
-                invokedOn!!.asNullableMutableList(model)!!.collection.add(index, parameters[1])
+                invokedOn.asNullableMutableList(model)!!.collection.add(index, parameters[1])
                 return KTEUnit
             }
 
@@ -36,7 +36,7 @@ object KTEMutableListImplementation {
                 require(parameters.size == 1) {
                     "mutable_list.remove(e : Element) expects a single parameter instead of ${parameters.size}"
                 }
-                return BooleanValue(invokedOn!!.asNullableMutableList(model)!!.collection.remove(parameters[0]))
+                return BooleanValue(invokedOn.asNullableMutableList(model)!!.collection.remove(parameters[0]))
             }
 
             override fun toString(): String = "remove(e : Element) : Boolean"
@@ -47,7 +47,7 @@ object KTEMutableListImplementation {
                 require(index != null) {
                     "mutable_list.removeAt(index : Int) expects single parameter instead of ${parameters.size}"
                 }
-                return invokedOn!!.asNullableMutableList(model)!!.collection.removeAt(index)
+                return invokedOn.asNullableMutableList(model)!!.collection.removeAt(index)
             }
 
             override fun toString(): String = "removeAt(index : Int) : Boolean"

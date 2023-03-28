@@ -2,6 +2,7 @@ package com.wakaztahir.kte.model.runtime
 
 import com.wakaztahir.kte.model.BooleanValue
 import com.wakaztahir.kte.model.IntValue
+import com.wakaztahir.kte.model.StringValue
 import com.wakaztahir.kte.model.model.*
 
 object KTEListImplementation {
@@ -12,10 +13,10 @@ object KTEListImplementation {
         put("get", object : KTEFunction() {
             override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
                 val index = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value as? Int
-                require(invokedOn != null && index != null) {
+                require(index != null) {
                     "list.get(int) expects a single Int parameter instead of ${parameters.size}"
                 }
-                return (invokedOn!!.asNullableList(model)!!.collection)[index]
+                return (invokedOn.asNullableList(model)!!.collection)[index]
             }
 
             override fun toString(): String = "get(number) : KTEValue"
@@ -23,14 +24,14 @@ object KTEListImplementation {
         })
         put("size", object : KTEFunction() {
             override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
-                return IntValue(invokedOn!!.asNullableList(model)!!.collection.size)
+                return IntValue(invokedOn.asNullableList(model)!!.collection.size)
             }
 
             override fun toString(): String = "size() : Int"
         })
         put("contains", object : KTEFunction() {
             override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
-                return BooleanValue(invokedOn!!.asNullableList(model)!!.collection.containsAll(parameters))
+                return BooleanValue(invokedOn.asNullableList(model)!!.collection.containsAll(parameters))
             }
 
             override fun toString(): String = "contains(parameter) : Boolean"
@@ -41,10 +42,20 @@ object KTEListImplementation {
                 require(parameters.size == 1) {
                     "indexOf requires a single parameter"
                 }
-                return IntValue(invokedOn!!.asNullableList(model)!!.collection.indexOf(parameters[0]))
+                return IntValue(invokedOn.asNullableList(model)!!.collection.indexOf(parameters[0]))
             }
 
             override fun toString(): String = "indexOf(parameter) : Int"
+
+        })
+        put("toString", object : KTEFunction() {
+            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
+                val list = invokedOn.asNullableList(model)
+                require(list != null) { "list is null" }
+                return StringValue('[' + list.collection.joinToString(",") + ']')
+            }
+
+            override fun toString(): String = "toString() : String"
 
         })
     }

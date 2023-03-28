@@ -15,3 +15,6 @@ internal fun GenerateCode(code: String): String = TemplateContext(code).getDesti
 
 @Suppress("FunctionName")
 internal fun GenerateCode(code: String, model: MutableKTEObject) = TemplateContext(code, model).getDestinationAsString()
+
+@Suppress("FunctionName")
+internal fun PlaceholderGen(code: String) = TemplateContext(code).getPlaceholderDestination()
