@@ -103,6 +103,19 @@ interface LazyBlock {
         return null
     }
 
+    fun getValueAsString(startPointer: Int = 0): String {
+        val previous = source.pointer
+        source.setPointerAt(startPointer)
+        var text = ""
+        while (canIterate()) {
+            text += source.currentChar
+            source.incrementPointer()
+        }
+        source.setPointerAt(previous)
+        return text
+
+    }
+
     @KTEDelicateFunction
     fun getDestinationString(): String {
         val destination = TextDestinationStream()
@@ -141,16 +154,7 @@ open class LazyBlockSlice(
     }
 
     fun getValueAsString(): String {
-        val previous = source.pointer
-        source.setPointerAt(startPointer)
-        var text = ""
-        while (canIterate()) {
-            text += source.currentChar
-            source.incrementPointer()
-        }
-        source.setPointerAt(previous)
-        return text
-
+        return getValueAsString(startPointer)
     }
 
     fun writeValueTo(destination: DestinationStream) {
