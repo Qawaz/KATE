@@ -3,6 +3,27 @@
 __KATE__ stands for Kotlin Adaptive Template Engine , KATE is very adaptive and
 you'd find it true to its name.
 
+## Usage
+
+Create a source stream , You can use `TextSourceStream` or `InputStreamSource` if you are on jvm
+
+```
+val context = TemplateContext(TextSourceStream("@var i = 5 @var(i)"))
+```
+
+If you'd like to get output as text , You can do 
+
+```
+context.getDestinationAsString(): String
+```
+
+If you'd like to write output to output stream on jvm
+
+```
+val stream = OutputStreamDestination(file.outputStream())
+context.stream.generateTo(stream)
+```
+
 ## How KATE works
 
 For the full design please see [KATE Design](./DESIGN.md)
