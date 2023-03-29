@@ -8,7 +8,7 @@ import com.wakaztahir.kte.parser.ArithmeticOperatorType
 import com.wakaztahir.kte.parser.stream.DestinationStream
 import kotlin.jvm.JvmInline
 
-interface PrimitiveValue<T> : CodeGen, ReferencedValue {
+interface PrimitiveValue<T> : ReferencedValue {
 
     val value: T
 
@@ -75,10 +75,6 @@ value class CharValue(override val value: Char) : PrimitiveValue<Char> {
         return IntValue(type.operate(value, value2.value))
     }
 
-    override fun generateTo(block: LazyBlock, destination: DestinationStream) {
-
-    }
-
     override fun getModelReference(reference: ModelReference): KTEValue? {
         return CharImplementation.propertyMap[reference.name]
     }
@@ -116,10 +112,6 @@ value class IntValue(override val value: Int) : PrimitiveValue<Int> {
         return IntImplementation.propertyMap[reference.name]
     }
 
-    override fun generateTo(block: LazyBlock, destination: DestinationStream) {
-
-    }
-
     override fun toString(): String = value.toString()
 
 }
@@ -155,10 +147,6 @@ value class DoubleValue(override val value: Double) : PrimitiveValue<Double> {
         return DoubleImplementation.propertyMap[reference.name]
     }
 
-    override fun generateTo(block: LazyBlock, destination: DestinationStream) {
-
-    }
-
     override fun toString(): String = value.toString()
 
 }
@@ -188,10 +176,6 @@ value class BooleanValue(override val value: Boolean) : PrimitiveValue<Boolean> 
 
     override fun getModelReference(reference: ModelReference): KTEValue? {
         return BooleanImplementation.propertyMap[reference.name]
-    }
-
-    override fun generateTo(block: LazyBlock, destination: DestinationStream) {
-
     }
 
     override fun toString(): String = value.toString()
@@ -243,10 +227,6 @@ value class StringValue(override val value: String) : PrimitiveValue<String> {
                 throw IllegalStateException("operator '${type.char}' cannot be applied with an unknown value")
             }
         }
-    }
-
-    override fun generateTo(block: LazyBlock, destination: DestinationStream) {
-
     }
 
     override fun toString(): String = value
