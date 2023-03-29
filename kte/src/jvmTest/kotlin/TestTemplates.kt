@@ -60,12 +60,12 @@ class TestTemplates {
     @Test
     fun testInputSourceStream() {
 
-        val input = object {}.javaClass.getResource("schema/main.kte")!!.openStream()
+        val input = object {}.javaClass.getResource("schema/main.kate")!!.openStream()
         val reader = input.bufferedReader()
         val text = reader.readText()
         reader.close()
 
-        val sourceStream = InputSourceStream(object {}.javaClass.getResource("schema/main.kte")!!.openStream(), getObject())
+        val sourceStream = InputSourceStream(object {}.javaClass.getResource("schema/main.kate")!!.openStream(), getObject())
         assertFalse(sourceStream.hasEnded)
         val other = sourceStream.getValueAsString(0)
         assertEquals(text, other)
@@ -73,7 +73,7 @@ class TestTemplates {
 
     @Test
     fun testMainTemplate() {
-        val context = TemplateContext(sourcePath("schema/main.kte", getObject()))
+        val context = TemplateContext(sourcePath("schema/main.kate", getObject()))
         val output = output("output/main.kt")
         context.generateTo(output)
         output.outputStream.close()
