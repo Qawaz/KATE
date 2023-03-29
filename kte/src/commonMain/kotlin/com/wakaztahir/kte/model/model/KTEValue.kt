@@ -6,9 +6,11 @@ import com.wakaztahir.kte.model.PrimitiveValue
 
 interface KTEValue {
 
-    fun getModelReference(reference: ModelReference): KTEValue?
+    fun getKTEValue(model: KTEObject): KTEValue {
+        return this
+    }
 
-    fun stringValue(indentationLevel: Int): String
+    fun getModelReference(reference: ModelReference): KTEValue?
 
     override fun toString(): String
 

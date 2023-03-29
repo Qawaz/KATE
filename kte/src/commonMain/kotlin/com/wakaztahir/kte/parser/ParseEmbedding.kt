@@ -15,7 +15,7 @@ fun LazyBlock.parseEmbedding(): EmbeddingDirective? {
         return EmbeddingDirective(
             path = source.parseTextWhile { currentChar != '\n' }.ifEmpty {
                 throw IllegalStateException("@embed path cannot be empty")
-            },
+            }.trim().replace("\n", ""),
             embedOnce = isOnce
         )
     }

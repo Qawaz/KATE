@@ -38,10 +38,6 @@ value class KTEListImpl<T : KTEValue>(override val collection: List<T>) : KTELis
         return collection.joinToString(",")
     }
 
-    override fun stringValue(indentationLevel: Int): String {
-        return "${indentation(indentationLevel)}[" + collection.joinToString("\n") { it.stringValue(indentationLevel + 1) } + "]"
-    }
-
 }
 
 @JvmInline
@@ -60,12 +56,7 @@ value class KTEMutableListImpl<T : KTEValue>(override val collection: MutableLis
     }
 
     override fun toString(): String {
-        return stringValue(0)
+        return collection.joinToString(",")
     }
-
-    override fun stringValue(indentationLevel: Int): String {
-        return "${indentation(indentationLevel)}[" + collection.joinToString("\n") { it.stringValue(indentationLevel + 1) } + "]"
-    }
-
 
 }

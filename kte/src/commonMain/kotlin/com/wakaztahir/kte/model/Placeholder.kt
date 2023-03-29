@@ -36,11 +36,6 @@ open class PlaceholderBlock(
         this.paramValue = value
     }
 
-    fun generateTo(value: KTEValue?, destination: DestinationStream) {
-        if (value != null) setParamValue(value)
-        generateTo(destination)
-    }
-
     protected open fun generateActual(destination: DestinationStream) {
         super.generateTo(destination)
     }
@@ -110,7 +105,8 @@ class PlaceholderInvocation(
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
         val placeholder = block.source.placeholderManager.getPlaceholder(placeholderName = placeholderName)
             ?: throw IllegalStateException("placeholder with name $placeholderName not found")
-        placeholder.generateTo(paramValue, destination)
+        placeholder.setParamValue(paramValue?.getKTEValue(block.model) ?: block.model)
+        placeholder.generateTo(destination)
         block.source.setPointerAt(invocationEndPointer)
     }
 }

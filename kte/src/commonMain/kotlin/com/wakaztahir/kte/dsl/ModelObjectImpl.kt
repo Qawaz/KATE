@@ -65,17 +65,4 @@ open class ModelObjectImpl(override val objectName: String) : MutableKTEObject {
         return -1
     }
 
-    override fun stringValue(indentationLevel: Int): String {
-        fun Any.toValue(): KTEValue? {
-            return (this as? PrimitiveValue<*>) ?: (this as? KTEObject) ?: (this as? KTEList<*>)
-        }
-
-        val indent = indentation(indentationLevel)
-        return "{\n" + container.map { item ->
-            "\t$indent${item.key} : ${
-                item.value.toValue()?.stringValue(indentationLevel + 1)
-            }"
-        }.joinToString("\n") + "\n$indent}"
-    }
-
 }

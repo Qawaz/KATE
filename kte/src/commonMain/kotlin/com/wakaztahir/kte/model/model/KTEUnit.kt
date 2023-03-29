@@ -6,7 +6,7 @@ import com.wakaztahir.kte.parser.stream.DestinationStream
 
 object KTEUnit : ReferencedValue, CodeGen {
 
-    override fun stringValue(indentationLevel: Int): String {
+    fun stringValue(indentationLevel: Int): String {
         return "KTEUnit"
     }
 

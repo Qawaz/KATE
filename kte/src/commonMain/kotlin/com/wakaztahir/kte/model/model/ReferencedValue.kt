@@ -11,10 +11,6 @@ interface ReferencedValue : KTEValue {
         return null
     }
 
-    fun getKTEValue(model: KTEObject): KTEValue {
-        return this
-    }
-
     fun toPlaceholderInvocation(model: MutableKTEObject, endPointer: Int): PlaceholderInvocation? {
         val value = getKTEValue(model)
         val typeFunction = (value.getModelReference(GetTypeModelReference)?.let { it as KTEFunction }) ?: return null

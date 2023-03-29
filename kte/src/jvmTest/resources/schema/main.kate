@@ -1,5 +1,6 @@
 @partial_raw
-    @raw package output
+    @raw
+        package output
     @endraw
     <%--
         KTE-v1.0

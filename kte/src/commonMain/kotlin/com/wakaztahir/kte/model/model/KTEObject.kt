@@ -44,7 +44,7 @@ interface KTEObject : ReferencedValue {
                         if (path.size == 1 && prop.name == "this") {
                             currentVal
                         } else {
-                            throw UnresolvedValueException("property ${path.pathUntil(prop)} does not exist")
+                            throw UnresolvedValueException("property ${path.pathUntil(prop)} does not exist on value : $currentVal")
                         }
                     }
                 }

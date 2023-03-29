@@ -103,7 +103,7 @@ fun LazyBlock.parsePlaceholderInvocation(): PlaceholderInvocation? {
             return PlaceholderInvocation(
                 placeholderName = placeholderName,
                 invocationEndPointer = source.pointer,
-                paramValue = genValue ?: model
+                paramValue = genValue
             )
         } else {
             throw IllegalStateException("placeholder name is required when invoking a placeholder using @placeholder")

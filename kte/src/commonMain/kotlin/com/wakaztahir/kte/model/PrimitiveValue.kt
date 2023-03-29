@@ -38,7 +38,7 @@ interface PrimitiveValue<T> : ReferencedValue {
         return this
     }
 
-    override fun stringValue(indentationLevel: Int): String {
+    fun stringValue(indentationLevel: Int): String {
         return toString()
     }
 

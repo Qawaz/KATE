@@ -27,11 +27,8 @@ class ScopedModelObject(internal val parent: MutableKTEObject) : ModelObjectImpl
     }
 
     override fun toString(): String {
-        return stringValue(0)
+        return super.toString() + " extends " + parent.toString()
     }
 
-    override fun stringValue(indentationLevel: Int): String {
-        return super.stringValue(indentationLevel) + " extends " + parent.toString()
-    }
 
 }

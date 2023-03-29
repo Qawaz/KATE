@@ -1,9 +1,5 @@
 package com.wakaztahir.kte.model.model
 
-import com.wakaztahir.kte.model.LazyBlock
-import com.wakaztahir.kte.model.ModelReference
-import com.wakaztahir.kte.parser.stream.DestinationStream
-
 abstract class KTEFunction : ReferencedValue {
 
     val parameters = mutableListOf<ReferencedValue>()
@@ -18,7 +14,7 @@ abstract class KTEFunction : ReferencedValue {
         throw IllegalStateException("KTEFunction should be invoked first to get the value to compare with the other")
     }
 
-    override fun stringValue(indentationLevel: Int): String {
+    fun stringValue(indentationLevel: Int): String {
         return toString()
     }
 

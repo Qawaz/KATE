@@ -14,7 +14,7 @@ interface EmbeddingManager {
             embeddedStreams[path] = true
             stream.generateTo(destination)
         } else {
-            throw IllegalStateException("stream with path $path not found")
+            throw IllegalStateException("stream not found with path $path")
         }
     }
 

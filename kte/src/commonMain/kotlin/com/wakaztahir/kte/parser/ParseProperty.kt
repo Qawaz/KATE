@@ -4,8 +4,6 @@ import com.wakaztahir.kte.model.*
 import com.wakaztahir.kte.model.model.KTEObject
 import com.wakaztahir.kte.model.model.KTEValue
 import com.wakaztahir.kte.model.model.ReferencedValue
-import com.wakaztahir.kte.model.indentation
-import com.wakaztahir.kte.parser.stream.DestinationStream
 import com.wakaztahir.kte.parser.stream.SourceStream
 
 internal fun SourceStream.parseNumberReference(): ReferencedValue? {
@@ -40,13 +38,8 @@ internal data class ExpressionValue(
         return asNullablePrimitive(model)
     }
 
-    override fun stringValue(indentationLevel: Int): String {
-        return indentation(indentationLevel) +
-                first.stringValue(0) + ' ' + operatorType.char + ' ' + second.stringValue(0)
-    }
-
     override fun toString(): String {
-        return stringValue(0)
+        return first.toString() + ' ' + operatorType.char + ' ' + second.toString()
     }
 
 }

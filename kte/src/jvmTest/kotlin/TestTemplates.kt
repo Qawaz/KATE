@@ -1,7 +1,9 @@
 import com.wakaztahir.kte.InputSourceStream
 import com.wakaztahir.kte.OutputDestinationStream
 import com.wakaztahir.kte.TemplateContext
+import com.wakaztahir.kte.model.LazyBlock
 import com.wakaztahir.kte.model.model.MutableKTEObject
+import com.wakaztahir.kte.parser.stream.EmbeddingManager
 import com.wakaztahir.kte.parser.stream.SourceStream
 import org.junit.Test
 import java.io.File
@@ -46,10 +48,6 @@ class TestTemplates {
         }
     }
 
-    private fun sourcePath(path: String, model: MutableKTEObject): SourceStream {
-        return InputSourceStream(object {}.javaClass.getResource(path)!!.openStream(), model)
-    }
-
     private fun output(path: String): OutputDestinationStream {
         val file = File("src/jvmTest/resources/$path")
         println(file.absolutePath)
@@ -64,19 +62,34 @@ class TestTemplates {
         val reader = input.bufferedReader()
         val text = reader.readText()
         reader.close()
-
-        val sourceStream = InputSourceStream(object {}.javaClass.getResource("schema/main.kate")!!.openStream(), getObject())
+        val sourceStream = InputSourceStream(
+            inputStream = object {}.javaClass.getResource("schema/main.kate")!!.openStream(),
+            model = getObject()
+        )
         assertFalse(sourceStream.hasEnded)
         val other = sourceStream.getValueAsString(0)
         assertEquals(text, other)
     }
 
-    @Test
-    fun testMainTemplate() {
-        val context = TemplateContext(sourcePath("schema/main.kate", getObject()))
-        val output = output("output/main.kt")
+    private fun testTemplate(inputPath: String, outputPath: String) {
+        val model = getObject()
+        val embedding = InputSourceStream.RelativeResourceEmbeddingManager("schema", object {}.javaClass)
+        val context = TemplateContext(
+            stream = InputSourceStream(
+                inputStream = object {}.javaClass.getResource("schema/$inputPath")!!.openStream(),
+                model = model,
+                embeddingManager = embedding,
+            )
+        )
+        val output = output("output/$outputPath")
         context.generateTo(output)
         output.outputStream.close()
+    }
+
+    @Test
+    fun testGenerateTemplates() {
+        testTemplate("main.kate", "main.kt")
+        testTemplate("test.kt.kate", "test.kt")
     }
 
 }
