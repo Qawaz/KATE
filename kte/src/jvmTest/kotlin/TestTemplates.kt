@@ -1,24 +1,24 @@
-import com.wakaztahir.kte.OutputStreamDestination
+import com.wakaztahir.kte.InputSourceStream
+import com.wakaztahir.kte.OutputDestinationStream
 import com.wakaztahir.kte.TemplateContext
 import com.wakaztahir.kte.model.LazyBlock
 import com.wakaztahir.kte.model.model.MutableKTEObject
 import com.wakaztahir.kte.parser.stream.DestinationStream
 import com.wakaztahir.kte.parser.stream.SourceStream
-import com.wakaztahir.kte.parser.stream.TextSourceStream
 import org.junit.Test
 import java.io.File
 
 class TestTemplates {
 
     private fun sourcePath(path: String, model: MutableKTEObject): SourceStream {
-        return TextSourceStream(object {}.javaClass.getResource(path)!!.readText(), model)
+        return InputSourceStream(object {}.javaClass.getResource(path)!!.openStream(), model)
     }
 
     private fun output(block: LazyBlock, path: String): DestinationStream {
         val file = File("src/jvmTest/resources/$path")
         println(file.absolutePath)
         val outputStream = file.outputStream()
-        return OutputStreamDestination(outputStream)
+        return OutputDestinationStream(outputStream)
     }
 
     @Test

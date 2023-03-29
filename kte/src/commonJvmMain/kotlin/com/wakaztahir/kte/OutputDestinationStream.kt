@@ -4,7 +4,7 @@ import com.wakaztahir.kte.parser.stream.DestinationStream
 import com.wakaztahir.kte.parser.stream.WritableStream
 import java.io.OutputStream
 
-class OutputStreamDestination(private val outputStream: OutputStream) : WritableStream, DestinationStream {
+class OutputDestinationStream(private val outputStream: OutputStream) : WritableStream, DestinationStream {
 
     override val stream: WritableStream
         get() = this

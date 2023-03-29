@@ -5,7 +5,7 @@ you'd find it true to its name.
 
 ## Usage
 
-Create a source stream , You can use `TextSourceStream` or `InputStreamSource` if you are on jvm
+Create a source stream , You can use `TextSourceStream` or `InputSourceStream` if you are on jvm
 
 ```
 val context = TemplateContext(TextSourceStream("@var i = 5 @var(i)"))
@@ -21,7 +21,7 @@ If you'd like to write output to output stream on jvm
 
 ```
 val output = file.outputStream()
-val stream = OutputStreamDestination(output)
+val stream = OutputDestinationStream(output)
 context.stream.generateTo(stream)
 output.close()
 ```
