@@ -1,15 +1,18 @@
 package com.wakaztahir.kte.parser.stream
 
 import com.wakaztahir.kte.dsl.ModelObjectImpl
-import com.wakaztahir.kte.model.LazyBlock
 import com.wakaztahir.kte.model.model.MutableKTEObject
 
 class TextSourceStream(
     private val sourceCode: String,
     override val model: MutableKTEObject = ModelObjectImpl("Global"),
-    override val placeholderManager: PlaceholderManager = DefaultPlaceholderManager(),
+    override val placeholderManager: PlaceholderManager = EmptyPlaceholderManager(),
     override val embeddingManager: EmbeddingManager = NoEmbeddings
 ) : SourceStream() {
+
+    init {
+        DefaultPlaceholderManagerInitializer.initializerDefaultPlaceholders(this)
+    }
 
     override var pointer: Int = 0
 

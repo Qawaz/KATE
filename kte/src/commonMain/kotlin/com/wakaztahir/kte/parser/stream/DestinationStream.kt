@@ -5,7 +5,6 @@ import com.wakaztahir.kte.model.DoubleValue
 import com.wakaztahir.kte.model.IntValue
 import com.wakaztahir.kte.model.StringValue
 
-interface DestinationStream : LanguageDestination {
-
-
+interface DestinationStream {
+    val stream: WritableStream
 }

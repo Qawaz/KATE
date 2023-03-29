@@ -8,7 +8,7 @@ import com.wakaztahir.kte.model.model.KTEValue
 
 interface LanguageDestination {
 
-    val stream: WritableStream
+
 
     fun write(block: LazyBlock,value : CharValue)
     fun write(block: LazyBlock,value: IntValue)

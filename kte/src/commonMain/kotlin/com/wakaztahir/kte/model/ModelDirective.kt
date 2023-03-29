@@ -29,7 +29,7 @@ sealed interface ModelReference {
 open class ModelDirective(val propertyPath: List<ModelReference>) : ReferencedValue, AtDirective {
 
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
-        getKTEValue(block.model).generateTo(block, destination)
+
     }
 
     override fun compareTo(model: KTEObject, other: KTEValue): Int {

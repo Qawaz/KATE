@@ -26,7 +26,7 @@ value class KTEListImpl<T : KTEValue>(override val collection: List<T>) : KTELis
     }
 
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
-        destination.write(block, this)
+
     }
 
     override fun compareTo(model: KTEObject, other: KTEValue): Int {
@@ -61,7 +61,7 @@ value class KTEMutableListImpl<T : KTEValue>(override val collection: MutableLis
     }
 
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
-        destination.write(block, this)
+
     }
 
     override fun compareTo(model: KTEObject, other: KTEValue): Int {

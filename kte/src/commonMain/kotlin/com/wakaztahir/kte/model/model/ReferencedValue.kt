@@ -1,8 +1,8 @@
 package com.wakaztahir.kte.model.model
 
-import com.wakaztahir.kte.model.CodeGen
-import com.wakaztahir.kte.model.ModelReference
-import com.wakaztahir.kte.model.PrimitiveValue
+import com.wakaztahir.kte.EmptyReferencedValuesList
+import com.wakaztahir.kte.GetTypeModelReference
+import com.wakaztahir.kte.model.*
 import com.wakaztahir.kte.model.model.*
 
 interface ReferencedValue : KTEValue, CodeGen {
@@ -13,6 +13,21 @@ interface ReferencedValue : KTEValue, CodeGen {
 
     fun getKTEValue(model: KTEObject): KTEValue {
         return this
+    }
+
+    fun toPlaceholderInvocation(model: MutableKTEObject, endPointer: Int): PlaceholderInvocation? {
+        val value = getKTEValue(model)
+        val typeFunction = (value.getModelReference(GetTypeModelReference)?.let { it as KTEFunction }) ?: return null
+        return PlaceholderInvocation(
+            placeholderName = (typeFunction.invoke(
+                model = model,
+                invokedOn = value,
+                parameters = EmptyReferencedValuesList
+            ) as StringValue).value,
+            generationObject = model,
+            paramValue = value,
+            invocationEndPointer = endPointer
+        )
     }
 
     override fun asNullablePrimitive(model: KTEObject): PrimitiveValue<*>? {

@@ -1,6 +1,7 @@
 package com.wakaztahir.kte.model
 
 import com.wakaztahir.kte.KTEDelicateFunction
+import com.wakaztahir.kte.model.model.KTEUnit
 import com.wakaztahir.kte.model.model.MutableKTEObject
 import com.wakaztahir.kte.parser.*
 import com.wakaztahir.kte.parser.stream.*
@@ -79,7 +80,7 @@ interface LazyBlock {
     }
 
     fun parseImplicitDirectives(): CodeGen? {
-        parseExpression()?.let { return it }
+        parseExpression()?.let { return it.toPlaceholderInvocation(model, source.pointer) ?: KTEUnit }
         return null
     }
 

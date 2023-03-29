@@ -4,7 +4,7 @@ import com.wakaztahir.kte.model.CodeGen
 import com.wakaztahir.kte.model.ModelReference
 import com.wakaztahir.kte.model.PrimitiveValue
 
-interface KTEValue : CodeGen {
+interface KTEValue {
 
     fun getModelReference(reference: ModelReference): KTEValue?
 

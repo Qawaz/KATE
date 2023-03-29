@@ -54,7 +54,7 @@ interface KTEObject : ReferencedValue {
     }
 
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
-        destination.write(block, this)
+
     }
 
     fun exists(model: KTEObject, path: List<ModelReference>): Boolean {

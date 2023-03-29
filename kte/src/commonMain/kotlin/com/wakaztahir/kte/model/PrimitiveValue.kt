@@ -76,7 +76,7 @@ value class CharValue(override val value: Char) : PrimitiveValue<Char> {
     }
 
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
-        destination.write(block, this)
+
     }
 
     override fun getModelReference(reference: ModelReference): KTEValue? {
@@ -117,7 +117,7 @@ value class IntValue(override val value: Int) : PrimitiveValue<Int> {
     }
 
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
-        destination.write(block, this@IntValue)
+
     }
 
     override fun toString(): String = value.toString()
@@ -156,7 +156,7 @@ value class DoubleValue(override val value: Double) : PrimitiveValue<Double> {
     }
 
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
-        destination.write(block, this@DoubleValue)
+
     }
 
     override fun toString(): String = value.toString()
@@ -191,7 +191,7 @@ value class BooleanValue(override val value: Boolean) : PrimitiveValue<Boolean> 
     }
 
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
-        destination.write(block, this@BooleanValue)
+
     }
 
     override fun toString(): String = value.toString()
@@ -246,7 +246,7 @@ value class StringValue(override val value: String) : PrimitiveValue<String> {
     }
 
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
-        destination.write(block, this@StringValue)
+
     }
 
     override fun toString(): String = value

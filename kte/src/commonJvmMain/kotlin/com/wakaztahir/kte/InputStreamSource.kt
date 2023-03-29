@@ -1,6 +1,5 @@
 package com.wakaztahir.kte
 
-import com.wakaztahir.kte.model.LazyBlock
 import com.wakaztahir.kte.model.model.MutableKTEObject
 import com.wakaztahir.kte.parser.stream.EmbeddingManager
 import com.wakaztahir.kte.parser.stream.PlaceholderManager
@@ -10,7 +9,7 @@ import java.io.InputStream
 class InputStreamSource(
     val stream: InputStream,
     override val embeddingManager: EmbeddingManager = NoEmbeddings,
-    override val placeholderManager: PlaceholderManager = DefaultPlaceholderManager()
+    override val placeholderManager: PlaceholderManager = EmptyPlaceholderManager()
 ) : SourceStream() {
 
     override var currentChar: Char = stream.read().toChar()
