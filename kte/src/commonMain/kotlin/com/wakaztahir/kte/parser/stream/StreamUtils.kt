@@ -110,6 +110,11 @@ internal fun SourceStream.printLeft() = resetIfNull {
     null
 }
 
+internal fun SourceStream.printLeftAscii() = resetIfNull {
+    for (char in parseTextWhile { true }) println("$char:${char.code}")
+    null
+}
+
 internal fun SourceStream.parseTextUntilConsumed(str: String): String {
     return parseTextWhile {
         currentChar != str[0] || !increment(str)
@@ -148,6 +153,13 @@ internal fun LazyBlock.escapeBlockSpacesForward() {
     val previous = source.pointer
     while (!source.hasEnded) {
         when (source.currentChar) {
+
+            '\r' -> {
+                source.incrementPointer()
+                if (source.currentChar == '\n') source.incrementPointer()
+                return
+            }
+
             '\n' -> {
                 source.incrementPointer()
                 return
@@ -179,7 +191,14 @@ internal fun LazyBlock.escapeBlockSpacesBackward() {
     while (!source.hasEnded) {
         source.decrementPointer()
         when (source.currentChar) {
+
+            '\r' -> {
+                return
+            }
+
             '\n' -> {
+                source.decrementPointer()
+                if(source.currentChar != '\r') source.incrementPointer()
                 return
             }
 

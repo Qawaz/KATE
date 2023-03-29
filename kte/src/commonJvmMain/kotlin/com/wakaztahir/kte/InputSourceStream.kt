@@ -31,7 +31,10 @@ class InputSourceStream(
             return InputSourceStream(
                 inputStream = file.openStream(),
                 model = block.source.model,
-                embeddingManager = block.source.embeddingManager,
+                embeddingManager = RelativeResourceEmbeddingManager(
+                    basePath = basePath + if (path.contains('/')) path.substring(0, path.lastIndexOf('/')) else "",
+                    classLoader = classLoader
+                ),
                 placeholderManager = block.source.placeholderManager
             )
         }

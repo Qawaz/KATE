@@ -35,7 +35,7 @@ interface LazyBlock {
                 continue
             }
             if (isWriteUnprocessedTextEnabled) {
-                if (blockLineNumber == 1 && source.currentChar == '\t' && indentationLevel > 0 && !hasConsumedFirstLineIndentation) {
+                if (blockLineNumber == 1 && (source.currentChar == '\t' || source.currentChar == ' ') && indentationLevel > 0 && !hasConsumedFirstLineIndentation) {
                     consumeLineIndentation()
                     hasConsumedFirstLineIndentation = true
                     continue
@@ -163,7 +163,7 @@ open class LazyBlockSlice(
         var hasConsumedFirstLineIndentation = false
         source.setPointerAt(startPointer)
         while (canIterate()) {
-            if (blockLineNumber == 1 && source.currentChar == '\t' && indentationLevel > 0 && !hasConsumedFirstLineIndentation) {
+            if (blockLineNumber == 1 && (source.currentChar == '\t' || source.currentChar == ' ') && indentationLevel > 0 && !hasConsumedFirstLineIndentation) {
                 consumeLineIndentation()
                 hasConsumedFirstLineIndentation = true
                 continue

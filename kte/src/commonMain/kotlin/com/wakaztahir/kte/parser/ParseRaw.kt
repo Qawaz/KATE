@@ -11,6 +11,7 @@ fun LazyBlock.parseBlockSlice(
     endsWith: String,
     allowTextOut: Boolean,
     model: MutableKTEObject,
+    indentationLevel: Int = this.indentationLevel + 1
 ): LazyBlockSlice {
 
     escapeBlockSpacesForward()
@@ -39,7 +40,7 @@ fun LazyBlock.parseBlockSlice(
         model = model,
         blockEndPointer = source.pointer,
         isWriteUnprocessedTextEnabled = allowTextOut,
-        indentationLevel = indentationLevel + 1
+        indentationLevel = indentationLevel
     )
 
 }
@@ -48,12 +49,14 @@ fun LazyBlock.parseBlockSlice(
     startsWith: String,
     endsWith: String,
     allowTextOut: Boolean,
-    inheritModel: Boolean
+    inheritModel: Boolean,
+    indentationLevel: Int = this.indentationLevel + 1
 ): LazyBlockSlice = parseBlockSlice(
     startsWith = startsWith,
     endsWith = endsWith,
     allowTextOut = allowTextOut,
-    model = if (inheritModel) model else ScopedModelObject(model)
+    model = if (inheritModel) model else ScopedModelObject(model),
+    indentationLevel = indentationLevel
 )
 
 fun LazyBlock.parseRawBlock(): RawBlock? {
