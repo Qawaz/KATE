@@ -1,10 +1,8 @@
 import com.wakaztahir.kte.GenerateCode
-import com.wakaztahir.kte.PlaceholderGen
 import com.wakaztahir.kte.TemplateContext
 import com.wakaztahir.kte.parser.parsePlaceholderDefinition
 import com.wakaztahir.kte.parser.parsePlaceholderInvocation
 import com.wakaztahir.kte.parser.stream.TextDestinationStream
-import com.wakaztahir.kte.parser.stream.languages.PlaceholderLanguageDestination
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -28,7 +26,7 @@ class PlaceholderTest {
         assertEquals("ElonMusk", definition.blockValue.getValueAsString())
         assertEquals("Name", invocation.placeholderName)
 
-        val destination = PlaceholderLanguageDestination(context.stream, TextDestinationStream())
+        val destination = TextDestinationStream()
         definition.generateTo(context.stream, destination)
         assertEquals(definition.blockValue, context.stream.placeholderManager.getPlaceholder("Name"))
         invocation.generateTo(context.stream, destination)
@@ -56,19 +54,21 @@ class PlaceholderTest {
 
     @Test
     fun testPlaceholderLanguage() {
-        assertEquals("5123", PlaceholderGen("@var i = 5123 @var(i)"))
-        assertEquals("12.34", PlaceholderGen("@var i = 12.34 @var(i)"))
-        assertEquals("hello", PlaceholderGen("@var i = \"hello\" @var(i)"))
-        assertEquals("f", PlaceholderGen("@var i = 'f' @var(i)"))
-        assertEquals("true", PlaceholderGen("@var i = true @var(i)"))
-        assertEquals("false", PlaceholderGen("@var i = false @var(i)"))
-        assertEquals("1,2,3", PlaceholderGen("@var i = @list(1,2,3) @var(i.joinToString())"))
-        assertEquals("1,2,3", PlaceholderGen("@var i = @list(1,2,3) @var(i)"))
-        assertEquals("1.2.3", PlaceholderGen("@var i = @mutable_list(1,2,3) @var(i.joinToString(\".\"))"))
-        assertEquals("1,2,3", PlaceholderGen("@var i = @mutable_list(1,2,3) @var(i)"))
+        assertEquals("5123", GenerateCode("@var i = 5123 @var(i)"))
+        assertEquals("12.34", GenerateCode("@var i = 12.34 @var(i)"))
+        assertEquals("hello", GenerateCode("@var i = \"hello\" @var(i)"))
+        assertEquals("f", GenerateCode("@var i = 'f' @var(i)"))
+        assertEquals("true", GenerateCode("@var i = true @var(i)"))
+        assertEquals("false", GenerateCode("@var i = false @var(i)"))
+        assertEquals("1,2,3", GenerateCode("@var i = @list(1,2,3) @var(i.joinToString())"))
+        assertEquals("1,2,3", GenerateCode("@var i = @list(1,2,3) @var(i)"))
+        assertEquals("1.2.3",
+            GenerateCode("@var i = @mutable_list(1,2,3) @var(i.joinToString(\".\"))")
+        )
+        assertEquals("1,2,3", GenerateCode("@var i = @mutable_list(1,2,3) @var(i)"))
         assertEquals(
             expected = "{\n\ti : 5\n\tl : 1,2,3\n}",
-            PlaceholderGen("@define_object(MyObj) @var i = 5 @var l = @list(1,2,3) @end_define_object @var(MyObj)")
+            GenerateCode("@define_object(MyObj) @var i = 5 @var l = @list(1,2,3) @end_define_object @var(MyObj)")
         )
     }
 

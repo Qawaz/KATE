@@ -1,6 +1,9 @@
 package com.wakaztahir.kte.parser.stream
 
-class TextDestinationStream : WritableStream {
+class TextDestinationStream : WritableStream, DestinationStream {
+
+    override val stream: WritableStream
+        get() = this
 
     private var text = ""
 

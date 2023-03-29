@@ -21,10 +21,7 @@ val GetTypeModelReference = ModelReference.FunctionCall(
 )
 
 @Suppress("FunctionName")
-internal fun GenerateCode(code: String): String = TemplateContext(code).getPlaceholderDestination()
+internal fun GenerateCode(code: String): String = TemplateContext(code).getDestinationAsString()
 
 @Suppress("FunctionName")
-internal fun GenerateCode(code: String, model: MutableKTEObject) = TemplateContext(code, model).getPlaceholderDestination()
-
-@Suppress("FunctionName")
-internal fun PlaceholderGen(code: String) = TemplateContext(code).getPlaceholderDestination()
+internal fun GenerateCode(code: String, model: MutableKTEObject) = TemplateContext(code, model).getDestinationAsString()

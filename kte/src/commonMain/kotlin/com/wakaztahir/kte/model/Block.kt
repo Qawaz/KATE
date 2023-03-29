@@ -4,9 +4,10 @@ import com.wakaztahir.kte.KTEDelicateFunction
 import com.wakaztahir.kte.model.model.KTEUnit
 import com.wakaztahir.kte.model.model.MutableKTEObject
 import com.wakaztahir.kte.parser.*
-import com.wakaztahir.kte.parser.stream.*
+import com.wakaztahir.kte.parser.stream.DestinationStream
+import com.wakaztahir.kte.parser.stream.SourceStream
+import com.wakaztahir.kte.parser.stream.TextDestinationStream
 import com.wakaztahir.kte.parser.stream.increment
-import com.wakaztahir.kte.parser.stream.languages.PlaceholderLanguageDestination
 
 interface LazyBlock {
 
@@ -104,7 +105,7 @@ interface LazyBlock {
 
     @KTEDelicateFunction
     fun getDestinationString(): String {
-        val destination = PlaceholderLanguageDestination(this, TextDestinationStream())
+        val destination = TextDestinationStream()
         generateTo(destination)
         return (destination.stream as TextDestinationStream).getValue()
     }
