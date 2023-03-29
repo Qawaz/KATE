@@ -10,6 +10,12 @@ object KTEListImplementation {
     val propertyMap by lazy { hashMapOf<String, KTEValue>().apply { putObjectFunctions() } }
 
     fun HashMap<String, KTEValue>.putObjectFunctions() {
+        put("getType", object : KTEFunction() {
+            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
+                return StringValue("list")
+            }
+            override fun toString(): String = "getType() : string"
+        })
         put("get", object : KTEFunction() {
             override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
                 val index = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value as? Int

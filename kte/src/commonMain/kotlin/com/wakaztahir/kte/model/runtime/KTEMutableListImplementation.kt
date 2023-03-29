@@ -1,6 +1,7 @@
 package com.wakaztahir.kte.model.runtime
 
 import com.wakaztahir.kte.model.BooleanValue
+import com.wakaztahir.kte.model.StringValue
 import com.wakaztahir.kte.model.model.*
 
 object KTEMutableListImplementation {
@@ -9,6 +10,12 @@ object KTEMutableListImplementation {
 
     private fun HashMap<String, KTEValue>.putObjectFunctions() {
         with(KTEListImplementation) { putObjectFunctions() }
+        put("getType", object : KTEFunction() {
+            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
+                return StringValue("mutable_list")
+            }
+            override fun toString(): String = "getType() : string"
+        })
         put("add", object : KTEFunction() {
             override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
                 require(parameters.size == 1) {

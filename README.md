@@ -58,6 +58,21 @@ Invoking a function without outputting returned value
 
 `@var(@funcName())`
 
+### getType()
+
+Every variable has a `getType` function available which returns type in string format
+
+| Variable               | Returned Type  |
+|------------------------|----------------|
+| boolean.getType()      | "boolean"      |
+| char.getType()         | "char"         |
+| string.getType()       | "string"       |   
+| double.getType()       | "double"       |
+| int.getType()          | "int"          |
+| list.getType()         | "list"         |
+| mutable_list.getType() | "mutable_list" |
+| object.getType()       | "object"       |
+
 ## Expressions
 
 `2 @+ 2` is an expression
@@ -209,28 +224,28 @@ A string can be defined like this
 
 Here's a table of functions available
 
-| Function                              | Description                                             |
-|---------------------------------------|---------------------------------------------------------|
-| `@var(str.size())`                    | Returns the size as an int                              |
-| `@var(str[0])`                        | Equivalent to .get(0) returns first char                |
-| `@var(str.toInt())`                   | Tries to convert to int , or returns Unit               |
-| `@var(str.toDouble())`                | Tries to convert to double , or returns Unit            |
-| `@var(str.substring(0,5))`            | Returns a substring from 0 (inclusive) to 5 (exclusive) |
-| `@var(str.uppercase())`               | Convert the whole string to uppercase                   |
-| `@var(str.lowercase())`               | Convert the whole string to lowercase                   |
-| `@var(str.capitalize())`              | Capitalize the first character                          |
-| `@var(str.decapitalize())`            | Decapitalize the first character                        |
-| `@var(str.replace("find","replace"))` | Replace the string's find with replace value            |
-| `@var(str.contains(""))`              | Returns true if contains the string                     |
+| Function                           | Description                                             |
+|------------------------------------|---------------------------------------------------------|
+| str[0]                             | Indexing , Equivalent to .get(0) returns first char     |
+| size() : int                       | Returns the size as an int                              |
+| toInt() : int                      | Tries to convert to int , or returns Unit               |
+| toDouble() : double                | Tries to convert to double , or returns Unit            |
+| substring(0,5) : string            | Returns a substring from 0 (inclusive) to 5 (exclusive) |
+| uppercase() : string               | Convert the whole string to uppercase                   |
+| lowercase() : string               | Convert the whole string to lowercase                   |
+| capitalize() : string              | Capitalize the first character                          |
+| decapitalize() : string            | Decapitalize the first character                        |
+| replace("find","replace") : string | Replace the string's find with replace value            |
+| contains("") : string              | Returns true if contains the string                     |
 
 ### Integers
 
 An integer can be defined like this `@var i = 0`
 
-| Function             | Description                     |
-|----------------------|---------------------------------|
-| `@var(i.toString())` | converts this integer to string |
-| `@var(i.toDouble())` | converts this integer to double |
+| Function            | Description                     |
+|---------------------|---------------------------------|
+| toString() : string | converts this integer to string |
+| toDouble() : double | converts this integer to double |
 
 Similar functions are available on a `Double`
 

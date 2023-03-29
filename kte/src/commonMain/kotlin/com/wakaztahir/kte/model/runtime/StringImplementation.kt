@@ -8,6 +8,12 @@ object StringImplementation {
     val propertyMap by lazy { hashMapOf<String, KTEValue>().apply { putObjectFunctions() } }
 
     private fun HashMap<String, KTEValue>.putObjectFunctions() {
+        put("getType", object : KTEFunction() {
+            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
+                return StringValue("string")
+            }
+            override fun toString(): String = "getType() : string"
+        })
         put("get", object : KTEFunction() {
             override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
                 val string = invokedOn.let { it as? StringValue }?.value

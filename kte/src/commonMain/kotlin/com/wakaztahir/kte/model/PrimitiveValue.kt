@@ -1,11 +1,9 @@
 package com.wakaztahir.kte.model
 
-import com.wakaztahir.kte.model.runtime.StringImplementation
 import com.wakaztahir.kte.model.model.KTEObject
 import com.wakaztahir.kte.model.model.KTEValue
 import com.wakaztahir.kte.model.model.ReferencedValue
-import com.wakaztahir.kte.model.runtime.DoubleImplementation
-import com.wakaztahir.kte.model.runtime.IntImplementation
+import com.wakaztahir.kte.model.runtime.*
 import com.wakaztahir.kte.parser.ArithmeticOperatorType
 import com.wakaztahir.kte.parser.stream.DestinationStream
 import kotlin.jvm.JvmInline
@@ -79,6 +77,10 @@ value class CharValue(override val value: Char) : PrimitiveValue<Char> {
 
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
         destination.write(block, this)
+    }
+
+    override fun getModelReference(reference: ModelReference): KTEValue? {
+        return CharImplementation.propertyMap[reference.name]
     }
 
 }
@@ -182,6 +184,10 @@ value class BooleanValue(override val value: Boolean) : PrimitiveValue<Boolean> 
 
     override fun operateOther(type: ArithmeticOperatorType, value2: PrimitiveValue<*>): PrimitiveValue<*> {
         throw IllegalStateException("boolean value cannot ${type.char} to any other value")
+    }
+
+    override fun getModelReference(reference: ModelReference): KTEValue? {
+        return BooleanImplementation.propertyMap[reference.name]
     }
 
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
