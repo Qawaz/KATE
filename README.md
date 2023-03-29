@@ -11,7 +11,7 @@ Create a source stream , You can use `TextSourceStream` or `InputStreamSource` i
 val context = TemplateContext(TextSourceStream("@var i = 5 @var(i)"))
 ```
 
-If you'd like to get output as text , You can do 
+If you'd like to get output as text , You can do
 
 ```
 context.getDestinationAsString(): String
@@ -20,8 +20,10 @@ context.getDestinationAsString(): String
 If you'd like to write output to output stream on jvm
 
 ```
-val stream = OutputStreamDestination(file.outputStream())
+val output = file.outputStream()
+val stream = OutputStreamDestination(output)
 context.stream.generateTo(stream)
+output.close()
 ```
 
 ## How KATE works
@@ -87,4 +89,5 @@ If you'd like to back to previous placeholder
 
 After this invocation `@var i = 5 @var(i)` , This code will no longer print `Kate` before every int
 
-Now to put everything in your perspective , There are placeholders for all the types __KATE__ supports , Primitives , Lists & Objects
+Now to put everything in your perspective , There are placeholders for all the types __KATE__ supports , Primitives ,
+Lists & Objects
