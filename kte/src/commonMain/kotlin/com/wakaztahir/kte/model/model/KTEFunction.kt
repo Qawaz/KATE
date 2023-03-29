@@ -14,10 +14,6 @@ abstract class KTEFunction : ReferencedValue {
         throw IllegalStateException("KTEFunction should be invoked to get the value")
     }
 
-    override fun generateTo(block: LazyBlock, destination: DestinationStream) {
-        throw IllegalStateException("KTEFunction should be invoked to get the value & then generate using value")
-    }
-
     override fun compareTo(model: KTEObject, other: KTEValue): Int {
         throw IllegalStateException("KTEFunction should be invoked first to get the value to compare with the other")
     }

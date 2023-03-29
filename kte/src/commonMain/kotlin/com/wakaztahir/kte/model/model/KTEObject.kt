@@ -53,10 +53,6 @@ interface KTEObject : ReferencedValue {
         return currentVal
     }
 
-    override fun generateTo(block: LazyBlock, destination: DestinationStream) {
-
-    }
-
     fun exists(model: KTEObject, path: List<ModelReference>): Boolean {
         if (path.isEmpty()) return false
         if (path.size == 1) return contains(path[0].name)

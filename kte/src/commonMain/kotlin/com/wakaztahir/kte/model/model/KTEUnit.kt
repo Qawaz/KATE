@@ -1,9 +1,10 @@
 package com.wakaztahir.kte.model.model
 
+import com.wakaztahir.kte.model.CodeGen
 import com.wakaztahir.kte.model.LazyBlock
 import com.wakaztahir.kte.parser.stream.DestinationStream
 
-object KTEUnit : ReferencedValue {
+object KTEUnit : ReferencedValue, CodeGen {
 
     override fun stringValue(indentationLevel: Int): String {
         return "KTEUnit"

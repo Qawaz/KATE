@@ -5,7 +5,7 @@ import com.wakaztahir.kte.GetTypeModelReference
 import com.wakaztahir.kte.model.*
 import com.wakaztahir.kte.model.model.*
 
-interface ReferencedValue : KTEValue, CodeGen {
+interface ReferencedValue : KTEValue {
 
     override fun getModelReference(reference: ModelReference): KTEValue? {
         return null

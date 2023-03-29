@@ -25,10 +25,6 @@ value class KTEListImpl<T : KTEValue>(override val collection: List<T>) : KTELis
         }
     }
 
-    override fun generateTo(block: LazyBlock, destination: DestinationStream) {
-
-    }
-
     override fun compareTo(model: KTEObject, other: KTEValue): Int {
         if (other is KTEList<*>) {
             if (this.collection.isEmpty() && other.collection.isEmpty()) return 0
@@ -58,10 +54,6 @@ value class KTEMutableListImpl<T : KTEValue>(override val collection: MutableLis
         } else {
             throw IllegalStateException("${reference.name} is not a property on list")
         }
-    }
-
-    override fun generateTo(block: LazyBlock, destination: DestinationStream) {
-
     }
 
     override fun compareTo(model: KTEObject, other: KTEValue): Int {

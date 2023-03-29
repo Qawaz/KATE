@@ -49,8 +49,4 @@ internal data class ExpressionValue(
         return stringValue(0)
     }
 
-    override fun generateTo(block: LazyBlock, destination: DestinationStream) {
-        asNullablePrimitive(block.model).generateTo(block, destination)
-    }
-
 }
