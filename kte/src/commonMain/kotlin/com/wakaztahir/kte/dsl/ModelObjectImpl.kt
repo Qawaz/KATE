@@ -4,7 +4,7 @@ import com.wakaztahir.kte.model.ModelReference
 import com.wakaztahir.kte.model.PrimitiveValue
 import com.wakaztahir.kte.model.indentation
 import com.wakaztahir.kte.model.model.*
-import com.wakaztahir.kte.model.runtime.KTEObjectImplementation
+import com.wakaztahir.kte.runtime.KTEObjectImplementation
 
 open class ModelObjectImpl(override val objectName: String) : MutableKTEObject {
 

@@ -1,4 +1,4 @@
-package com.wakaztahir.kte.model.runtime
+package com.wakaztahir.kte.runtime
 
 import com.wakaztahir.kte.model.DoubleValue
 import com.wakaztahir.kte.model.IntValue

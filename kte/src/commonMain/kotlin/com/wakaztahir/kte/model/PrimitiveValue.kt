@@ -5,7 +5,7 @@ import com.wakaztahir.kte.model.model.KTEValue
 import com.wakaztahir.kte.model.model.ReferencedValue
 import com.wakaztahir.kte.model.runtime.*
 import com.wakaztahir.kte.parser.ArithmeticOperatorType
-import com.wakaztahir.kte.parser.stream.DestinationStream
+import com.wakaztahir.kte.runtime.*
 import kotlin.jvm.JvmInline
 
 interface PrimitiveValue<T> : ReferencedValue {

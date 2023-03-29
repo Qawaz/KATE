@@ -1,4 +1,4 @@
-package com.wakaztahir.kte.model.runtime
+package com.wakaztahir.kte.runtime
 
 import com.wakaztahir.kte.model.BooleanValue
 import com.wakaztahir.kte.model.StringValue
@@ -9,10 +9,20 @@ object KTEObjectImplementation {
     val propertyMap by lazy { hashMapOf<String, KTEValue>().apply { putObjectFunctions() } }
 
     private fun HashMap<String, KTEValue>.putObjectFunctions() {
+        put("getName", object : KTEFunction() {
+            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
+                val value = invokedOn as? KTEObject
+                require(value != null) { "invoked on object cannot be null" }
+                return StringValue(value.objectName)
+            }
+
+            override fun toString(): String = "getName() : string"
+        })
         put("getType", object : KTEFunction() {
             override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
                 return StringValue("object")
             }
+
             override fun toString(): String = "getType() : string"
         })
         put("getKeys", object : KTEFunction() {

@@ -1,0 +1,21 @@
+@partial_raw
+	@define_placeholder(object,KotlinInterface)
+		@var keys = @var(__param__.getKeys())
+
+		<%-- Creating interface definition --%>
+		@default_no_raw
+			data class @var(__param__.getName()) (
+
+		@end_default_no_raw
+
+
+
+		@for(@var i=0;i<@var(keys.size());i++)
+		@default_no_raw
+						val @var(keys[@var(i)]) : @var(keys[@var(i)].getType().capitalize())
+
+			@end_default_no_raw
+		@endfor
+		@raw ) @endraw
+	@end_define_placeholder
+@end_partial_raw

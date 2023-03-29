@@ -1,9 +1,8 @@
 package com.wakaztahir.kte.model.model
 
 import com.wakaztahir.kte.model.*
-import com.wakaztahir.kte.model.runtime.KTEListImplementation
-import com.wakaztahir.kte.model.runtime.KTEMutableListImplementation
-import com.wakaztahir.kte.parser.stream.DestinationStream
+import com.wakaztahir.kte.runtime.KTEListImplementation
+import com.wakaztahir.kte.runtime.KTEMutableListImplementation
 import kotlin.jvm.JvmInline
 
 interface KTEList<T : KTEValue> : ReferencedValue {
