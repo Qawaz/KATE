@@ -27,24 +27,16 @@ open class PlaceholderBlock(
     indentationLevel = indentationLevel
 ) {
 
-    private var isGenerationModelSet = false
-
     override var model: MutableKTEObject = parent
         protected set
 
     private var paramValue: KTEValue? = null
 
-    fun setGenerationModel(model: MutableKTEObject) {
-        this.model = model
-        this.isGenerationModelSet = true
-    }
-
     fun setParamValue(value: KTEValue) {
         this.paramValue = value
     }
 
-    fun generateTo(model: MutableKTEObject, value: KTEValue?, destination: DestinationStream) {
-        setGenerationModel(model)
+    fun generateTo(value: KTEValue?, destination: DestinationStream) {
         if (value != null) setParamValue(value)
         generateTo(destination)
     }
@@ -54,9 +46,6 @@ open class PlaceholderBlock(
     }
 
     override fun generateTo(destination: DestinationStream) {
-        require(isGenerationModelSet) {
-            "Generation Model should be set using setGenerationModel before calling generateTo"
-        }
         if (paramValue != null) {
             require(!model.contains("__param__")) {
                 "when passing @var(this) value to placeholder invocation , defining value with same name \"__param__\" is not allowed"
@@ -75,7 +64,6 @@ open class PlaceholderBlock(
                 }
             }
         }
-        this.isGenerationModelSet = false
     }
 
 }
@@ -116,14 +104,13 @@ class PlaceholderDefinition(val blockValue: PlaceholderBlock) : BlockContainer {
 
 class PlaceholderInvocation(
     val placeholderName: String,
-    val generationObject: MutableKTEObject,
     var paramValue: KTEValue?,
     val invocationEndPointer: Int
 ) : CodeGen {
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
         val placeholder = block.source.placeholderManager.getPlaceholder(placeholderName = placeholderName)
             ?: throw IllegalStateException("placeholder with name $placeholderName not found")
-        placeholder.generateTo(generationObject, paramValue, destination)
+        placeholder.generateTo(paramValue, destination)
         block.source.setPointerAt(invocationEndPointer)
     }
 }

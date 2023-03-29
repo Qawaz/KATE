@@ -24,7 +24,6 @@ interface ReferencedValue : KTEValue {
                 invokedOn = value,
                 parameters = EmptyReferencedValuesList
             ) as StringValue).value,
-            generationObject = model,
             paramValue = value,
             invocationEndPointer = endPointer
         )

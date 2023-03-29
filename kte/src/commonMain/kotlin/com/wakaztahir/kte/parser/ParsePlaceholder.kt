@@ -45,7 +45,7 @@ private fun LazyBlock.parsePlaceholderBlock(nameAndDef: Pair<String, String>): P
         startsWith = "@define_placeholder",
         endsWith = "@end_define_placeholder",
         allowTextOut = isWriteUnprocessedTextEnabled,
-        inheritModel = true
+        inheritModel = false
     )
 
     return PlaceholderBlock(
@@ -100,12 +100,10 @@ fun LazyBlock.parsePlaceholderInvocation(): PlaceholderInvocation? {
             }
         }
         if (placeholderName != null) {
-            val genModel: MutableKTEObject? = genValue?.asNullableMutableObject(model)
             return PlaceholderInvocation(
                 placeholderName = placeholderName,
-                generationObject = genModel ?: model,
                 invocationEndPointer = source.pointer,
-                paramValue = if (genModel == null) genValue else null
+                paramValue = genValue ?: model
             )
         } else {
             throw IllegalStateException("placeholder name is required when invoking a placeholder using @placeholder")

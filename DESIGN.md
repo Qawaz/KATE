@@ -276,11 +276,12 @@ To invoke / call a placeholder You use `@placeholder` with Placeholder name as t
 @placeholder(WelcomeText)
 ```
 
-Placeholders inherit scope of invocation directive , Because of this, this code is possible
+Placeholders always get passed an object / parameter , If you don't pass a value , current scope is passed ,
+That's why this code is possible
 
 ```
-@define_placeholder(Varible)
-    @var(i)
+@define_placeholder(Variable)
+    @var(__param__.i)
 @end_define_placeholder
 
 @for(@var i=0;i<5;i++)
@@ -288,11 +289,7 @@ Placeholders inherit scope of invocation directive , Because of this, this code 
 @endfor
 ```
 
-This means that placeholder block inherits the scope of invocation directive , so any
-variables / lists / objects that are in the scope of invocation will be
-accessible inside the placeholder definition
-
-You can also provide an object whose variables will be in the scope of placeholder
+Passing a custom object to placeholder
 
 ```
 @define_object(MyObject)
@@ -302,12 +299,7 @@ You can also provide an object whose variables will be in the scope of placehold
 @placeholder(WelcomeText,@var(MyObject))
 ```
 
-Now welcome text can make a reference to `myVar` and it will be able to access it
-
-If placeholder creates any variables , They'll be present in `MyObject` after the invocation
-
-Values provided to placeholder can be accessed using `@var(__param__)` , Values other than objects can
-be accessed this way inside the placeholder
+Now welcome text can make a reference to `myVar` and it will be able to access it using `@var(__param__.myVar)`
 
 ### Redefinition
 
