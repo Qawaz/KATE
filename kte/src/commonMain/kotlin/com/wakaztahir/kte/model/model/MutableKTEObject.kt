@@ -68,18 +68,8 @@ interface MutableKTEObject : KTEObject {
 
     fun removeKey(key: String)
 
-    fun remove(model: KTEObject, path: List<ModelReference>) {
-        if (path.isEmpty()) return
-        if (path.size == 1) {
-            removeKey(path[0].name)
-            return
-        }
-        val parentPath = path.subList(1, path.size)
-        val parent = getModelReferenceValue(model = model, path = parentPath, callFunctions = false)
-        if (parent is MutableKTEObject) {
-            parent.removeKey(path.last().name)
-        }
-    }
+    fun removeAll()
+
 
 }
 

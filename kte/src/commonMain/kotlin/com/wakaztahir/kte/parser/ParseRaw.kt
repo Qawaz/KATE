@@ -2,6 +2,7 @@ package com.wakaztahir.kte.parser
 
 import com.wakaztahir.kte.dsl.ScopedModelObject
 import com.wakaztahir.kte.model.*
+import com.wakaztahir.kte.model.model.MutableKTEObject
 import com.wakaztahir.kte.parser.stream.*
 import com.wakaztahir.kte.parser.stream.increment
 
@@ -9,7 +10,7 @@ fun LazyBlock.parseBlockSlice(
     startsWith: String,
     endsWith: String,
     allowTextOut: Boolean,
-    inheritModel: Boolean
+    model: MutableKTEObject,
 ): LazyBlockSlice {
 
     escapeBlockSpacesForward()
@@ -35,13 +36,25 @@ fun LazyBlock.parseBlockSlice(
         parentBlock = this,
         startPointer = previous,
         length = length,
-        model = if (inheritModel) model else ScopedModelObject(model),
+        model = model,
         blockEndPointer = source.pointer,
         isWriteUnprocessedTextEnabled = allowTextOut,
         indentationLevel = indentationLevel + 1
     )
 
 }
+
+fun LazyBlock.parseBlockSlice(
+    startsWith: String,
+    endsWith: String,
+    allowTextOut: Boolean,
+    inheritModel: Boolean
+): LazyBlockSlice = parseBlockSlice(
+    startsWith = startsWith,
+    endsWith = endsWith,
+    allowTextOut = allowTextOut,
+    model = if (inheritModel) model else ScopedModelObject(model)
+)
 
 fun LazyBlock.parseRawBlock(): RawBlock? {
     if (source.currentChar == '@' && source.increment("@raw")) {

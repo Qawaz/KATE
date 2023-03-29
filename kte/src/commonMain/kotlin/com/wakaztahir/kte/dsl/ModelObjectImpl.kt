@@ -33,11 +33,15 @@ open class ModelObjectImpl(override val objectName: String) : MutableKTEObject {
         container.remove(key)
     }
 
+    override fun removeAll() {
+        container.clear()
+    }
+
     override fun toString(): String {
         if (container.isEmpty()) return "{}"
         var str = "{"
         for (item in container) {
-            if(item.value == this) continue
+            if (item.value == this) continue
             str += "\n\t"
             str += item.key
             str += " : "

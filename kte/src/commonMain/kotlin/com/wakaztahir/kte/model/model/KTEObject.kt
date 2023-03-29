@@ -53,17 +53,6 @@ interface KTEObject : ReferencedValue {
         return currentVal
     }
 
-    fun exists(model: KTEObject, path: List<ModelReference>): Boolean {
-        if (path.isEmpty()) return false
-        if (path.size == 1) return contains(path[0].name)
-        val value = try {
-            getModelReferenceValue(model = model, path = path, callFunctions = false)
-        } catch (_: UnresolvedValueException) {
-            null
-        }
-        return value != null
-    }
-
     fun traverse(block: (KTEValue) -> Unit) {
         block(this)
         for (each in contained) {

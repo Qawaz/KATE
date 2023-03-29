@@ -1,5 +1,6 @@
 package com.wakaztahir.kte.parser
 
+import com.wakaztahir.kte.dsl.ModelObjectImpl
 import com.wakaztahir.kte.model.*
 import com.wakaztahir.kte.model.model.*
 import com.wakaztahir.kte.parser.stream.DestinationStream
@@ -54,7 +55,8 @@ class FunctionDefinition(val slice: FunctionSlice, val functionName: String) : C
                 (model as? MutableKTEObject)?.putValue("this", KTEListImpl(parameters))
                 slice.generateTo(destination)
                 (model as? MutableKTEObject)?.removeKey("this")
-                return slice.returnedValue ?: throw IllegalStateException("function $functionName didn't return a value")
+                return slice.returnedValue
+                    ?: throw IllegalStateException("function $functionName didn't return a value")
             }
 
             override fun toString(): String = "$functionName()"
@@ -85,7 +87,7 @@ fun LazyBlock.parseFunctionDefinition(): FunctionDefinition? {
             startsWith = "@function",
             endsWith = "@end_function",
             allowTextOut = false,
-            inheritModel = true
+            inheritModel = false
         )
         return FunctionDefinition(slice = FunctionSlice(slice = slice), functionName)
     }
