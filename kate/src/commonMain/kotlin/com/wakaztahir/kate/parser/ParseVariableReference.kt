@@ -2,6 +2,7 @@ package com.wakaztahir.kate.parser
 
 import com.wakaztahir.kate.model.ModelDirective
 import com.wakaztahir.kate.model.ModelReference
+import com.wakaztahir.kate.model.PrimitiveValue
 import com.wakaztahir.kate.model.model.ReferencedValue
 import com.wakaztahir.kate.parser.stream.SourceStream
 import com.wakaztahir.kate.parser.stream.increment
@@ -29,9 +30,15 @@ internal fun SourceStream.parseFunctionParameters(): List<ReferencedValue>? {
     return null
 }
 
+private fun SourceStream.parseIndexingOperatorValue(): ReferencedValue? {
+    parseVariableReference()?.let { return it  }
+    parseNumberValue()?.let { return it  }
+    return null
+}
+
 internal fun SourceStream.parseIndexingOperatorCall(invokeOnly: Boolean): ModelReference.FunctionCall? {
     if (increment('[')) {
-        val indexingValue = parseNumberOrReference()
+        val indexingValue = parseIndexingOperatorValue()
             ?: throw IllegalStateException("couldn't get indexing value inside indexing operator")
         if (increment(']')) {
             return ModelReference.FunctionCall(

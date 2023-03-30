@@ -81,7 +81,10 @@ interface LazyBlock {
     }
 
     fun parseImplicitDirectives(): CodeGen? {
-        parseExpression()?.let { return it.toPlaceholderInvocation(model, source.pointer) ?: KTEUnit }
+        parseExpression(
+            parseFirstStringOrChar = false,
+            parseNotFirstStringOrChar = true
+        )?.let { return it.toPlaceholderInvocation(model, source.pointer) ?: KTEUnit }
         return null
     }
 
@@ -136,7 +139,7 @@ open class LazyBlockSlice(
     override val indentationLevel: Int
 ) : LazyBlock {
 
-    override val source: SourceStream  = parentBlock.source
+    override val source: SourceStream = parentBlock.source
 
     override fun canIterate(): Boolean {
         return source.pointer < startPointer + length

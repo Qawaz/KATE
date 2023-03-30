@@ -4,10 +4,10 @@ import com.wakaztahir.kate.model.IntValue
 import com.wakaztahir.kate.model.StringValue
 import com.wakaztahir.kate.model.asPrimitive
 import com.wakaztahir.kate.model.model.*
+import com.wakaztahir.kate.parser.*
+import com.wakaztahir.kate.parser.parseExpression
 import com.wakaztahir.kate.parser.parseVariableDeclaration
 import com.wakaztahir.kate.parser.parseVariableReference
-import com.wakaztahir.kate.parser.parseExpression
-import com.wakaztahir.kate.parser.parseStringValue
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
@@ -26,9 +26,10 @@ class VariablesTest {
     }
 
     @Test
-    fun testVariableType(){
-        assertEquals("objectbooleanchardoubleintlistmutable_liststringlong", GenerateCode(
-            """@define_object(MyObj)
+    fun testVariableType() {
+        assertEquals(
+            "objectbooleanchardoubleintlistmutable_liststringlong", GenerateCode(
+                """@define_object(MyObj)
             |@var b = true
             |@var c = 'c'
             |@var d = 123.123
@@ -38,7 +39,14 @@ class VariablesTest {
             |@var s = "hello"
             |@var l2 = 123L
             |@end_define_object
-            |@var(MyObj.getType())@var(MyObj.b.getType())@var(MyObj.c.getType())@var(MyObj.d.getType())@var(MyObj.i.getType())@var(MyObj.l.getType())@var(MyObj.ml.getType())@var(MyObj.s.getType())@var(MyObj.l2.getType())""".trimMargin()))
+            |@var(MyObj.getType())@var(MyObj.b.getType())@var(MyObj.c.getType())@var(MyObj.d.getType())@var(MyObj.i.getType())@var(MyObj.l.getType())@var(MyObj.ml.getType())@var(MyObj.s.getType())@var(MyObj.l2.getType())""".trimMargin()
+            )
+        )
+    }
+
+    @Test
+    fun testStringConcatenation() {
+        assertEquals("helloworld", GenerateCode("@var i = \"hel\" @+ \"lo\" @var(i) @+ \"world\""))
     }
 
     @Test
@@ -47,7 +55,11 @@ class VariablesTest {
             expected = "10",
             actual = GenerateCode("@var i = @var(myFunc()) @var(i)", MutableKTEObject {
                 putValue("myFunc", object : KTEFunction() {
-                    override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
+                    override fun invoke(
+                        model: KTEObject,
+                        invokedOn: KTEValue,
+                        parameters: List<ReferencedValue>
+                    ): KTEValue {
                         return IntValue(10)
                     }
 
@@ -77,11 +89,11 @@ class VariablesTest {
     }
 
     @Test
-    fun testStringConversions(){
-        assertEquals("123",GenerateCode("@var x = \"123\" @var(x.toInt())"))
-        assertEquals("123.0",GenerateCode("@var x = \"123\" @var(x.toDouble())"))
-        assertEquals("",GenerateCode("@var x = \"abc\" @var(x.toInt())"))
-        assertEquals("123",GenerateCode("@var x = \"123\" @var(x.toInt().toString())"))
+    fun testStringConversions() {
+        assertEquals("123", GenerateCode("@var x = \"123\" @var(x.toInt())"))
+        assertEquals("123.0", GenerateCode("@var x = \"123\" @var(x.toDouble())"))
+        assertEquals("", GenerateCode("@var x = \"abc\" @var(x.toInt())"))
+        assertEquals("123", GenerateCode("@var x = \"123\" @var(x.toInt().toString())"))
     }
 
     @Test
@@ -176,7 +188,7 @@ class VariablesTest {
     fun testParseDynamicProperty() {
         val context = TemplateContext(("@var(myVar)"))
         context.stream.model.putValue("myVar", StringValue("someValue"))
-        val property = context.stream.parseExpression()
+        val property = context.stream.parseExpression(true,true)
         assertEquals(property!!.asPrimitive(context.stream.model).value, "someValue")
     }
 

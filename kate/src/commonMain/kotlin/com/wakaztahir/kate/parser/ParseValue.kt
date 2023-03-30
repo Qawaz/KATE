@@ -60,9 +60,9 @@ internal fun SourceStream.parseCharacterValue(): CharValue? {
 
 internal fun SourceStream.parseStringValue(): StringValue? {
     if (currentChar == '\"' && increment('\"')) {
-        val value = StringValue(parseTextWhile { currentChar != '\"' })
+        val value = parseTextWhile { currentChar != '\"' }
         increment('\"')
-        return value
+        return StringValue(value)
     }
     return null
 }

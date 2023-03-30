@@ -222,8 +222,8 @@ private class ValueAndOperatorStack {
 
 }
 
-private fun LazyBlock.parseValueAndOperator(): Pair<ReferencedValue, ArithmeticOperatorType?>? {
-    val firstValue = source.parseNumberOrReference()
+private fun LazyBlock.parseValueAndOperator(parseStringAndChar: Boolean): Pair<ReferencedValue, ArithmeticOperatorType?>? {
+    val firstValue = source.parseValueInsideExpression(parseStringAndChar = parseStringAndChar)
     if (firstValue != null) {
         val pointerAfterFirstValue = source.pointer
         source.increment(' ')
@@ -245,11 +245,12 @@ private fun LazyBlock.parseValueAndOperator(): Pair<ReferencedValue, ArithmeticO
 }
 
 private fun SourceStream.parseExpressionWith(
+    parseStringAndChar: Boolean,
     stack: ValueAndOperatorStack,
     final: ValueAndOperatorStack
 ) {
     while (!hasEnded) {
-        val valueAndOp = parseValueAndOperator()
+        val valueAndOp = parseValueAndOperator(parseStringAndChar = parseStringAndChar)
         if (valueAndOp != null) {
             final.putValue(valueAndOp.first)
             val operator = valueAndOp.second
@@ -309,8 +310,11 @@ private fun SourceStream.parseExpressionWith(
     stack.putAllInto(final)
 }
 
-internal fun LazyBlock.parseExpression(): ReferencedValue? {
-    val valueAndOp = parseValueAndOperator()
+internal fun LazyBlock.parseExpression(
+    parseFirstStringOrChar: Boolean,
+    parseNotFirstStringOrChar: Boolean
+): ReferencedValue? {
+    val valueAndOp = parseValueAndOperator(parseStringAndChar = parseFirstStringOrChar)
     if (valueAndOp != null) {
         return if (valueAndOp.second != null) {
 
@@ -318,7 +322,7 @@ internal fun LazyBlock.parseExpression(): ReferencedValue? {
             stack.putOperator(valueAndOp.second!!)
             val final = ValueAndOperatorStack()
             final.putValue(valueAndOp.first)
-            source.parseExpressionWith(stack = stack, final = final)
+            source.parseExpressionWith(parseStringAndChar = parseNotFirstStringOrChar, stack = stack, final = final)
             final.toExpression()
 
         } else {
@@ -328,8 +332,8 @@ internal fun LazyBlock.parseExpression(): ReferencedValue? {
     return null
 }
 
-private fun SourceStream.parseUnitValue() : ReferencedValue? {
-    if(currentChar == '@' && increment("@Unit")) return KTEUnit
+private fun SourceStream.parseUnitValue(): ReferencedValue? {
+    if (currentChar == '@' && increment("@Unit")) return KTEUnit
     return null
 }
 
@@ -337,9 +341,10 @@ internal fun SourceStream.parseAnyExpressionOrValue(): ReferencedValue? {
     parseListDefinition()?.let { return it }
     parseMutableListDefinition()?.let { return it }
     parseBooleanValue()?.let { return it }
-    parseStringValue()?.let { return it }
-    parseCharacterValue()?.let { return it }
     parseUnitValue()?.let { return it }
-    parseExpression()?.let { return it }
+    parseExpression(
+        parseFirstStringOrChar = true,
+        parseNotFirstStringOrChar = true
+    )?.let { return it }
     return null
 }

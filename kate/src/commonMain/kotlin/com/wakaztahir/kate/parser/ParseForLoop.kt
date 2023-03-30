@@ -230,6 +230,12 @@ private class NumberedForLoopIncrementer(
     val incrementerValue: ReferencedValue
 )
 
+private fun SourceStream.parseNumberOrReference(): ReferencedValue? {
+    parseVariableReference()?.let { return it }
+    parseNumberValue()?.let { return it }
+    return null
+}
+
 private fun SourceStream.parseNumberedForLoopIncrementer(variableName: String): NumberedForLoopIncrementer {
     val incrementalConst = parseTextWhile { currentChar.isVariableName() }
     if (incrementalConst == variableName) {
