@@ -14,7 +14,7 @@ import java.net.URL
 
 class InputSourceStream(
     private val inputStream: InputStream,
-    override val model: MutableKTEObject = ModelObjectImpl("Global"),
+    override val model: MutableKTEObject = ModelObjectImpl(GlobalModelObjectName),
     override val embeddingManager: EmbeddingManager = NoEmbeddings,
     override val placeholderManager: PlaceholderManager = EmptyPlaceholderManager()
 ) : SourceStream() {

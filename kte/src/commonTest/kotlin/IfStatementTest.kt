@@ -110,6 +110,18 @@ class IfStatementTest {
     }
 
     @Test
+    fun testLongs() {
+        assertTrue(evaluate("1L", "==", "1L"))
+        assertTrue(evaluate("0L", "!=", "1L"))
+        assertTrue(evaluate("1L", "!=", "0L"))
+        assertTrue(evaluate("0L", "==", "0L"))
+        assertTrue(evaluate("2L", "> ", "1L"))
+        assertTrue(evaluate("1L", "< ", "2L"))
+        assertTrue(evaluate("2L", ">=", "1L"))
+        assertTrue(evaluate("1L", "<=", "2L"))
+    }
+
+    @Test
     fun testCompareLists() {
         assertEquals(true, evaluate("@list(1,2,3)", "==", "@list(1,2,3)"))
         assertEquals(false, evaluate("@list(1,2,3)", "==", "@list(1,3,2)"))

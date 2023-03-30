@@ -5,6 +5,7 @@
         @var testChar = 's'
         @var testBoolean = false
         @var testDouble = 0.123433
+        @var testLong = 12322L
         @var testList = @list(1,2,3,4)
         @var testMList = @mutable_list(1.2,3.4,5.6,3.4)
         @define_object(NestedObject)
@@ -12,12 +13,23 @@
             @var testChar = 's'
             @var testBoolean = false
             @var testDouble = 0.123433
+            @var testLong = 12322L
             @var testList = @list(1,2,3,4)
             @var testMList = @mutable_list(1.2,3.4,5.6,3.4)
         @end_define_object
     @end_define_object
 
     @embed_once ./kotlin/object_as_data_class.kate
+
+    @default_no_raw @var(TestObject) @end_default_no_raw
+
+    @embed_once ./kotlin/object_as_interface.kate
+
+    @default_no_raw
+
+
+
+    @end_default_no_raw
 
     @default_no_raw @var(TestObject) @end_default_no_raw
 

@@ -1,5 +1,6 @@
 package com.wakaztahir.kte.model.model
 
+import com.wakaztahir.kte.GlobalModelObjectName
 import com.wakaztahir.kte.dsl.ModelObjectImpl
 import com.wakaztahir.kte.model.*
 
@@ -73,7 +74,7 @@ interface MutableKTEObject : KTEObject {
 
 }
 
-fun MutableKTEObject(name: String = "Global", block: MutableKTEObject.() -> Unit): MutableKTEObject {
+fun MutableKTEObject(name: String = GlobalModelObjectName, block: MutableKTEObject.() -> Unit): MutableKTEObject {
     val modelObj = ModelObjectImpl(objectName = name)
     block(modelObj)
     return modelObj

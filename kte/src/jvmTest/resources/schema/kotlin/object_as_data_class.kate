@@ -1,6 +1,6 @@
 @partial_raw
 
-	@define_placeholder(object,KotlinInterface)
+	@define_placeholder(object,KotlinDataClass)
 		@var keys = @var(__param__.getKeys())
 
 		<%-- Creating interface definition --%>

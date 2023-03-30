@@ -12,6 +12,9 @@ import com.wakaztahir.kte.model.model.ReferencedValue
 )
 annotation class KTEDelicateFunction
 
+const val GlobalModelObjectName = "Global"
+const val ScopedModelObjectName = "ScopedObject"
+
 val EmptyReferencedValuesList = emptyList<ReferencedValue>()
 
 val GetTypeModelReference = ModelReference.FunctionCall(

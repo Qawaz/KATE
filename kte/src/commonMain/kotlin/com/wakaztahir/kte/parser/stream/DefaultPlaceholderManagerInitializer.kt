@@ -6,6 +6,7 @@ object DefaultPlaceholderManagerInitializer {
 
     private const val DoublePlaceholderName = "double"
     private const val IntPlaceholderName = "int"
+    private const val LongPlaceholderName = "long"
     private const val StringPlaceholderName = "string"
     private const val CharPlaceholderName = "char"
     private const val BooleanPlaceholderName = "boolean"
@@ -27,6 +28,12 @@ object DefaultPlaceholderManagerInitializer {
                     parent = source,
                     placeholderName = IntPlaceholderName,
                     definitionName = IntPlaceholderName
+                ),
+                TextPlaceholderBlock(
+                    text = "@runtime.print_string(@var(__param__.toString()))",
+                    parent = source,
+                    placeholderName = LongPlaceholderName,
+                    definitionName = LongPlaceholderName
                 ),
                 TextPlaceholderBlock(
                     text = "@runtime.print_string(@var(__param__))",
