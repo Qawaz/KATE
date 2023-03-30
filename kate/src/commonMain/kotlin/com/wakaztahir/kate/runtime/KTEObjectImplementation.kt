@@ -1,6 +1,7 @@
 package com.wakaztahir.kate.runtime
 
 import com.wakaztahir.kate.model.BooleanValue
+import com.wakaztahir.kate.model.ModelReference
 import com.wakaztahir.kate.model.StringValue
 import com.wakaztahir.kate.model.model.*
 
@@ -9,6 +10,17 @@ object KTEObjectImplementation {
     val propertyMap by lazy { hashMapOf<String, KTEValue>().apply { putObjectFunctions() } }
 
     private fun HashMap<String, KTEValue>.putObjectFunctions() {
+        put("get",object : KTEFunction(){
+            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
+                val value = invokedOn as? KTEObject
+                require(value != null) { "invoked on object cannot be null" }
+                val required = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
+                require(required != null){ "get requires a single parameter" }
+                return value.get(required) ?: KTEUnit
+            }
+
+            override fun toString(): String = "get() : KATEValue"
+        })
         put("getName", object : KTEFunction() {
             override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
                 val value = invokedOn as? KTEObject

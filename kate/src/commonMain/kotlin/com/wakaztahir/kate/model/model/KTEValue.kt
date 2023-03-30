@@ -1,7 +1,11 @@
 package com.wakaztahir.kate.model.model
 
+import com.wakaztahir.kate.EmptyReferencedValuesList
+import com.wakaztahir.kate.GetTypeModelReference
 import com.wakaztahir.kate.model.ModelReference
+import com.wakaztahir.kate.model.PlaceholderInvocation
 import com.wakaztahir.kate.model.PrimitiveValue
+import com.wakaztahir.kate.model.StringValue
 
 interface KTEValue {
 
@@ -10,6 +14,15 @@ interface KTEValue {
     }
 
     fun getModelReference(reference: ModelReference): KTEValue?
+
+    fun getKateType(model: KTEObject): String? {
+        val typeFunction = (getModelReference(GetTypeModelReference)?.let { it as KTEFunction }) ?: return null
+        return (typeFunction.invoke(
+            model = model,
+            invokedOn = this,
+            parameters = EmptyReferencedValuesList
+        ) as StringValue).value
+    }
 
     override fun toString(): String
 
@@ -39,6 +52,6 @@ interface KTEValue {
         return this as? KTEFunction
     }
 
-    fun compareTo(model: KTEObject,other: KTEValue): Int
+    fun compareTo(model: KTEObject, other: KTEValue): Int
 
 }

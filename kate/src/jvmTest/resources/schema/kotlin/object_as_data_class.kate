@@ -17,7 +17,7 @@
 
 		@for(@var i=0;i<@var(keys.size());i++)
 		    @default_no_raw
-                    @if(@var(overriding)) override  @endif val @var(keys[@var(i)].decapitalize()) : @var(keys[@var(i)].getType().capitalize()),
+                    @if(@var(overriding)) override  @endif val @var(keys[@var(i)].decapitalize()) : @var(__param__[@var(keys[@var(i)])].getType().capitalize()),
 
 			@end_default_no_raw
 		@endfor

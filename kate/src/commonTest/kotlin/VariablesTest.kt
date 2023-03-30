@@ -27,7 +27,7 @@ class VariablesTest {
 
     @Test
     fun testVariableType(){
-        assertEquals("objectbooleanchardoubleintlistmutable_liststring", GenerateCode(
+        assertEquals("objectbooleanchardoubleintlistmutable_liststringlong", GenerateCode(
             """@define_object(MyObj)
             |@var b = true
             |@var c = 'c'
@@ -36,8 +36,9 @@ class VariablesTest {
             |@var l = @list(1,2,3)
             |@var ml = @mutable_list(1,2,3)
             |@var s = "hello"
+            |@var l2 = 123L
             |@end_define_object
-            |@var(MyObj.getType())@var(MyObj.b.getType())@var(MyObj.c.getType())@var(MyObj.d.getType())@var(MyObj.i.getType())@var(MyObj.l.getType())@var(MyObj.ml.getType())@var(MyObj.s.getType())""".trimMargin()))
+            |@var(MyObj.getType())@var(MyObj.b.getType())@var(MyObj.c.getType())@var(MyObj.d.getType())@var(MyObj.i.getType())@var(MyObj.l.getType())@var(MyObj.ml.getType())@var(MyObj.s.getType())@var(MyObj.l2.getType())""".trimMargin()))
     }
 
     @Test

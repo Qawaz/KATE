@@ -11,6 +11,8 @@ interface KTEObject : ReferencedValue {
 
     fun contains(key: String): Boolean
 
+    fun get(key : String) : KTEValue?
+
     private fun List<ModelReference>.pathUntil(prop: ModelReference): String {
         return joinToString(
             separator = ".",

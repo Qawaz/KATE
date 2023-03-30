@@ -1,32 +1,32 @@
 interface TestInterface {
-	val nestedObject : String
-	val testList : String
-	val testMList : String
-	val testBoolean : String
-	val testChar : String
+	val nestedObject : Object
+	val testList : List
+	val testMList : Mutable_list
+	val testBoolean : Boolean
+	val testChar : Char
 	val testVariable : String
-	val testDouble : String
-	val testLong : String
+	val testDouble : Double
+	val testLong : Long
 }
 
 data class TestDataClass (
-    val nestedObject : String,
-    val testList : String,
-    val testMList : String,
-    val testBoolean : String,
-    val testChar : String,
+    val nestedObject : Object,
+    val testList : List,
+    val testMList : Mutable_list,
+    val testBoolean : Boolean,
+    val testChar : Char,
     val testVariable : String,
-    val testDouble : String,
-    val testLong : String,
+    val testDouble : Double,
+    val testLong : Long,
 )
 
 data class TestOverriding (
-    override val nestedObject : String,
-    override val testList : String,
-    override val testMList : String,
-    override val testBoolean : String,
-    override val testChar : String,
+    override val nestedObject : Object,
+    override val testList : List,
+    override val testMList : Mutable_list,
+    override val testBoolean : Boolean,
+    override val testChar : Char,
     override val testVariable : String,
-    override val testDouble : String,
-    override val testLong : String,
+    override val testDouble : Double,
+    override val testLong : Long,
 ) : TestInterface

@@ -12,7 +12,7 @@
 
 		@for(@var i=0;i<@var(keys.size());i++)
 		@default_no_raw
-					val @var(keys[@var(i)].decapitalize()) : @var(keys[@var(i)].getType().capitalize())
+					val @var(keys[@var(i)].decapitalize()) : @var(__param__[@var(keys[@var(i)])].getType().capitalize())
 
 			@end_default_no_raw
 		@endfor

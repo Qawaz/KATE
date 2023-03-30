@@ -1,7 +1,9 @@
 package com.wakaztahir.kate.runtime
 
+import com.wakaztahir.kate.GetTypeModelReference
 import com.wakaztahir.kate.model.BooleanValue
 import com.wakaztahir.kate.model.IntValue
+import com.wakaztahir.kate.model.ModelReference
 import com.wakaztahir.kate.model.StringValue
 import com.wakaztahir.kate.model.model.*
 
@@ -14,6 +16,18 @@ object KTEListImplementation {
             override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
                 return StringValue("list")
             }
+
+            override fun toString(): String = "getType() : string"
+        })
+        put("getChildType", object : KTEFunction() {
+            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
+                val list = invokedOn.asNullableList(model)
+                require(list != null) { "list is null" }
+                return StringValue(
+                    value = list.collection.firstOrNull()?.getKTEValue(model)?.getKateType(model) ?: "unit"
+                )
+            }
+
             override fun toString(): String = "getType() : string"
         })
         put("get", object : KTEFunction() {

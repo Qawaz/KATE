@@ -13,6 +13,10 @@ open class ModelObjectImpl(override var objectName: String, override val parent:
 
     // ----- Getters
 
+    override fun get(key: String): KTEValue? {
+        return container[key]
+    }
+
     override fun contains(key: String): Boolean {
         return container.containsKey(key)
     }

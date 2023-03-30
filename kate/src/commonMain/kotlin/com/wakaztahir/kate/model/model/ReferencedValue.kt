@@ -12,13 +12,9 @@ interface ReferencedValue : KTEValue {
 
     fun toPlaceholderInvocation(model: MutableKTEObject, endPointer: Int): PlaceholderInvocation? {
         val value = getKTEValue(model)
-        val typeFunction = (value.getModelReference(GetTypeModelReference)?.let { it as KTEFunction }) ?: return null
+        val type = value.getKateType(model) ?: return null
         return PlaceholderInvocation(
-            placeholderName = (typeFunction.invoke(
-                model = model,
-                invokedOn = value,
-                parameters = EmptyReferencedValuesList
-            ) as StringValue).value,
+            placeholderName = type,
             paramValue = value,
             invocationEndPointer = endPointer
         )
