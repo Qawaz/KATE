@@ -7,6 +7,7 @@ import com.wakaztahir.kte.parser.stream.DestinationStream
 interface KTEObject : ReferencedValue {
 
     val objectName: String
+    val parent: KTEObject?
     val contained: Map<String, KTEValue>
 
     fun contains(key: String): Boolean
@@ -41,8 +42,10 @@ interface KTEObject : ReferencedValue {
 
                 is ModelReference.Property -> {
                     currentVal = currentVal.getModelReference(prop) ?: run {
-                        if (path.size == 1 && prop.name == "this") {
+                        if (prop.name == "this") {
                             currentVal
+                        } else if (prop.name == "parent" && parent != null) {
+                            parent!!
                         } else {
                             throw UnresolvedValueException("property ${path.pathUntil(prop)} does not exist on value : $currentVal")
                         }

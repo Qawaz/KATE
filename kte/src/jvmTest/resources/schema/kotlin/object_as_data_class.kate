@@ -3,6 +3,12 @@
 	@define_placeholder(object,KotlinDataClass)
 		@var keys = @var(__param__.getKeys())
 
+		@var overriding = false
+
+		@if(@var(this.parent.contains("__overriding__")))
+		    @var overriding = true
+		@endif
+
 		<%-- Creating interface definition --%>
 		@default_no_raw
 			data class @var(__param__.getName()) (
@@ -11,13 +17,18 @@
 
 		@for(@var i=0;i<@var(keys.size());i++)
 		    @default_no_raw
-                    val @var(keys[@var(i)].decapitalize()) : @var(keys[@var(i)].getType().capitalize()),
+                    @if(@var(overriding)) override  @endif val @var(keys[@var(i)].decapitalize()) : @var(keys[@var(i)].getType().capitalize()),
 
 			@end_default_no_raw
 		@endfor
-		@raw
+		@default_no_raw
 		    )
-		@endraw
+		@end_default_no_raw
+		@default_no_raw
+            @if(@var(this.parent.contains("__overriding__")))
+                 : @var(this.parent.__overriding__)
+            @endif
+        @end_default_no_raw
 	@end_define_placeholder
 
 @end_partial_raw

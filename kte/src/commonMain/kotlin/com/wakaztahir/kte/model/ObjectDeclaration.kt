@@ -11,7 +11,7 @@ import com.wakaztahir.kte.parser.stream.DestinationStream
 
 class ObjectDeclarationModel(
     objectName: String,
-    val parent: MutableKTEObject
+    override val parent: MutableKTEObject
 ) : ModelObjectImpl(objectName) {
     override fun getModelReference(reference: ModelReference): KTEValue? {
         return super.getModelReference(reference) ?: parent.getModelReference(reference)

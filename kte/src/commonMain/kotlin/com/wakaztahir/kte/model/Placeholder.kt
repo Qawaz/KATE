@@ -43,7 +43,7 @@ open class PlaceholderBlock(
     override fun generateTo(destination: DestinationStream) {
         if (paramValue != null) {
             require(!model.contains("__param__")) {
-                "when passing @var(this) value to placeholder invocation , defining value with same name \"__param__\" is not allowed"
+                "when passing @var(__param__) value to placeholder invocation , defining value with same name \"__param__\" is not allowed"
             }
             (paramValue as? ModelDirective)?.propertyPath?.lastOrNull()?.name?.let {
                 model.putValue("__kte_param_name__", it)
