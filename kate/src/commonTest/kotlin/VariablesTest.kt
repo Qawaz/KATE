@@ -18,7 +18,7 @@ class VariablesTest {
     @Test
     fun testParseVariableReference() {
         val context = TemplateContext(("@var(myVar)"))
-        val ref = context.stream.parseVariableReference()
+        val ref = context.stream.parseVariableReference(true)
         assertNotEquals(null, ref)
         assertEquals(ref!!.propertyPath[0].name, "myVar")
         context.stream.model.putValue("myVar", StringValue("someValue"))
@@ -188,7 +188,11 @@ class VariablesTest {
     fun testParseDynamicProperty() {
         val context = TemplateContext(("@var(myVar)"))
         context.stream.model.putValue("myVar", StringValue("someValue"))
-        val property = context.stream.parseExpression(true,true)
+        val property = context.stream.parseExpression(
+            parseFirstStringOrChar = true,
+            parseNotFirstStringOrChar = true,
+            parseDirectRefs = true
+        )
         assertEquals(property!!.asPrimitive(context.stream.model).value, "someValue")
     }
 

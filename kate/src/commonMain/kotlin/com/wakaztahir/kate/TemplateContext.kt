@@ -5,10 +5,16 @@ import com.wakaztahir.kate.model.model.MutableKTEObject
 import com.wakaztahir.kate.parser.stream.DestinationStream
 import com.wakaztahir.kate.parser.stream.SourceStream
 import com.wakaztahir.kate.parser.stream.TextSourceStream
+import com.wakaztahir.kate.parser.stream.printErrorLineNumberAndCharacterIndex
 
 class TemplateContext(stream: SourceStream) {
 
-    constructor(text: String, model: MutableKTEObject = ModelObjectImpl(GlobalModelObjectName)) : this(TextSourceStream(text, model))
+    constructor(text: String, model: MutableKTEObject = ModelObjectImpl(GlobalModelObjectName)) : this(
+        TextSourceStream(
+            text,
+            model
+        )
+    )
 
     var stream: SourceStream = stream
         private set

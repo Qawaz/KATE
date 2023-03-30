@@ -148,6 +148,37 @@ internal inline fun SourceStream.incrementUntilDirectiveWithSkip(
     return null
 }
 
+inline fun SourceStream.readStream(startPointer: Int, limit: Int, block: () -> Unit) {
+    val previous = pointer
+    setPointerAt(startPointer)
+    while (canIterate() && pointer < limit) {
+        block()
+        incrementPointer()
+    }
+    setPointerAt(previous)
+}
+
+fun SourceStream.getErrorInfoAtCurrentPointer(): Pair<Int, Int> {
+    val pointerAt = pointer
+    var lineNumber = 1
+    var charIndex = 0
+    source.readStream(0, pointerAt) {
+        charIndex++
+        if (currentChar == '\n') {
+            lineNumber++
+            charIndex = 0
+        }
+    }
+    return Pair(lineNumber, charIndex)
+}
+
+fun SourceStream.printErrorLineNumberAndCharacterIndex() {
+    val errorInfo = getErrorInfoAtCurrentPointer()
+    println("Error : Line Number : ${errorInfo.first} , Character Index : ${errorInfo.second}")
+    println("Un-parsed Code : ")
+    printLeft()
+}
+
 internal fun LazyBlock.escapeBlockSpacesForward() {
 
     val previous = source.pointer
@@ -198,7 +229,7 @@ internal fun LazyBlock.escapeBlockSpacesBackward() {
 
             '\n' -> {
                 source.decrementPointer()
-                if(source.currentChar != '\r') source.incrementPointer()
+                if (source.currentChar != '\r') source.incrementPointer()
                 return
             }
 

@@ -1,4 +1,7 @@
 @partial_raw
+
+    @embed_once ./type.kate
+
 	@define_placeholder(object,KotlinInterface)
 		@var keys = @var(__param__.getKeys())
 
@@ -12,10 +15,11 @@
 
 		@for(@var i=0;i<@var(keys.size());i++)
 		@default_no_raw
-					val @var(keys[@var(i)].decapitalize()) : @var(__param__[@var(keys[@var(i)])].getType().capitalize())
+					val @var(keys[@var(i)].decapitalize()) : @var(getKType(@var(__param__[@var(keys[@var(i)])])))
 
 			@end_default_no_raw
 		@endfor
 		@raw } @endraw
 	@end_define_placeholder
+
 @end_partial_raw

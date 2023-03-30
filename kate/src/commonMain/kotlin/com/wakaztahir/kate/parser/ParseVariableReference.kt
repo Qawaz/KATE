@@ -2,9 +2,8 @@ package com.wakaztahir.kate.parser
 
 import com.wakaztahir.kate.model.ModelDirective
 import com.wakaztahir.kate.model.ModelReference
-import com.wakaztahir.kate.model.PrimitiveValue
 import com.wakaztahir.kate.model.model.ReferencedValue
-import com.wakaztahir.kate.parser.stream.SourceStream
+import com.wakaztahir.kate.parser.stream.*
 import com.wakaztahir.kate.parser.stream.increment
 import com.wakaztahir.kate.parser.stream.parseTextWhile
 
@@ -23,22 +22,26 @@ internal fun SourceStream.parseFunctionParameters(): List<ReferencedValue>? {
             }
         } while (increment(','))
         if (!increment(')')) {
-            throw IllegalStateException("a function call must end with ')'")
+            printErrorLineNumberAndCharacterIndex()
+            throw IllegalStateException("a function call must end with ')' but instead found $currentChar")
         }
         return parameters
     }
     return null
 }
 
-private fun SourceStream.parseIndexingOperatorValue(): ReferencedValue? {
-    parseVariableReference()?.let { return it  }
-    parseNumberValue()?.let { return it  }
+private fun SourceStream.parseIndexingOperatorValue(parseDirectRefs: Boolean): ReferencedValue? {
+    parseVariableReference(parseDirectRefs = parseDirectRefs)?.let { return it }
+    parseNumberValue()?.let { return it }
     return null
 }
 
-internal fun SourceStream.parseIndexingOperatorCall(invokeOnly: Boolean): ModelReference.FunctionCall? {
+internal fun SourceStream.parseIndexingOperatorCall(
+    parseDirectRefs: Boolean,
+    invokeOnly: Boolean
+): ModelReference.FunctionCall? {
     if (increment('[')) {
-        val indexingValue = parseIndexingOperatorValue()
+        val indexingValue = parseIndexingOperatorValue(parseDirectRefs)
             ?: throw IllegalStateException("couldn't get indexing value inside indexing operator")
         if (increment(']')) {
             return ModelReference.FunctionCall(
@@ -53,7 +56,7 @@ internal fun SourceStream.parseIndexingOperatorCall(invokeOnly: Boolean): ModelR
     return null
 }
 
-internal fun SourceStream.parseDotReferencesInto(): MutableList<ModelReference>? {
+internal fun SourceStream.parseDotReferencesInto(parseDirectRefs: Boolean): MutableList<ModelReference>? {
     var propertyPath: MutableList<ModelReference>? = null
     do {
         val invokeOnly = increment('@')
@@ -65,25 +68,27 @@ internal fun SourceStream.parseDotReferencesInto(): MutableList<ModelReference>?
         } else {
             propertyPath.add(ModelReference.Property(propertyName))
         }
-        parseIndexingOperatorCall(invokeOnly)?.let { propertyPath.add(it) }
+        parseIndexingOperatorCall(parseDirectRefs, invokeOnly)?.let { propertyPath.add(it) }
     } while (increment('.'))
     return propertyPath
 }
 
 class VariableReferenceParseException(message: String) : Exception(message)
 
-internal fun SourceStream.parseModelDirective(): ModelDirective? {
-    parseDotReferencesInto()?.let { return ModelDirective(it) }
+internal fun SourceStream.parseModelDirective(parseDirectRefs: Boolean): ModelDirective? {
+    parseDotReferencesInto(parseDirectRefs = parseDirectRefs)?.let { return ModelDirective(it) }
     return null
 }
 
-internal fun SourceStream.parseVariableReference(): ModelDirective? {
+internal fun SourceStream.parseVariableReference(parseDirectRefs: Boolean): ModelDirective? {
     if (currentChar == '@' && increment("@var(")) {
-        val directive = parseModelDirective()
+        val directive = parseModelDirective(parseDirectRefs = parseDirectRefs)
         if (!increment(')')) {
+            printErrorLineNumberAndCharacterIndex()
             throw VariableReferenceParseException("expected ) got $currentChar at $pointer")
         }
         return directive
     }
+//    if (parseDirectRefs) return parseModelDirective(true)?.let { return it }
     return null
 }

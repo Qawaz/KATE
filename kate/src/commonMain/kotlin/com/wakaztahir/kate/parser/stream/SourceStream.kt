@@ -12,7 +12,7 @@ abstract class SourceStream : LazyBlock {
         }
     }
 
-    protected class EmptyPlaceholderManager() : PlaceholderManager {
+    protected class EmptyPlaceholderManager : PlaceholderManager {
 
         override val placeholders: MutableList<PlaceholderBlock> = mutableListOf()
         override val undefinedPlaceholders: MutableList<PlaceholderBlock> = mutableListOf()

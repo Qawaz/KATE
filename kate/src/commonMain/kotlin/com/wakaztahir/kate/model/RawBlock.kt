@@ -40,7 +40,7 @@ open class PartialRawLazyBlockSlice(
 ) {
 
     override fun parseImplicitDirectives(): CodeGen? {
-        source.parseVariableReference()?.let {
+        source.parseVariableReference(false)?.let {
             it.propertyPath.lastOrNull()?.let { c -> c as? ModelReference.FunctionCall }?.let { call ->
                 call.invokeOnly = true
                 return it.toPlaceholderInvocation(model, source.pointer) ?: KTEUnit

@@ -3,10 +3,7 @@ package com.wakaztahir.kate
 import com.wakaztahir.kate.dsl.ModelObjectImpl
 import com.wakaztahir.kate.model.LazyBlock
 import com.wakaztahir.kate.model.model.MutableKTEObject
-import com.wakaztahir.kate.parser.stream.DefaultPlaceholderManagerInitializer
-import com.wakaztahir.kate.parser.stream.EmbeddingManager
-import com.wakaztahir.kate.parser.stream.PlaceholderManager
-import com.wakaztahir.kate.parser.stream.SourceStream
+import com.wakaztahir.kate.parser.stream.*
 import java.io.File
 import java.io.InputStream
 
@@ -16,27 +13,6 @@ class InputSourceStream(
     override val embeddingManager: EmbeddingManager = NoEmbeddings,
     override val placeholderManager: PlaceholderManager = EmptyPlaceholderManager()
 ) : SourceStream() {
-
-    class RelativeResourceEmbeddingManager(
-        private val basePath: String,
-        private val classLoader: Class<Any> = object {}.javaClass
-    ) : EmbeddingManager {
-        override val embeddedStreams: MutableMap<String, Boolean> = mutableMapOf()
-        override fun provideStream(block: LazyBlock, path: String): SourceStream? {
-            val actualPath = "$basePath/${path.removePrefix("/").removePrefix("./")}"
-            val file = classLoader.getResource(actualPath)
-                ?: throw IllegalStateException("embedding with path not found $actualPath")
-            return InputSourceStream(
-                inputStream = file.openStream(),
-                model = block.source.model,
-                embeddingManager = RelativeResourceEmbeddingManager(
-                    basePath = basePath + if (path.contains('/')) path.substring(0, path.lastIndexOf('/')) else "",
-                    classLoader = classLoader
-                ),
-                placeholderManager = block.source.placeholderManager
-            )
-        }
-    }
 
     class RelativeFileEmbeddingManager(private val file: File) : EmbeddingManager {
         override val embeddedStreams: MutableMap<String, Boolean> = mutableMapOf()

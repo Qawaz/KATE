@@ -4,9 +4,7 @@ import com.wakaztahir.kate.KTEDelicateFunction
 import com.wakaztahir.kate.model.model.KTEUnit
 import com.wakaztahir.kate.model.model.MutableKTEObject
 import com.wakaztahir.kate.parser.*
-import com.wakaztahir.kate.parser.stream.DestinationStream
-import com.wakaztahir.kate.parser.stream.SourceStream
-import com.wakaztahir.kate.parser.stream.TextDestinationStream
+import com.wakaztahir.kate.parser.stream.*
 import com.wakaztahir.kate.parser.stream.increment
 
 interface LazyBlock {
@@ -83,7 +81,8 @@ interface LazyBlock {
     fun parseImplicitDirectives(): CodeGen? {
         parseExpression(
             parseFirstStringOrChar = false,
-            parseNotFirstStringOrChar = true
+            parseNotFirstStringOrChar = true,
+            parseDirectRefs = false
         )?.let { return it.toPlaceholderInvocation(model, source.pointer) ?: KTEUnit }
         return null
     }

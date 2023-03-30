@@ -1,7 +1,9 @@
 import com.wakaztahir.kate.InputSourceStream
 import com.wakaztahir.kate.OutputDestinationStream
+import com.wakaztahir.kate.RelativeResourceEmbeddingManager
 import com.wakaztahir.kate.TemplateContext
 import com.wakaztahir.kate.model.model.MutableKTEObject
+import com.wakaztahir.kate.parser.stream.getErrorInfoAtCurrentPointer
 import org.junit.Test
 import java.io.File
 import kotlin.test.assertEquals
@@ -70,16 +72,23 @@ class TestTemplates {
 
     private fun testTemplate(inputPath: String, outputPath: String) {
         val model = getObject()
-        val embedding = InputSourceStream.RelativeResourceEmbeddingManager("schema", object {}.javaClass)
+        val path = object {}.javaClass.getResource("schema/$inputPath")!!
+        val embedding = RelativeResourceEmbeddingManager("schema", object {}.javaClass)
         val context = TemplateContext(
             stream = InputSourceStream(
-                inputStream = object {}.javaClass.getResource("schema/$inputPath")!!.openStream(),
+                inputStream = path.openStream(),
                 model = model,
                 embeddingManager = embedding,
             )
         )
         val output = output("output/$outputPath")
-        context.generateTo(output)
+        try {
+            context.generateTo(output)
+        }catch (e : Throwable){
+            val err = context.stream.getErrorInfoAtCurrentPointer()
+            println("${path.path.removePrefix("/")}:${err.first}:${err.second}")
+            throw e
+        }
         output.outputStream.close()
     }
 

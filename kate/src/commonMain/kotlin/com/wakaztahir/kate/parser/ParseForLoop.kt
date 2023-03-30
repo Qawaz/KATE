@@ -191,8 +191,8 @@ private fun LazyBlock.parseConditionalFor(): ForLoop.ConditionalFor? {
     return null
 }
 
-private fun SourceStream.parseListReferencedValue(): ReferencedValue? {
-    parseVariableReference()?.let { return it }
+private fun SourceStream.parseListReferencedValue(parseDirectRefs : Boolean): ReferencedValue? {
+    parseVariableReference(parseDirectRefs = parseDirectRefs)?.let { return it }
     parseListDefinition()?.let { return it }
     parseMutableListDefinition()?.let { return it }
     return null
@@ -206,7 +206,7 @@ private fun LazyBlock.parseIterableForLoopAfterVariable(variableName: String): F
     source.escapeSpaces()
     if (source.increment(':')) {
         source.escapeSpaces()
-        val referencedValue = source.parseListReferencedValue()
+        val referencedValue = source.parseListReferencedValue(parseDirectRefs = true)
         source.escapeSpaces()
         if (!source.increment(')')) {
             throw IllegalStateException("expected ) , got ${source.currentChar}")
@@ -230,8 +230,8 @@ private class NumberedForLoopIncrementer(
     val incrementerValue: ReferencedValue
 )
 
-private fun SourceStream.parseNumberOrReference(): ReferencedValue? {
-    parseVariableReference()?.let { return it }
+private fun SourceStream.parseNumberOrReference(parseDirectRefs: Boolean): ReferencedValue? {
+    parseVariableReference(parseDirectRefs = parseDirectRefs)?.let { return it }
     parseNumberValue()?.let { return it }
     return null
 }
@@ -246,7 +246,7 @@ private fun SourceStream.parseNumberedForLoopIncrementer(variableName: String): 
             val incrementer = if (singleIncrement != null && increment(singleIncrement.char)) {
                 IntValue(1)
             } else {
-                parseNumberOrReference()
+                parseNumberOrReference(parseDirectRefs = false)
             }
                 ?: throw IllegalStateException("expected number property or value or '+' or '-' , got $currentChar in for loop incrementer")
             return NumberedForLoopIncrementer(

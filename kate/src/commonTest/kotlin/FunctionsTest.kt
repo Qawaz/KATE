@@ -60,6 +60,18 @@ class FunctionsTest {
                 """.trimMargin()
             )
         )
+        //TODO recursion is failing
+//        assertEquals(
+//            expected = "10",
+//            actual = GeneratePartialRaw(
+//                """
+//                |@function MyFunc(param1)
+//                |@if(@var(param1) < 5) @return @var(MyFunc(@var(param1) @+ 1)) @else @return @var(param1) @endif
+//                |@end_function
+//                |@default_no_raw @var(MyFunc(0)) @end_default_no_raw
+//                """.trimMargin()
+//            )
+//        )
     }
 
 }

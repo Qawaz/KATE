@@ -1,0 +1,40 @@
+@partial_raw
+
+@function getObjType(param)
+    @if(@var(param.getType()) == "object")
+        @return @var(param.getName())
+    @else
+        @return @var(param.getType())
+    @endif
+@end_function
+
+@function getListKotlinType(param)
+    @var retVal = ""
+    @var current = @var(param)
+
+    @for(@var(current.getType()) == "list")
+        @var retVal = @var(retVal) @+ @var(getObjType(@var(current)).capitalize()) @+ '<'
+        @var current = @var(current.get(0))
+    @endfor
+
+	@var retVal = @var(retVal) @+ @var(getObjType(@var(current)).capitalize()) @+ '>'
+
+    @var current = @var(param)
+
+    @for(@var(current.getType()) == "list")
+        @var retVal = @var(retVal) @+ '>'
+        @var current = @var(current.get(0))
+    @endfor
+
+    @return @var(retVal)
+@end_function
+
+@function getKType(param)
+    @if(@var(param.getType()) == "list")
+        @return @var(getListKotlinType(@var(param)))
+    @else
+        @return @var(getObjType(@var(param)))
+    @endif
+@end_function
+
+@end_partial_raw

@@ -81,7 +81,7 @@ fun LazyBlock.parsePlaceholderInvocation(): PlaceholderInvocation? {
     if (source.currentChar == '@' && source.increment("@placeholder")) {
         val placeholderName = source.parsePlaceHolderName()
         val genValue: KTEValue? = if (source.increment(',')) {
-            val refValue = source.parseVariableReference()
+            val refValue = source.parseVariableReference(parseDirectRefs = true)
             if (refValue != null) {
                 if (source.increment(')')) {
                     refValue

@@ -222,8 +222,12 @@ private class ValueAndOperatorStack {
 
 }
 
-private fun LazyBlock.parseValueAndOperator(parseStringAndChar: Boolean): Pair<ReferencedValue, ArithmeticOperatorType?>? {
-    val firstValue = source.parseValueInsideExpression(parseStringAndChar = parseStringAndChar)
+private fun LazyBlock.parseValueAndOperator(
+    parseStringAndChar: Boolean,
+    parseDirectRefs: Boolean
+): Pair<ReferencedValue, ArithmeticOperatorType?>? {
+    val firstValue =
+        source.parseValueInsideExpression(parseStringAndChar = parseStringAndChar, parseDirectRefs = parseDirectRefs)
     if (firstValue != null) {
         val pointerAfterFirstValue = source.pointer
         source.increment(' ')
@@ -246,11 +250,13 @@ private fun LazyBlock.parseValueAndOperator(parseStringAndChar: Boolean): Pair<R
 
 private fun SourceStream.parseExpressionWith(
     parseStringAndChar: Boolean,
+    parseDirectRefs: Boolean,
     stack: ValueAndOperatorStack,
     final: ValueAndOperatorStack
 ) {
     while (!hasEnded) {
-        val valueAndOp = parseValueAndOperator(parseStringAndChar = parseStringAndChar)
+        val valueAndOp =
+            parseValueAndOperator(parseStringAndChar = parseStringAndChar, parseDirectRefs = parseDirectRefs)
         if (valueAndOp != null) {
             final.putValue(valueAndOp.first)
             val operator = valueAndOp.second
@@ -312,9 +318,11 @@ private fun SourceStream.parseExpressionWith(
 
 internal fun LazyBlock.parseExpression(
     parseFirstStringOrChar: Boolean,
-    parseNotFirstStringOrChar: Boolean
+    parseNotFirstStringOrChar: Boolean,
+    parseDirectRefs: Boolean
 ): ReferencedValue? {
-    val valueAndOp = parseValueAndOperator(parseStringAndChar = parseFirstStringOrChar)
+    val valueAndOp =
+        parseValueAndOperator(parseStringAndChar = parseFirstStringOrChar, parseDirectRefs = parseDirectRefs)
     if (valueAndOp != null) {
         return if (valueAndOp.second != null) {
 
@@ -322,7 +330,12 @@ internal fun LazyBlock.parseExpression(
             stack.putOperator(valueAndOp.second!!)
             val final = ValueAndOperatorStack()
             final.putValue(valueAndOp.first)
-            source.parseExpressionWith(parseStringAndChar = parseNotFirstStringOrChar, stack = stack, final = final)
+            source.parseExpressionWith(
+                parseStringAndChar = parseNotFirstStringOrChar,
+                parseDirectRefs = parseDirectRefs,
+                stack = stack,
+                final = final
+            )
             final.toExpression()
 
         } else {
@@ -344,7 +357,8 @@ internal fun SourceStream.parseAnyExpressionOrValue(): ReferencedValue? {
     parseUnitValue()?.let { return it }
     parseExpression(
         parseFirstStringOrChar = true,
-        parseNotFirstStringOrChar = true
+        parseNotFirstStringOrChar = true,
+        parseDirectRefs = false
     )?.let { return it }
     return null
 }

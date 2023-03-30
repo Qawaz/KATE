@@ -56,6 +56,11 @@ internal enum class ConditionType {
 
 }
 
+internal enum class ConditionOperation {
+    And,
+    Or
+}
+
 interface Condition {
     fun evaluate(context: KTEObject): Boolean
     fun evaluate(context: TemplateContext): Boolean {

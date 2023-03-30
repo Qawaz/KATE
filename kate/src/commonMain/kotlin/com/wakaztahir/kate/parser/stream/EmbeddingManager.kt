@@ -8,11 +8,19 @@ interface EmbeddingManager {
 
     fun provideStream(block: LazyBlock, path: String): SourceStream?
 
+    fun handleException(path : String,stream: SourceStream, exception: Throwable) {
+        throw exception
+    }
+
     fun embedGenerateStream(block: LazyBlock, path: String, destination: DestinationStream) {
         val stream = provideStream(block, path)
         if (stream != null) {
             embeddedStreams[path] = true
-            stream.generateTo(destination)
+            try {
+                stream.generateTo(destination)
+            } catch (e: Throwable) {
+                handleException(path,stream, e)
+            }
         } else {
             throw IllegalStateException("stream not found with path $path")
         }

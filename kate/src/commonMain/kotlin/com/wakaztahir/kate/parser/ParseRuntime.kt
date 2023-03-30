@@ -33,14 +33,14 @@ private value class WriteString(val string: ReferencedValue) : CodeGen {
     }
 }
 
-private fun SourceStream.parseRefCharValue(): ReferencedValue? {
-    parseVariableReference()?.let { return it }
+private fun SourceStream.parseRefCharValue(parseDirectRefs : Boolean): ReferencedValue? {
+    parseVariableReference(parseDirectRefs = parseDirectRefs)?.let { return it }
     parseCharacterValue()?.let { return it }
     return null
 }
 
-private fun SourceStream.parseRefStringValue(): ReferencedValue? {
-    parseVariableReference()?.let { return it }
+private fun SourceStream.parseRefStringValue(parseDirectRefs : Boolean): ReferencedValue? {
+    parseVariableReference(parseDirectRefs = parseDirectRefs)?.let { return it }
     parseStringValue()?.let { return it }
     return null
 }
@@ -50,13 +50,13 @@ fun LazyBlock.parseRuntimeGen(): CodeGen? {
         if (source.increment(CHAR_DIRECTIVE)) {
             if (!source.increment('(')) throw IllegalStateException("expected '(' got ${source.currentChar}")
             val value =
-                source.parseRefCharValue() ?: throw IllegalStateException("value for runtime directive not found")
+                source.parseRefCharValue(parseDirectRefs = false) ?: throw IllegalStateException("value for runtime directive not found")
             if (!source.increment(')')) throw IllegalStateException("expected ')' got ${source.currentChar}")
             return WriteChar(value)
         } else if (source.increment(STRING_DIRECTIVE)) {
             if (!source.increment('(')) throw IllegalStateException("expected '(' got ${source.currentChar}")
             val value =
-                source.parseRefStringValue() ?: throw IllegalStateException("value for runtime directive not found")
+                source.parseRefStringValue(parseDirectRefs = false) ?: throw IllegalStateException("value for runtime directive not found")
             if (!source.increment(')')) throw IllegalStateException("expected ')' got ${source.currentChar}")
             return WriteString(value)
         }
