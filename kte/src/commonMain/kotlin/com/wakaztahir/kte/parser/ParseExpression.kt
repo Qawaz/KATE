@@ -16,7 +16,12 @@ enum class ArithmeticOperatorType(val char: Char, val associativity: OperatorAss
         override fun operate(value1: Int, value2: Int): Int = value1 + value2
         override fun operate(value1: Double, value2: Double): Double = value1 + value2
         override fun operate(value1: Int, value2: Double): Double = value1 + value2
+        override fun operate(value1: Int, value2: Long): Long = value1 + value2
         override fun operate(value1: Double, value2: Int): Double = value1 + value2
+        override fun operate(value1: Double, value2: Long): Double = value1 + value2
+        override fun operate(value1: Long, value2: Long): Long = value1 + value2
+        override fun operate(value1: Long, value2: Int): Long = value1 + value2
+        override fun operate(value1: Long, value2: Double): Double = value1 + value2
         override fun operate(value1: String, value2: String): String = value1 + value2
         override fun operate(value1: String, value2: Int): String = value1 + value2
         override fun operate(value1: String, value2: Double): String = value1 + value2
@@ -29,7 +34,12 @@ enum class ArithmeticOperatorType(val char: Char, val associativity: OperatorAss
         override fun operate(value1: Int, value2: Int): Int = value1 - value2
         override fun operate(value1: Double, value2: Double): Double = value1 - value2
         override fun operate(value1: Int, value2: Double): Double = value1 - value2
+        override fun operate(value1: Int, value2: Long): Long = value1 - value2
         override fun operate(value1: Double, value2: Int): Double = value1 - value2
+        override fun operate(value1: Double, value2: Long): Double = value1 - value2
+        override fun operate(value1: Long, value2: Long): Long = value1 - value2
+        override fun operate(value1: Long, value2: Int): Long = value1 - value2
+        override fun operate(value1: Long, value2: Double): Double = value1 - value2
         override fun operate(value1: String, value2: String): String = notPossible("String", "String")
         override fun operate(value1: String, value2: Int): String = notPossible("String", "Int")
         override fun operate(value1: String, value2: Double): String = notPossible("String", "Double")
@@ -42,7 +52,12 @@ enum class ArithmeticOperatorType(val char: Char, val associativity: OperatorAss
         override fun operate(value1: Int, value2: Int): Int = value1 / value2
         override fun operate(value1: Double, value2: Double): Double = value1 / value2
         override fun operate(value1: Int, value2: Double): Double = value1 / value2
+        override fun operate(value1: Int, value2: Long): Long = value1 / value2
         override fun operate(value1: Double, value2: Int): Double = value1 / value2
+        override fun operate(value1: Double, value2: Long): Double = value1 / value2
+        override fun operate(value1: Long, value2: Long): Long = value1 / value2
+        override fun operate(value1: Long, value2: Int): Long = value1 / value2
+        override fun operate(value1: Long, value2: Double): Double = value1 / value2
         override fun operate(value1: String, value2: String): String = notPossible("String", "String")
         override fun operate(value1: String, value2: Int): String = notPossible("String", "Int")
         override fun operate(value1: String, value2: Double): String = notPossible("String", "Double")
@@ -55,7 +70,12 @@ enum class ArithmeticOperatorType(val char: Char, val associativity: OperatorAss
         override fun operate(value1: Int, value2: Int): Int = value1 * value2
         override fun operate(value1: Double, value2: Double): Double = value1 * value2
         override fun operate(value1: Int, value2: Double): Double = value1 * value2
+        override fun operate(value1: Int, value2: Long): Long = value1 * value2
         override fun operate(value1: Double, value2: Int): Double = value1 * value2
+        override fun operate(value1: Double, value2: Long): Double = value1 * value2
+        override fun operate(value1: Long, value2: Long): Long = value1 * value2
+        override fun operate(value1: Long, value2: Int): Long = value1 * value2
+        override fun operate(value1: Long, value2: Double): Double = value1 * value2
         override fun operate(value1: String, value2: String): String = notPossible("String", "String")
         override fun operate(value1: String, value2: Int): String = notPossible("String", "Int")
         override fun operate(value1: String, value2: Double): String = notPossible("String", "Double")
@@ -68,7 +88,12 @@ enum class ArithmeticOperatorType(val char: Char, val associativity: OperatorAss
         override fun operate(value1: Int, value2: Int): Int = value1 % value2
         override fun operate(value1: Double, value2: Double): Double = value1 % value2
         override fun operate(value1: Int, value2: Double): Double = value1 % value2
+        override fun operate(value1: Int, value2: Long): Long = value1 % value2
         override fun operate(value1: Double, value2: Int): Double = value1 % value2
+        override fun operate(value1: Double, value2: Long): Double = value1 % value2
+        override fun operate(value1: Long, value2: Long): Long = value1 % value2
+        override fun operate(value1: Long, value2: Int): Long = value1 % value2
+        override fun operate(value1: Long, value2: Double): Double = value1 % value2
         override fun operate(value1: String, value2: String): String = notPossible("String", "String")
         override fun operate(value1: String, value2: Int): String = notPossible("String", "Int")
         override fun operate(value1: String, value2: Double): String = notPossible("String", "Double")
@@ -83,9 +108,14 @@ enum class ArithmeticOperatorType(val char: Char, val associativity: OperatorAss
     }
 
     abstract fun operate(value1: Int, value2: Int): Int
-    abstract fun operate(value1: Double, value2: Double): Double
     abstract fun operate(value1: Int, value2: Double): Double
+    abstract fun operate(value1: Int, value2: Long): Long
+    abstract fun operate(value1: Double, value2: Double): Double
     abstract fun operate(value1: Double, value2: Int): Double
+    abstract fun operate(value1: Double, value2: Long): Double
+    abstract fun operate(value1: Long, value2: Long): Long
+    abstract fun operate(value1: Long, value2: Int): Long
+    abstract fun operate(value1: Long, value2: Double): Double
     abstract fun operate(value1: String, value2: String): String
     abstract fun operate(value1: String, value2: Int): String
     abstract fun operate(value1: String, value2: Double): String

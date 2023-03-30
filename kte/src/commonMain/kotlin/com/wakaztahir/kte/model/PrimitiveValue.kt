@@ -88,10 +88,18 @@ value class IntValue(override val value: Int) : PrimitiveValue<Int> {
     }
 
     override fun compareOther(other: PrimitiveValue<*>): Int {
-        if (other is DoubleValue) {
-            return value.compareTo(other.value)
-        } else {
-            throw IllegalStateException("value of type int cannot be compared to unknown value type")
+        return when (other) {
+            is DoubleValue -> {
+                value.compareTo(other.value)
+            }
+
+            is LongValue -> {
+                value.compareTo(other.value)
+            }
+
+            else -> {
+                throw IllegalStateException("value of type int cannot be compared to unknown value type")
+            }
         }
     }
 
@@ -100,10 +108,18 @@ value class IntValue(override val value: Int) : PrimitiveValue<Int> {
     }
 
     override fun operateOther(type: ArithmeticOperatorType, value2: PrimitiveValue<*>): PrimitiveValue<*> {
-        if (value2 is DoubleValue) {
-            return DoubleValue(type.operate(value, value2.value))
-        } else {
-            throw IllegalStateException("value of type cannot be operated with an unknown value type")
+        return when (value2) {
+            is DoubleValue -> {
+                DoubleValue(type.operate(value, value2.value))
+            }
+
+            is LongValue -> {
+                LongValue(type.operate(value, value2.value))
+            }
+
+            else -> {
+                throw IllegalStateException("value of type cannot be operated with an unknown value type")
+            }
         }
     }
 
@@ -123,10 +139,18 @@ value class DoubleValue(override val value: Double) : PrimitiveValue<Double> {
     }
 
     override fun compareOther(other: PrimitiveValue<*>): Int {
-        if (other is IntValue) {
-            return value.compareTo(other.value)
-        } else {
-            throw IllegalStateException("value of type double cannot be compared to value of unknown type")
+        return when (other) {
+            is IntValue -> {
+                value.compareTo(other.value)
+            }
+
+            is LongValue -> {
+                value.compareTo(other.value)
+            }
+
+            else -> {
+                throw IllegalStateException("value of type double cannot be compared to value of unknown type")
+            }
         }
     }
 
@@ -135,15 +159,74 @@ value class DoubleValue(override val value: Double) : PrimitiveValue<Double> {
     }
 
     override fun operateOther(type: ArithmeticOperatorType, value2: PrimitiveValue<*>): PrimitiveValue<*> {
-        if (value2 is IntValue) {
-            return DoubleValue(type.operate(value, value2.value))
-        } else {
-            throw IllegalStateException("value of type double cannot be operated with value of unknown type")
+        return when (value2) {
+            is IntValue -> {
+                DoubleValue(type.operate(value, value2.value))
+            }
+
+            is LongValue -> {
+                DoubleValue(type.operate(value, value2.value))
+            }
+
+            else -> {
+                throw IllegalStateException("value of type double cannot be operated with value of unknown type")
+            }
         }
     }
 
     override fun getModelReference(reference: ModelReference): KTEValue? {
         return DoubleImplementation.propertyMap[reference.name]
+    }
+
+    override fun toString(): String = value.toString()
+
+}
+
+@JvmInline
+value class LongValue(override val value: Long) : PrimitiveValue<Long> {
+
+    override fun compareTo(other: PrimitiveValue<Long>): Int {
+        return value.compareTo(other.value)
+    }
+
+    override fun compareOther(other: PrimitiveValue<*>): Int {
+        return when (other) {
+            is IntValue -> {
+                value.compareTo(other.value)
+            }
+
+            is DoubleValue -> {
+                value.compareTo(other.value)
+            }
+
+            else -> {
+                throw IllegalStateException("value of type double cannot be compared to value of unknown type")
+            }
+        }
+    }
+
+    override fun operate(type: ArithmeticOperatorType, value2: PrimitiveValue<Long>): PrimitiveValue<Long> {
+        return LongValue(type.operate(value, value2.value))
+    }
+
+    override fun operateOther(type: ArithmeticOperatorType, value2: PrimitiveValue<*>): PrimitiveValue<*> {
+        return when (value2) {
+            is IntValue -> {
+                LongValue(type.operate(value, value2.value))
+            }
+
+            is DoubleValue -> {
+                DoubleValue(type.operate(value, value2.value))
+            }
+
+            else -> {
+                throw IllegalStateException("value of type double cannot be operated with value of unknown type")
+            }
+        }
+    }
+
+    override fun getModelReference(reference: ModelReference): KTEValue? {
+        return LongImplementation.propertyMap[reference.name]
     }
 
     override fun toString(): String = value.toString()

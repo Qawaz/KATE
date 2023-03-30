@@ -2,6 +2,7 @@ package com.wakaztahir.kte.runtime
 
 import com.wakaztahir.kte.model.DoubleValue
 import com.wakaztahir.kte.model.IntValue
+import com.wakaztahir.kte.model.LongValue
 import com.wakaztahir.kte.model.StringValue
 import com.wakaztahir.kte.model.model.*
 
@@ -14,6 +15,7 @@ object DoubleImplementation {
             override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
                 return StringValue("double")
             }
+
             override fun toString(): String = "getType() : string"
         })
         put("toString", object : KTEFunction() {
@@ -23,7 +25,7 @@ object DoubleImplementation {
                 return StringValue(intVal.toString())
             }
 
-            override fun toString(): String = "toString() : String"
+            override fun toString(): String = "toString() : string"
         })
         put("toInt", object : KTEFunction() {
             override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
@@ -32,7 +34,16 @@ object DoubleImplementation {
                 return IntValue(intVal.toInt())
             }
 
-            override fun toString(): String = "toInt() : Int"
+            override fun toString(): String = "toInt() : int"
+        })
+        put("toLong", object : KTEFunction() {
+            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
+                val intVal = invokedOn.let { it as? DoubleValue }?.value
+                require(intVal != null) { "double value is null" }
+                return LongValue(intVal.toLong())
+            }
+
+            override fun toString(): String = "toLong() : long"
         })
     }
 
