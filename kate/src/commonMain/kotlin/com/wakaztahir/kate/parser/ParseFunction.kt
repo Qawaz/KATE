@@ -1,5 +1,6 @@
 package com.wakaztahir.kate.parser
 
+import com.wakaztahir.kate.dsl.ScopedModelObject
 import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.model.model.*
 import com.wakaztahir.kate.parser.stream.DestinationStream
@@ -23,6 +24,12 @@ class FunctionSlice(
     indentationLevel = indentationLevel
 ) {
 
+    private var isFirstInvocation = true
+    override var model: MutableKTEObject = parentBlock.model
+        private set
+
+    private val previousModels = mutableListOf<MutableKTEObject>()
+
     var returnedValue: KTEValue? = null
     private var hasBroken = false
 
@@ -37,7 +44,6 @@ class FunctionSlice(
         indentationLevel = slice.indentationLevel
     )
 
-
     override fun parseNestedAtDirective(block: LazyBlock): CodeGen? {
         block.parseFunctionReturnValue()?.let {
             returnedValue = it
@@ -46,6 +52,16 @@ class FunctionSlice(
         }
         return super.parseNestedAtDirective(block)
     }
+
+    fun prepareFunctionGeneration() {
+        if (!isFirstInvocation) previousModels.add(model) else isFirstInvocation = false
+        model = ScopedModelObject(parentBlock.model)
+    }
+
+    fun cleanupFunctionGeneration() {
+        if (previousModels.isNotEmpty()) model = previousModels.removeLast()
+    }
+
 }
 
 class FunctionDefinition(val slice: FunctionSlice, val functionName: String, val parameterNames: List<String>?) :
@@ -70,6 +86,7 @@ class FunctionDefinition(val slice: FunctionSlice, val functionName: String, val
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
         block.model.putValue(functionName, object : KTEFunction() {
             override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
+                slice.prepareFunctionGeneration()
                 slice.model.forEachParam { paramName, index ->
                     if (index < parameters.size) {
                         putValue(paramName, parameters[index].getKTEValue(model))
@@ -79,7 +96,7 @@ class FunctionDefinition(val slice: FunctionSlice, val functionName: String, val
                 }
                 slice.generateTo(destination)
                 val returned = slice.returnedValue?.getKTEValue(slice.model) ?: KTEUnit
-                slice.model.forEachParam { paramName, _ -> removeKey(paramName) }
+                slice.cleanupFunctionGeneration()
                 return returned
             }
 
@@ -123,7 +140,7 @@ fun LazyBlock.parseFunctionDefinition(): FunctionDefinition? {
             startsWith = "@function",
             endsWith = "@end_function",
             allowTextOut = false,
-            inheritModel = false
+            inheritModel = true
         )
         return FunctionDefinition(
             slice = FunctionSlice(slice = slice),

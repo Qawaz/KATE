@@ -4,7 +4,7 @@
     @if(@var(param.getType()) == "object")
         @return @var(param.getName())
     @else
-        @return @var(param.getType())
+        @return @var(param.getType().capitalize())
     @endif
 @end_function
 
