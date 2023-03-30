@@ -70,7 +70,7 @@ android {
 
 publishing {
     repositories {
-        maven("https://maven.pkg.github.com/Qawaz/kte") {
+        maven("https://maven.pkg.github.com/Qawaz/kate") {
             name = "GithubPackages"
             credentials {
                 username = (System.getenv("GPR_USER")).toString()

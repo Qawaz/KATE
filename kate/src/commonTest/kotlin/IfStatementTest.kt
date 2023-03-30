@@ -1,12 +1,10 @@
-import com.wakaztahir.kte.GenerateCode
-import com.wakaztahir.kte.KTEDelicateFunction
-import com.wakaztahir.kte.TemplateContext
-import com.wakaztahir.kte.model.LogicalCondition
-import com.wakaztahir.kte.model.asPrimitive
-import com.wakaztahir.kte.parser.*
-import com.wakaztahir.kte.parser.parseCondition
-import com.wakaztahir.kte.parser.parseVariableDeclaration
-import com.wakaztahir.kte.parser.parseIfStatement
+import com.wakaztahir.kate.GenerateCode
+import com.wakaztahir.kate.TemplateContext
+import com.wakaztahir.kate.model.LogicalCondition
+import com.wakaztahir.kate.model.asPrimitive
+import com.wakaztahir.kate.parser.parseCondition
+import com.wakaztahir.kate.parser.parseVariableDeclaration
+import com.wakaztahir.kate.parser.parseIfStatement
 import kotlin.test.*
 
 class IfStatementTest {

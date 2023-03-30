@@ -1,8 +1,8 @@
-import com.wakaztahir.kte.GenerateCode
-import com.wakaztahir.kte.TemplateContext
-import com.wakaztahir.kte.model.*
-import com.wakaztahir.kte.model.model.*
-import com.wakaztahir.kte.parser.parseVariableReference
+import com.wakaztahir.kate.GenerateCode
+import com.wakaztahir.kate.TemplateContext
+import com.wakaztahir.kate.model.*
+import com.wakaztahir.kate.model.model.*
+import com.wakaztahir.kate.parser.parseVariableReference
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue

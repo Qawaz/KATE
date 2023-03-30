@@ -1,6 +1,6 @@
-import com.wakaztahir.kte.TemplateContext
-import com.wakaztahir.kte.parser.stream.*
-import com.wakaztahir.kte.parser.stream.increment
+import com.wakaztahir.kate.TemplateContext
+import com.wakaztahir.kate.parser.stream.*
+import com.wakaztahir.kate.parser.stream.increment
 import kotlin.test.*
 
 class StreamUtilsText {

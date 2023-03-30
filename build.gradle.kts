@@ -17,7 +17,7 @@ allprojects {
         mavenCentral()
         maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
         maven("https://jitpack.io")
-        maven("https://maven.pkg.github.com/Qawaz/kte") {
+        maven("https://maven.pkg.github.com/Qawaz/kate") {
             try {
                 credentials {
                     username = (System.getenv("GPR_USER")).toString()

@@ -1,8 +1,8 @@
-import com.wakaztahir.kte.GenerateCode
-import com.wakaztahir.kte.TemplateContext
-import com.wakaztahir.kte.parser.parsePlaceholderDefinition
-import com.wakaztahir.kte.parser.parsePlaceholderInvocation
-import com.wakaztahir.kte.parser.stream.TextDestinationStream
+import com.wakaztahir.kate.GenerateCode
+import com.wakaztahir.kate.TemplateContext
+import com.wakaztahir.kate.parser.parsePlaceholderDefinition
+import com.wakaztahir.kate.parser.parsePlaceholderInvocation
+import com.wakaztahir.kate.parser.stream.TextDestinationStream
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

@@ -4,7 +4,7 @@ pluginManagement {
         google()
         mavenCentral()
         maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
-        maven("https://maven.pkg.github.com/Qawaz/kte") {
+        maven("https://maven.pkg.github.com/Qawaz/kate") {
             credentials {
                 username = (System.getenv("GPR_USER")).toString()
                 password = (System.getenv("GPR_API_KEY")).toString()

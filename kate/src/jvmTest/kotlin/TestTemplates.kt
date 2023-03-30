@@ -1,10 +1,7 @@
-import com.wakaztahir.kte.InputSourceStream
-import com.wakaztahir.kte.OutputDestinationStream
-import com.wakaztahir.kte.TemplateContext
-import com.wakaztahir.kte.model.LazyBlock
-import com.wakaztahir.kte.model.model.MutableKTEObject
-import com.wakaztahir.kte.parser.stream.EmbeddingManager
-import com.wakaztahir.kte.parser.stream.SourceStream
+import com.wakaztahir.kate.InputSourceStream
+import com.wakaztahir.kate.OutputDestinationStream
+import com.wakaztahir.kate.TemplateContext
+import com.wakaztahir.kate.model.model.MutableKTEObject
 import org.junit.Test
 import java.io.File
 import kotlin.test.assertEquals

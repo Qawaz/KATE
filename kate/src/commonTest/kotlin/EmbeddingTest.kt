@@ -1,8 +1,8 @@
-import com.wakaztahir.kte.TemplateContext
-import com.wakaztahir.kte.model.asPrimitive
-import com.wakaztahir.kte.parser.parseVariableDeclaration
-import com.wakaztahir.kte.parser.parseEmbedding
-import com.wakaztahir.kte.parser.stream.TextSourceStream
+import com.wakaztahir.kate.TemplateContext
+import com.wakaztahir.kate.model.asPrimitive
+import com.wakaztahir.kate.parser.parseVariableDeclaration
+import com.wakaztahir.kate.parser.parseEmbedding
+import com.wakaztahir.kate.parser.stream.TextSourceStream
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

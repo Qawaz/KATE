@@ -1,7 +1,6 @@
-import com.wakaztahir.kte.GenerateCode
-import com.wakaztahir.kte.KTEDelicateFunction
-import com.wakaztahir.kte.TemplateContext
-import com.wakaztahir.kte.parser.parseRawBlock
+import com.wakaztahir.kate.GenerateCode
+import com.wakaztahir.kate.TemplateContext
+import com.wakaztahir.kate.parser.parseRawBlock
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFails

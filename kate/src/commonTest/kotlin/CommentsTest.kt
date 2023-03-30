@@ -1,7 +1,7 @@
-import com.wakaztahir.kte.GenerateCode
-import com.wakaztahir.kte.TemplateContext
-import com.wakaztahir.kte.parser.*
-import com.wakaztahir.kte.parser.CommentParseException
+import com.wakaztahir.kate.GenerateCode
+import com.wakaztahir.kate.TemplateContext
+import com.wakaztahir.kate.parser.*
+import com.wakaztahir.kate.parser.CommentParseException
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
