@@ -57,6 +57,20 @@ object KTEObjectImplementation {
             override fun toString(): String = "contains(name : string) : boolean"
 
         })
+        put("rename", object : KTEFunction() {
+            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
+                val value = invokedOn as? MutableKTEObject
+                val key = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
+                val other = parameters.getOrNull(1)?.asNullablePrimitive(model)?.value?.let { it as String }
+                require(value != null) { "invoked on object cannot be null" }
+                require(key != null) { "rename requires the 1st key parameter" }
+                require(other != null) { "rename requires the 2nd replace parameter" }
+                value.rename(key, other)
+                return KTEUnit
+            }
+
+            override fun toString(): String = "delete(name : string) : unit"
+        })
         put("delete", object : KTEFunction() {
             override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
                 val value = invokedOn as? MutableKTEObject

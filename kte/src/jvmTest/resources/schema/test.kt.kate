@@ -1,6 +1,6 @@
 @partial_raw
 
-    @define_object(TestObject)
+    @define_object(TestDataClass)
         @var testVariable = "My First Variable"
         @var testChar = 's'
         @var testBoolean = false
@@ -21,7 +21,7 @@
 
     @embed_once ./kotlin/object_as_data_class.kate
 
-    @default_no_raw @var(TestObject) @end_default_no_raw
+    @default_no_raw @var(TestDataClass) @end_default_no_raw
 
     @embed_once ./kotlin/object_as_interface.kate
 
@@ -31,6 +31,8 @@
 
     @end_default_no_raw
 
-    @default_no_raw @var(TestObject) @end_default_no_raw
+    @default_no_raw @var(@rename("TestDataClass","TestInterface")) @end_default_no_raw
+
+    @default_no_raw @var(TestInterface) @end_default_no_raw
 
 @end_partial_raw

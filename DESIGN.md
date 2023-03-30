@@ -203,12 +203,13 @@ And then objects can be referenced just like any other variable `@var(MyObject)`
 
 Here's a table of functions that exist on objects
 
-| Value                             | Description                  |
-|-----------------------------------|------------------------------|
-| getKeys() : List<string>          | Get keys of the object       |
-| getValues() : List<KTEValue>      | Get values of the object     |
-| contains(name : string) : boolean | Returns true if contains key |
-| delete(name : string) : unit      | Removes the key if exists    |
+| Value                                     | Description                       |
+|-------------------------------------------|-----------------------------------|
+| getKeys() : List<string>                  | Get keys of the object            |
+| getValues() : List<KTEValue>              | Get values of the object          |
+| contains(name : string) : boolean         | Returns true if contains key      |
+| delete(name : string) : unit              | Removes the key if exists         |
+| rename(key : string,with : string) : unit | Renames a child key to 'with' key |
 
 ## Primitives
 

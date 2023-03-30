@@ -67,6 +67,10 @@ interface MutableKTEObject : KTEObject {
         putValue(key, ModelObjectImpl(key).apply(block))
     }
 
+    fun changeName(name : String)
+
+    fun rename(key : String,other : String)
+
     fun removeKey(key: String)
 
     fun removeAll()

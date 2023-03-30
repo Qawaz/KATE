@@ -6,7 +6,7 @@ import com.wakaztahir.kte.model.indentation
 import com.wakaztahir.kte.model.model.*
 import com.wakaztahir.kte.runtime.KTEObjectImplementation
 
-open class ModelObjectImpl(override val objectName: String) : MutableKTEObject {
+open class ModelObjectImpl(override var objectName: String) : MutableKTEObject {
 
     private val container: MutableMap<String, KTEValue> by lazy { hashMapOf() }
 
@@ -27,6 +27,19 @@ open class ModelObjectImpl(override val objectName: String) : MutableKTEObject {
 
     override fun putValue(key: String, value: KTEValue) {
         container[key] = value
+    }
+
+    override fun changeName(name: String) {
+        this.objectName = name
+    }
+
+    override fun rename(key: String, other: String) {
+        val item = container[key]
+        if (item != null) {
+            container.remove(key)
+            if (item is MutableKTEObject) item.changeName(other)
+            container[other] = item
+        }
     }
 
     override fun removeKey(key: String) {

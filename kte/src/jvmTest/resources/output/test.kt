@@ -1,4 +1,4 @@
-data class TestObject (
+data class TestDataClass (
     val nestedObject : String,
     val testList : String,
     val testMList : String,
@@ -9,7 +9,7 @@ data class TestObject (
     val testLong : String,
 )
 
-interface TestObject {
+interface TestInterface {
 	val nestedObject : String
 	val testList : String
 	val testMList : String
