@@ -356,9 +356,4 @@ returned value
 
 The code above returns the first parameter passed to the function using indexing operator which translates to `get(0)`
 
-#### Keep in mind
-
-When defining a function following rules apply
-
-- Nothing is outputted directly like `@partial_raw` , explicit output is required
-- Function must return something , `@return @Unit` can be used if there is nothing to return
+Nothing is outputted directly like `@partial_raw` , explicit output is required in functions
