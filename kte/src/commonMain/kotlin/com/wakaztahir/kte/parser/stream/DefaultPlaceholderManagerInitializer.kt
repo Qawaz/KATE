@@ -4,6 +4,7 @@ import com.wakaztahir.kte.model.TextPlaceholderBlock
 
 object DefaultPlaceholderManagerInitializer {
 
+    private const val UnitPlaceholderName = "unit"
     private const val DoublePlaceholderName = "double"
     private const val IntPlaceholderName = "int"
     private const val LongPlaceholderName = "long"
@@ -17,6 +18,12 @@ object DefaultPlaceholderManagerInitializer {
     fun initializerDefaultPlaceholders(source: SourceStream) {
         source.placeholderManager.placeholders.addAll(
             listOf(
+                TextPlaceholderBlock(
+                    text = "",
+                    parent = source,
+                    placeholderName = UnitPlaceholderName,
+                    definitionName = UnitPlaceholderName
+                ),
                 TextPlaceholderBlock(
                     text = "@runtime.print_string(@var(__param__.toString()))",
                     parent = source,

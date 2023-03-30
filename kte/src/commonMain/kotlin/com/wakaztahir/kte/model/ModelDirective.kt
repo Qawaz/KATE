@@ -42,8 +42,4 @@ open class ModelDirective(val propertyPath: List<ModelReference>) : ReferencedVa
 
     override fun toString(): String = propertyPath.joinToString(".")
 
-    fun stringValue(indentationLevel: Int): String {
-        return indentation(indentationLevel) + toString()
-    }
-
 }

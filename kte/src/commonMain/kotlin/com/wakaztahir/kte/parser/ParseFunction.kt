@@ -7,6 +7,8 @@ import com.wakaztahir.kte.parser.stream.DestinationStream
 import com.wakaztahir.kte.parser.stream.increment
 import com.wakaztahir.kte.parser.stream.parseTextWhile
 
+val FunctionReturnedKTEUnit = StringValue("")
+
 class FunctionSlice(
     parentBlock: LazyBlock,
     startPointer: Int,
@@ -55,8 +57,7 @@ class FunctionDefinition(val slice: FunctionSlice, val functionName: String) : C
                 (model as? MutableKTEObject)?.putValue("this", KTEListImpl(parameters))
                 slice.generateTo(destination)
                 (model as? MutableKTEObject)?.removeKey("this")
-                return slice.returnedValue
-                    ?: throw IllegalStateException("function $functionName didn't return a value")
+                return slice.returnedValue ?: KTEUnit
             }
 
             override fun toString(): String = "$functionName()"
@@ -66,9 +67,6 @@ class FunctionDefinition(val slice: FunctionSlice, val functionName: String) : C
 
 private fun LazyBlock.parseFunctionReturnValue(): ReferencedValue? {
     if (source.currentChar == '@' && source.increment("@return ")) {
-        if (source.increment("@unit") || source.increment("@Unit")) {
-            return KTEUnit
-        }
         return source.parseAnyExpressionOrValue()
     }
     return null

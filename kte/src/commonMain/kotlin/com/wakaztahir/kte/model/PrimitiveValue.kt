@@ -37,10 +37,6 @@ interface PrimitiveValue<T> : ReferencedValue {
         return this
     }
 
-    fun stringValue(indentationLevel: Int): String {
-        return toString()
-    }
-
 }
 
 @JvmInline

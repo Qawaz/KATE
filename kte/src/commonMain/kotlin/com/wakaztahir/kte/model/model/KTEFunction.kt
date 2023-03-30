@@ -14,8 +14,4 @@ abstract class KTEFunction : ReferencedValue {
         throw IllegalStateException("KTEFunction should be invoked first to get the value to compare with the other")
     }
 
-    fun stringValue(indentationLevel: Int): String {
-        return toString()
-    }
-
 }
