@@ -14,7 +14,7 @@ kotlin {
     sourceSets {
         val jvmMain by getting {
             dependencies {
-                implementation(project(":kte"))
+                implementation(project(":kate"))
                 implementation(compose.runtime)
                 implementation(compose.foundation)
                 implementation(compose.ui)

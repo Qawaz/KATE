@@ -28,4 +28,4 @@ dependencyResolutionManagement {
 rootProject.name = "KATE-DEV"
 include(":desktop")
 include(":web")
-include(":kte")
+include(":kate")
