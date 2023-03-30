@@ -6,10 +6,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import com.wakaztahir.kate.TemplateContext
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,9 +33,11 @@ fun DisplayDemo() {
                     codeJob?.cancel()
                 }
                 codeJob = scope.launch {
+                    errorText = ""
+                    output = "...COMPILING..."
+                    delay(500)
                     try {
                         output = TemplateContext(text).getDestinationAsString()
-                        errorText = ""
                     } catch (e: Throwable) {
                         e.printStackTrace()
                         errorText = e.message ?: ""

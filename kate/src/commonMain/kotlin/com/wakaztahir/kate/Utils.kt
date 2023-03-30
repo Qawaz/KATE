@@ -27,4 +27,7 @@ val GetTypeModelReference = ModelReference.FunctionCall(
 internal fun GenerateCode(code: String): String = TemplateContext(code).getDestinationAsString()
 
 @Suppress("FunctionName")
+internal fun GeneratePartialRaw(code: String) = GenerateCode("@partial_raw $code @end_partial_raw")
+
+@Suppress("FunctionName")
 internal fun GenerateCode(code: String, model: MutableKTEObject) = TemplateContext(code, model).getDestinationAsString()

@@ -6,7 +6,7 @@ import com.wakaztahir.kate.model.model.KTEValue
 import com.wakaztahir.kate.model.model.ReferencedValue
 import com.wakaztahir.kate.parser.stream.SourceStream
 
-internal fun SourceStream.parseNumberReference(): ReferencedValue? {
+internal fun SourceStream.parseNumberOrReference(): ReferencedValue? {
     parseVariableReference()?.let { return it }
     parseNumberValue()?.let { return it }
     return null

@@ -240,7 +240,7 @@ private fun SourceStream.parseNumberedForLoopIncrementer(variableName: String): 
             val incrementer = if (singleIncrement != null && increment(singleIncrement.char)) {
                 IntValue(1)
             } else {
-                parseNumberReference()
+                parseNumberOrReference()
             }
                 ?: throw IllegalStateException("expected number property or value or '+' or '-' , got $currentChar in for loop incrementer")
             return NumberedForLoopIncrementer(

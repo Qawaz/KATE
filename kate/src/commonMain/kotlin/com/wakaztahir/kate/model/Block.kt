@@ -136,8 +136,7 @@ open class LazyBlockSlice(
     override val indentationLevel: Int
 ) : LazyBlock {
 
-    override val source: SourceStream
-        get() = parentBlock.source
+    override val source: SourceStream  = parentBlock.source
 
     override fun canIterate(): Boolean {
         return source.pointer < startPointer + length

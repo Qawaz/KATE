@@ -3,10 +3,9 @@ package com.wakaztahir.kate.parser
 import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.model.model.*
 import com.wakaztahir.kate.parser.stream.DestinationStream
+import com.wakaztahir.kate.parser.stream.SourceStream
 import com.wakaztahir.kate.parser.stream.increment
 import com.wakaztahir.kate.parser.stream.parseTextWhile
-
-val FunctionReturnedKTEUnit = StringValue("")
 
 class FunctionSlice(
     parentBlock: LazyBlock,
@@ -49,14 +48,39 @@ class FunctionSlice(
     }
 }
 
-class FunctionDefinition(val slice: FunctionSlice, val functionName: String) : CodeGen {
+class FunctionDefinition(val slice: FunctionSlice, val functionName: String, val parameterNames: List<String>?) :
+    CodeGen, BlockContainer {
+
+    override fun getBlockValue(model: KTEObject): LazyBlock {
+        return slice
+    }
+
+    private inline fun KTEObject.forEachParam(block: MutableKTEObject.(String, Int) -> Unit) {
+        (this as? MutableKTEObject)?.let {
+            if (parameterNames != null) {
+                var i = 0
+                for (param in parameterNames) {
+                    block(it, param, i)
+                    i++
+                }
+            }
+        }
+    }
+
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
         block.model.putValue(functionName, object : KTEFunction() {
             override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
-                (model as? MutableKTEObject)?.putValue("this", KTEListImpl(parameters))
+                slice.model.forEachParam { paramName, index ->
+                    if (index < parameters.size) {
+                        putValue(paramName, parameters[index].getKTEValue(model))
+                    } else {
+                        throw IllegalStateException("function expects ${parameterNames?.size} parameters and not ${parameters.size}")
+                    }
+                }
                 slice.generateTo(destination)
-                (model as? MutableKTEObject)?.removeKey("this")
-                return slice.returnedValue ?: KTEUnit
+                val returned = slice.returnedValue?.getKTEValue(slice.model) ?: KTEUnit
+                slice.model.forEachParam { paramName, _ -> removeKey(paramName) }
+                return returned
             }
 
             override fun toString(): String = "$functionName()"
@@ -71,22 +95,41 @@ private fun LazyBlock.parseFunctionReturnValue(): ReferencedValue? {
     return null
 }
 
+private fun SourceStream.parseParametersNames(): List<String>? {
+    if (increment('(')) {
+        val parameters = mutableListOf<String>()
+        do {
+            val paramName = parseTextWhile { currentChar.isVariableName() }
+            if (paramName.isNotEmpty()) parameters.add(paramName)
+        } while (increment(','))
+        if (parameters.isEmpty()) return null
+        return parameters
+    }
+    if (!increment(')')) {
+        throw IllegalStateException("expected ')' got ${source.currentChar} in function parameter definition")
+    }
+    return null
+}
+
 fun LazyBlock.parseFunctionDefinition(): FunctionDefinition? {
-    if (source.currentChar == '@' && source.increment("@function(")) {
+    if (source.currentChar == '@' && source.increment("@function ")) {
         val functionName = source.parseTextWhile { currentChar.isVariableName() }
         if (functionName.isEmpty()) {
             throw IllegalStateException("functionName cannot be empty")
         }
-        if (!source.increment(')')) {
-            throw IllegalStateException("expected ')' got ${source.currentChar} in function definition")
-        }
+        source.increment(' ')
+        val parameters = source.parseParametersNames()
         val slice = parseBlockSlice(
             startsWith = "@function",
             endsWith = "@end_function",
             allowTextOut = false,
             inheritModel = false
         )
-        return FunctionDefinition(slice = FunctionSlice(slice = slice), functionName)
+        return FunctionDefinition(
+            slice = FunctionSlice(slice = slice),
+            functionName = functionName,
+            parameterNames = parameters
+        )
     }
     return null
 }

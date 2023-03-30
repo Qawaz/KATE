@@ -223,7 +223,7 @@ private class ValueAndOperatorStack {
 }
 
 private fun LazyBlock.parseValueAndOperator(): Pair<ReferencedValue, ArithmeticOperatorType?>? {
-    val firstValue = source.parseNumberReference()
+    val firstValue = source.parseNumberOrReference()
     if (firstValue != null) {
         val pointerAfterFirstValue = source.pointer
         source.increment(' ')

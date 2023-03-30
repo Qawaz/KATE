@@ -37,7 +37,7 @@ interface KTEObject : ReferencedValue {
                             func
                         }
                     } ?: run {
-                        throw UnresolvedValueException("function ${path.pathUntil(prop)} does not exist")
+                        throw UnresolvedValueException("function ${path.pathUntil(prop)} does not exist on value : $currentVal")
                     }
                 }
 

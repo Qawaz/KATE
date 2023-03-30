@@ -31,7 +31,7 @@ internal fun SourceStream.parseFunctionParameters(): List<ReferencedValue>? {
 
 internal fun SourceStream.parseIndexingOperatorCall(invokeOnly: Boolean): ModelReference.FunctionCall? {
     if (increment('[')) {
-        val indexingValue = parseNumberReference()
+        val indexingValue = parseNumberOrReference()
             ?: throw IllegalStateException("couldn't get indexing value inside indexing operator")
         if (increment(']')) {
             return ModelReference.FunctionCall(
@@ -46,11 +46,13 @@ internal fun SourceStream.parseIndexingOperatorCall(invokeOnly: Boolean): ModelR
     return null
 }
 
-internal fun SourceStream.parseDotReferencesInto(propertyPath: MutableList<ModelReference>) {
+internal fun SourceStream.parseDotReferencesInto(): MutableList<ModelReference>? {
+    var propertyPath: MutableList<ModelReference>? = null
     do {
         val invokeOnly = increment('@')
         val propertyName = parseTextWhile { currentChar.isVariableName() }
         val parameters = parseFunctionParameters()
+        if (propertyPath == null) propertyPath = mutableListOf()
         if (parameters != null) {
             propertyPath.add(ModelReference.FunctionCall(propertyName, invokeOnly = invokeOnly, parameters))
         } else {
@@ -58,18 +60,23 @@ internal fun SourceStream.parseDotReferencesInto(propertyPath: MutableList<Model
         }
         parseIndexingOperatorCall(invokeOnly)?.let { propertyPath.add(it) }
     } while (increment('.'))
+    return propertyPath
 }
 
 class VariableReferenceParseException(message: String) : Exception(message)
 
+internal fun SourceStream.parseModelDirective(): ModelDirective? {
+    parseDotReferencesInto()?.let { return ModelDirective(it) }
+    return null
+}
+
 internal fun SourceStream.parseVariableReference(): ModelDirective? {
     if (currentChar == '@' && increment("@var(")) {
-        val propertyPath = mutableListOf<ModelReference>()
-        parseDotReferencesInto(propertyPath)
+        val directive = parseModelDirective()
         if (!increment(')')) {
             throw VariableReferenceParseException("expected ) got $currentChar at $pointer")
         }
-        return ModelDirective(propertyPath)
+        return directive
     }
     return null
 }

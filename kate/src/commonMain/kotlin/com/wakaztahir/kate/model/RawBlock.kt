@@ -1,6 +1,7 @@
 package com.wakaztahir.kate.model
 
 import com.wakaztahir.kate.model.model.KTEObject
+import com.wakaztahir.kate.model.model.KTEUnit
 import com.wakaztahir.kate.model.model.MutableKTEObject
 import com.wakaztahir.kate.parser.parseDefaultNoRaw
 import com.wakaztahir.kate.parser.parseVariableReference
@@ -40,7 +41,12 @@ open class PartialRawLazyBlockSlice(
 
     override fun parseImplicitDirectives(): CodeGen? {
         source.parseVariableReference()?.let {
-            throw IllegalStateException("variable reference $it cannot be used inside @partial_raw")
+            it.propertyPath.lastOrNull()?.let { c -> c as? ModelReference.FunctionCall }?.let { call ->
+                call.invokeOnly = true
+                return it.toPlaceholderInvocation(model, source.pointer) ?: KTEUnit
+            } ?: run {
+                throw IllegalStateException("variable reference $it cannot be used inside @partial_raw")
+            }
         }
         return null
     }
