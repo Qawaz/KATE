@@ -25,7 +25,7 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "KTE-DEV"
+rootProject.name = "KATE-DEV"
 include(":desktop")
 include(":web")
 include(":kte")
