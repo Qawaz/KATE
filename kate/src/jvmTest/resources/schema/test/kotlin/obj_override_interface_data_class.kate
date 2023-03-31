@@ -1,0 +1,25 @@
+package test_object_as_overridden_interface
+
+@partial_raw
+
+    @embed_once ../../data/test_object.kate
+
+    @embed_once ../../kotlin/object_as_interface.kate
+
+    @var __append_i__ = true
+
+    @default_no_raw @var(TestObject) @end_default_no_raw
+
+    @default_no_raw
+
+
+
+    @end_default_no_raw
+
+    @embed_once ../../kotlin/object_as_data_class.kate
+
+    @var __overriding__ = true
+
+    @default_no_raw @var(TestObject) @end_default_no_raw
+
+@end_partial_raw

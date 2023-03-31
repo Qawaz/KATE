@@ -1,6 +1,5 @@
 @partial_raw
-
-    @define_object(TestInterface)
+    @define_object(TestObject)
         @var testVariable = "My First Variable"
         @var testChar = 's'
         @var testBoolean = false
@@ -19,33 +18,4 @@
             @var testMList = @mutable_list(1.2,3.4,5.6,3.4)
         @end_define_object
     @end_define_object
-
-    @embed_once ./kotlin/object_as_interface.kate
-
-    @default_no_raw @var(TestInterface) @end_default_no_raw
-
-    @embed_once ./kotlin/object_as_data_class.kate
-
-    @default_no_raw
-
-
-
-    @end_default_no_raw
-
-    @default_no_raw @var(@rename("TestInterface","TestDataClass")) @end_default_no_raw
-
-    @default_no_raw @var(TestDataClass) @end_default_no_raw
-
-    @default_no_raw
-
-
-
-    @end_default_no_raw
-
-    @default_no_raw @var(@rename("TestDataClass","TestOverriding")) @end_default_no_raw
-
-    @var __overriding__ = "TestInterface"
-
-    @default_no_raw @var(TestOverriding) @end_default_no_raw
-
 @end_partial_raw

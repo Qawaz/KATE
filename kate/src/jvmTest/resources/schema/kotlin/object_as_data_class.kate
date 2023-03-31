@@ -2,24 +2,30 @@
 
     @embed_once ./type.kate
 
-	@define_placeholder(object,KotlinDataClass)
-		@var keys = @var(__param__.getKeys())
+    @function writeObjectAsKotlinDataClass(object,overriding)
 
-		@var overriding = false
+        @var keys = @var(object.getKeys())
 
-		@if(@var(this.parent.contains("__overriding__")))
-		    @var overriding = true
-		@endif
+        @for(@var i=0;i<@var(keys.size());i++)
+            @if(@var(object[@var(keys[@var(i)])].getType()) == "object")
+                @var(writeObjectAsKotlinDataClass(@var(object[@var(keys[@var(i)])]),@var(overriding)))
+                @default_no_raw
+
+
+
+                @end_default_no_raw
+            @endif
+        @endfor
 
 		<%-- Creating interface definition --%>
 		@default_no_raw
-			data class @var(__param__.getName()) (
+			data class @var(object.getName()) (
 
 		@end_default_no_raw
 
 		@for(@var i=0;i<@var(keys.size());i++)
 		    @default_no_raw
-                    @if(@var(overriding)) override  @endif val @var(keys[@var(i)].decapitalize()) : @var(getKotlinType(@var(__param__[@var(keys[@var(i)])]))),
+                    @if(@var(overriding)) override  @endif val @var(keys[@var(i)].decapitalize()) : @var(getKotlinType(@var(object[@var(keys[@var(i)])]))),
 
 			@end_default_no_raw
 		@endfor
@@ -27,10 +33,18 @@
 		    )
 		@end_default_no_raw
 		@default_no_raw
-            @if(@var(this.parent.contains("__overriding__")))
-                 : @var(this.parent.__overriding__)
+            @if(@var(overriding))
+                 : I@var(object.getName())
             @endif
         @end_default_no_raw
+    @end_function
+
+	@define_placeholder(object,KotlinDataClass)
+        @var overriding = false
+        @if(@var(this.parent.contains("__overriding__")))
+            @var overriding = @var(this.parent.__overriding__)
+        @endif
+        @var(writeObjectAsKotlinDataClass(@var(__param__),@var(overriding)))
 	@end_define_placeholder
 
 @end_partial_raw

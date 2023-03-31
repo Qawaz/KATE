@@ -4,7 +4,9 @@ import com.wakaztahir.kate.model.LazyBlock
 import com.wakaztahir.kate.parser.stream.EmbeddingManager
 import com.wakaztahir.kate.parser.stream.SourceStream
 import com.wakaztahir.kate.parser.stream.getErrorInfoAtCurrentPointer
-import com.wakaztahir.kate.parser.stream.printErrorLineNumberAndCharacterIndex
+import java.io.InputStream
+import java.net.URL
+import java.nio.file.Paths
 
 open class RelativeResourceEmbeddingManager(
     private val basePath: String,
@@ -15,18 +17,35 @@ open class RelativeResourceEmbeddingManager(
 
     override fun handleException(path: String, stream: SourceStream, exception: Throwable) {
         val indo = stream.getErrorInfoAtCurrentPointer()
-        throw Throwable("$path:${indo.first}:${indo.second}", cause = exception)
+        throw Throwable("${completePath(path)}:${indo.first}:${indo.second}", cause = exception)
+    }
+
+    fun relativeParentPath(other : String) : String {
+        return Paths.get(basePath).resolve(Paths.get(other)).parent.normalize().toString().replace('\\','/')
+    }
+
+    fun relativePath(other : String) : String {
+        return Paths.get(basePath).resolve(Paths.get(other)).normalize().toString().replace('\\','/')
+    }
+
+    fun getUrl(path : String): URL {
+        return classLoader.getResource(relativePath(path)) ?: throw IllegalStateException("embedding with path not found ${relativePath(path)} where base $basePath and other $path")
+    }
+
+    fun completePath(other : String) : String {
+        return getUrl(other).file.removePrefix("/")
+    }
+
+    fun getStream(path : String): InputStream {
+        return getUrl(path).openStream()
     }
 
     override fun provideStream(block: LazyBlock, path: String): SourceStream? {
-        val actualPath = "$basePath/${path.removePrefix("/").removePrefix("./")}"
-        val file = classLoader.getResource(actualPath)
-            ?: throw IllegalStateException("embedding with path not found $actualPath")
         return InputSourceStream(
-            inputStream = file.openStream(),
+            inputStream = getStream(path),
             model = block.model,
             embeddingManager = RelativeResourceEmbeddingManager(
-                basePath = basePath + if (path.contains('/')) path.substring(0, path.lastIndexOf('/')) else "",
+                basePath = relativeParentPath(path),
                 classLoader = classLoader
             ),
             placeholderManager = block.source.placeholderManager

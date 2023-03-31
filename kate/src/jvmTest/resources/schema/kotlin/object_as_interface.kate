@@ -2,24 +2,24 @@
 
     @embed_once ./type.kate
 
-    @function generateNested(param)
-        @var keys = @var(param.getKeys())
-        @for(@var i=0;i<@var(keys.size());i++)
-            @if(@var(param[@var(keys[@var(i)])].getType()) == "object")
-                @default_no_raw @var(param) @end_default_no_raw
+    @function writeObjectAsKotlinInterface(object,appendI)
+
+		@var keys = @var(object.getKeys())
+
+		@for(@var i=0;i<@var(keys.size());i++)
+            @if(@var(object[@var(keys[@var(i)])].getType()) == "object")
+                @var(writeObjectAsKotlinInterface(@var(object[@var(keys[@var(i)])]),@var(appendI)))
+                @default_no_raw
+
+
+
+                @end_default_no_raw
             @endif
         @endfor
-    @end_function
-
-	@define_placeholder(object,KotlinInterface)
-
-        @var(generateNested(@var(__param__)))
-
-		@var keys = @var(__param__.getKeys())
 
 		<%-- Creating interface definition --%>
 		@default_no_raw
-			interface @var(__param__.getName()) {
+			interface @if(@var(appendI)) I @endif @var(object.getName()) {
 
 		@end_default_no_raw
 
@@ -27,11 +27,19 @@
 
 		@for(@var i=0;i<@var(keys.size());i++)
 		@default_no_raw
-					val @var(keys[@var(i)].decapitalize()) : @var(getKotlinType(@var(__param__[@var(keys[@var(i)])])))
+					val @var(keys[@var(i)].decapitalize()) : @var(getKotlinType(@var(object[@var(keys[@var(i)])])))
 
 			@end_default_no_raw
 		@endfor
 		@raw } @endraw
+    @end_function
+
+	@define_placeholder(object,KotlinInterface)
+	    @var appendI = false
+	    @if(@var(this.parent.contains("__append_i__")))
+	        @var appendI = @var(this.parent.__append_i__)
+        @endif
+        @var(writeObjectAsKotlinInterface(@var(__param__),@var(appendI)))
 	@end_define_placeholder
 
 @end_partial_raw

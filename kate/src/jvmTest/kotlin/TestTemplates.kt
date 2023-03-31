@@ -70,32 +70,32 @@ class TestTemplates {
         assertEquals(text, other)
     }
 
-    private fun testTemplate(inputPath: String, outputPath: String) {
+    private fun testTemplate(basePath: String, inputPath: String, outputPath: String) {
         val model = getObject()
-        val path = object {}.javaClass.getResource("schema/$inputPath")!!
-        val embedding = RelativeResourceEmbeddingManager("schema", object {}.javaClass)
+        val embedding = RelativeResourceEmbeddingManager("schema/$basePath", object {}.javaClass)
         val context = TemplateContext(
             stream = InputSourceStream(
-                inputStream = path.openStream(),
+                inputStream = embedding.getStream(inputPath),
                 model = model,
                 embeddingManager = embedding,
             )
         )
-        val output = output("output/$outputPath")
-        try {
-            context.generateTo(output)
-        }catch (e : Throwable){
-            val err = context.stream.getErrorInfoAtCurrentPointer()
-            println("${path.path.removePrefix("/")}:${err.first}:${err.second}")
-            throw e
-        }
+        val output = output("output/$basePath/$outputPath")
+        context.generateTo(output)
         output.outputStream.close()
     }
 
     @Test
+    fun testKotlinTemplates() {
+        val basePath = "test/kotlin"
+        testTemplate(basePath, "obj_as_data_class.kate", "obj_as_data_class.kt")
+        testTemplate(basePath, "obj_as_interface.kate", "obj_as_interface.kt")
+        testTemplate(basePath, "obj_override_interface_data_class.kate", "obj_override_interface_data_class.kt")
+    }
+
+    @Test
     fun testGenerateTemplates() {
-        testTemplate("main.kate", "main.kt")
-        testTemplate("test.kt.kate", "test.kt")
+        testTemplate("","main.kate", "main.kt")
     }
 
 }

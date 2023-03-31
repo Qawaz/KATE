@@ -1,0 +1,11 @@
+package test_object_as_data_class
+
+@partial_raw
+
+    @embed_once ../../data/test_object.kate
+
+    @embed_once ../../kotlin/object_as_data_class.kate
+
+    @default_no_raw @var(TestObject) @end_default_no_raw
+
+@end_partial_raw
