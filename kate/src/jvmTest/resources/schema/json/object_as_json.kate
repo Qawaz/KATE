@@ -10,7 +10,8 @@
             @endfor
         @end_function
 
-		@raw { @endraw
+		@runtime.print_char('{')
+
         @runtime.print_char('\n')
 
         @function listValue(param)
@@ -34,17 +35,11 @@
             @elseif(@var(param.getType()) == "mutable_list")
                 @var(listValue(@var(param)))
             @elseif(@var(param.getType()) == "string")
-                @default_no_raw
-                    "@var(param)"
-                @end_default_no_raw
+                @default_no_raw "@var(param)" @end_default_no_raw
             @elseif(@var(param.getType()) == "char")
-                @default_no_raw
-                    "@var(param)"
-                @end_default_no_raw
+                @default_no_raw "@var(param)" @end_default_no_raw
             @else
-                @default_no_raw
-                    @var(param)
-                @end_default_no_raw
+                @default_no_raw @var(param) @end_default_no_raw
             @endif
         @end_function
 
@@ -74,7 +69,8 @@
 
 		@var(indent())
 
-		@raw } @endraw
+		@runtime.print_char('}')
+
     @end_function
 
 	@define_placeholder(object,JsonObject)
