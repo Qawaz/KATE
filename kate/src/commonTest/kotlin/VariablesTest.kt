@@ -121,6 +121,14 @@ class VariablesTest {
     }
 
     @Test
+    fun testObjectListType(){
+        assertEquals(
+            expected = "list",
+            actual = GenerateCode("@define_object(Test) @var list = @list(1,2,3) @end_define_object @var(Test.list.getType())")
+        )
+    }
+
+    @Test
     fun testDifferentVariables() {
         assertEquals("x", GenerateCode("@var x = 'x' @var(x)"))
     }

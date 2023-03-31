@@ -15,7 +15,7 @@
 
 		@for(@var i=0;i<@var(keys.size());i++)
 		@default_no_raw
-					val @var(keys[@var(i)].decapitalize()) : @var(getKType(@var(__param__[@var(keys[@var(i)])])))
+					val @var(keys[@var(i)].decapitalize()) : @var(getKotlinType(@var(__param__[@var(keys[@var(i)])])))
 
 			@end_default_no_raw
 		@endfor

@@ -8,6 +8,7 @@
         @var testLong = 12322L
         @var testList = @list(1,2,3,4)
         @var testMList = @mutable_list(1.2,3.4,5.6,3.4)
+        @var testListList = @list(@list(1,2,3),@list(4,5,6))
         @define_object(NestedObject)
             @var testVariable = "My First Variable"
             @var testChar = 's'

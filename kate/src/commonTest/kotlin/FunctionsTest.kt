@@ -60,6 +60,10 @@ class FunctionsTest {
                 """.trimMargin()
             )
         )
+    }
+
+    @Test
+    fun testFunctionRecursion(){
         assertEquals(
             expected = "5",
             actual = GeneratePartialRaw(
@@ -71,6 +75,27 @@ class FunctionsTest {
                 |   @return @var(param1) @endif
                 |@end_function
                 |@default_no_raw @var(MyFunc(9)) @end_default_no_raw
+                """.trimMargin()
+            )
+        )
+        assertEquals(
+            expected = "5040",
+            actual = GenerateCode("7 @* 6 @* 5 @* 4 @* 3 @* 2 @*1")
+        )
+        assertEquals(
+            expected = "120245040362880",
+            actual = GeneratePartialRaw(
+                """
+                |@function fact(n)
+                |@if(@var(n) <= 1)
+                |   @return 1
+                |@else
+                |   @return @var(n) @* @var(fact(@var(n) @- 1)) @endif
+                |@end_function
+                |@default_no_raw @var(fact(5)) @end_default_no_raw
+                |@default_no_raw @var(fact(4)) @end_default_no_raw
+                |@default_no_raw @var(fact(7)) @end_default_no_raw
+                |@default_no_raw @var(fact(9)) @end_default_no_raw
                 """.trimMargin()
             )
         )

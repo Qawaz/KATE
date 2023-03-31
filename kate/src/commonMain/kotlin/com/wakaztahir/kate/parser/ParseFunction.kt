@@ -49,7 +49,7 @@ class FunctionSlice(
 
 }
 
-abstract class KTERecursiveFunction(val slice: FunctionSlice,val parameterNames: List<String>?) : KTEFunction() {
+abstract class KTERecursiveFunction(val slice: FunctionSlice, val parameterNames: List<String>?) : KTEFunction() {
 
     var destination: DestinationStream? = null
 
@@ -79,7 +79,7 @@ abstract class KTERecursiveFunction(val slice: FunctionSlice,val parameterNames:
         }
     }
 
-    private fun startInvocation(model: KTEObject,parameters : List<ReferencedValue>) {
+    private fun startInvocation(model: KTEObject, parameters: List<ReferencedValue>) {
         invocationNumber++
         if (invocationNumber > 1) {
             previousModels.add(slice.model)
@@ -96,17 +96,17 @@ abstract class KTERecursiveFunction(val slice: FunctionSlice,val parameterNames:
     }
 
     private fun endInvocation(): KTEValue {
-        val returnedValue = returnedValues[invocationNumber]?.getKTEValue(slice.model) ?: KTEUnit
-        if (previousModels.isNotEmpty()) slice.model = previousModels.removeLast()
+        val returnedValue = returnedValues.remove(invocationNumber)?.getKTEValue(slice.model) ?: KTEUnit
         invocationNumber--
-        previousPointers[invocationNumber]?.let {
+        if (previousModels.isNotEmpty()) slice.model = previousModels.removeLast()
+        previousPointers.remove(invocationNumber)?.let {
             slice.source.setPointerAt(it)
         }
         return returnedValue
     }
 
-    fun generateNow(model: KTEObject,parameters: List<ReferencedValue>): KTEValue {
-        startInvocation(model = model,parameters = parameters)
+    fun generateNow(model: KTEObject, parameters: List<ReferencedValue>): KTEValue {
+        startInvocation(model = model, parameters = parameters)
         slice.generateTo(destination!!)
         return endInvocation()
     }
@@ -117,9 +117,9 @@ abstract class KTERecursiveFunction(val slice: FunctionSlice,val parameterNames:
 class FunctionDefinition(val slice: FunctionSlice, val functionName: String, val parameterNames: List<String>?) :
     CodeGen, BlockContainer {
 
-    private val definition = object : KTERecursiveFunction(slice,parameterNames) {
+    private val definition = object : KTERecursiveFunction(slice, parameterNames) {
         override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
-            return generateNow(model = model,parameters)
+            return generateNow(model = model, parameters)
         }
 
         override fun toString(): String = "$functionName()"

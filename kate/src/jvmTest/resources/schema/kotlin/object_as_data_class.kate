@@ -1,5 +1,7 @@
 @partial_raw
 
+    @embed_once ./type.kate
+
 	@define_placeholder(object,KotlinDataClass)
 		@var keys = @var(__param__.getKeys())
 
@@ -17,7 +19,7 @@
 
 		@for(@var i=0;i<@var(keys.size());i++)
 		    @default_no_raw
-                    @if(@var(overriding)) override  @endif val @var(keys[@var(i)].decapitalize()) : @var(__param__[@var(keys[@var(i)])].getType().capitalize()),
+                    @if(@var(overriding)) override  @endif val @var(keys[@var(i)].decapitalize()) : @var(getKotlinType(@var(__param__[@var(keys[@var(i)])]))),
 
 			@end_default_no_raw
 		@endfor

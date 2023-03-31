@@ -1,39 +1,14 @@
 @partial_raw
 
-@function getObjType(param)
+@function getKotlinType(param)
     @if(@var(param.getType()) == "object")
-        @return @var(param.getName())
+        @return @var(param.getName().capitalize())
+    @elseif(@var(param.getType()) == "list")
+        @return "List<" @+ @var(getKotlinType(@var(param[0]))) @+ ">"
+    @elseif(@var(param.getType()) == "mutable_list")
+        @return "List<" @+ @var(getKotlinType(@var(param[0]))) @+ ">"
     @else
         @return @var(param.getType().capitalize())
-    @endif
-@end_function
-
-@function getListKotlinType(param)
-    @var retVal = ""
-    @var current = @var(param)
-
-    @for(@var(current.getType()) == "list")
-        @var retVal = @var(retVal) @+ @var(getObjType(@var(current)).capitalize()) @+ '<'
-        @var current = @var(current.get(0))
-    @endfor
-
-	@var retVal = @var(retVal) @+ @var(getObjType(@var(current)).capitalize()) @+ '>'
-
-    @var current = @var(param)
-
-    @for(@var(current.getType()) == "list")
-        @var retVal = @var(retVal) @+ '>'
-        @var current = @var(current.get(0))
-    @endfor
-
-    @return @var(retVal)
-@end_function
-
-@function getKType(param)
-    @if(@var(param.getType()) == "list")
-        @return @var(getListKotlinType(@var(param)))
-    @else
-        @return @var(getObjType(@var(param)))
     @endif
 @end_function
 

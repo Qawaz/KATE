@@ -19,17 +19,6 @@ object KTEListImplementation {
 
             override fun toString(): String = "getType() : string"
         })
-        put("getChildType", object : KTEFunction() {
-            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
-                val list = invokedOn.asNullableList(model)
-                require(list != null) { "list is null" }
-                return StringValue(
-                    value = list.collection.firstOrNull()?.getKTEValue(model)?.getKateType(model) ?: "unit"
-                )
-            }
-
-            override fun toString(): String = "getType() : string"
-        })
         put("get", object : KTEFunction() {
             override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
                 val index = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value as? Int
