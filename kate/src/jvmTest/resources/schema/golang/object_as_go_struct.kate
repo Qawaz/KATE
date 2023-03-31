@@ -1,0 +1,41 @@
+@partial_raw
+
+    @embed_once ./type.kate
+
+    @function writeObjectAsKotlinInterface(object,appendI)
+
+		@var keys = @var(object.getKeys())
+
+		@for(@var i=0;i<@var(keys.size());i++)
+            @if(@var(object[@var(keys[@var(i)])].getType()) == "object")
+                @var(writeObjectAsKotlinInterface(@var(object[@var(keys[@var(i)])]),@var(appendI)))
+                @runtime.print_string("\n\n")
+            @endif
+        @endfor
+
+		<%-- Creating interface definition --%>
+		@default_no_raw
+			type @if(@var(appendI)) I @endif @var(object.getName()) struct {
+		@end_default_no_raw
+        @runtime.print_string("\n")
+
+		@for(@var i=0;i<@var(keys.size());i++)
+		    @runtime.print_char('\t')
+		    @default_no_raw
+				@var(keys[@var(i)].decapitalize()) @var(getGolangType(@var(object[@var(keys[@var(i)])])))
+			@end_default_no_raw
+			@runtime.print_string("\n")
+		@endfor
+		@raw } @endraw
+
+    @end_function
+
+	@define_placeholder(object,KotlinInterface)
+	    @var appendI = false
+	    @if(@var(this.parent.contains("__append_i__")))
+	        @var appendI = @var(this.parent.__append_i__)
+        @endif
+        @var(writeObjectAsKotlinInterface(@var(__param__),@var(appendI)))
+	@end_define_placeholder
+
+@end_partial_raw

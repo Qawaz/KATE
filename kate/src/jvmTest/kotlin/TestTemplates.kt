@@ -98,6 +98,12 @@ class TestTemplates {
     }
 
     @Test
+    fun testObjectAsGoStruct(){
+        val basePath = "test/golang"
+        testTemplate(basePath, "object_as_golang.kate", "object_as_golang.go")
+    }
+
+    @Test
     fun testKotlinTemplates() {
         val basePath = "test/kotlin"
         testTemplate(basePath, "obj_as_data_class.kate", "obj_as_data_class.kt")

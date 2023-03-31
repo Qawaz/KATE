@@ -1,0 +1,11 @@
+package object_as_struct
+
+@partial_raw
+
+    @embed_once ../../data/test_object.kate
+
+    @embed_once ../../golang/object_as_go_struct.kate
+
+    @default_no_raw @var(TestObject) @end_default_no_raw
+
+@end_partial_raw

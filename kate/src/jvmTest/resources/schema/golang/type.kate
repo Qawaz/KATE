@@ -1,0 +1,23 @@
+@partial_raw
+
+@function getGolangType(param)
+    @if(@var(param.getType()) == "object")
+        @return @var(param.getName().capitalize())
+    @elseif(@var(param.getType()) == "list")
+        @return "[]" @+ @var(getGolangType(@var(param[0])))
+    @elseif(@var(param.getType()) == "mutable_list")
+        @return "[]" @+ @var(getGolangType(@var(param[0])))
+    @elseif(@var(param.getType()) == "boolean")
+        @return "bool"
+    @elseif(@var(param.getType()) == "double")
+        @return "float32"
+    @elseif(@var(param.getType()) == "long")
+        @return "int64"
+    @elseif(@var(param.getType()) == "char")
+        @return "rune"
+    @else
+        @return @var(param.getType())
+    @endif
+@end_function
+
+@end_partial_raw
