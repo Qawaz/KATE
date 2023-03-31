@@ -55,10 +55,19 @@
 		    @end_function
 
             @var(indent())
+
             @runtime.print_char('\t')
+
 		    @default_no_raw
-                "@var(keys[@var(i)].decapitalize())" : @var(jsonValue(@var(object[@var(keys[@var(i)])])))@var(separator())
+                "@var(keys[@var(i)].decapitalize())" :
 			@end_default_no_raw
+
+			@runtime.print_char(' ')
+
+			@var(jsonValue(@var(object[@var(keys[@var(i)])])))
+
+			@var(separator())
+
 			@runtime.print_char('\n')
 
 		@endfor
