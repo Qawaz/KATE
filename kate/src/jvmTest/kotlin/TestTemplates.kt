@@ -92,6 +92,12 @@ class TestTemplates {
     }
 
     @Test
+    fun testJsonObjectTemplate(){
+        val basePath = "test/json"
+        testTemplate(basePath, "object_as_json.kate", "object_as_json.json")
+    }
+
+    @Test
     fun testKotlinTemplates() {
         val basePath = "test/kotlin"
         testTemplate(basePath, "obj_as_data_class.kate", "obj_as_data_class.kt")

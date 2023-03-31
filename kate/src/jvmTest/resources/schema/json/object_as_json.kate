@@ -1,0 +1,69 @@
+@partial_raw
+
+    @function writeObjectAsJson(object)
+
+        @var keys = @var(object.getKeys())
+
+		@default_no_raw
+			{
+
+		@end_default_no_raw
+
+		@for(@var i=0;i<@var(keys.size());i++)
+
+		    @function separator()
+		        @if(@var(i) != @var(keys.size()) @- 1) @return "," @else @return "" @endif
+		    @end_function
+
+		    @function listValue(param)
+                @default_no_raw [ @end_default_no_raw
+                @for(@var j = 0;j<@var(param.size());j++)
+                    @var(jsonValue(@var(param[@var(j)])))
+                    @default_no_raw
+                        @if(@var(j) != @var(param.size()) @- 1) , @endif
+                    @end_default_no_raw
+                @endfor
+                @default_no_raw ] @end_default_no_raw
+		    @end_function
+
+		    @function jsonValue(param)
+
+		        @if(@var(param.getType()) == "object")
+                    @default_no_raw
+                        @var(writeObjectAsJson(@var(object[@var(keys[@var(i)])])))
+                    @end_default_no_raw
+		        @elseif(@var(param.getType()) == "list")
+                    @var(listValue(@var(param)))
+		        @elseif(@var(param.getType()) == "mutable_list")
+                    @var(listValue(@var(param)))
+		        @elseif(@var(param.getType()) == "string")
+                    @default_no_raw
+                        "@var(param)"
+                    @end_default_no_raw
+		        @elseif(@var(param.getType()) == "char")
+                    @default_no_raw
+                        "@var(param)"
+                    @end_default_no_raw
+		        @else
+                    @default_no_raw
+                        @var(param)
+                    @end_default_no_raw
+		        @endif
+		    @end_function
+
+		    @default_no_raw
+                    "@var(keys[@var(i)].decapitalize())" : @var(jsonValue(@var(object[@var(keys[@var(i)])])))@var(separator())
+
+			@end_default_no_raw
+
+		@endfor
+		@default_no_raw
+		    }
+		@end_default_no_raw
+    @end_function
+
+	@define_placeholder(object,JsonObject)
+        @var(writeObjectAsJson(@var(__param__)))
+	@end_define_placeholder
+
+@end_partial_raw
