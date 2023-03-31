@@ -80,8 +80,19 @@ internal fun SourceStream.parseCharacterValue(): CharValue? {
 
 internal fun SourceStream.parseStringValue(): StringValue? {
     if (currentChar == '\"' && increment('\"')) {
-        val value = parseTextWhile { currentChar != '\"' }
-        increment('\"')
+        var value = ""
+        while (!hasEnded && currentChar != '\"') {
+            value += if (currentChar == '\\') {
+                incrementPointer()
+                currentChar.transformAfterBackslashChar()
+            } else {
+                currentChar
+            }
+            incrementPointer()
+        }
+        if (!increment('\"')) {
+            throw IllegalArgumentException("string value must end with \" value : $value")
+        }
         return StringValue(value)
     }
     return null

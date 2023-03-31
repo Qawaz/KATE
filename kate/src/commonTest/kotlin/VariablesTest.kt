@@ -144,6 +144,17 @@ class VariablesTest {
         assertEquals("\"", GenerateCode("@var i = '\\\"' @var(i)"))
     }
 
+    @Test
+    fun testStringEscapes(){
+        assertEquals("abc\bdef\b", GenerateCode("@var i = \"abc\\bdef\\b\" @var(i)"))
+        assertEquals("abc\ndef\n", GenerateCode("@var i = \"abc\\ndef\\n\" @var(i)"))
+        assertEquals("abc\rdef\r", GenerateCode("@var i = \"abc\\rdef\\r\" @var(i)"))
+        assertEquals("abc\tdef\t", GenerateCode("@var i = \"abc\\tdef\\t\" @var(i)"))
+        assertEquals("abc\\def\\", GenerateCode("@var i = \"abc\\\\def\\\\\" @var(i)"))
+        assertEquals("abc'def'", GenerateCode("@var i = \"abc\\'def\\'\" @var(i)"))
+        assertEquals("abc\"def\"", GenerateCode("@var i = \"abc\\\"def\\\"\" @var(i)"))
+    }
+
     private fun evaluate(i: String, j: String, char: Char, expect: String) {
         assertEquals(expect, GenerateCode("@var i = $i@var j = @var(i) @$char $j@var(j)"))
         assertEquals(expect, GenerateCode("$i @$char $j"))
