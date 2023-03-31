@@ -345,16 +345,10 @@ internal fun LazyBlock.parseExpression(
     return null
 }
 
-private fun SourceStream.parseUnitValue(): ReferencedValue? {
-    if (currentChar == '@' && increment("@Unit")) return KTEUnit
-    return null
-}
-
 internal fun SourceStream.parseAnyExpressionOrValue(): ReferencedValue? {
     parseListDefinition()?.let { return it }
     parseMutableListDefinition()?.let { return it }
     parseBooleanValue()?.let { return it }
-    parseUnitValue()?.let { return it }
     parseExpression(
         parseFirstStringOrChar = true,
         parseNotFirstStringOrChar = true,

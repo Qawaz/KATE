@@ -24,16 +24,11 @@ class FunctionSlice(
     indentationLevel = indentationLevel
 ) {
 
-    private var isFirstInvocation = true
     override var model: MutableKTEObject = parentBlock.model
-        private set
+    var keepIterating: () -> Boolean = { true }
+    var onReturnValueFound: (ReferencedValue) -> Unit = {}
 
-    private val previousModels = mutableListOf<MutableKTEObject>()
-
-    var returnedValue: KTEValue? = null
-    private var hasBroken = false
-
-    override fun canIterate(): Boolean = super.canIterate() && !hasBroken
+    override fun canIterate(): Boolean = super.canIterate() && keepIterating()
 
     constructor(slice: LazyBlockSlice) : this(
         parentBlock = slice.parentBlock,
@@ -45,30 +40,31 @@ class FunctionSlice(
     )
 
     override fun parseNestedAtDirective(block: LazyBlock): CodeGen? {
-        block.parseFunctionReturnValue()?.let {
-            returnedValue = it
-            hasBroken = true
+        block.parseFunctionReturn()?.let {
+            onReturnValueFound(it)
             return KTEUnit
         }
         return super.parseNestedAtDirective(block)
     }
 
-    fun prepareFunctionGeneration() {
-        if (!isFirstInvocation) previousModels.add(model) else isFirstInvocation = false
-        model = ScopedModelObject(parentBlock.model)
-    }
-
-    fun cleanupFunctionGeneration() {
-        if (previousModels.isNotEmpty()) model = previousModels.removeLast()
-    }
-
 }
 
-class FunctionDefinition(val slice: FunctionSlice, val functionName: String, val parameterNames: List<String>?) :
-    CodeGen, BlockContainer {
+abstract class KTERecursiveFunction(val slice: FunctionSlice,val parameterNames: List<String>?) : KTEFunction() {
 
-    override fun getBlockValue(model: KTEObject): LazyBlock {
-        return slice
+    var destination: DestinationStream? = null
+
+    private var invocationNumber = 0
+    private var returnedValues = hashMapOf<Int, KTEValue>()
+    private val previousModels = mutableListOf<MutableKTEObject>()
+    private val previousPointers = hashMapOf<Int, Int>()
+
+    init {
+        slice.onReturnValueFound = {
+            returnedValues[invocationNumber] = it
+        }
+        slice.keepIterating = {
+            !returnedValues.containsKey(invocationNumber)
+        }
     }
 
     private inline fun KTEObject.forEachParam(block: MutableKTEObject.(String, Int) -> Unit) {
@@ -83,31 +79,65 @@ class FunctionDefinition(val slice: FunctionSlice, val functionName: String, val
         }
     }
 
-    override fun generateTo(block: LazyBlock, destination: DestinationStream) {
-        block.model.putValue(functionName, object : KTEFunction() {
-            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
-                slice.prepareFunctionGeneration()
-                slice.model.forEachParam { paramName, index ->
-                    if (index < parameters.size) {
-                        putValue(paramName, parameters[index].getKTEValue(model))
-                    } else {
-                        throw IllegalStateException("function expects ${parameterNames?.size} parameters and not ${parameters.size}")
-                    }
-                }
-                slice.generateTo(destination)
-                val returned = slice.returnedValue?.getKTEValue(slice.model) ?: KTEUnit
-                slice.cleanupFunctionGeneration()
-                return returned
+    private fun startInvocation(model: KTEObject,parameters : List<ReferencedValue>) {
+        invocationNumber++
+        if (invocationNumber > 1) {
+            previousModels.add(slice.model)
+            previousPointers[invocationNumber - 1] = slice.source.pointer
+        }
+        slice.model = ScopedModelObject(slice.parentBlock.model)
+        slice.model.forEachParam { paramName, index ->
+            if (index < parameters.size) {
+                putValue(paramName, parameters[index].getKTEValue(model))
+            } else {
+                throw IllegalStateException("function expects ${parameterNames?.size} parameters and not ${parameters.size}")
             }
+        }
+    }
 
-            override fun toString(): String = "$functionName()"
-        })
+    private fun endInvocation(): KTEValue {
+        val returnedValue = returnedValues[invocationNumber]?.getKTEValue(slice.model) ?: KTEUnit
+        if (previousModels.isNotEmpty()) slice.model = previousModels.removeLast()
+        invocationNumber--
+        previousPointers[invocationNumber]?.let {
+            slice.source.setPointerAt(it)
+        }
+        return returnedValue
+    }
+
+    fun generateNow(model: KTEObject,parameters: List<ReferencedValue>): KTEValue {
+        startInvocation(model = model,parameters = parameters)
+        slice.generateTo(destination!!)
+        return endInvocation()
+    }
+
+
+}
+
+class FunctionDefinition(val slice: FunctionSlice, val functionName: String, val parameterNames: List<String>?) :
+    CodeGen, BlockContainer {
+
+    private val definition = object : KTERecursiveFunction(slice,parameterNames) {
+        override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
+            return generateNow(model = model,parameters)
+        }
+
+        override fun toString(): String = "$functionName()"
+    }
+
+    override fun getBlockValue(model: KTEObject): LazyBlock {
+        return slice
+    }
+
+    override fun generateTo(block: LazyBlock, destination: DestinationStream) {
+        definition.destination = destination
+        block.model.putValue(functionName, definition)
     }
 }
 
-private fun LazyBlock.parseFunctionReturnValue(): ReferencedValue? {
+private fun LazyBlock.parseFunctionReturn(): ReferencedValue? {
     if (source.currentChar == '@' && source.increment("@return ")) {
-        return source.parseAnyExpressionOrValue()
+        return source.parseAnyExpressionOrValue() ?: KTEUnit
     }
     return null
 }

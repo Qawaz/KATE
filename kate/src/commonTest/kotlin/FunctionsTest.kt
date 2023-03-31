@@ -61,13 +61,16 @@ class FunctionsTest {
             )
         )
         assertEquals(
-            expected = "10",
+            expected = "5",
             actual = GeneratePartialRaw(
                 """
                 |@function MyFunc(param1)
-                |@if(@var(param1) < 5) @return @var(MyFunc(@var(param1) @+ 1)) @else @return @var(param1) @endif
+                |@if(@var(param1) > 5)
+                |   @return @var(MyFunc(@var(param1) @- 1)) 
+                |@else
+                |   @return @var(param1) @endif
                 |@end_function
-                |@default_no_raw @var(MyFunc(0)) @end_default_no_raw
+                |@default_no_raw @var(MyFunc(9)) @end_default_no_raw
                 """.trimMargin()
             )
         )

@@ -2,8 +2,6 @@ package com.wakaztahir.kate.model.model
 
 abstract class KTEFunction : ReferencedValue {
 
-    val parameters = mutableListOf<ReferencedValue>()
-
     abstract fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue
 
     override fun getKTEValue(model: KTEObject): KTEValue {
