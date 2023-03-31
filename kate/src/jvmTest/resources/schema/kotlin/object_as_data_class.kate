@@ -9,11 +9,7 @@
         @for(@var i=0;i<@var(keys.size());i++)
             @if(@var(object[@var(keys[@var(i)])].getType()) == "object")
                 @var(writeObjectAsKotlinDataClass(@var(object[@var(keys[@var(i)])]),@var(overriding)))
-                @default_no_raw
-
-
-
-                @end_default_no_raw
+                @runtime.print_string("\n\n")
             @endif
         @endfor
 
@@ -26,8 +22,8 @@
 		@for(@var i=0;i<@var(keys.size());i++)
 		    @default_no_raw
                     @if(@var(overriding)) override  @endif val @var(keys[@var(i)].decapitalize()) : @var(getKotlinType(object[keys[i]])),
-
 			@end_default_no_raw
+			@runtime.print_string("\n")
 		@endfor
 		@default_no_raw
 		    )
