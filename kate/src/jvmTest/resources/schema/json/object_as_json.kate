@@ -31,7 +31,6 @@
 		    @end_function
 
 		    @function jsonValue(param)
-
 		        @if(@var(param.getType()) == "object")
                     @default_no_raw
                         @var(writeObjectAsJson(@var(object[@var(keys[@var(i)])]),indentation @+ 1))
