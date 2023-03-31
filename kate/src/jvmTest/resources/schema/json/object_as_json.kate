@@ -15,14 +15,14 @@
         @runtime.print_char('\n')
 
         @function listValue(param)
-            @default_no_raw [ @end_default_no_raw
+            @runtime.print_char('[')
             @for(@var j = 0;j<@var(param.size());j++)
                 @var(jsonValue(@var(param[@var(j)])))
                 @default_no_raw
                     @if(@var(j) != @var(param.size()) @- 1) , @endif
                 @end_default_no_raw
             @endfor
-            @default_no_raw ] @end_default_no_raw
+            @runtime.print_char(']')
         @end_function
 
         @function jsonValue(param)
