@@ -1,19 +1,19 @@
 {
-    "nestedObject" : {
-	    "testList" : [1,2,3,4],
-	    "testMList" : [1.2,3.4,5.6,3.4],
-	    "testBoolean" : false,
-	    "testChar" : "s",
-	    "testVariable" : "My First Variable",
-	    "testDouble" : 0.123433,
-	    "testLong" : 12322
+	"nestedObject" : {
+		"testList" : [1,2,3,4],
+		"testMList" : [1.2,3.4,5.6,3.4],
+		"testBoolean" : false,
+		"testChar" : "s",
+		"testVariable" : "My First Variable",
+		"testDouble" : 0.123433,
+		"testLong" : 12322
 	},
-    "testList" : [1,2,3,4],
-    "testMList" : [1.2,3.4,5.6,3.4],
-    "testBoolean" : false,
-    "testChar" : "s",
-    "testVariable" : "My First Variable",
-    "testListList" : [[1,2,3],[4,5,6]],
-    "testDouble" : 0.123433,
-    "testLong" : 12322
+	"testList" : [1,2,3,4],
+	"testMList" : [1.2,3.4,5.6,3.4],
+	"testBoolean" : false,
+	"testChar" : "s",
+	"testVariable" : "My First Variable",
+	"testListList" : [[1,2,3],[4,5,6]],
+	"testDouble" : 0.123433,
+	"testLong" : 12322
 }

@@ -10,10 +10,8 @@
             @endfor
         @end_function
 
-		@default_no_raw
-			{
-
-		@end_default_no_raw
+		@raw { @endraw
+        @runtime.print_char('\n')
 
 		@for(@var i=0;i<@var(keys.size());i++)
 
@@ -58,18 +56,17 @@
 		    @end_function
 
             @var(indent())
+            @runtime.print_char('\t')
 		    @default_no_raw
-                    "@var(keys[@var(i)].decapitalize())" : @var(jsonValue(@var(object[@var(keys[@var(i)])])))@var(separator())
-
+                "@var(keys[@var(i)].decapitalize())" : @var(jsonValue(@var(object[@var(keys[@var(i)])])))@var(separator())
 			@end_default_no_raw
+			@runtime.print_char('\n')
 
 		@endfor
 
 		@var(indent())
 
-		@default_no_raw
-		    }
-		@end_default_no_raw
+		@raw } @endraw
     @end_function
 
 	@define_placeholder(object,JsonObject)
