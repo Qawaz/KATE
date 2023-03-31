@@ -74,6 +74,10 @@ value class CharValue(override val value: Char) : PrimitiveValue<Char> {
         return CharImplementation.propertyMap[reference.name]
     }
 
+    override fun toString(): String {
+        return value.toString()
+    }
+
 }
 
 @JvmInline
