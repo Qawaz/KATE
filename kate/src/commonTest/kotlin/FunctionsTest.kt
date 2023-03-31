@@ -63,6 +63,22 @@ class FunctionsTest {
     }
 
     @Test
+    fun testDirectRefsInFunctionParams(){
+        assertEquals(
+            expected = "world",
+            actual = GeneratePartialRaw(
+                """
+                |@function MyFunc(param1)
+                |@return @var(param1)
+                |@end_function
+                |@var world = "world"
+                |@default_no_raw @var(MyFunc(world)) @end_default_no_raw
+                """.trimMargin()
+            )
+        )
+    }
+
+    @Test
     fun testFunctionRecursion(){
         assertEquals(
             expected = "5",

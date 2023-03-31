@@ -36,6 +36,7 @@ internal fun SourceStream.parseVariableName(): String? {
 private fun isTakenVariableName(name: String): Boolean {
     return when (name) {
         "this" -> true
+        "parent" -> true
         else -> false
     }
 }
@@ -44,6 +45,9 @@ internal fun LazyBlock.parseVariableDeclaration(): VariableDeclaration? {
     val variableName = source.parseVariableName()
     if (variableName != null) {
         if (variableName.isNotEmpty()) {
+            if(variableName.first().isDigit()){
+                throw IllegalStateException("variable name cannot start with a digit $variableName")
+            }
             if (isTakenVariableName(variableName)) {
                 throw IllegalStateException("variable name cannot be $variableName")
             }

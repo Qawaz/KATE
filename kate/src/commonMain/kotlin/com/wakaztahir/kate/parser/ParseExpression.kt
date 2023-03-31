@@ -345,14 +345,18 @@ internal fun LazyBlock.parseExpression(
     return null
 }
 
-internal fun SourceStream.parseAnyExpressionOrValue(): ReferencedValue? {
+internal fun SourceStream.parseAnyExpressionOrValue(
+    parseFirstStringOrChar: Boolean = true,
+    parseNotFirstStringOrChar: Boolean = true,
+    parseDirectRefs: Boolean = false
+): ReferencedValue? {
     parseListDefinition()?.let { return it }
     parseMutableListDefinition()?.let { return it }
     parseBooleanValue()?.let { return it }
     parseExpression(
-        parseFirstStringOrChar = true,
-        parseNotFirstStringOrChar = true,
-        parseDirectRefs = false
+        parseFirstStringOrChar = parseFirstStringOrChar,
+        parseNotFirstStringOrChar = parseNotFirstStringOrChar,
+        parseDirectRefs = parseDirectRefs
     )?.let { return it }
     return null
 }

@@ -231,8 +231,8 @@ private class NumberedForLoopIncrementer(
 )
 
 private fun SourceStream.parseNumberOrReference(parseDirectRefs: Boolean): ReferencedValue? {
-    parseVariableReference(parseDirectRefs = parseDirectRefs)?.let { return it }
     parseNumberValue()?.let { return it }
+    parseVariableReference(parseDirectRefs = parseDirectRefs)?.let { return it }
     return null
 }
 

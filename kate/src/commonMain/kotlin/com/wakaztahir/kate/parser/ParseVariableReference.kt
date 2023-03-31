@@ -14,7 +14,9 @@ internal fun SourceStream.parseFunctionParameters(): List<ReferencedValue>? {
         }
         val parameters = mutableListOf<ReferencedValue>()
         do {
-            val parameter = this.parseAnyExpressionOrValue()
+            val parameter = this.parseAnyExpressionOrValue(
+                parseDirectRefs = true
+            )
             if (parameter != null) {
                 parameters.add(parameter)
             } else {
@@ -31,8 +33,8 @@ internal fun SourceStream.parseFunctionParameters(): List<ReferencedValue>? {
 }
 
 private fun SourceStream.parseIndexingOperatorValue(parseDirectRefs: Boolean): ReferencedValue? {
-    parseVariableReference(parseDirectRefs = parseDirectRefs)?.let { return it }
     parseNumberValue()?.let { return it }
+    parseVariableReference(parseDirectRefs = parseDirectRefs)?.let { return it }
     return null
 }
 
@@ -60,6 +62,9 @@ internal fun SourceStream.parseDotReferencesInto(parseDirectRefs: Boolean): Muta
     var propertyPath: MutableList<ModelReference>? = null
     do {
         val invokeOnly = increment('@')
+        if(currentChar.isDigit()){
+            throw VariableReferenceParseException("variable name cannot begin with a digit")
+        }
         val propertyName = parseTextWhile { currentChar.isVariableName() }
         val parameters = parseFunctionParameters()
         if (propertyPath == null) propertyPath = mutableListOf()
@@ -89,6 +94,6 @@ internal fun SourceStream.parseVariableReference(parseDirectRefs: Boolean): Mode
         }
         return directive
     }
-//    if (parseDirectRefs) return parseModelDirective(true)?.let { return it }
+    if (parseDirectRefs) return parseModelDirective(true)?.let { return it }
     return null
 }

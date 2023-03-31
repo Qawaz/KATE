@@ -11,8 +11,8 @@ internal fun SourceStream.parseValueInsideExpression(parseStringAndChar: Boolean
         parseStringValue()?.let { return it }
         parseCharacterValue()?.let { return it }
     }
-    parseVariableReference(parseDirectRefs = parseDirectRefs)?.let { return it }
     parseNumberValue()?.let { return it }
+    parseVariableReference(parseDirectRefs = parseDirectRefs)?.let { return it }
     return null
 }
 
