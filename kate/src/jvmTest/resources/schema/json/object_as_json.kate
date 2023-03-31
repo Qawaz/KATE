@@ -13,45 +13,45 @@
 		@raw { @endraw
         @runtime.print_char('\n')
 
+        @function listValue(param)
+            @default_no_raw [ @end_default_no_raw
+            @for(@var j = 0;j<@var(param.size());j++)
+                @var(jsonValue(@var(param[@var(j)])))
+                @default_no_raw
+                    @if(@var(j) != @var(param.size()) @- 1) , @endif
+                @end_default_no_raw
+            @endfor
+            @default_no_raw ] @end_default_no_raw
+        @end_function
+
+        @function jsonValue(param)
+            @if(@var(param.getType()) == "object")
+                @default_no_raw
+                    @var(writeObjectAsJson(@var(param),indentation @+ 1))
+                @end_default_no_raw
+            @elseif(@var(param.getType()) == "list")
+                @var(listValue(@var(param)))
+            @elseif(@var(param.getType()) == "mutable_list")
+                @var(listValue(@var(param)))
+            @elseif(@var(param.getType()) == "string")
+                @default_no_raw
+                    "@var(param)"
+                @end_default_no_raw
+            @elseif(@var(param.getType()) == "char")
+                @default_no_raw
+                    "@var(param)"
+                @end_default_no_raw
+            @else
+                @default_no_raw
+                    @var(param)
+                @end_default_no_raw
+            @endif
+        @end_function
+
 		@for(@var i=0;i<@var(keys.size());i++)
 
 		    @function separator()
 		        @if(@var(i) != @var(keys.size()) @- 1) @return "," @else @return "" @endif
-		    @end_function
-
-		    @function listValue(param)
-                @default_no_raw [ @end_default_no_raw
-                @for(@var j = 0;j<@var(param.size());j++)
-                    @var(jsonValue(@var(param[@var(j)])))
-                    @default_no_raw
-                        @if(@var(j) != @var(param.size()) @- 1) , @endif
-                    @end_default_no_raw
-                @endfor
-                @default_no_raw ] @end_default_no_raw
-		    @end_function
-
-		    @function jsonValue(param)
-		        @if(@var(param.getType()) == "object")
-                    @default_no_raw
-                        @var(writeObjectAsJson(@var(object[@var(keys[@var(i)])]),indentation @+ 1))
-                    @end_default_no_raw
-		        @elseif(@var(param.getType()) == "list")
-                    @var(listValue(@var(param)))
-		        @elseif(@var(param.getType()) == "mutable_list")
-                    @var(listValue(@var(param)))
-		        @elseif(@var(param.getType()) == "string")
-                    @default_no_raw
-                        "@var(param)"
-                    @end_default_no_raw
-		        @elseif(@var(param.getType()) == "char")
-                    @default_no_raw
-                        "@var(param)"
-                    @end_default_no_raw
-		        @else
-                    @default_no_raw
-                        @var(param)
-                    @end_default_no_raw
-		        @endif
 		    @end_function
 
             @var(indent())
