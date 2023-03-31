@@ -10,7 +10,7 @@
     @elseif(@var(param.getType()) == "boolean")
         @return "bool"
     @elseif(@var(param.getType()) == "double")
-        @return "float32"
+        @return "float64"
     @elseif(@var(param.getType()) == "long")
         @return "int64"
     @elseif(@var(param.getType()) == "char")
