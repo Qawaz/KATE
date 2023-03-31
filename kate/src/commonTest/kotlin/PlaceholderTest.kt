@@ -58,13 +58,22 @@ class PlaceholderTest {
         assertEquals("false", GenerateCode("@var i = false @var(i)"))
         assertEquals("1,2,3", GenerateCode("@var i = @list(1,2,3) @var(i.joinToString())"))
         assertEquals("1,2,3", GenerateCode("@var i = @list(1,2,3) @var(i)"))
-        assertEquals("1.2.3",
+        assertEquals(
+            "1.2.3",
             GenerateCode("@var i = @mutable_list(1,2,3) @var(i.joinToString(\".\"))")
         )
         assertEquals("1,2,3", GenerateCode("@var i = @mutable_list(1,2,3) @var(i)"))
         assertEquals(
             expected = "{\n\ti : 5\n\tl : 1,2,3\n}",
             GenerateCode("@define_object(MyObj) @var i = 5 @var l = @list(1,2,3) @end_define_object @var(MyObj)")
+        )
+    }
+
+    @Test
+    fun testPlaceholderNesting() {
+        assertEquals(
+            expected = "",
+            actual = GenerateCode("@define_placeholder(Name)  @end_define_placeholder")
         )
     }
 

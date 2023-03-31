@@ -37,7 +37,7 @@ class ObjectDeclarationBlockSlice(
 
     override fun parseAtDirective(): CodeGen? {
         parseVariableDeclaration()?.let { return it }
-        parseFunctionDefinition()?.let { return it }
+        parseFunctionDefinition(anonymousFunctionName = null)?.let { return it }
         parseObjectDeclaration()?.let { return it }
         return null
     }

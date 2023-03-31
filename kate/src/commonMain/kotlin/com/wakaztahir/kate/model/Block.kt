@@ -100,7 +100,7 @@ interface LazyBlock {
         parseForLoop()?.let { return it }
         parsePlaceholderDefinition()?.let { return it }
         parsePlaceholderInvocation()?.let { return it }
-        parseFunctionDefinition()?.let { return it }
+        parseFunctionDefinition(anonymousFunctionName = null)?.let { return it }
         parsePlaceholderUse()?.let { return it }
         return null
     }

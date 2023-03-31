@@ -2,7 +2,19 @@
 
     @embed_once ./type.kate
 
+    @function generateNested(param)
+        @var keys = @var(param.getKeys())
+        @for(@var i=0;i<@var(keys.size());i++)
+            @if(@var(param[@var(keys[@var(i)])].getType()) == "object")
+                @default_no_raw @var(param) @end_default_no_raw
+            @endif
+        @endfor
+    @end_function
+
 	@define_placeholder(object,KotlinInterface)
+
+        @var(generateNested(@var(__param__)))
+
 		@var keys = @var(__param__.getKeys())
 
 		<%-- Creating interface definition --%>

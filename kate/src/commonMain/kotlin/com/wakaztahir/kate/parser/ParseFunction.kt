@@ -158,12 +158,15 @@ private fun SourceStream.parseParametersNames(): List<String>? {
     return null
 }
 
-fun LazyBlock.parseFunctionDefinition(): FunctionDefinition? {
-    if (source.currentChar == '@' && source.increment("@function ")) {
-        val functionName = source.parseTextWhile { currentChar.isVariableName() }
-        if (functionName.isEmpty()) {
-            throw IllegalStateException("functionName cannot be empty")
-        }
+fun LazyBlock.parseFunctionDefinition(anonymousFunctionName: String?): FunctionDefinition? {
+    if (source.currentChar == '@' && source.increment("@function")) {
+        source.increment(' ')
+        val functionName: String = anonymousFunctionName
+            ?: source.parseTextWhile { currentChar.isVariableName() }.also {
+                if (it.isEmpty()) {
+                    throw IllegalStateException("functionName cannot be empty")
+                }
+            }
         source.increment(' ')
         val parameters = source.parseParametersNames()
         val slice = parseBlockSlice(

@@ -42,21 +42,22 @@ open class PlaceholderBlock(
     override fun generateTo(destination: DestinationStream) {
         if (paramValue != null) {
             require(!model.contains("__param__")) {
-                "when passing @var(__param__) value to placeholder invocation , defining value with same name \"__param__\" is not allowed"
+                "when passing @var(__param__) value to placeholder invocation , defining value with same name \"__param__\" is not allowed \n this can also happen " +
+                        "if you invoke a placeholder inside a placeholder definition , placeholders are not recursive , solution is to call a recursive function inside a placeholder"
             }
-            (paramValue as? ModelDirective)?.propertyPath?.lastOrNull()?.name?.let {
-                model.putValue("__kte_param_name__", it)
-            }
+//            (paramValue as? ModelDirective)?.propertyPath?.lastOrNull()?.name?.let {
+//                model.putValue("__kte_param_name__", it)
+//            }
             model.putValue("__param__", paramValue!!)
         }
         generateActual(destination)
         if (paramValue != null) {
             model.removeKey("__param__")
-            if (paramValue is ModelDirective) {
-                (paramValue as? ModelDirective)?.propertyPath?.lastOrNull()?.name?.let {
-                    model.removeKey("__kte_param_name__")
-                }
-            }
+//            if (paramValue is ModelDirective) {
+//                (paramValue as? ModelDirective)?.propertyPath?.lastOrNull()?.name?.let {
+//                    model.removeKey("__kte_param_name__")
+//                }
+//            }
         }
     }
 
