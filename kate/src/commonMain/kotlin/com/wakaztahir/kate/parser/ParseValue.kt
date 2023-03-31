@@ -46,12 +46,32 @@ internal fun SourceStream.parseBooleanValue(): PrimitiveValue<*>? {
     return null
 }
 
+private fun Char.transformAfterBackslashChar(): Char? {
+    return when (this) {
+        'b' -> '\b'
+        'n' -> '\n'
+        'r' -> '\r'
+        't' -> '\t'
+        '\\' -> '\\'
+        '\'' -> '\''
+        '\"' -> '\"'
+        else -> null
+    }
+}
+
 internal fun SourceStream.parseCharacterValue(): CharValue? {
     if (currentChar == '\'' && increment('\'')) {
-        val value = CharValue(currentChar)
+        val characterValue = if (currentChar == '\\') {
+            incrementPointer()
+            currentChar.transformAfterBackslashChar()
+                ?: throw IllegalArgumentException("unknown character after backslash $currentChar")
+        } else {
+            currentChar
+        }
+        val value = CharValue(characterValue)
         incrementPointer()
         if (!increment('\'')) {
-            throw IllegalStateException("a char ends with '")
+            throw IllegalStateException("a char value must end with '")
         }
         return value
     }

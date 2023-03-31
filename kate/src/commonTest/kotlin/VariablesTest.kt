@@ -133,6 +133,17 @@ class VariablesTest {
         assertEquals("x", GenerateCode("@var x = 'x' @var(x)"))
     }
 
+    @Test
+    fun testCharacterEscape(){
+        assertEquals("\b", GenerateCode("@var i = '\\b' @var(i)"))
+        assertEquals("\n", GenerateCode("@var i = '\\n' @var(i)"))
+        assertEquals("\r", GenerateCode("@var i = '\\r' @var(i)"))
+        assertEquals("\t", GenerateCode("@var i = '\\t' @var(i)"))
+        assertEquals("\\", GenerateCode("@var i = '\\\\' @var(i)"))
+        assertEquals("'", GenerateCode("@var i = '\\'' @var(i)"))
+        assertEquals("\"", GenerateCode("@var i = '\\\"' @var(i)"))
+    }
+
     private fun evaluate(i: String, j: String, char: Char, expect: String) {
         assertEquals(expect, GenerateCode("@var i = $i@var j = @var(i) @$char $j@var(j)"))
         assertEquals(expect, GenerateCode("$i @$char $j"))

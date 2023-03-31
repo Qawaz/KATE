@@ -1,6 +1,6 @@
 @partial_raw
 
-    @function writeObjectAsJson(object)
+    @function writeObjectAsJson(object,indentation)
 
         @var keys = @var(object.getKeys())
 
@@ -30,7 +30,7 @@
 
 		        @if(@var(param.getType()) == "object")
                     @default_no_raw
-                        @var(writeObjectAsJson(@var(object[@var(keys[@var(i)])])))
+                        @var(writeObjectAsJson(@var(object[@var(keys[@var(i)])]),indentation @+ 1))
                     @end_default_no_raw
 		        @elseif(@var(param.getType()) == "list")
                     @var(listValue(@var(param)))
@@ -63,7 +63,7 @@
     @end_function
 
 	@define_placeholder(object,JsonObject)
-        @var(writeObjectAsJson(@var(__param__)))
+        @var(writeObjectAsJson(@var(__param__),0))
 	@end_define_placeholder
 
 @end_partial_raw
