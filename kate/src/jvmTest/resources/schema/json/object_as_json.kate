@@ -4,6 +4,12 @@
 
         @var keys = @var(object.getKeys())
 
+        @function indent()
+            @for(@var i = 0;i<@var(indentation);i++)
+                @runtime.print_char('\t')
+            @endfor
+        @end_function
+
 		@default_no_raw
 			{
 
@@ -51,12 +57,16 @@
 		        @endif
 		    @end_function
 
+            @var(indent())
 		    @default_no_raw
                     "@var(keys[@var(i)].decapitalize())" : @var(jsonValue(@var(object[@var(keys[@var(i)])])))@var(separator())
 
 			@end_default_no_raw
 
 		@endfor
+
+		@var(indent())
+
 		@default_no_raw
 		    }
 		@end_default_no_raw
