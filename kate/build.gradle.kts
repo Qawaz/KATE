@@ -1,5 +1,3 @@
-import java.util.Properties
-
 plugins {
     kotlin("multiplatform")
     id("maven-publish")
@@ -70,11 +68,15 @@ android {
 
 publishing {
     repositories {
-        maven("https://maven.pkg.github.com/Qawaz/kate") {
+        maven("https://maven.pkg.github.com/Qawaz/KATE") {
             name = "GithubPackages"
-            credentials {
-                username = (System.getenv("GPR_USER")).toString()
-                password = (System.getenv("GPR_API_KEY")).toString()
+            try {
+                credentials {
+                    username = (System.getenv("GPR_USER")).toString()
+                    password = (System.getenv("GPR_API_KEY")).toString()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
     }
