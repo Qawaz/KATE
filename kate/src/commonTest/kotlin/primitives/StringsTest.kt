@@ -20,6 +20,14 @@ class StringsTest {
             expected = "hello",
             actual = GenerateCode("@var lo = \"lo\"@runtime.print_string(\"hel\" @+ @var(lo))")
         )
+        assertEquals(
+            expected = "hello",
+            actual = GenerateCode("@var l = \"l\" @var t = \"h\" @var t = @var(t) @+ \"e\" @var t = @var(t) @+ \"l\" @var t = @var(t) @+ @var(l) @var t = @var(t) @+ \"o\" @var(t)")
+        )
+        assertEquals(
+            expected = "21hello",
+            actual = GenerateCode("@var i = \"1\" @var l = \"l\" @var t = @var(i) @+ \"h\" @var t = \"2\" @+ @var(t) @+ \"e\" @var t = @var(t) @+ \"l\" @var t = @var(t) @+ @var(l) @var t = @var(t) @+ \"o\" @var(t)")
+        )
     }
 
     @Test
