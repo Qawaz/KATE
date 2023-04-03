@@ -33,30 +33,24 @@ private value class WriteString(val string: ReferencedValue) : CodeGen {
     }
 }
 
-private fun SourceStream.parseRefCharValue(parseDirectRefs : Boolean): ReferencedValue? {
-    parseVariableReference(parseDirectRefs = parseDirectRefs)?.let { return it }
-    parseCharacterValue()?.let { return it }
-    return null
-}
-
-private fun SourceStream.parseRefStringValue(parseDirectRefs : Boolean): ReferencedValue? {
-    parseVariableReference(parseDirectRefs = parseDirectRefs)?.let { return it }
-    parseStringValue()?.let { return it }
-    return null
-}
-
 fun LazyBlock.parseRuntimeGen(): CodeGen? {
     if (source.currentChar == '@') {
         if (source.increment(CHAR_DIRECTIVE)) {
             if (!source.increment('(')) throw IllegalStateException("expected '(' got ${source.currentChar}")
-            val value =
-                source.parseRefCharValue(parseDirectRefs = false) ?: throw IllegalStateException("value for runtime directive not found")
+            val value = source.parseExpression(
+                parseDirectRefs = false,
+                parseFirstStringOrChar = true,
+                parseNotFirstStringOrChar = true
+            ) ?: throw IllegalStateException("value for runtime directive not found")
             if (!source.increment(')')) throw IllegalStateException("expected ')' got ${source.currentChar}")
             return WriteChar(value)
         } else if (source.increment(STRING_DIRECTIVE)) {
             if (!source.increment('(')) throw IllegalStateException("expected '(' got ${source.currentChar}")
-            val value =
-                source.parseRefStringValue(parseDirectRefs = false) ?: throw IllegalStateException("value for runtime directive not found")
+            val value = source.parseExpression(
+                parseDirectRefs = false,
+                parseFirstStringOrChar = true,
+                parseNotFirstStringOrChar = true
+            ) ?: throw IllegalStateException("value for runtime directive not found")
             if (!source.increment(')')) throw IllegalStateException("expected ')' got ${source.currentChar}")
             return WriteString(value)
         }
