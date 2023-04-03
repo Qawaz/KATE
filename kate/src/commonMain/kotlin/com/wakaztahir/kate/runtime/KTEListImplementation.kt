@@ -1,26 +1,24 @@
 package com.wakaztahir.kate.runtime
 
-import com.wakaztahir.kate.GetTypeModelReference
 import com.wakaztahir.kate.model.BooleanValue
 import com.wakaztahir.kate.model.IntValue
-import com.wakaztahir.kate.model.ModelReference
 import com.wakaztahir.kate.model.StringValue
 import com.wakaztahir.kate.model.model.*
 
 object KTEListImplementation {
 
-    val propertyMap by lazy { hashMapOf<String, KTEValue>().apply { putObjectFunctions() } }
+    val propertyMap by lazy { hashMapOf<String, KATEValue>().apply { putObjectFunctions() } }
 
-    fun HashMap<String, KTEValue>.putObjectFunctions() {
-        put("getType", object : KTEFunction() {
-            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
+    fun HashMap<String, KATEValue>.putObjectFunctions() {
+        put("getType", object : KATEFunction() {
+            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
                 return StringValue("list")
             }
 
             override fun toString(): String = "getType() : string"
         })
-        put("get", object : KTEFunction() {
-            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
+        put("get", object : KATEFunction() {
+            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
                 val index = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value as? Int
                 require(index != null) {
                     "list.get(int) expects a single Int parameter instead of ${parameters.size}"
@@ -31,23 +29,23 @@ object KTEListImplementation {
             override fun toString(): String = "get(number) : KTEValue"
 
         })
-        put("size", object : KTEFunction() {
-            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
+        put("size", object : KATEFunction() {
+            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
                 return IntValue(invokedOn.asNullableList(model)!!.collection.size)
             }
 
             override fun toString(): String = "size() : Int"
         })
-        put("contains", object : KTEFunction() {
-            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
+        put("contains", object : KATEFunction() {
+            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
                 return BooleanValue(invokedOn.asNullableList(model)!!.collection.containsAll(parameters))
             }
 
             override fun toString(): String = "contains(parameter) : Boolean"
 
         })
-        put("indexOf", object : KTEFunction() {
-            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
+        put("indexOf", object : KATEFunction() {
+            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
                 require(parameters.size == 1) {
                     "indexOf requires a single parameter"
                 }
@@ -57,8 +55,8 @@ object KTEListImplementation {
             override fun toString(): String = "indexOf(parameter) : Int"
 
         })
-        put("joinToString", object : KTEFunction() {
-            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
+        put("joinToString", object : KATEFunction() {
+            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
                 val list = invokedOn.asNullableList(model)
                 require(list != null) { "list is null" }
                 val separator = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as? String } ?: ","

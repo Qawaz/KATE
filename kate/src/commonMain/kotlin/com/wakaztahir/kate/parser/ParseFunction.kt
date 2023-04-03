@@ -13,7 +13,7 @@ class FunctionSlice(
     startPointer: Int,
     length: Int,
     blockEndPointer: Int,
-    model: MutableKTEObject,
+    model: MutableKATEObject,
     indentationLevel: Int
 ) : PartialRawLazyBlockSlice(
     parentBlock = parentBlock,
@@ -24,7 +24,7 @@ class FunctionSlice(
     indentationLevel = indentationLevel
 ) {
 
-    override var model: MutableKTEObject = parentBlock.model
+    override var model: MutableKATEObject = parentBlock.model
     var keepIterating: () -> Boolean = { true }
     var onReturnValueFound: (ReferencedValue) -> Unit = {}
 
@@ -42,20 +42,20 @@ class FunctionSlice(
     override fun parseNestedAtDirective(block: LazyBlock): CodeGen? {
         block.parseFunctionReturn()?.let {
             onReturnValueFound(it)
-            return KTEUnit
+            return KATEUnit
         }
         return super.parseNestedAtDirective(block)
     }
 
 }
 
-abstract class KTERecursiveFunction(val slice: FunctionSlice, val parameterNames: List<String>?) : KTEFunction() {
+abstract class KATERecursiveFunction(val slice: FunctionSlice, val parameterNames: List<String>?) : KATEFunction() {
 
     var destination: DestinationStream? = null
 
     private var invocationNumber = 0
-    private var returnedValues = hashMapOf<Int, KTEValue>()
-    private val previousModels = mutableListOf<MutableKTEObject>()
+    private var returnedValues = hashMapOf<Int, KATEValue>()
+    private val previousModels = mutableListOf<MutableKATEObject>()
     private val previousPointers = hashMapOf<Int, Int>()
 
     init {
@@ -67,8 +67,8 @@ abstract class KTERecursiveFunction(val slice: FunctionSlice, val parameterNames
         }
     }
 
-    private inline fun KTEObject.forEachParam(block: MutableKTEObject.(String, Int) -> Unit) {
-        (this as? MutableKTEObject)?.let {
+    private inline fun KATEObject.forEachParam(block: MutableKATEObject.(String, Int) -> Unit) {
+        (this as? MutableKATEObject)?.let {
             if (parameterNames != null) {
                 var i = 0
                 for (param in parameterNames) {
@@ -79,7 +79,7 @@ abstract class KTERecursiveFunction(val slice: FunctionSlice, val parameterNames
         }
     }
 
-    private fun startInvocation(model: KTEObject, parameters: List<ReferencedValue>) {
+    private fun startInvocation(model: KATEObject, parameters: List<ReferencedValue>) {
         invocationNumber++
         if (invocationNumber > 1) {
             previousModels.add(slice.model)
@@ -95,8 +95,8 @@ abstract class KTERecursiveFunction(val slice: FunctionSlice, val parameterNames
         }
     }
 
-    private fun endInvocation(): KTEValue {
-        val returnedValue = returnedValues.remove(invocationNumber)?.getKTEValue(slice.model) ?: KTEUnit
+    private fun endInvocation(): KATEValue {
+        val returnedValue = returnedValues.remove(invocationNumber)?.getKTEValue(slice.model) ?: KATEUnit
         invocationNumber--
         if (previousModels.isNotEmpty()) slice.model = previousModels.removeLast()
         previousPointers.remove(invocationNumber)?.let {
@@ -105,7 +105,7 @@ abstract class KTERecursiveFunction(val slice: FunctionSlice, val parameterNames
         return returnedValue
     }
 
-    fun generateNow(model: KTEObject, parameters: List<ReferencedValue>): KTEValue {
+    fun generateNow(model: KATEObject, parameters: List<ReferencedValue>): KATEValue {
         startInvocation(model = model, parameters = parameters)
         slice.generateTo(destination!!)
         return endInvocation()
@@ -117,15 +117,15 @@ abstract class KTERecursiveFunction(val slice: FunctionSlice, val parameterNames
 class FunctionDefinition(val slice: FunctionSlice, val functionName: String, val parameterNames: List<String>?) :
     CodeGen, BlockContainer {
 
-    private val definition = object : KTERecursiveFunction(slice, parameterNames) {
-        override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
+    private val definition = object : KATERecursiveFunction(slice, parameterNames) {
+        override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
             return generateNow(model = model, parameters)
         }
 
         override fun toString(): String = "$functionName()"
     }
 
-    override fun getBlockValue(model: KTEObject): LazyBlock {
+    override fun getBlockValue(model: KATEObject): LazyBlock {
         return slice
     }
 
@@ -137,7 +137,7 @@ class FunctionDefinition(val slice: FunctionSlice, val functionName: String, val
 
 private fun LazyBlock.parseFunctionReturn(): ReferencedValue? {
     if (source.currentChar == '@' && source.increment("@return ")) {
-        return source.parseAnyExpressionOrValue() ?: KTEUnit
+        return source.parseAnyExpressionOrValue() ?: KATEUnit
     }
     return null
 }

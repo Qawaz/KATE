@@ -1,7 +1,6 @@
 package com.wakaztahir.kate.parser
 
 import com.wakaztahir.kate.model.LazyBlock
-import com.wakaztahir.kate.model.model.KTEUnit
 import com.wakaztahir.kate.model.model.ReferencedValue
 import com.wakaztahir.kate.parser.stream.SourceStream
 import com.wakaztahir.kate.parser.stream.increment

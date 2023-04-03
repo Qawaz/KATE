@@ -1,10 +1,10 @@
 package com.wakaztahir.kate.parser.stream
 
 import com.wakaztahir.kate.model.*
-import com.wakaztahir.kate.model.model.KTEList
-import com.wakaztahir.kate.model.model.KTEMutableList
-import com.wakaztahir.kate.model.model.KTEObject
-import com.wakaztahir.kate.model.model.KTEValue
+import com.wakaztahir.kate.model.model.KATEList
+import com.wakaztahir.kate.model.model.KATEMutableList
+import com.wakaztahir.kate.model.model.KATEObject
+import com.wakaztahir.kate.model.model.KATEValue
 
 interface LanguageDestination {
 
@@ -15,8 +15,8 @@ interface LanguageDestination {
     fun write(block: LazyBlock,value: DoubleValue)
     fun write(block: LazyBlock,value: BooleanValue)
     fun write(block: LazyBlock,value: StringValue)
-    fun write(block: LazyBlock,value: KTEList<out KTEValue>)
-    fun write(block: LazyBlock,value: KTEMutableList<out KTEValue>)
-    fun write(block: LazyBlock,value: KTEObject)
+    fun write(block: LazyBlock,value: KATEList<out KATEValue>)
+    fun write(block: LazyBlock,value: KATEMutableList<out KATEValue>)
+    fun write(block: LazyBlock,value: KATEObject)
 
 }

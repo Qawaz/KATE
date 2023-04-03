@@ -1,8 +1,8 @@
 package com.wakaztahir.kate.parser
 
 import com.wakaztahir.kate.model.*
-import com.wakaztahir.kate.model.model.KTEObject
-import com.wakaztahir.kate.model.model.KTEValue
+import com.wakaztahir.kate.model.model.KATEObject
+import com.wakaztahir.kate.model.model.KATEValue
 import com.wakaztahir.kate.model.model.ReferencedValue
 import com.wakaztahir.kate.parser.stream.SourceStream
 
@@ -22,7 +22,7 @@ internal data class ExpressionValue(
     val second: ReferencedValue
 ) : ReferencedValue {
 
-    override fun asNullablePrimitive(model: KTEObject): PrimitiveValue<*> {
+    override fun asNullablePrimitive(model: KATEObject): PrimitiveValue<*> {
         return first.asNullablePrimitive(model)?.let { first ->
             second.asNullablePrimitive(model)?.let { second ->
                 first.operateAny(operatorType, second)
@@ -34,11 +34,11 @@ internal data class ExpressionValue(
         }
     }
 
-    override fun compareTo(model: KTEObject, other: KTEValue): Int {
+    override fun compareTo(model: KATEObject, other: KATEValue): Int {
         return asNullablePrimitive(model).compareTo(model, other)
     }
 
-    override fun getKTEValue(model: KTEObject): KTEValue {
+    override fun getKTEValue(model: KATEObject): KATEValue {
         return asNullablePrimitive(model)
     }
 

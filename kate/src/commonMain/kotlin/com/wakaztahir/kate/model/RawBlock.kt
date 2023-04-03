@@ -1,22 +1,22 @@
 package com.wakaztahir.kate.model
 
-import com.wakaztahir.kate.model.model.KTEObject
-import com.wakaztahir.kate.model.model.KTEUnit
-import com.wakaztahir.kate.model.model.MutableKTEObject
+import com.wakaztahir.kate.model.model.KATEObject
+import com.wakaztahir.kate.model.model.KATEUnit
+import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.parser.parseDefaultNoRaw
 import com.wakaztahir.kate.parser.parseVariableReference
 import com.wakaztahir.kate.parser.stream.DestinationStream
 import kotlin.jvm.JvmInline
 
 class DefaultNoRawBlock(val value: LazyBlockSlice) : BlockContainer {
-    override fun getBlockValue(model: KTEObject): LazyBlock = value
+    override fun getBlockValue(model: KATEObject): LazyBlock = value
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
         value.generateTo(destination)
     }
 }
 
 class RawBlock(val value: LazyBlockSlice) : BlockContainer {
-    override fun getBlockValue(model: KTEObject): LazyBlock = value
+    override fun getBlockValue(model: KATEObject): LazyBlock = value
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
         value.writeValueTo(destination)
     }
@@ -27,7 +27,7 @@ open class PartialRawLazyBlockSlice(
     startPointer: Int,
     length: Int,
     blockEndPointer: Int,
-    model: MutableKTEObject,
+    model: MutableKATEObject,
     indentationLevel: Int
 ) : LazyBlockSlice(
     parentBlock = parentBlock,
@@ -43,7 +43,7 @@ open class PartialRawLazyBlockSlice(
         source.parseVariableReference(false)?.let {
             it.propertyPath.lastOrNull()?.let { c -> c as? ModelReference.FunctionCall }?.let { call ->
                 call.invokeOnly = true
-                return it.toPlaceholderInvocation(model, source.pointer) ?: KTEUnit
+                return it.toPlaceholderInvocation(model, source.pointer) ?: KATEUnit
             } ?: run {
                 throw IllegalStateException("variable reference $it cannot be used inside @partial_raw")
             }
@@ -60,7 +60,7 @@ open class PartialRawLazyBlockSlice(
 
 @JvmInline
 value class PartialRawBlock(val value: PartialRawLazyBlockSlice) : BlockContainer {
-    override fun getBlockValue(model: KTEObject): LazyBlock = value
+    override fun getBlockValue(model: KATEObject): LazyBlock = value
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
         value.generateTo(destination)
     }

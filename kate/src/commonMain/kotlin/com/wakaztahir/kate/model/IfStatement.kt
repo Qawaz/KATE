@@ -1,57 +1,57 @@
 package com.wakaztahir.kate.model
 
 import com.wakaztahir.kate.TemplateContext
-import com.wakaztahir.kate.model.model.KTEObject
-import com.wakaztahir.kate.model.model.KTEValue
+import com.wakaztahir.kate.model.model.KATEObject
+import com.wakaztahir.kate.model.model.KATEValue
 import com.wakaztahir.kate.model.model.ReferencedValue
 import com.wakaztahir.kate.parser.stream.DestinationStream
 
 
 internal enum class ConditionType {
     ReferentiallyEquals {
-        override fun compare(model: KTEObject, first: KTEValue, second: KTEValue): Boolean =
+        override fun compare(model: KATEObject, first: KATEValue, second: KATEValue): Boolean =
             first === second
 
         override fun verifyCompare(result: Int) = result == 0
     },
     Equals {
-        override fun compare(model: KTEObject, first: KTEValue, second: KTEValue) =
+        override fun compare(model: KATEObject, first: KATEValue, second: KATEValue) =
             first.compareTo(model, second) == 0
 
         override fun verifyCompare(result: Int) = result == 0
     },
     NotEquals {
-        override fun compare(model: KTEObject, first: KTEValue, second: KTEValue) =
+        override fun compare(model: KATEObject, first: KATEValue, second: KATEValue) =
             first.compareTo(model, second) != 0
 
         override fun verifyCompare(result: Int) = result != 0
     },
     GreaterThan {
-        override fun compare(model: KTEObject, first: KTEValue, second: KTEValue) =
+        override fun compare(model: KATEObject, first: KATEValue, second: KATEValue) =
             first.compareTo(model, second) > 0
 
         override fun verifyCompare(result: Int) = result == 1
     },
     LessThan {
-        override fun compare(model: KTEObject, first: KTEValue, second: KTEValue) =
+        override fun compare(model: KATEObject, first: KATEValue, second: KATEValue) =
             first.compareTo(model, second) < 0
 
         override fun verifyCompare(result: Int) = result == -1
     },
     GreaterThanEqualTo {
-        override fun compare(model: KTEObject, first: KTEValue, second: KTEValue) =
+        override fun compare(model: KATEObject, first: KATEValue, second: KATEValue) =
             first.compareTo(model, second).let { it > 0 || it == 0 }
 
         override fun verifyCompare(result: Int) = result == 1 || result == 0
     },
     LessThanEqualTo {
-        override fun compare(model: KTEObject, first: KTEValue, second: KTEValue) =
+        override fun compare(model: KATEObject, first: KATEValue, second: KATEValue) =
             first.compareTo(model, second).let { it < 0 || it == 0 }
 
         override fun verifyCompare(result: Int) = result == -1 || result == 0
     };
 
-    abstract fun compare(model: KTEObject, first: KTEValue, second: KTEValue): Boolean
+    abstract fun compare(model: KATEObject, first: KATEValue, second: KATEValue): Boolean
     abstract fun verifyCompare(result: Int): Boolean
 
 }
@@ -62,7 +62,7 @@ internal enum class ConditionOperation {
 }
 
 interface Condition {
-    fun evaluate(context: KTEObject): Boolean
+    fun evaluate(context: KATEObject): Boolean
     fun evaluate(context: TemplateContext): Boolean {
         return evaluate(context.stream.model)
     }
@@ -73,13 +73,13 @@ internal class LogicalCondition(
     val type: ConditionType,
     val propertySecond: ReferencedValue
 ) : Condition {
-    override fun evaluate(context: KTEObject): Boolean {
+    override fun evaluate(context: KATEObject): Boolean {
         return type.compare(context, propertyFirst.getKTEValue(context), propertySecond.getKTEValue(context))
     }
 }
 
 internal class ReferencedBoolean(val value: ReferencedValue) : Condition {
-    override fun evaluate(context: KTEObject): Boolean {
+    override fun evaluate(context: KATEObject): Boolean {
         val value = value.asNullablePrimitive(context)
         if (value != null && value is BooleanValue) {
             return value.value
@@ -90,7 +90,7 @@ internal class ReferencedBoolean(val value: ReferencedValue) : Condition {
 }
 
 internal class EvaluatedCondition(val value: Boolean) : Condition {
-    override fun evaluate(context: KTEObject): Boolean {
+    override fun evaluate(context: KATEObject): Boolean {
         return value
     }
 }
@@ -124,7 +124,7 @@ internal class IfStatement(private val ifs: MutableList<SingleIf>) : BlockContai
         sortByOrder()
     }
 
-    override fun getBlockValue(model: KTEObject): LazyBlock? {
+    override fun getBlockValue(model: KATEObject): LazyBlock? {
         return evaluate(model)?.blockValue
     }
 
@@ -132,7 +132,7 @@ internal class IfStatement(private val ifs: MutableList<SingleIf>) : BlockContai
         return evaluate(context.stream.model)
     }
 
-    fun evaluate(context: KTEObject): SingleIf? {
+    fun evaluate(context: KATEObject): SingleIf? {
         for (iffy in ifs) {
             if (iffy.condition.evaluate(context)) {
                 return iffy

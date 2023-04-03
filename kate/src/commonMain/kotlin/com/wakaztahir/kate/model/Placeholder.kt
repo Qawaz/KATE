@@ -1,8 +1,8 @@
 package com.wakaztahir.kate.model
 
-import com.wakaztahir.kate.model.model.KTEObject
-import com.wakaztahir.kate.model.model.KTEValue
-import com.wakaztahir.kate.model.model.MutableKTEObject
+import com.wakaztahir.kate.model.model.KATEObject
+import com.wakaztahir.kate.model.model.KATEValue
+import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.parser.stream.DestinationStream
 import com.wakaztahir.kate.parser.stream.TextSourceStream
 
@@ -13,7 +13,7 @@ open class PlaceholderBlock(
     startPointer: Int,
     length: Int,
     blockEndPointer: Int,
-    parent: MutableKTEObject,
+    parent: MutableKATEObject,
     allowTextOut: Boolean,
     indentationLevel: Int
 ) : LazyBlockSlice(
@@ -26,12 +26,12 @@ open class PlaceholderBlock(
     indentationLevel = indentationLevel
 ) {
 
-    override var model: MutableKTEObject = parent
+    override var model: MutableKATEObject = parent
         protected set
 
-    private var paramValue: KTEValue? = null
+    private var paramValue: KATEValue? = null
 
-    fun setParamValue(value: KTEValue) {
+    fun setParamValue(value: KATEValue) {
         this.paramValue = value
     }
 
@@ -94,12 +94,12 @@ class PlaceholderDefinition(val blockValue: PlaceholderBlock) : BlockContainer {
         block.source.placeholderManager.definePlaceholder(blockValue)
     }
 
-    override fun getBlockValue(model: KTEObject): LazyBlock = blockValue
+    override fun getBlockValue(model: KATEObject): LazyBlock = blockValue
 }
 
 class PlaceholderInvocation(
     val placeholderName: String,
-    var paramValue: KTEValue?,
+    var paramValue: KATEValue?,
     val invocationEndPointer: Int
 ) : CodeGen {
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {

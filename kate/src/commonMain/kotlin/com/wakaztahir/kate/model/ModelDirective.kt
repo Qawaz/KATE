@@ -1,7 +1,6 @@
 package com.wakaztahir.kate.model
 
 import com.wakaztahir.kate.model.model.*
-import com.wakaztahir.kate.parser.stream.DestinationStream
 
 sealed interface ModelReference {
 
@@ -27,11 +26,11 @@ sealed interface ModelReference {
 
 open class ModelDirective(val propertyPath: List<ModelReference>) : ReferencedValue {
 
-    override fun compareTo(model: KTEObject, other: KTEValue): Int {
+    override fun compareTo(model: KATEObject, other: KATEValue): Int {
         return getKTEValue(model).compareTo(model, other)
     }
 
-    override fun getKTEValue(model: KTEObject): KTEValue {
+    override fun getKTEValue(model: KATEObject): KATEValue {
         return model.getModelReferenceValue(model = model, path = propertyPath, callFunctions = true)
     }
 

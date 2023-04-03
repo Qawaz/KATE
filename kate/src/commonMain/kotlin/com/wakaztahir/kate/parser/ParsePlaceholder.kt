@@ -1,7 +1,7 @@
 package com.wakaztahir.kate.parser
 
 import com.wakaztahir.kate.model.*
-import com.wakaztahir.kate.model.model.KTEValue
+import com.wakaztahir.kate.model.model.KATEValue
 import com.wakaztahir.kate.parser.stream.*
 import com.wakaztahir.kate.parser.stream.increment
 import com.wakaztahir.kate.parser.stream.parseTextWhile
@@ -80,7 +80,7 @@ fun LazyBlock.parsePlaceholderDefinition(): PlaceholderDefinition? {
 fun LazyBlock.parsePlaceholderInvocation(): PlaceholderInvocation? {
     if (source.currentChar == '@' && source.increment("@placeholder")) {
         val placeholderName = source.parsePlaceHolderName()
-        val genValue: KTEValue? = if (source.increment(',')) {
+        val genValue: KATEValue? = if (source.increment(',')) {
             val refValue = source.parseVariableReference(parseDirectRefs = true)
             if (refValue != null) {
                 if (source.increment(')')) {

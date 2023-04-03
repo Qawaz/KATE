@@ -2,7 +2,7 @@ package com.wakaztahir.kate.parser
 
 import com.wakaztahir.kate.dsl.ScopedModelObject
 import com.wakaztahir.kate.model.*
-import com.wakaztahir.kate.model.model.MutableKTEObject
+import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.parser.stream.*
 import com.wakaztahir.kate.parser.stream.increment
 
@@ -10,7 +10,7 @@ fun LazyBlock.parseBlockSlice(
     startsWith: String,
     endsWith: String,
     allowTextOut: Boolean,
-    model: MutableKTEObject,
+    model: MutableKATEObject,
     indentationLevel: Int = this.indentationLevel + 1
 ): LazyBlockSlice {
 

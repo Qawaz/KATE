@@ -30,7 +30,7 @@ class ModelDirectiveTest {
                 this.putValue("myDouble", 16.000)
                 this.putValue("myStr", "something is here")
                 this.putValue(
-                    key = "myList", value = KTEListImpl<IntValue>(
+                    key = "myList", value = KATEListImpl<IntValue>(
                         collection = listOf(
                             IntValue(10),
                             IntValue(20),
@@ -96,8 +96,8 @@ class ModelDirectiveTest {
     @Test
     fun testFunction() {
         var invocations = 0
-        val myFunc = object : KTEFunction() {
-            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
+        val myFunc = object : KATEFunction() {
+            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
                 invocations++
                 return StringValue("funVal")
             }
@@ -119,12 +119,12 @@ class ModelDirectiveTest {
             putObject("property2") {
                 putValue("property3", "123")
             }
-            putValue("callSum", object : KTEFunction() {
+            putValue("callSum", object : KATEFunction() {
                 override fun invoke(
-                    model: KTEObject,
-                    invokedOn: KTEValue,
+                    model: KATEObject,
+                    invokedOn: KATEValue,
                     parameters: List<ReferencedValue>
-                ): KTEValue {
+                ): KATEValue {
                     return IntValue(parameters.map { it.asPrimitive(model) }.sumOf { it.value as Int })
                 }
 

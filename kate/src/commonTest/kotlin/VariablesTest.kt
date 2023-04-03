@@ -54,12 +54,12 @@ class VariablesTest {
         assertEquals(
             expected = "10",
             actual = GenerateCode("@var i = @var(myFunc()) @var(i)", MutableKTEObject {
-                putValue("myFunc", object : KTEFunction() {
+                putValue("myFunc", object : KATEFunction() {
                     override fun invoke(
-                        model: KTEObject,
-                        invokedOn: KTEValue,
+                        model: KATEObject,
+                        invokedOn: KATEValue,
                         parameters: List<ReferencedValue>
-                    ): KTEValue {
+                    ): KATEValue {
                         return IntValue(10)
                     }
 

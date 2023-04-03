@@ -4,11 +4,11 @@ import com.wakaztahir.kate.GlobalModelObjectName
 import com.wakaztahir.kate.dsl.ModelObjectImpl
 import com.wakaztahir.kate.model.*
 
-interface MutableKTEObject : KTEObject {
+interface MutableKATEObject : KATEObject {
 
     // Put Functions
 
-    fun putValue(key: String, value: KTEValue)
+    fun putValue(key: String, value: KATEValue)
 
     // Extensions
 
@@ -50,20 +50,20 @@ interface MutableKTEObject : KTEObject {
 //    }
 
     interface PutObjectsScope {
-        fun putObject(block: MutableKTEObject.() -> Unit)
+        fun putObject(block: MutableKATEObject.() -> Unit)
     }
 
     fun putObjects(key: String, block: PutObjectsScope.() -> Unit) {
-        val objects = mutableListOf<KTEObject>()
+        val objects = mutableListOf<KATEObject>()
         block(object : PutObjectsScope {
-            override fun putObject(block: MutableKTEObject.() -> Unit) {
+            override fun putObject(block: MutableKATEObject.() -> Unit) {
                 objects.add(ModelObjectImpl("$key${objects.size}").apply(block))
             }
         })
-        putValue(key, KTEMutableListImpl(objects))
+        putValue(key, KATEMutableListImpl(objects))
     }
 
-    fun putObject(key: String, block: MutableKTEObject.() -> Unit) {
+    fun putObject(key: String, block: MutableKATEObject.() -> Unit) {
         putValue(key, ModelObjectImpl(key).apply(block))
     }
 
@@ -78,7 +78,7 @@ interface MutableKTEObject : KTEObject {
 
 }
 
-fun MutableKTEObject(name: String = GlobalModelObjectName, block: MutableKTEObject.() -> Unit): MutableKTEObject {
+fun MutableKTEObject(name: String = GlobalModelObjectName, block: MutableKATEObject.() -> Unit): MutableKATEObject {
     val modelObj = ModelObjectImpl(objectName = name)
     block(modelObj)
     return modelObj

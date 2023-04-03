@@ -12,10 +12,10 @@ internal sealed interface ForLoop : BlockContainer {
 
     val blockValue: LazyBlockSlice
 
-    val model: MutableKTEObject
+    val model: MutableKATEObject
         get() = blockValue.model
 
-    override fun getBlockValue(model: KTEObject): LazyBlock {
+    override fun getBlockValue(model: KATEObject): LazyBlock {
         return blockValue
     }
 
@@ -53,7 +53,7 @@ internal sealed interface ForLoop : BlockContainer {
             }
         }
 
-        private fun store(value: KTEValue) {
+        private fun store(value: KATEValue) {
             model.putValue(elementConstName, value)
         }
 
@@ -91,16 +91,16 @@ internal sealed interface ForLoop : BlockContainer {
         override val blockValue: LazyBlockSlice
     ) : ForLoop {
 
-        private fun ReferencedValue.intVal(context: MutableKTEObject): Int {
+        private fun ReferencedValue.intVal(context: MutableKATEObject): Int {
             (asNullablePrimitive(context) as? IntValue)?.value?.let { return it }
                 ?: throw IllegalStateException("for loop variable must be an integer")
         }
 
-        private fun MutableKTEObject.storeIndex(value: Int) {
+        private fun MutableKATEObject.storeIndex(value: Int) {
             putValue(variableName, value)
         }
 
-        private fun MutableKTEObject.removeIndex() {
+        private fun MutableKATEObject.removeIndex() {
             removeKey(variableName)
         }
 
@@ -153,7 +153,7 @@ private class ForLoopLazyBlockSlice(
     }
 
     override fun parseNestedAtDirective(block: LazyBlock): CodeGen? {
-        if (source.parseBreakForAtDirective()) return KTEUnit
+        if (source.parseBreakForAtDirective()) return KATEUnit
         return super.parseNestedAtDirective(block)
     }
 

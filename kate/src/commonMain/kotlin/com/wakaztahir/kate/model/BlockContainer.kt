@@ -1,9 +1,9 @@
 package com.wakaztahir.kate.model
 
-import com.wakaztahir.kate.model.model.KTEObject
+import com.wakaztahir.kate.model.model.KATEObject
 
 interface BlockContainer : AtDirective {
 
-    fun getBlockValue(model : KTEObject) : LazyBlock?
+    fun getBlockValue(model : KATEObject) : LazyBlock?
 
 }

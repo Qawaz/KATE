@@ -2,11 +2,11 @@ package com.wakaztahir.kate.parser.stream
 
 import com.wakaztahir.kate.GlobalModelObjectName
 import com.wakaztahir.kate.dsl.ModelObjectImpl
-import com.wakaztahir.kate.model.model.MutableKTEObject
+import com.wakaztahir.kate.model.model.MutableKATEObject
 
 class TextSourceStream(
     private val sourceCode: String,
-    override val model: MutableKTEObject = ModelObjectImpl(GlobalModelObjectName),
+    override val model: MutableKATEObject = ModelObjectImpl(GlobalModelObjectName),
     override val placeholderManager: PlaceholderManager = EmptyPlaceholderManager(),
     override val embeddingManager: EmbeddingManager = NoEmbeddings
 ) : SourceStream() {

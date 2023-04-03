@@ -1,9 +1,9 @@
 package com.wakaztahir.kate.model
 
 import com.wakaztahir.kate.dsl.ModelObjectImpl
-import com.wakaztahir.kate.model.model.KTEObject
-import com.wakaztahir.kate.model.model.KTEValue
-import com.wakaztahir.kate.model.model.MutableKTEObject
+import com.wakaztahir.kate.model.model.KATEObject
+import com.wakaztahir.kate.model.model.KATEValue
+import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.parser.parseFunctionDefinition
 import com.wakaztahir.kate.parser.parseObjectDeclaration
 import com.wakaztahir.kate.parser.parseVariableDeclaration
@@ -11,9 +11,9 @@ import com.wakaztahir.kate.parser.stream.DestinationStream
 
 class ObjectDeclarationModel(
     objectName: String,
-    override val parent: MutableKTEObject
+    override val parent: MutableKATEObject
 ) : ModelObjectImpl(objectName) {
-    override fun getModelReference(reference: ModelReference): KTEValue? {
+    override fun getModelReference(reference: ModelReference): KATEValue? {
         return super.getModelReference(reference) ?: parent.getModelReference(reference)
     }
 }
@@ -48,7 +48,7 @@ class ObjectDeclaration(val objectName: String, val declarationBlock: ObjectDecl
     override val isEmptyWriter: Boolean
         get() = true
 
-    override fun getBlockValue(model: KTEObject): LazyBlock = declarationBlock
+    override fun getBlockValue(model: KATEObject): LazyBlock = declarationBlock
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
         declarationBlock.generateTo(destination)
         block.model.putValue(objectName, declarationBlock.model)

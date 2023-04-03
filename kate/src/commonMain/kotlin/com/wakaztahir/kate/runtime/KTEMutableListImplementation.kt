@@ -6,18 +6,18 @@ import com.wakaztahir.kate.model.model.*
 
 object KTEMutableListImplementation {
 
-    val propertyMap by lazy { hashMapOf<String, KTEValue>().apply { putObjectFunctions() } }
+    val propertyMap by lazy { hashMapOf<String, KATEValue>().apply { putObjectFunctions() } }
 
-    private fun HashMap<String, KTEValue>.putObjectFunctions() {
+    private fun HashMap<String, KATEValue>.putObjectFunctions() {
         with(KTEListImplementation) { putObjectFunctions() }
-        put("getType", object : KTEFunction() {
-            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
+        put("getType", object : KATEFunction() {
+            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
                 return StringValue("mutable_list")
             }
             override fun toString(): String = "getType() : string"
         })
-        put("add", object : KTEFunction() {
-            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
+        put("add", object : KATEFunction() {
+            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
                 require(parameters.size == 1) {
                     "mutable_list.add(e : Element) expects a single parameter instead of ${parameters.size}"
                 }
@@ -26,20 +26,20 @@ object KTEMutableListImplementation {
 
             override fun toString(): String = "add(e : Element) : KTEValue"
         })
-        put("addAt", object : KTEFunction() {
-            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
+        put("addAt", object : KATEFunction() {
+            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
                 val index = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value as? Int
                 require(parameters.size == 2 && index != null) {
                     "mutable_list.addAt(index : Int,e : Element) expects two parameters instead of ${parameters.size}"
                 }
                 invokedOn.asNullableMutableList(model)!!.collection.add(index, parameters[1])
-                return KTEUnit
+                return KATEUnit
             }
 
             override fun toString(): String = "addAt(index : Int,e : Element) : Boolean"
         })
-        put("remove", object : KTEFunction() {
-            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
+        put("remove", object : KATEFunction() {
+            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
                 require(parameters.size == 1) {
                     "mutable_list.remove(e : Element) expects a single parameter instead of ${parameters.size}"
                 }
@@ -48,8 +48,8 @@ object KTEMutableListImplementation {
 
             override fun toString(): String = "remove(e : Element) : Boolean"
         })
-        put("removeAt", object : KTEFunction() {
-            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
+        put("removeAt", object : KATEFunction() {
+            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
                 val index = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value as? Int
                 require(index != null) {
                     "mutable_list.removeAt(index : Int) expects single parameter instead of ${parameters.size}"

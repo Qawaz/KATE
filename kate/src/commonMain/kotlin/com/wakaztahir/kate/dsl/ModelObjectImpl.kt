@@ -4,16 +4,16 @@ import com.wakaztahir.kate.model.ModelReference
 import com.wakaztahir.kate.model.model.*
 import com.wakaztahir.kate.runtime.KTEObjectImplementation
 
-open class ModelObjectImpl(override var objectName: String, override val parent: KTEObject? = null) : MutableKTEObject {
+open class ModelObjectImpl(override var objectName: String, override val parent: KATEObject? = null) : MutableKATEObject {
 
-    private val container: MutableMap<String, KTEValue> by lazy { hashMapOf() }
+    private val container: MutableMap<String, KATEValue> by lazy { hashMapOf() }
 
-    override val contained: Map<String, KTEValue>
+    override val contained: Map<String, KATEValue>
         get() = container
 
     // ----- Getters
 
-    override fun get(key: String): KTEValue? {
+    override fun get(key: String): KATEValue? {
         return container[key]
     }
 
@@ -21,13 +21,13 @@ open class ModelObjectImpl(override var objectName: String, override val parent:
         return container.containsKey(key)
     }
 
-    override fun getModelReference(reference: ModelReference): KTEValue? {
+    override fun getModelReference(reference: ModelReference): KATEValue? {
         return container[reference.name] ?: KTEObjectImplementation.propertyMap[reference.name]
     }
 
     // ----- Putters
 
-    override fun putValue(key: String, value: KTEValue) {
+    override fun putValue(key: String, value: KATEValue) {
         container[key] = value
     }
 
@@ -39,7 +39,7 @@ open class ModelObjectImpl(override var objectName: String, override val parent:
         val item = container[key]
         if (item != null) {
             container.remove(key)
-            if (item is MutableKTEObject) item.changeName(other)
+            if (item is MutableKATEObject) item.changeName(other)
             container[other] = item
         }
     }
@@ -60,7 +60,7 @@ open class ModelObjectImpl(override var objectName: String, override val parent:
             str += "\n\t"
             str += item.key
             str += " : "
-            str += if (item.value is KTEObject) {
+            str += if (item.value is KATEObject) {
                 item.value.toString().replace("\n", "\n\t")
             } else {
                 item.value.toString()
@@ -70,7 +70,7 @@ open class ModelObjectImpl(override var objectName: String, override val parent:
         return str
     }
 
-    override fun compareTo(model: KTEObject, other: KTEValue): Int {
+    override fun compareTo(model: KATEObject, other: KATEValue): Int {
         if (other is ModelObjectImpl) {
             if (this.container.isEmpty() && other.container.isEmpty()) return -1
             if (this.container.size != other.container.size) return -1

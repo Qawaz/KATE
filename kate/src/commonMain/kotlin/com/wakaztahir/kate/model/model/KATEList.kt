@@ -5,18 +5,18 @@ import com.wakaztahir.kate.runtime.KTEListImplementation
 import com.wakaztahir.kate.runtime.KTEMutableListImplementation
 import kotlin.jvm.JvmInline
 
-interface KTEList<T : KTEValue> : ReferencedValue {
+interface KATEList<T : KATEValue> : ReferencedValue {
     val collection: List<T>
 }
 
-interface KTEMutableList<T : KTEValue> : KTEList<T> {
+interface KATEMutableList<T : KATEValue> : KATEList<T> {
     override val collection: MutableList<T>
 }
 
 @JvmInline
-value class KTEListImpl<T : KTEValue>(override val collection: List<T>) : KTEList<T> {
+value class KATEListImpl<T : KATEValue>(override val collection: List<T>) : KATEList<T> {
 
-    override fun getModelReference(reference: ModelReference): KTEValue? {
+    override fun getModelReference(reference: ModelReference): KATEValue? {
         if (reference is ModelReference.FunctionCall) {
             return KTEListImplementation.propertyMap[reference.name]
         } else {
@@ -24,8 +24,8 @@ value class KTEListImpl<T : KTEValue>(override val collection: List<T>) : KTELis
         }
     }
 
-    override fun compareTo(model: KTEObject, other: KTEValue): Int {
-        if (other is KTEList<*>) {
+    override fun compareTo(model: KATEObject, other: KATEValue): Int {
+        if (other is KATEList<*>) {
             if (this.collection.isEmpty() && other.collection.isEmpty()) return 0
             if (this.collection.size != other.collection.size) return -1
             if (this.collection != other.collection) return -1
@@ -41,9 +41,9 @@ value class KTEListImpl<T : KTEValue>(override val collection: List<T>) : KTELis
 }
 
 @JvmInline
-value class KTEMutableListImpl<T : KTEValue>(override val collection: MutableList<T>) : KTEMutableList<T> {
+value class KATEMutableListImpl<T : KATEValue>(override val collection: MutableList<T>) : KATEMutableList<T> {
 
-    override fun getModelReference(reference: ModelReference): KTEValue? {
+    override fun getModelReference(reference: ModelReference): KATEValue? {
         if (reference is ModelReference.FunctionCall) {
             return KTEMutableListImplementation.propertyMap[reference.name]
         } else {
@@ -51,7 +51,7 @@ value class KTEMutableListImpl<T : KTEValue>(override val collection: MutableLis
         }
     }
 
-    override fun compareTo(model: KTEObject, other: KTEValue): Int {
+    override fun compareTo(model: KATEObject, other: KATEValue): Int {
         throw IllegalStateException("list $this cannot be compared to $other")
     }
 

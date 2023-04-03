@@ -5,17 +5,17 @@ import com.wakaztahir.kate.model.model.*
 
 object StringImplementation {
 
-    val propertyMap by lazy { hashMapOf<String, KTEValue>().apply { putObjectFunctions() } }
+    val propertyMap by lazy { hashMapOf<String, KATEValue>().apply { putObjectFunctions() } }
 
-    private fun HashMap<String, KTEValue>.putObjectFunctions() {
-        put("getType", object : KTEFunction() {
-            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
+    private fun HashMap<String, KATEValue>.putObjectFunctions() {
+        put("getType", object : KATEFunction() {
+            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
                 return StringValue("string")
             }
             override fun toString(): String = "getType() : string"
         })
-        put("get", object : KTEFunction() {
-            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
+        put("get", object : KATEFunction() {
+            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 val index = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as? Int }
                 require(string != null) { "string value is null" }
@@ -25,8 +25,8 @@ object StringImplementation {
 
             override fun toString(): String = "get(int) : chat"
         })
-        put("size", object : KTEFunction() {
-            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
+        put("size", object : KATEFunction() {
+            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
                 return IntValue(string.length)
@@ -34,26 +34,26 @@ object StringImplementation {
 
             override fun toString(): String = "size() : int"
         })
-        put("toInt", object : KTEFunction() {
-            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
+        put("toInt", object : KATEFunction() {
+            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
-                return string.toIntOrNull()?.let { IntValue(it) } ?: KTEUnit
+                return string.toIntOrNull()?.let { IntValue(it) } ?: KATEUnit
             }
 
             override fun toString(): String = "toInt() : int"
         })
-        put("toDouble", object : KTEFunction() {
-            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
+        put("toDouble", object : KATEFunction() {
+            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
-                return string.toDoubleOrNull()?.let { DoubleValue(it) } ?: KTEUnit
+                return string.toDoubleOrNull()?.let { DoubleValue(it) } ?: KATEUnit
             }
 
             override fun toString(): String = "toDouble() : double"
         })
-        put("substring", object : KTEFunction() {
-            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
+        put("substring", object : KATEFunction() {
+            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
                 val firstIndex = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as Int }
@@ -66,8 +66,8 @@ object StringImplementation {
 
             override fun toString(): String = "substring(int,int) : string"
         })
-        put("uppercase", object : KTEFunction() {
-            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
+        put("uppercase", object : KATEFunction() {
+            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
                 return StringValue(string.uppercase())
@@ -75,8 +75,8 @@ object StringImplementation {
 
             override fun toString(): String = "uppercase() : string"
         })
-        put("lowercase", object : KTEFunction() {
-            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
+        put("lowercase", object : KATEFunction() {
+            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
                 return StringValue(string.lowercase())
@@ -84,8 +84,8 @@ object StringImplementation {
 
             override fun toString(): String = "lowercase() : string"
         })
-        put("capitalize", object : KTEFunction() {
-            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
+        put("capitalize", object : KATEFunction() {
+            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
                 return StringValue(string.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() })
@@ -93,8 +93,8 @@ object StringImplementation {
 
             override fun toString(): String = "capitalize() : string"
         })
-        put("decapitalize", object : KTEFunction() {
-            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
+        put("decapitalize", object : KATEFunction() {
+            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
                 return StringValue(string.replaceFirstChar { it.lowercase() })
@@ -102,8 +102,8 @@ object StringImplementation {
 
             override fun toString(): String = "decapitalize() : string"
         })
-        put("replace", object : KTEFunction() {
-            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
+        put("replace", object : KATEFunction() {
+            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
                 val find = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
@@ -116,8 +116,8 @@ object StringImplementation {
 
             override fun toString(): String = "replace(string,string) : string"
         })
-        put("contains", object : KTEFunction() {
-            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
+        put("contains", object : KATEFunction() {
+            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
                 val firstStr = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }

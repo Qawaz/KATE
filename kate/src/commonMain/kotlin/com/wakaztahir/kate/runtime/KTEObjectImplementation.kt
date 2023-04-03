@@ -1,65 +1,64 @@
 package com.wakaztahir.kate.runtime
 
 import com.wakaztahir.kate.model.BooleanValue
-import com.wakaztahir.kate.model.ModelReference
 import com.wakaztahir.kate.model.StringValue
 import com.wakaztahir.kate.model.model.*
 
 object KTEObjectImplementation {
 
-    val propertyMap by lazy { hashMapOf<String, KTEValue>().apply { putObjectFunctions() } }
+    val propertyMap by lazy { hashMapOf<String, KATEValue>().apply { putObjectFunctions() } }
 
-    private fun HashMap<String, KTEValue>.putObjectFunctions() {
-        put("get",object : KTEFunction(){
-            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
-                val value = invokedOn as? KTEObject
+    private fun HashMap<String, KATEValue>.putObjectFunctions() {
+        put("get",object : KATEFunction(){
+            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
+                val value = invokedOn as? KATEObject
                 require(value != null) { "invoked on object cannot be null" }
                 val required = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
                 require(required != null){ "get requires a single parameter" }
-                return value.get(required) ?: KTEUnit
+                return value.get(required) ?: KATEUnit
             }
 
             override fun toString(): String = "get() : KATEValue"
         })
-        put("getName", object : KTEFunction() {
-            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
-                val value = invokedOn as? KTEObject
+        put("getName", object : KATEFunction() {
+            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
+                val value = invokedOn as? KATEObject
                 require(value != null) { "invoked on object cannot be null" }
                 return StringValue(value.objectName)
             }
 
             override fun toString(): String = "getName() : string"
         })
-        put("getType", object : KTEFunction() {
-            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
+        put("getType", object : KATEFunction() {
+            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
                 return StringValue("object")
             }
 
             override fun toString(): String = "getType() : string"
         })
-        put("getKeys", object : KTEFunction() {
-            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
-                val value = invokedOn as? KTEObject
+        put("getKeys", object : KATEFunction() {
+            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
+                val value = invokedOn as? KATEObject
                 require(value != null) { "invoked on object cannot be null" }
-                return KTEListImpl(value.contained.keys.map { StringValue(it) })
+                return KATEListImpl(value.contained.keys.map { StringValue(it) })
             }
 
             override fun toString(): String = "getKeys() : List<string>"
 
         })
-        put("getValues", object : KTEFunction() {
-            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
-                val value = invokedOn as? KTEObject
+        put("getValues", object : KATEFunction() {
+            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
+                val value = invokedOn as? KATEObject
                 require(value != null) { "invoked on object cannot be null" }
-                return KTEListImpl(value.contained.values.toList())
+                return KATEListImpl(value.contained.values.toList())
             }
 
             override fun toString(): String = "getValues() : List<KTEValue>"
 
         })
-        put("contains", object : KTEFunction() {
-            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
-                val value = invokedOn as? KTEObject
+        put("contains", object : KATEFunction() {
+            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
+                val value = invokedOn as? KATEObject
                 val required = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
                 require(value != null) { "invoked on object cannot be null" }
                 require(required != null) { "exists require a single parameter by the name of object" }
@@ -69,34 +68,34 @@ object KTEObjectImplementation {
             override fun toString(): String = "contains(name : string) : boolean"
 
         })
-        put("rename", object : KTEFunction() {
-            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
-                val value = invokedOn as? MutableKTEObject
+        put("rename", object : KATEFunction() {
+            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
+                val value = invokedOn as? MutableKATEObject
                 val key = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
                 val other = parameters.getOrNull(1)?.asNullablePrimitive(model)?.value?.let { it as String }
                 require(value != null) { "invoked on object cannot be null" }
                 require(key != null) { "rename requires the 1st key parameter" }
                 require(other != null) { "rename requires the 2nd replace parameter" }
                 value.rename(key, other)
-                return KTEUnit
+                return KATEUnit
             }
 
             override fun toString(): String = "delete(name : string) : unit"
         })
-        put("delete", object : KTEFunction() {
-            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
-                val value = invokedOn as? MutableKTEObject
+        put("delete", object : KATEFunction() {
+            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
+                val value = invokedOn as? MutableKATEObject
                 val required = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
                 require(value != null) { "invoked on object cannot be null" }
                 require(required != null) { "exists require a single parameter by the name of object" }
                 value.removeKey(required)
-                return KTEUnit
+                return KATEUnit
             }
 
             override fun toString(): String = "delete(name : string) : unit"
         })
-        put("toString", object : KTEFunction() {
-            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
+        put("toString", object : KATEFunction() {
+            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
                 val obj = invokedOn.asNullableObject(model)
                 require(obj != null) { "object is null" }
                 return StringValue(obj.toString())

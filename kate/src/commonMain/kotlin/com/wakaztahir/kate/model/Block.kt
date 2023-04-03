@@ -1,8 +1,8 @@
 package com.wakaztahir.kate.model
 
 import com.wakaztahir.kate.KTEDelicateFunction
-import com.wakaztahir.kate.model.model.KTEUnit
-import com.wakaztahir.kate.model.model.MutableKTEObject
+import com.wakaztahir.kate.model.model.KATEUnit
+import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.parser.*
 import com.wakaztahir.kate.parser.stream.*
 import com.wakaztahir.kate.parser.stream.increment
@@ -10,7 +10,7 @@ import com.wakaztahir.kate.parser.stream.increment
 interface LazyBlock {
 
     val source: SourceStream
-    val model: MutableKTEObject
+    val model: MutableKATEObject
 
     // Text that couldn't be processed by the compiler is written to stream as it is
     val isWriteUnprocessedTextEnabled: Boolean
@@ -83,7 +83,7 @@ interface LazyBlock {
             parseFirstStringOrChar = false,
             parseNotFirstStringOrChar = true,
             parseDirectRefs = false
-        )?.let { return it.toPlaceholderInvocation(model, source.pointer) ?: KTEUnit }
+        )?.let { return it.toPlaceholderInvocation(model, source.pointer) ?: KATEUnit }
         return null
     }
 
@@ -133,7 +133,7 @@ open class LazyBlockSlice(
     val startPointer: Int,
     val length: Int,
     val blockEndPointer: Int,
-    override val model: MutableKTEObject,
+    override val model: MutableKATEObject,
     override val isWriteUnprocessedTextEnabled: Boolean,
     override val indentationLevel: Int
 ) : LazyBlock {

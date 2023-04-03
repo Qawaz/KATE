@@ -1,8 +1,8 @@
 package com.wakaztahir.kate.parser
 
 import com.wakaztahir.kate.model.LazyBlock
-import com.wakaztahir.kate.model.model.KTEListImpl
-import com.wakaztahir.kate.model.model.KTEMutableListImpl
+import com.wakaztahir.kate.model.model.KATEListImpl
+import com.wakaztahir.kate.model.model.KATEMutableListImpl
 import com.wakaztahir.kate.model.model.ReferencedValue
 import com.wakaztahir.kate.parser.stream.increment
 
@@ -25,7 +25,7 @@ private fun LazyBlock.parseListParameters(list: MutableList<ReferencedValue> = m
 fun LazyBlock.parseListDefinition(): ReferencedValue? {
     if (source.currentChar == '@' && source.increment("@list(")) {
         val parameters = parseListParameters()
-        return KTEListImpl(parameters.toList())
+        return KATEListImpl(parameters.toList())
     }
     return null
 }
@@ -33,7 +33,7 @@ fun LazyBlock.parseListDefinition(): ReferencedValue? {
 fun LazyBlock.parseMutableListDefinition(): ReferencedValue? {
     if (source.currentChar == '@' && source.increment("@mutable_list(")) {
         val parameters = parseListParameters()
-        return KTEMutableListImpl(parameters)
+        return KATEMutableListImpl(parameters)
     }
     return null
 }

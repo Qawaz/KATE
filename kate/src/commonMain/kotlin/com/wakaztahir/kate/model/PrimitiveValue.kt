@@ -1,7 +1,7 @@
 package com.wakaztahir.kate.model
 
-import com.wakaztahir.kate.model.model.KTEObject
-import com.wakaztahir.kate.model.model.KTEValue
+import com.wakaztahir.kate.model.model.KATEObject
+import com.wakaztahir.kate.model.model.KATEValue
 import com.wakaztahir.kate.model.model.ReferencedValue
 import com.wakaztahir.kate.parser.ArithmeticOperatorType
 import com.wakaztahir.kate.runtime.*
@@ -15,7 +15,7 @@ interface PrimitiveValue<T> : ReferencedValue {
 
     fun compareOther(other: PrimitiveValue<*>): Int
 
-    override fun compareTo(model: KTEObject, other: KTEValue): Int {
+    override fun compareTo(model: KATEObject, other: KATEValue): Int {
         @Suppress("UNCHECKED_CAST")
         (other as? PrimitiveValue<T>)?.let { return compareTo(it) }
         other.asNullablePrimitive(model)?.let { return compareOther(it) }
@@ -33,7 +33,7 @@ interface PrimitiveValue<T> : ReferencedValue {
         throw IllegalStateException("couldn't operate ${type.char} between $this and $other")
     }
 
-    override fun asNullablePrimitive(model: KTEObject): PrimitiveValue<*>? {
+    override fun asNullablePrimitive(model: KATEObject): PrimitiveValue<*>? {
         return this
     }
 
@@ -70,7 +70,7 @@ value class CharValue(override val value: Char) : PrimitiveValue<Char> {
         return IntValue(type.operate(value, value2.value))
     }
 
-    override fun getModelReference(reference: ModelReference): KTEValue? {
+    override fun getModelReference(reference: ModelReference): KATEValue? {
         return CharImplementation.propertyMap[reference.name]
     }
 
@@ -123,7 +123,7 @@ value class IntValue(override val value: Int) : PrimitiveValue<Int> {
         }
     }
 
-    override fun getModelReference(reference: ModelReference): KTEValue? {
+    override fun getModelReference(reference: ModelReference): KATEValue? {
         return IntImplementation.propertyMap[reference.name]
     }
 
@@ -174,7 +174,7 @@ value class DoubleValue(override val value: Double) : PrimitiveValue<Double> {
         }
     }
 
-    override fun getModelReference(reference: ModelReference): KTEValue? {
+    override fun getModelReference(reference: ModelReference): KATEValue? {
         return DoubleImplementation.propertyMap[reference.name]
     }
 
@@ -225,7 +225,7 @@ value class LongValue(override val value: Long) : PrimitiveValue<Long> {
         }
     }
 
-    override fun getModelReference(reference: ModelReference): KTEValue? {
+    override fun getModelReference(reference: ModelReference): KATEValue? {
         return LongImplementation.propertyMap[reference.name]
     }
 
@@ -256,7 +256,7 @@ value class BooleanValue(override val value: Boolean) : PrimitiveValue<Boolean> 
         throw IllegalStateException("boolean value cannot ${type.char} to any other value")
     }
 
-    override fun getModelReference(reference: ModelReference): KTEValue? {
+    override fun getModelReference(reference: ModelReference): KATEValue? {
         return BooleanImplementation.propertyMap[reference.name]
     }
 
@@ -275,7 +275,7 @@ value class StringValue(override val value: String) : PrimitiveValue<String> {
         }
     }
 
-    override fun getModelReference(reference: ModelReference): KTEValue? {
+    override fun getModelReference(reference: ModelReference): KATEValue? {
         return StringImplementation.propertyMap[reference.name]
     }
 

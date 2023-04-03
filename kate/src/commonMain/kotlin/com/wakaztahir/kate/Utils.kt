@@ -1,7 +1,7 @@
 package com.wakaztahir.kate
 
 import com.wakaztahir.kate.model.ModelReference
-import com.wakaztahir.kate.model.model.MutableKTEObject
+import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.model.model.ReferencedValue
 
 
@@ -30,4 +30,4 @@ internal fun GenerateCode(code: String): String = TemplateContext(code).getDesti
 internal fun GeneratePartialRaw(code: String) = GenerateCode("@partial_raw $code @end_partial_raw")
 
 @Suppress("FunctionName")
-internal fun GenerateCode(code: String, model: MutableKTEObject) = TemplateContext(code, model).getDestinationAsString()
+internal fun GenerateCode(code: String, model: MutableKATEObject) = TemplateContext(code, model).getDestinationAsString()

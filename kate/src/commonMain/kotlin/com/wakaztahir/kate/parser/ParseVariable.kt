@@ -1,6 +1,6 @@
 package com.wakaztahir.kate.parser
 
-import com.wakaztahir.kate.model.model.MutableKTEObject
+import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.model.model.ReferencedValue
 import com.wakaztahir.kate.parser.stream.*
@@ -12,7 +12,7 @@ internal data class VariableDeclaration(val variableName: String, val variableVa
     override val isEmptyWriter: Boolean
         get() = true
 
-    fun storeValue(model: MutableKTEObject) {
+    fun storeValue(model: MutableKATEObject) {
         model.putValue(variableName, variableValue.getKTEValue(model))
     }
 

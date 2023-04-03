@@ -4,25 +4,25 @@ import com.wakaztahir.kate.model.DoubleValue
 import com.wakaztahir.kate.model.IntValue
 import com.wakaztahir.kate.model.LongValue
 import com.wakaztahir.kate.model.StringValue
-import com.wakaztahir.kate.model.model.KTEFunction
-import com.wakaztahir.kate.model.model.KTEObject
-import com.wakaztahir.kate.model.model.KTEValue
+import com.wakaztahir.kate.model.model.KATEFunction
+import com.wakaztahir.kate.model.model.KATEObject
+import com.wakaztahir.kate.model.model.KATEValue
 import com.wakaztahir.kate.model.model.ReferencedValue
 
 object LongImplementation {
 
-    val propertyMap by lazy { hashMapOf<String, KTEValue>().apply { putObjectFunctions() } }
+    val propertyMap by lazy { hashMapOf<String, KATEValue>().apply { putObjectFunctions() } }
 
-    private fun HashMap<String, KTEValue>.putObjectFunctions() {
-        put("getType", object : KTEFunction() {
-            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
+    private fun HashMap<String, KATEValue>.putObjectFunctions() {
+        put("getType", object : KATEFunction() {
+            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
                 return StringValue("long")
             }
 
             override fun toString(): String = "getType() : string"
         })
-        put("toString", object : KTEFunction() {
-            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
+        put("toString", object : KATEFunction() {
+            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
                 val intVal = invokedOn.let { it as? LongValue }?.value
                 require(intVal != null) { "long value is null" }
                 return StringValue(intVal.toString())
@@ -30,8 +30,8 @@ object LongImplementation {
 
             override fun toString(): String = "toString() : string"
         })
-        put("toInt", object : KTEFunction() {
-            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
+        put("toInt", object : KATEFunction() {
+            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
                 val intVal = invokedOn.let { it as? LongValue }?.value
                 require(intVal != null) { "long value is null" }
                 return IntValue(intVal.toInt())
@@ -39,8 +39,8 @@ object LongImplementation {
 
             override fun toString(): String = "toInt() : int"
         })
-        put("toDouble", object : KTEFunction() {
-            override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
+        put("toDouble", object : KATEFunction() {
+            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
                 val intVal = invokedOn.let { it as? LongValue }?.value
                 require(intVal != null) { "long value is null" }
                 return DoubleValue(intVal.toDouble())

@@ -6,21 +6,21 @@ import com.wakaztahir.kate.model.ModelReference
 import com.wakaztahir.kate.model.StringValue
 import com.wakaztahir.kate.parser.stream.DestinationStream
 
-object KTEUnit : ReferencedValue, CodeGen {
+object KATEUnit : ReferencedValue, CodeGen {
 
     override fun toString(): String = "KTEUnit"
 
     private val KTEUnitType = StringValue("unit")
 
-    private val KTEUnitTypeFunction = object : KTEFunction() {
-        override fun invoke(model: KTEObject, invokedOn: KTEValue, parameters: List<ReferencedValue>): KTEValue {
+    private val KTEUnitTypeFunction = object : KATEFunction() {
+        override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
             return KTEUnitType
         }
 
-        override fun toString(): String = this@KTEUnit.toString()
+        override fun toString(): String = this@KATEUnit.toString()
     }
 
-    override fun getModelReference(reference: ModelReference): KTEValue? {
+    override fun getModelReference(reference: ModelReference): KATEValue? {
         return if (reference.name == "getType") {
             KTEUnitTypeFunction
         } else {
@@ -32,7 +32,7 @@ object KTEUnit : ReferencedValue, CodeGen {
         // Generates nothing
     }
 
-    override fun compareTo(model: KTEObject, other: KTEValue): Int {
+    override fun compareTo(model: KATEObject, other: KATEValue): Int {
         throw IllegalStateException("$this cannot be compared to $other")
     }
 

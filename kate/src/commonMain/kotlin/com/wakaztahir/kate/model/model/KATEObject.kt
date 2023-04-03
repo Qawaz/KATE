@@ -3,15 +3,15 @@ package com.wakaztahir.kate.model.model
 import com.wakaztahir.kate.dsl.UnresolvedValueException
 import com.wakaztahir.kate.model.*
 
-interface KTEObject : ReferencedValue {
+interface KATEObject : ReferencedValue {
 
     val objectName: String
-    val parent: KTEObject?
-    val contained: Map<String, KTEValue>
+    val parent: KATEObject?
+    val contained: Map<String, KATEValue>
 
     fun contains(key: String): Boolean
 
-    fun get(key : String) : KTEValue?
+    fun get(key : String) : KATEValue?
 
     private fun List<ModelReference>.pathUntil(prop: ModelReference): String {
         return joinToString(
@@ -20,16 +20,16 @@ interface KTEObject : ReferencedValue {
         )
     }
 
-    fun getModelReferenceValue(model: KTEObject, path: List<ModelReference>, callFunctions: Boolean): KTEValue {
-        var currentVal: KTEValue = this
+    fun getModelReferenceValue(model: KATEObject, path: List<ModelReference>, callFunctions: Boolean): KATEValue {
+        var currentVal: KATEValue = this
         for (prop in path) {
             when (prop) {
                 is ModelReference.FunctionCall -> {
-                    (currentVal.getModelReference(prop) as? KTEFunction)?.let { func ->
+                    (currentVal.getModelReference(prop) as? KATEFunction)?.let { func ->
                         currentVal = if (callFunctions) {
                             if (prop.invokeOnly) {
                                 func.invoke(model, currentVal, prop.parametersList)
-                                KTEUnit
+                                KATEUnit
                             } else {
                                 func.invoke(model, currentVal, prop.parametersList)
                             }
@@ -57,16 +57,16 @@ interface KTEObject : ReferencedValue {
         return currentVal
     }
 
-    fun traverse(block: (KTEValue) -> Unit) {
+    fun traverse(block: (KATEValue) -> Unit) {
         block(this)
         for (each in contained) {
             when (each.value) {
-                is KTEList<*> -> {
-                    for (item in (each.value as KTEList<*>).collection) block(item)
+                is KATEList<*> -> {
+                    for (item in (each.value as KATEList<*>).collection) block(item)
                 }
 
-                is KTEObject -> {
-                    (each.value as KTEObject).traverse(block)
+                is KATEObject -> {
+                    (each.value as KATEObject).traverse(block)
                 }
 
                 else -> {

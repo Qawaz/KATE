@@ -3,7 +3,7 @@ import com.wakaztahir.kate.OutputDestinationStream
 import com.wakaztahir.kate.RelativeResourceEmbeddingManager
 import com.wakaztahir.kate.TemplateContext
 import com.wakaztahir.kate.model.model.MutableKTEObject
-import com.wakaztahir.kate.parser.stream.getErrorInfoAtCurrentPointer
+import com.wakaztahir.kate.model.model.MutableKATEObject
 import org.junit.Test
 import java.io.File
 import kotlin.test.assertEquals
@@ -11,7 +11,7 @@ import kotlin.test.assertFalse
 
 class TestTemplates {
 
-    private fun getObject(): MutableKTEObject {
+    private fun getObject(): MutableKATEObject {
         return MutableKTEObject {
             putValue("mathTestClassName", "MathsClass")
             putObjects("arithmetic") {

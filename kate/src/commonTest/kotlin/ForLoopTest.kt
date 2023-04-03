@@ -1,7 +1,7 @@
 import com.wakaztahir.kate.GenerateCode
 import com.wakaztahir.kate.TemplateContext
 import com.wakaztahir.kate.dsl.UnresolvedValueException
-import com.wakaztahir.kate.model.model.KTEListImpl
+import com.wakaztahir.kate.model.model.KATEListImpl
 import com.wakaztahir.kate.model.ModelDirective
 import com.wakaztahir.kate.model.StringValue
 import com.wakaztahir.kate.model.asPrimitive
@@ -103,7 +103,7 @@ class ForLoopTest {
     @Test
     fun testForLoopGeneration4() {
         val context = TemplateContext("@for(@var elem : @var(list)) @var(elem) @endfor", MutableKTEObject {
-            putValue("list", KTEListImpl(listOf("H", "e", "ll", "o").map { StringValue(it) }))
+            putValue("list", KATEListImpl(listOf("H", "e", "ll", "o").map { StringValue(it) }))
         })
         assertEquals("Hello", context.getDestinationAsString())
     }
@@ -111,7 +111,7 @@ class ForLoopTest {
     @Test
     fun testForLoopGeneration5() {
         val kteObject = MutableKTEObject {
-            putValue("list", KTEListImpl(listOf("H", "e", "ll", "o").map { StringValue(it) }))
+            putValue("list", KATEListImpl(listOf("H", "e", "ll", "o").map { StringValue(it) }))
         }
         val context = TemplateContext(
             "@var(list.size())@var(list.get(2))@var(list.contains(\"ll\"))@var(list.contains(\"v\"))",

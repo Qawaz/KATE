@@ -1,13 +1,13 @@
 package com.wakaztahir.kate.dsl
 
 import com.wakaztahir.kate.ScopedModelObjectName
-import com.wakaztahir.kate.model.model.KTEValue
+import com.wakaztahir.kate.model.model.KATEValue
 import com.wakaztahir.kate.model.ModelReference
-import com.wakaztahir.kate.model.model.MutableKTEObject
+import com.wakaztahir.kate.model.model.MutableKATEObject
 
-class ScopedModelObject(override val parent: MutableKTEObject) : ModelObjectImpl(ScopedModelObjectName) {
+class ScopedModelObject(override val parent: MutableKATEObject) : ModelObjectImpl(ScopedModelObjectName) {
 
-    override fun getModelReference(reference: ModelReference): KTEValue? {
+    override fun getModelReference(reference: ModelReference): KATEValue? {
         return super.getModelReference(reference) ?: parent.getModelReference(reference)
     }
 
@@ -19,7 +19,7 @@ class ScopedModelObject(override val parent: MutableKTEObject) : ModelObjectImpl
         }
     }
 
-    override fun putValue(key: String, value: KTEValue) {
+    override fun putValue(key: String, value: KATEValue) {
         if (parent.contains(key)) {
             parent.putValue(key, value)
         } else {
