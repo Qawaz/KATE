@@ -61,8 +61,6 @@ private fun isTakenVariableName(name: String): Boolean {
     }
 }
 
-class DeclarationOperator(arithmeticOperatorType: ArithmeticOperatorType?)
-
 internal fun LazyBlock.parseVariableDeclaration(): VariableDeclaration? {
     val variableName = source.parseVariableName()
     if (variableName != null) {
@@ -75,7 +73,9 @@ internal fun LazyBlock.parseVariableDeclaration(): VariableDeclaration? {
             }
             source.escapeSpaces()
             val arithmeticOperator = source.parseArithmeticOperator()
-            source.increment('=')
+            if (!source.increment('=')) {
+                throw IllegalStateException("expected '=' when assigning a value to variable $variableName but got ${source.currentChar} in variable declaration")
+            }
             source.escapeSpaces()
             val property = source.parseAnyExpressionOrValue()
             return if (property != null) {
@@ -85,14 +85,14 @@ internal fun LazyBlock.parseVariableDeclaration(): VariableDeclaration? {
                     variableValue = property
                 )
             } else {
-                throw VariableDeclarationParseException("constant's value not found")
+                throw VariableDeclarationParseException("constant's value not found when declaring variable $variableName")
             }
         } else {
             if (source.hasEnded) {
                 throw UnexpectedEndOfStream("unexpected end of stream at pointer : ${source.pointer}")
             } else {
                 source.printLeft()
-                throw VariableDeclarationParseException("constant's name not given")
+                throw VariableDeclarationParseException("variable's name not given or is empty")
             }
         }
     }
