@@ -40,7 +40,9 @@ The value of the variable can only be one of these
 
 To assign to another variable
 
-`@var i = @var(j)`
+`@var i = @var(j)` or reference directly `@var i = j`
+
+__KATE__ also supports assignment operators `+`,`-`,`*`,`/`,`%` so you can also `@var i *= j`
 
 To access the object of current scope , You can do
 
@@ -80,6 +82,10 @@ Every variable has a `getType` function available which returns type in string f
 `2 @+ 2` outputs `4`
 
 You can use variables in expressions
+
+This rule won't stand in all modes / cases, for example in variable declaration
+
+`@var name = 2 + 2` name's value is 4
 
 > Brackets not supported at the moment
 
