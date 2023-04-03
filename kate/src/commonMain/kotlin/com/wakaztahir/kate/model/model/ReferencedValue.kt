@@ -18,25 +18,4 @@ interface ReferencedValue : KATEValue {
         )
     }
 
-    override fun asNullablePrimitive(model: KATEObject): PrimitiveValue<*>? {
-        return getKTEValue(model) as? PrimitiveValue<*>
-    }
-
-    override fun asNullableList(model: KATEObject): KATEList<KATEValue>? {
-        @Suppress("UNCHECKED_CAST")
-        return getKTEValue(model) as? KATEList<KATEValue>
-    }
-
-    override fun asNullableObject(model: KATEObject): KATEObject? {
-        return getKTEValue(model) as? KATEObject
-    }
-
-    override fun asNullableMutableObject(model: KATEObject): MutableKATEObject? {
-        return getKTEValue(model) as? MutableKATEObject
-    }
-
-    override fun asNullableFunction(model: KATEObject): KATEFunction? {
-        return getKTEValue(model) as? KATEFunction
-    }
-
 }

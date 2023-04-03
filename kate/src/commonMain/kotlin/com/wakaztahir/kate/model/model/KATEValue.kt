@@ -26,29 +26,29 @@ interface KATEValue {
     override fun toString(): String
 
     fun asNullablePrimitive(model: KATEObject): PrimitiveValue<*>? {
-        return this as? PrimitiveValue<*>
+        return getKTEValue(model) as? PrimitiveValue<*>
     }
 
     fun asNullableList(model: KATEObject): KATEList<KATEValue>? {
         @Suppress("UNCHECKED_CAST")
-        return this as? KATEList<KATEValue>
+        return getKTEValue(model) as? KATEList<KATEValue>
     }
 
     fun asNullableMutableList(model: KATEObject): KATEMutableList<KATEValue>? {
         @Suppress("UNCHECKED_CAST")
-        return this as? KATEMutableList<KATEValue>
+        return getKTEValue(model) as? KATEMutableList<KATEValue>
     }
 
     fun asNullableObject(model: KATEObject): KATEObject? {
-        return this as? KATEObject
+        return getKTEValue(model) as? KATEObject
     }
 
     fun asNullableMutableObject(model: KATEObject): MutableKATEObject? {
-        return this as? MutableKATEObject
+        return getKTEValue(model) as? MutableKATEObject
     }
 
     fun asNullableFunction(model: KATEObject): KATEFunction? {
-        return this as? KATEFunction
+        return getKTEValue(model) as? KATEFunction
     }
 
     fun compareTo(model: KATEObject, other: KATEValue): Int
