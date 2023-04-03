@@ -7,6 +7,11 @@ import kotlin.test.assertEquals
 class CharsTest {
 
     @Test
+    fun testCharAssignment() {
+        assertEquals("x", GenerateCode("@var x = 'x' @var(x)"))
+    }
+
+    @Test
     fun testCharacterEscape(){
         assertEquals("\b", GenerateCode("@var i = '\\b' @var(i)"))
         assertEquals("\n", GenerateCode("@var i = '\\n' @var(i)"))

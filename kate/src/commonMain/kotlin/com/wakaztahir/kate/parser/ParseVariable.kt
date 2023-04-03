@@ -77,7 +77,12 @@ internal fun LazyBlock.parseVariableDeclaration(): VariableDeclaration? {
                 throw IllegalStateException("expected '=' when assigning a value to variable $variableName but got ${source.currentChar} in variable declaration")
             }
             source.escapeSpaces()
-            val property = source.parseAnyExpressionOrValue()
+            val property = source.parseAnyExpressionOrValue(
+                parseFirstStringOrChar = true,
+                parseNotFirstStringOrChar = true,
+                parseDirectRefs = true,
+                allowAtLessExpressions = true
+            )
             return if (property != null) {
                 VariableDeclaration(
                     variableName = variableName,

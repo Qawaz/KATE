@@ -14,7 +14,6 @@ import kotlin.test.assertNotEquals
 
 class VariablesTest {
 
-
     @Test
     fun testParseVariableReference() {
         val context = TemplateContext(("@var(myVar)"))
@@ -45,7 +44,7 @@ class VariablesTest {
     }
 
     @Test
-    fun testVariableAssignment(){
+    fun testVariableAssignment() {
         assertEquals("15", GenerateCode("@var i = 5 @var i *= 3 @var(i)"))
         assertEquals("8", GenerateCode("@var i = 5 @var i += 3 @var(i)"))
         assertEquals("2", GenerateCode("@var i = 5 @var i -= 3 @var(i)"))
@@ -130,16 +129,11 @@ class VariablesTest {
     }
 
     @Test
-    fun testObjectListType(){
+    fun testObjectListType() {
         assertEquals(
             expected = "list",
             actual = GenerateCode("@define_object(Test) @var list = @list(1,2,3) @end_define_object @var(Test.list.getType())")
         )
-    }
-
-    @Test
-    fun testDifferentVariables() {
-        assertEquals("x", GenerateCode("@var x = 'x' @var(x)"))
     }
 
     private fun evaluate(i: String, j: String, char: Char, expect: String) {
@@ -202,13 +196,66 @@ class VariablesTest {
     }
 
     @Test
+    fun testAtLessAndDirectRefsDeclaration() {
+        assertEquals(
+            expected = "he",
+            actual = GenerateCode("@var i = \"h\" + \"e\" @var(i)")
+        )
+        assertEquals(
+            expected = "15",
+            actual = GenerateCode("@var i = 10 + 5 @var(i)")
+        )
+        assertEquals(
+            expected = "5",
+            actual = GenerateCode("@var i = 15 / 3 @var(i)")
+        )
+        assertEquals(
+            expected = "15",
+            actual = GenerateCode("@var i = 3 * 5 @var(i)")
+        )
+        assertEquals(
+            expected = "he",
+            actual = GenerateCode("@var j = \"e\" @var i = \"h\" + @var(j) @var(i)")
+        )
+        assertEquals(
+            expected = "15",
+            actual = GenerateCode("@var j = 5 @var i = 10 + @var(j) @var(i)")
+        )
+        assertEquals(
+            expected = "5",
+            actual = GenerateCode("@var j = 3 @var i = 15 / @var(j) @var(i)")
+        )
+        assertEquals(
+            expected = "15",
+            actual = GenerateCode("@var j = 5 @var i = 3 * @var(j) @var(i)")
+        )
+        assertEquals(
+            expected = "he",
+            actual = GenerateCode("@var j = \"e\" @var i = \"h\" + j @var(i)")
+        )
+        assertEquals(
+            expected = "15",
+            actual = GenerateCode("@var j = 5 @var i = 10 + j @var(i)")
+        )
+        assertEquals(
+            expected = "5",
+            actual = GenerateCode("@var j = 3 @var i = 15 / j @var(i)")
+        )
+        assertEquals(
+            expected = "15",
+            actual = GenerateCode("@var j = 5 @var i = 3 * j @var(i)")
+        )
+    }
+
+    @Test
     fun testParseDynamicProperty() {
         val context = TemplateContext(("@var(myVar)"))
         context.stream.model.putValue("myVar", StringValue("someValue"))
         val property = context.stream.parseExpression(
             parseFirstStringOrChar = true,
             parseNotFirstStringOrChar = true,
-            parseDirectRefs = true
+            parseDirectRefs = true,
+            allowAtLessExpressions = false
         )
         assertEquals(property!!.asPrimitive(context.stream.model).value, "someValue")
     }

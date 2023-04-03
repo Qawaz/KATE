@@ -40,7 +40,8 @@ fun LazyBlock.parseRuntimeGen(): CodeGen? {
             val value = source.parseExpression(
                 parseDirectRefs = false,
                 parseFirstStringOrChar = true,
-                parseNotFirstStringOrChar = true
+                parseNotFirstStringOrChar = true,
+                allowAtLessExpressions = true
             ) ?: throw IllegalStateException("value for runtime directive not found")
             if (!source.increment(')')) throw IllegalStateException("expected ')' got ${source.currentChar}")
             return WriteChar(value)
@@ -49,7 +50,8 @@ fun LazyBlock.parseRuntimeGen(): CodeGen? {
             val value = source.parseExpression(
                 parseDirectRefs = false,
                 parseFirstStringOrChar = true,
-                parseNotFirstStringOrChar = true
+                parseNotFirstStringOrChar = true,
+                allowAtLessExpressions = true
             ) ?: throw IllegalStateException("value for runtime directive not found")
             if (!source.increment(')')) throw IllegalStateException("expected ')' got ${source.currentChar}")
             return WriteString(value)

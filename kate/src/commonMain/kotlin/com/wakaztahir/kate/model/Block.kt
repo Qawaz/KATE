@@ -82,7 +82,8 @@ interface LazyBlock {
         parseExpression(
             parseFirstStringOrChar = false,
             parseNotFirstStringOrChar = true,
-            parseDirectRefs = false
+            parseDirectRefs = false,
+            allowAtLessExpressions = false
         )?.let { return it.toPlaceholderInvocation(model, source.pointer) ?: KATEUnit }
         return null
     }

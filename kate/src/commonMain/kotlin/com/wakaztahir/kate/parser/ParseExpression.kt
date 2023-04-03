@@ -223,14 +223,15 @@ private class ValueAndOperatorStack {
 
 private fun LazyBlock.parseValueAndOperator(
     parseStringAndChar: Boolean,
-    parseDirectRefs: Boolean
+    parseDirectRefs: Boolean,
+    allowAtLessExpressions: Boolean
 ): Pair<ReferencedValue, ArithmeticOperatorType?>? {
     val firstValue =
         source.parseValueInsideExpression(parseStringAndChar = parseStringAndChar, parseDirectRefs = parseDirectRefs)
     if (firstValue != null) {
         val pointerAfterFirstValue = source.pointer
         source.increment(' ')
-        return if (source.increment('@')) {
+        return if ((source.increment('@') || (allowAtLessExpressions && !source.hasEnded))) {
             val arithmeticOperator = source.parseArithmeticOperator()
             if (arithmeticOperator != null) {
                 source.increment(' ')
@@ -250,12 +251,17 @@ private fun LazyBlock.parseValueAndOperator(
 private fun SourceStream.parseExpressionWith(
     parseStringAndChar: Boolean,
     parseDirectRefs: Boolean,
+    allowAtLessExpressions: Boolean,
     stack: ValueAndOperatorStack,
     final: ValueAndOperatorStack
 ) {
     while (!hasEnded) {
         val valueAndOp =
-            parseValueAndOperator(parseStringAndChar = parseStringAndChar, parseDirectRefs = parseDirectRefs)
+            parseValueAndOperator(
+                parseStringAndChar = parseStringAndChar,
+                parseDirectRefs = parseDirectRefs,
+                allowAtLessExpressions = allowAtLessExpressions
+            )
         if (valueAndOp != null) {
             final.putValue(valueAndOp.first)
             val operator = valueAndOp.second
@@ -318,10 +324,15 @@ private fun SourceStream.parseExpressionWith(
 internal fun LazyBlock.parseExpression(
     parseFirstStringOrChar: Boolean,
     parseNotFirstStringOrChar: Boolean,
+    allowAtLessExpressions: Boolean,
     parseDirectRefs: Boolean
 ): ReferencedValue? {
     val valueAndOp =
-        parseValueAndOperator(parseStringAndChar = parseFirstStringOrChar, parseDirectRefs = parseDirectRefs)
+        parseValueAndOperator(
+            parseStringAndChar = parseFirstStringOrChar,
+            parseDirectRefs = parseDirectRefs,
+            allowAtLessExpressions = allowAtLessExpressions
+        )
     if (valueAndOp != null) {
         return if (valueAndOp.second != null) {
 
@@ -332,6 +343,7 @@ internal fun LazyBlock.parseExpression(
             source.parseExpressionWith(
                 parseStringAndChar = parseNotFirstStringOrChar,
                 parseDirectRefs = parseDirectRefs,
+                allowAtLessExpressions = allowAtLessExpressions,
                 stack = stack,
                 final = final
             )
@@ -347,7 +359,8 @@ internal fun LazyBlock.parseExpression(
 internal fun SourceStream.parseAnyExpressionOrValue(
     parseFirstStringOrChar: Boolean = true,
     parseNotFirstStringOrChar: Boolean = true,
-    parseDirectRefs: Boolean = false
+    parseDirectRefs: Boolean = false,
+    allowAtLessExpressions: Boolean = false
 ): ReferencedValue? {
     parseListDefinition()?.let { return it }
     parseMutableListDefinition()?.let { return it }
@@ -355,7 +368,8 @@ internal fun SourceStream.parseAnyExpressionOrValue(
     parseExpression(
         parseFirstStringOrChar = parseFirstStringOrChar,
         parseNotFirstStringOrChar = parseNotFirstStringOrChar,
-        parseDirectRefs = parseDirectRefs
+        parseDirectRefs = parseDirectRefs,
+        allowAtLessExpressions = allowAtLessExpressions
     )?.let { return it }
     return null
 }
