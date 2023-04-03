@@ -17,9 +17,9 @@ internal fun SourceStream.parseValueInsideExpression(parseStringAndChar: Boolean
 }
 
 internal data class ExpressionValue(
-    val first: ReferencedValue,
+    val first: KATEValue,
     val operatorType: ArithmeticOperatorType,
-    val second: ReferencedValue
+    val second: KATEValue
 ) : ReferencedValue {
 
     override fun asNullablePrimitive(model: KATEObject): PrimitiveValue<*> {

@@ -45,6 +45,15 @@ class VariablesTest {
     }
 
     @Test
+    fun testVariableAssignment(){
+        assertEquals("15", GenerateCode("@var i = 5 @var i *= 3 @var(i)"))
+        assertEquals("8", GenerateCode("@var i = 5 @var i += 3 @var(i)"))
+        assertEquals("2", GenerateCode("@var i = 5 @var i -= 3 @var(i)"))
+        assertEquals("5", GenerateCode("@var i = 15 @var i /= 3 @var(i)"))
+        assertEquals("1", GenerateCode("@var i = 16 @var i %= 3 @var(i)"))
+    }
+
+    @Test
     fun testStringConcatenation() {
         assertEquals("helloworld", GenerateCode("@var i = \"hel\" @+ \"lo\" @var(i) @+ \"world\""))
     }

@@ -2,17 +2,38 @@ package com.wakaztahir.kate.parser
 
 import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.model.*
+import com.wakaztahir.kate.model.model.KATEValue
 import com.wakaztahir.kate.model.model.ReferencedValue
 import com.wakaztahir.kate.parser.stream.*
 import com.wakaztahir.kate.parser.stream.increment
 
-internal data class VariableDeclaration(val variableName: String, val variableValue: ReferencedValue) : AtDirective {
+internal data class VariableDeclaration(
+    val variableName: String,
+    val arithmeticOperatorType: ArithmeticOperatorType?,
+    val variableValue: ReferencedValue
+) : AtDirective {
 
     override val isEmptyWriter: Boolean
         get() = true
 
+    private fun throwIt(): Nothing {
+        throw IllegalStateException("error setting value of variable $variableName , couldn't get original value")
+    }
+
+    private fun getValue(model: MutableKATEObject): KATEValue {
+        return if (arithmeticOperatorType == null) {
+            variableValue.getKTEValue(model)
+        } else {
+            ExpressionValue(
+                first = model.getModelReference(ModelReference.Property(variableName)) ?: throwIt(),
+                operatorType = arithmeticOperatorType,
+                second = variableValue
+            ).getKTEValue(model)
+        }
+    }
+
     fun storeValue(model: MutableKATEObject) {
-        model.putValue(variableName, variableValue.getKTEValue(model))
+        model.putValue(variableName, getValue(model))
     }
 
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
@@ -40,22 +61,29 @@ private fun isTakenVariableName(name: String): Boolean {
     }
 }
 
+class DeclarationOperator(arithmeticOperatorType: ArithmeticOperatorType?)
+
 internal fun LazyBlock.parseVariableDeclaration(): VariableDeclaration? {
     val variableName = source.parseVariableName()
     if (variableName != null) {
         if (variableName.isNotEmpty()) {
-            if(variableName.first().isDigit()){
+            if (variableName.first().isDigit()) {
                 throw IllegalStateException("variable name cannot start with a digit $variableName")
             }
             if (isTakenVariableName(variableName)) {
                 throw IllegalStateException("variable name cannot be $variableName")
             }
             source.escapeSpaces()
+            val arithmeticOperator = source.parseArithmeticOperator()
             source.increment('=')
             source.escapeSpaces()
             val property = source.parseAnyExpressionOrValue()
             return if (property != null) {
-                VariableDeclaration(variableName = variableName, variableValue = property)
+                VariableDeclaration(
+                    variableName = variableName,
+                    arithmeticOperatorType = arithmeticOperator,
+                    variableValue = property
+                )
             } else {
                 throw VariableDeclarationParseException("constant's value not found")
             }

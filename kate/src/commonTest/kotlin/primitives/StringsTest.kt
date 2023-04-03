@@ -28,6 +28,10 @@ class StringsTest {
             expected = "21hello",
             actual = GenerateCode("@var i = \"1\" @var l = \"l\" @var t = @var(i) @+ \"h\" @var t = \"2\" @+ @var(t) @+ \"e\" @var t = @var(t) @+ \"l\" @var t = @var(t) @+ @var(l) @var t = @var(t) @+ \"o\" @var(t)")
         )
+        assertEquals(
+            expected = "21hello",
+            actual = GenerateCode("@var i = \"1\" @var l = \"l\" @var t = @var(i) @+ \"h\" @var t = \"2\" @+ @var(t) @+ \"e\" @var t += \"l\" @var t += @var(l) @var t += \"o\" @var(t)")
+        )
     }
 
     @Test
