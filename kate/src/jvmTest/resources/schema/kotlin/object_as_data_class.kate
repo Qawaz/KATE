@@ -4,7 +4,7 @@
 
     @function writeObjectAsKotlinDataClass(object,overriding)
 
-        @var keys = @var(object.getKeys())
+        @var keys = object.getKeys()
 
         @for(@var i=0;i<@var(keys.size());i++)
             @if(@var(object[@var(keys[@var(i)])].getType()) == "object")
@@ -38,7 +38,7 @@
 	@define_placeholder(object,KotlinDataClass)
         @var overriding = false
         @if(@var(this.parent.contains("__overriding__")))
-            @var overriding = @var(this.parent.__overriding__)
+            @var overriding = this.parent.__overriding__
         @endif
         @var(writeObjectAsKotlinDataClass(@var(__param__),@var(overriding)))
 	@end_define_placeholder
