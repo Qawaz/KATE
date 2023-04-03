@@ -9,8 +9,8 @@ import java.net.URL
 import java.nio.file.Paths
 
 open class RelativeResourceEmbeddingManager(
-    private val basePath: String,
-    private val classLoader: Class<Any> = object {}.javaClass
+    protected val basePath: String,
+    protected val classLoader: Class<Any> = object {}.javaClass
 ) : EmbeddingManager {
 
     override val embeddedStreams: MutableMap<String, Boolean> = mutableMapOf()
@@ -20,24 +20,28 @@ open class RelativeResourceEmbeddingManager(
         throw Throwable("${completePath(path)}:${indo.first}:${indo.second}", cause = exception)
     }
 
-    fun relativeParentPath(other : String) : String {
-        return Paths.get(basePath).resolve(Paths.get(other)).parent.normalize().toString().replace('\\','/')
+    protected open fun throwStreamNotFound(path: String): Nothing {
+        throw IllegalStateException("embedding with path ${relativePath(path)} not found , base : $basePath , path : $path")
     }
 
-    fun relativePath(other : String) : String {
-        return Paths.get(basePath).resolve(Paths.get(other)).normalize().toString().replace('\\','/')
+    open fun relativeParentPath(other: String): String {
+        return Paths.get(basePath).resolve(Paths.get(other)).parent.normalize().toString().replace('\\', '/')
     }
 
-    fun getUrl(path : String): URL {
-        return classLoader.getResource(relativePath(path)) ?: throw IllegalStateException("embedding with path not found ${relativePath(path)} where base $basePath and other $path")
+    open fun relativePath(other: String): String {
+        return Paths.get(basePath).resolve(Paths.get(other)).normalize().toString().replace('\\', '/')
     }
 
-    fun completePath(other : String) : String {
+    open fun getUrl(path: String): URL {
+        return classLoader.getResource(relativePath(path)) ?: throwStreamNotFound(path)
+    }
+
+    open fun completePath(other: String): String {
         return getUrl(other).file.removePrefix("/")
     }
 
-    fun getStream(path : String): InputStream {
-        return getUrl(path).openStream()
+    open fun getStream(path: String): InputStream {
+        return getUrl(path).openStream() ?: throwStreamNotFound(path)
     }
 
     override fun provideStream(block: LazyBlock, path: String): SourceStream? {

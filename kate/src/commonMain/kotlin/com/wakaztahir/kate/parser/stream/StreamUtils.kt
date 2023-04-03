@@ -4,14 +4,6 @@ import com.wakaztahir.kate.model.LazyBlock
 
 internal class UnexpectedEndOfStream(message: String) : Exception(message)
 
-internal fun SourceStream.unexpected(): UnexpectedEndOfStream {
-    return UnexpectedEndOfStream("unexpected end of stream at pointer : $pointer")
-}
-
-internal fun SourceStream.unexpected(expected: String): UnexpectedEndOfStream {
-    return UnexpectedEndOfStream("unexpected end of stream , expected $expected at pointer : $pointer")
-}
-
 internal fun SourceStream.increment(char: Char): Boolean {
     return if (!hasEnded && currentChar == char) {
         return incrementPointer()

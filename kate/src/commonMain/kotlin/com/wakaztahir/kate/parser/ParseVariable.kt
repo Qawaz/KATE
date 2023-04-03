@@ -5,7 +5,6 @@ import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.model.model.ReferencedValue
 import com.wakaztahir.kate.parser.stream.*
 import com.wakaztahir.kate.parser.stream.increment
-import com.wakaztahir.kate.parser.stream.unexpected
 
 internal data class VariableDeclaration(val variableName: String, val variableValue: ReferencedValue) : AtDirective {
 
@@ -62,7 +61,7 @@ internal fun LazyBlock.parseVariableDeclaration(): VariableDeclaration? {
             }
         } else {
             if (source.hasEnded) {
-                source.unexpected()
+                throw UnexpectedEndOfStream("unexpected end of stream at pointer : ${source.pointer}")
             } else {
                 source.printLeft()
                 throw VariableDeclarationParseException("constant's name not given")
