@@ -98,6 +98,8 @@ class ForLoopTest {
     fun testForLoopGeneration2() {
         assertEquals("012", GenerateCode("@for(@var i=0;i<3;i+1) @var(i) @endfor"))
         assertEquals("xxxxx", GenerateCode("@for(@var i = 0;i<5;i+1) x @endfor"))
+        assertEquals("xxxxx", GenerateCode("@var j = 5 @for(@var i = 0;i<j;i+1) x @endfor"))
+        assertEquals("xxxxxx", GenerateCode("@var j = 5 @for(@var i = 0;i<j+1;i+1) x @endfor"))
     }
 
     @Test
@@ -118,6 +120,19 @@ class ForLoopTest {
             kteObject
         )
         assertEquals("4lltruefalse", context.getDestinationAsString())
+    }
+
+    @Test
+    fun testForLoopGenerationWithDirectReference() {
+        val context = TemplateContext("@for(@var elem : list) @var(elem) @endfor", MutableKTEObject {
+            putValue("list", KATEListImpl(listOf("H", "e", "ll", "o").map { StringValue(it) }))
+        })
+        assertEquals("Hello", context.getDestinationAsString())
+    }
+
+    @Test
+    fun testForLoopGenerationWithList() {
+        assertEquals("123", GenerateCode("@for(@var elem : @list(1,2,3)) @var(elem) @endfor"))
     }
 
     @Test

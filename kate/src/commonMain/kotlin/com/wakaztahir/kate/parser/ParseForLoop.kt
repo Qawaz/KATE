@@ -192,9 +192,9 @@ private fun LazyBlock.parseConditionalFor(): ForLoop.ConditionalFor? {
 }
 
 private fun SourceStream.parseListReferencedValue(parseDirectRefs : Boolean): ReferencedValue? {
-    parseVariableReference(parseDirectRefs = parseDirectRefs)?.let { return it }
     parseListDefinition()?.let { return it }
     parseMutableListDefinition()?.let { return it }
+    parseVariableReference(parseDirectRefs = parseDirectRefs)?.let { return it }
     return null
 }
 
@@ -246,7 +246,7 @@ private fun SourceStream.parseNumberedForLoopIncrementer(variableName: String): 
             val incrementer = if (singleIncrement != null && increment(singleIncrement.char)) {
                 IntValue(1)
             } else {
-                parseNumberOrReference(parseDirectRefs = false)
+                parseNumberOrReference(parseDirectRefs = true)
             }
                 ?: throw IllegalStateException("expected number property or value or '+' or '-' , got $currentChar in for loop incrementer")
             return NumberedForLoopIncrementer(
@@ -271,8 +271,12 @@ private fun LazyBlock.parseNumberedForLoopAfterVariable(variableName: String): F
             if (conditionalConst == variableName) {
                 val conditionType = source.parseConditionType()
                     ?: throw IllegalStateException("expected conditional operator , got ${source.currentChar}")
-                val conditional = source.parseAnyExpressionOrValue()
-                    ?: throw IllegalStateException("expected number property of value got ${source.currentChar}")
+                val conditional = source.parseAnyExpressionOrValue(
+                    parseFirstStringOrChar = true,
+                    parseNotFirstStringOrChar = true,
+                    parseDirectRefs = true,
+                    allowAtLessExpressions = true
+                )?: throw IllegalStateException("expected number property of value got ${source.currentChar}")
                 if (source.increment(';')) {
                     val incrementer = source.parseNumberedForLoopIncrementer(variableName)
                     if (!source.increment(')')) {

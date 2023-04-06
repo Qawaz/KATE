@@ -5,7 +5,7 @@
         @var keys = object.getKeys()
 
         @function indent()
-            @for(@var i = 0;i<@var(indentation);i++)
+            @for(@var i = 0;i<indentation;i++)
                 @runtime.print_char('\t')
             @endfor
         @end_function
@@ -16,7 +16,7 @@
 
         @function listValue(param)
             @runtime.print_char('[')
-            @for(@var j = 0;j<@var(param.size());j++)
+            @for(@var j = 0;j<param.size();j++)
                 @var(jsonValue(param[j]))
                 @default_no_raw
                     @if(@var(j) != @var(param.size()) @- 1) , @endif
@@ -43,7 +43,7 @@
             @endif
         @end_function
 
-		@for(@var i=0;i<@var(keys.size());i++)
+		@for(@var i=0;i<keys.size();i++)
 
 		    @function separator()
 		        @if(@var(i) != @var(keys.size()) @- 1) @return "," @else @return "" @endif
