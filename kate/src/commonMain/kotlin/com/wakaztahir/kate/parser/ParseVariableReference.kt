@@ -87,7 +87,7 @@ internal fun SourceStream.parseModelDirective(parseDirectRefs: Boolean): ModelDi
 
 internal fun SourceStream.parseVariableReference(parseDirectRefs: Boolean): ModelDirective? {
     if (currentChar == '@' && increment("@var(")) {
-        val directive = parseModelDirective(parseDirectRefs = parseDirectRefs)
+        val directive = parseModelDirective(parseDirectRefs = true)
         if (!increment(')')) {
             printErrorLineNumberAndCharacterIndex()
             throw VariableReferenceParseException("expected ) got $currentChar at $pointer")

@@ -7,8 +7,8 @@
 		@var keys = object.getKeys()
 
 		@for(@var i=0;i<@var(keys.size());i++)
-            @if(@var(object[@var(keys[@var(i)])].getType()) == "object")
-                @var(writeObjectAsKotlinInterface(@var(object[@var(keys[@var(i)])]),@var(appendI)))
+            @if(@var(object[keys[i]].getType()) == "object")
+                @var(writeObjectAsKotlinInterface(object[keys[i]],appendI))
                 @runtime.print_string("\n\n")
             @endif
         @endfor
@@ -22,7 +22,7 @@
 		@for(@var i=0;i<@var(keys.size());i++)
 		    @runtime.print_char('\t')
 		    @default_no_raw
-				val @var(keys[@var(i)].decapitalize()) : @var(getKotlinType(@var(object[@var(keys[@var(i)])])))
+				val @var(keys[i].decapitalize()) : @var(getKotlinType(object[keys[i]]))
 			@end_default_no_raw
 			@runtime.print_string("\n")
 		@endfor

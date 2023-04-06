@@ -4,9 +4,9 @@
     @if(@var(param.getType()) == "object")
         @return @var(param.getName().capitalize())
     @elseif(@var(param.getType()) == "list")
-        @return "List<" @+ @var(getKotlinType(@var(param[0]))) @+ ">"
+        @return "List<" @+ @var(getKotlinType(param[0])) @+ ">"
     @elseif(@var(param.getType()) == "mutable_list")
-        @return "List<" @+ @var(getKotlinType(@var(param[0]))) @+ ">"
+        @return "List<" @+ @var(getKotlinType(param[0])) @+ ">"
     @else
         @return @var(param.getType().capitalize())
     @endif

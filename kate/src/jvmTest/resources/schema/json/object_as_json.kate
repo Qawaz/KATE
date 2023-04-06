@@ -17,7 +17,7 @@
         @function listValue(param)
             @runtime.print_char('[')
             @for(@var j = 0;j<@var(param.size());j++)
-                @var(jsonValue(@var(param[@var(j)])))
+                @var(jsonValue(param[j]))
                 @default_no_raw
                     @if(@var(j) != @var(param.size()) @- 1) , @endif
                 @end_default_no_raw
@@ -28,12 +28,12 @@
         @function jsonValue(param)
             @if(@var(param.getType()) == "object")
                 @default_no_raw
-                    @var(writeObjectAsJson(@var(param),indentation @+ 1))
+                    @var(writeObjectAsJson(param,indentation @+ 1))
                 @end_default_no_raw
             @elseif(@var(param.getType()) == "list")
-                @var(listValue(@var(param)))
+                @var(listValue(param))
             @elseif(@var(param.getType()) == "mutable_list")
-                @var(listValue(@var(param)))
+                @var(listValue(param))
             @elseif(@var(param.getType()) == "string")
                 @default_no_raw "@var(param)" @end_default_no_raw
             @elseif(@var(param.getType()) == "char")
@@ -54,12 +54,12 @@
             @runtime.print_char('\t')
 
 		    @default_no_raw
-                "@var(keys[@var(i)].decapitalize())" :
+                "@var(keys[i].decapitalize())" :
 			@end_default_no_raw
 
 			@runtime.print_char(' ')
 
-			@var(jsonValue(@var(object[@var(keys[@var(i)])])))
+			@var(jsonValue(object[keys[i]]))
 
 			@var(separator())
 
@@ -74,7 +74,7 @@
     @end_function
 
 	@define_placeholder(object,JsonObject)
-        @var(writeObjectAsJson(@var(__param__),0))
+        @var(writeObjectAsJson(__param__,0))
 	@end_define_placeholder
 
 @end_partial_raw
