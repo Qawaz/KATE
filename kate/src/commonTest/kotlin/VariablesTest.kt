@@ -1,8 +1,6 @@
 import com.wakaztahir.kate.GenerateCode
 import com.wakaztahir.kate.TemplateContext
-import com.wakaztahir.kate.model.IntValue
-import com.wakaztahir.kate.model.StringValue
-import com.wakaztahir.kate.model.asPrimitive
+import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.model.model.*
 import com.wakaztahir.kate.parser.*
 import com.wakaztahir.kate.parser.parseExpression
@@ -22,6 +20,26 @@ class VariablesTest {
         assertEquals(ref!!.propertyPath[0].name, "myVar")
         context.stream.model.putValue("myVar", StringValue("someValue"))
         assertEquals("someValue", ref.asPrimitive(context.stream.model).value)
+    }
+
+    @Test
+    fun testReferencedFunction() {
+        assertEquals(
+            expected = "5",
+            actual = GenerateCode(
+                "@var i = 5 @var j = @var(i) @runtime.print_string(j.toString())"
+            )
+        )
+    }
+
+    @Test
+    fun testLazyReferencedValue() {
+        assertEquals(
+            expected = "5",
+            actual = GenerateCode("@var(i)", MutableKTEObject {
+                putValue("i", LazyReferencedValue { IntValue(5) })
+            })
+        )
     }
 
     @Test

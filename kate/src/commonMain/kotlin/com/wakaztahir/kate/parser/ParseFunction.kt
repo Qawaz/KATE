@@ -121,7 +121,6 @@ class FunctionDefinition(val slice: FunctionSlice, val functionName: String, val
         override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
             return generateNow(model = model, parameters)
         }
-
         override fun toString(): String = "$functionName()"
     }
 

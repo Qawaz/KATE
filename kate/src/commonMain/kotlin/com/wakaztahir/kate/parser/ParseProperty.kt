@@ -34,6 +34,10 @@ internal data class ExpressionValue(
         }
     }
 
+    override fun getModelReference(reference: ModelReference): KATEValue? {
+        return null
+    }
+
     override fun compareTo(model: KATEObject, other: KATEValue): Int {
         return asNullablePrimitive(model).compareTo(model, other)
     }

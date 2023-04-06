@@ -48,7 +48,7 @@ fun LazyBlock.parseRuntimeGen(): CodeGen? {
         } else if (source.increment(STRING_DIRECTIVE)) {
             if (!source.increment('(')) throw IllegalStateException("expected '(' got ${source.currentChar}")
             val value = source.parseExpression(
-                parseDirectRefs = false,
+                parseDirectRefs = true,
                 parseFirstStringOrChar = true,
                 parseNotFirstStringOrChar = true,
                 allowAtLessExpressions = true

@@ -30,6 +30,10 @@ open class ModelDirective(val propertyPath: List<ModelReference>) : ReferencedVa
         return getKTEValue(model).compareTo(model, other)
     }
 
+    override fun getModelReference(reference: ModelReference): KATEValue? {
+        return null
+    }
+
     override fun getKTEValue(model: KATEObject): KATEValue {
         return model.getModelReferenceValue(model = model, path = propertyPath, callFunctions = true)
     }
