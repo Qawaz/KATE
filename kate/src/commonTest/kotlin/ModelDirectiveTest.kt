@@ -133,6 +133,7 @@ class ModelDirectiveTest {
         }
         assertEquals("true1233", GenerateCode("@var(property1)@var(property2.property3)@var(callSum(1,2))", model))
         assertEquals("3", GenerateCode("@var sum = @var(callSum(1,2)) @var(sum)", model))
+        assertEquals("16", GenerateCode("@var(callSum(9 + 3,2 * 2))", model))
     }
 
 }

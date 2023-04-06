@@ -28,7 +28,7 @@
         @function jsonValue(param)
             @if(param.getType() == "object")
                 @default_no_raw
-                    @var(writeObjectAsJson(param,indentation @+ 1))
+                    @var(writeObjectAsJson(param,indentation + 1))
                 @end_default_no_raw
             @elseif(param.getType() == "list")
                 @var(listValue(param))

@@ -15,7 +15,10 @@ internal fun SourceStream.parseFunctionParameters(): List<ReferencedValue>? {
         val parameters = mutableListOf<ReferencedValue>()
         do {
             val parameter = this.parseAnyExpressionOrValue(
-                parseDirectRefs = true
+                parseFirstStringOrChar = true,
+                parseNotFirstStringOrChar = true,
+                parseDirectRefs = true,
+                allowAtLessExpressions = true
             )
             if (parameter != null) {
                 parameters.add(parameter)
