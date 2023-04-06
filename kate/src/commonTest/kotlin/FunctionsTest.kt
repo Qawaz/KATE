@@ -63,13 +63,13 @@ class FunctionsTest {
     }
 
     @Test
-    fun testDirectRefsInFunctionParams(){
+    fun testDirectRefsInFunctions(){
         assertEquals(
             expected = "world",
             actual = GeneratePartialRaw(
                 """
                 |@function MyFunc(param1)
-                |@return @var(param1)
+                |@return param1
                 |@end_function
                 |@var world = "world"
                 |@default_no_raw @var(MyFunc(world)) @end_default_no_raw

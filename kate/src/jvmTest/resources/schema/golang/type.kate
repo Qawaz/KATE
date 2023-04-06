@@ -2,11 +2,11 @@
 
 @function getGolangType(param)
     @if(param.getType() == "object")
-        @return @var(param.getName().capitalize())
+        @return param.getName().capitalize()
     @elseif(param.getType() == "list")
-        @return "[]" @+ @var(getGolangType(param[0]))
+        @return "[]" + getGolangType(param[0])
     @elseif(param.getType() == "mutable_list")
-        @return "[]" @+ @var(getGolangType(param[0]))
+        @return "[]" + getGolangType(param[0])
     @elseif(param.getType() == "boolean")
         @return "bool"
     @elseif(param.getType() == "double")
@@ -16,7 +16,7 @@
     @elseif(param.getType() == "char")
         @return "rune"
     @else
-        @return @var(param.getType())
+        @return param.getType()
     @endif
 @end_function
 

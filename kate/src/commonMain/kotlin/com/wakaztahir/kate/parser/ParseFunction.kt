@@ -136,7 +136,12 @@ class FunctionDefinition(val slice: FunctionSlice, val functionName: String, val
 
 private fun LazyBlock.parseFunctionReturn(): ReferencedValue? {
     if (source.currentChar == '@' && source.increment("@return ")) {
-        return source.parseAnyExpressionOrValue() ?: KATEUnit
+        return source.parseAnyExpressionOrValue(
+            parseFirstStringOrChar = true,
+            parseNotFirstStringOrChar = true,
+            parseDirectRefs = true,
+            allowAtLessExpressions = true
+        ) ?: KATEUnit
     }
     return null
 }
