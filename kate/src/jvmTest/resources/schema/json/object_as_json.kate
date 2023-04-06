@@ -19,24 +19,24 @@
             @for(@var j = 0;j<param.size();j++)
                 @var(jsonValue(param[j]))
                 @default_no_raw
-                    @if(@var(j) != @var(param.size()) @- 1) , @endif
+                    @if(j != param.size() @- 1) , @endif
                 @end_default_no_raw
             @endfor
             @runtime.print_char(']')
         @end_function
 
         @function jsonValue(param)
-            @if(@var(param.getType()) == "object")
+            @if(param.getType() == "object")
                 @default_no_raw
                     @var(writeObjectAsJson(param,indentation @+ 1))
                 @end_default_no_raw
-            @elseif(@var(param.getType()) == "list")
+            @elseif(param.getType() == "list")
                 @var(listValue(param))
-            @elseif(@var(param.getType()) == "mutable_list")
+            @elseif(param.getType() == "mutable_list")
                 @var(listValue(param))
-            @elseif(@var(param.getType()) == "string")
+            @elseif(param.getType() == "string")
                 @default_no_raw "@var(param)" @end_default_no_raw
-            @elseif(@var(param.getType()) == "char")
+            @elseif(param.getType() == "char")
                 @default_no_raw "@var(param)" @end_default_no_raw
             @else
                 @default_no_raw @var(param) @end_default_no_raw
@@ -46,7 +46,7 @@
 		@for(@var i=0;i<keys.size();i++)
 
 		    @function separator()
-		        @if(@var(i) != @var(keys.size()) @- 1) @return "," @else @return "" @endif
+		        @if(i != keys.size() @- 1) @return "," @else @return "" @endif
 		    @end_function
 
             @var(indent())

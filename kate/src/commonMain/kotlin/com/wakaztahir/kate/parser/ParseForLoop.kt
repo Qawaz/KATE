@@ -178,7 +178,7 @@ private fun LazyBlock.parseForBlockValue(): ForLoopLazyBlockSlice {
 }
 
 private fun LazyBlock.parseConditionalFor(): ForLoop.ConditionalFor? {
-    val condition = source.parseCondition()
+    val condition = source.parseCondition(parseDirectRefs = false)
     if (condition != null) {
         source.increment(')')
         source.increment(' ')

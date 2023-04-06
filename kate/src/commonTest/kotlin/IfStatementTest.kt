@@ -15,12 +15,15 @@ class IfStatementTest {
         updateStream("@var var2 = $var2")
         stream.parseVariableDeclaration()!!.storeValue(stream.model)
         updateStream("@var(var1) $condition @var(var2)")
-        return stream.parseCondition()!!.evaluate(stream.model)
+        val result1 = stream.parseCondition(parseDirectRefs = false)!!.evaluate(stream.model)
+        updateStream("var1 $condition var2")
+        val result2 = stream.parseCondition(parseDirectRefs = true)!!.evaluate(stream.model)
+        return result1 && result2
     }
 
     private fun evaluate(var1: String, condition: String, var2: String, constants: Boolean = true): Boolean {
         val context = TemplateContext(("$var1 $condition $var2"))
-        val result = context.stream.parseCondition()!!.evaluate(context)
+        val result = context.stream.parseCondition(parseDirectRefs = false)!!.evaluate(context)
         val result2 = if (constants) context.evaluateConstants(var1, condition, var2) else true
         return result && result2
     }
@@ -30,6 +33,22 @@ class IfStatementTest {
         val context = TemplateContext("@if(@var(var1)) blockValue @endif")
         context.stream.model.putValue("var1", true)
         assertEquals("blockValue", context.getDestinationAsString())
+    }
+
+    @Test
+    fun testIfDirectRefs(){
+        assertEquals(
+            expected = "blockValue",
+            actual = GenerateCode("@var i = 5 @if(i == 5) blockValue @endif")
+        )
+        assertEquals(
+            expected = "",
+            actual = GenerateCode("@var i = 4 @if(i == 5) blockValue @endif")
+        )
+        assertEquals(
+            expected = "10",
+            actual = GenerateCode("@var i = 10 @var j = 10 @if(i == j) @var(j) @endif")
+        )
     }
 
     @Test
@@ -54,7 +73,7 @@ class IfStatementTest {
     @Test
     fun testUnequalCondition() {
         val context = TemplateContext(("\"ValueOne\" == \"SecondValue\""))
-        val condition = context.stream.parseCondition()!! as LogicalCondition
+        val condition = context.stream.parseCondition(parseDirectRefs = false)!! as LogicalCondition
         assertEquals("ValueOne", condition.propertyFirst.asPrimitive(context.stream.model).value)
         assertEquals("SecondValue", condition.propertySecond.asPrimitive(context.stream.model).value)
     }
@@ -131,7 +150,7 @@ class IfStatementTest {
     @Test
     fun testConstantsRefs() {
         val context = TemplateContext(("\"ValueOne\" == \"SecondValue\""))
-        val condition = context.stream.parseCondition()!! as LogicalCondition
+        val condition = context.stream.parseCondition(parseDirectRefs = false)!! as LogicalCondition
         assertEquals("ValueOne", condition.propertyFirst.asPrimitive(context.stream.model).value)
         assertEquals("SecondValue", condition.propertySecond.asPrimitive(context.stream.model).value)
     }

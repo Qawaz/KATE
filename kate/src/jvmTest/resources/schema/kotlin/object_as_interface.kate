@@ -7,7 +7,7 @@
 		@var keys = object.getKeys()
 
 		@for(@var i=0;i<keys.size();i++)
-            @if(@var(object[keys[i]].getType()) == "object")
+            @if(object[keys[i]].getType() == "object")
                 @var(writeObjectAsKotlinInterface(object[keys[i]],appendI))
                 @runtime.print_string("\n\n")
             @endif
@@ -15,7 +15,7 @@
 
 		<%-- Creating interface definition --%>
 		@default_no_raw
-			interface @if(@var(appendI)) I @endif @var(object.getName()) {
+			interface @if(appendI) I @endif @var(object.getName()) {
 		@end_default_no_raw
         @runtime.print_string("\n")
 
@@ -32,10 +32,10 @@
 
 	@define_placeholder(object,KotlinInterface)
 	    @var appendI = false
-	    @if(@var(this.parent.contains("__append_i__")))
+	    @if(this.parent.contains("__append_i__"))
 	        @var appendI = this.parent.__append_i__
         @endif
-        @var(writeObjectAsKotlinInterface(@var(__param__),@var(appendI)))
+        @var(writeObjectAsKotlinInterface(__param__,appendI))
 	@end_define_placeholder
 
 @end_partial_raw

@@ -33,9 +33,14 @@ internal fun SourceStream.parseConditionType(): ConditionType? {
     }
 }
 
-internal fun SourceStream.parseCondition(): Condition? {
+internal fun SourceStream.parseCondition(parseDirectRefs : Boolean): Condition? {
 
-    val propertyFirst = this.parseAnyExpressionOrValue() ?: run {
+    val propertyFirst = this.parseAnyExpressionOrValue(
+        parseFirstStringOrChar = true,
+        parseNotFirstStringOrChar = true,
+        parseDirectRefs = parseDirectRefs,
+        allowAtLessExpressions = true
+    ) ?: run {
         return null
     }
 
@@ -56,7 +61,12 @@ internal fun SourceStream.parseCondition(): Condition? {
     }
 
     escapeSpaces()
-    val propertySecond = this.parseAnyExpressionOrValue() ?: run {
+    val propertySecond = this.parseAnyExpressionOrValue(
+        parseFirstStringOrChar = true,
+        parseNotFirstStringOrChar = true,
+        parseDirectRefs = parseDirectRefs,
+        allowAtLessExpressions = true
+    ) ?: run {
         throw IllegalStateException("condition's right hand side cannot be found")
     }
 
@@ -117,7 +127,7 @@ private fun LazyBlock.parseIfBlockValue(ifType: IfType): LazyBlockSlice {
 internal fun LazyBlock.parseSingleIf(start: String, ifType: IfType): SingleIf? {
     if (source.currentChar == '@' && source.increment(start)) {
         if (ifType != IfType.Else) {
-            val condition = source.parseCondition()
+            val condition = source.parseCondition(parseDirectRefs = true)
             if (condition != null) {
                 if (source.increment(')')) {
                     source.increment(' ')
