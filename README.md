@@ -91,3 +91,7 @@ After this invocation `@var i = 5 @var(i)` , This code will no longer print `Kat
 
 Now to put everything in your perspective , There are placeholders for all the types __KATE__ supports , Primitives ,
 Lists & Objects
+
+## Licensing
+
+All the code generated using __KATE__ is totally yours , templates that you write are yours , You can license them however you like , __KATE__ and templates shipped with __KATE__ are under [LICENSE](./LICENSE) defined in this repository
