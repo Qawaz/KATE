@@ -40,7 +40,7 @@ The value of the variable can only be one of these
 
 To assign to another variable
 
-`@var i = @var(j)` or reference directly `@var i = j`
+ `@var i = j`
 
 __KATE__ also supports assignment operators `+`,`-`,`*`,`/`,`%` so you can also `@var i *= j`
 
@@ -54,7 +54,7 @@ To invoke a function
 
 Invoking a function without outputting returned value
 
-`@var(@funcName())`
+`@partial_raw funcName() @end_partial_raw`
 
 ### getType()
 
@@ -81,9 +81,9 @@ Every variable has a `getType` function available which returns type in string f
 
 `2 @+ 2` outputs `4`
 
-You can use variables in expressions
+Expressions inside `partial_raw` or inside other `@` directives are `at_less` meaning they don't require `@`
 
-This rule won't stand in all modes / cases, for example in variable declaration
+For example in variable declaration
 
 `@var name = 2 + 2` name's value is 4
 
@@ -350,8 +350,7 @@ To define a function
 @end_function
 ```
 
-To invoke the function `@var(myFunc("myOwnStr"))` can be used , prefixed with `@` if you don't want to output
-returned value
+To invoke the function `@var(myFunc("myOwnStr"))` can be used
 
 The code above returns the first parameter passed to the function using indexing operator which translates to `get(0)`
 

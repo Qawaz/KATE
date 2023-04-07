@@ -3,6 +3,7 @@ package com.wakaztahir.kate.model
 import com.wakaztahir.kate.model.model.KATEObject
 import com.wakaztahir.kate.model.model.KATEValue
 import com.wakaztahir.kate.model.model.MutableKATEObject
+import com.wakaztahir.kate.parser.parsePartialRawImplicitDirective
 import com.wakaztahir.kate.parser.stream.DestinationStream
 import com.wakaztahir.kate.parser.stream.TextSourceStream
 
@@ -37,6 +38,14 @@ open class PlaceholderBlock(
 
     protected open fun generateActual(destination: DestinationStream) {
         super.generateTo(destination)
+    }
+
+    override fun parseImplicitDirectives(): CodeGen? {
+        super.parseImplicitDirectives()?.let { return it }
+        if (!isWriteUnprocessedTextEnabled) {
+            parsePartialRawImplicitDirective()?.let { return it }
+        }
+        return null
     }
 
     override fun generateTo(destination: DestinationStream) {

@@ -43,7 +43,6 @@ private fun SourceStream.parseIndexingOperatorValue(parseDirectRefs: Boolean): R
 
 internal fun SourceStream.parseIndexingOperatorCall(
     parseDirectRefs: Boolean,
-    invokeOnly: Boolean
 ): ModelReference.FunctionCall? {
     if (increment('[')) {
         val indexingValue = parseIndexingOperatorValue(parseDirectRefs)
@@ -51,7 +50,6 @@ internal fun SourceStream.parseIndexingOperatorCall(
         if (increment(']')) {
             return ModelReference.FunctionCall(
                 name = "get",
-                invokeOnly = invokeOnly,
                 parametersList = listOf(indexingValue)
             )
         } else {
@@ -61,42 +59,62 @@ internal fun SourceStream.parseIndexingOperatorCall(
     return null
 }
 
-internal fun SourceStream.parseDotReferencesInto(parseDirectRefs: Boolean): MutableList<ModelReference>? {
+internal fun SourceStream.parseDotReferencesInto(
+    parseDirectRefs: Boolean,
+    throwOnEmptyVariableName: Boolean,
+): MutableList<ModelReference>? {
     var propertyPath: MutableList<ModelReference>? = null
+    val previous = pointer
     do {
-        val invokeOnly = increment('@')
-        if(currentChar.isDigit()){
+        if (currentChar.isDigit()) {
             throw VariableReferenceParseException("variable name cannot begin with a digit")
         }
         val propertyName = parseTextWhile { currentChar.isVariableName() }
+        if (propertyName.isEmpty()) {
+            if (throwOnEmptyVariableName || propertyPath != null) {
+                throw IllegalStateException("variable name cannot be empty")
+            } else {
+                setPointerAt(previous)
+                return null
+            }
+        }
         val parameters = parseFunctionParameters()
         if (propertyPath == null) propertyPath = mutableListOf()
         if (parameters != null) {
-            propertyPath.add(ModelReference.FunctionCall(propertyName, invokeOnly = invokeOnly, parameters))
+            propertyPath.add(ModelReference.FunctionCall(propertyName, parameters))
         } else {
             propertyPath.add(ModelReference.Property(propertyName))
         }
-        parseIndexingOperatorCall(parseDirectRefs, invokeOnly)?.let { propertyPath.add(it) }
+        parseIndexingOperatorCall(parseDirectRefs = parseDirectRefs)?.let { propertyPath.add(it) }
     } while (increment('.'))
     return propertyPath
 }
 
 class VariableReferenceParseException(message: String) : Exception(message)
 
-internal fun SourceStream.parseModelDirective(parseDirectRefs: Boolean): ModelDirective? {
-    parseDotReferencesInto(parseDirectRefs = parseDirectRefs)?.let { return ModelDirective(it) }
+internal fun SourceStream.parseModelDirective(
+    parseDirectRefs: Boolean,
+    throwOnEmptyVariableName: Boolean
+): ModelDirective? {
+    parseDotReferencesInto(
+        parseDirectRefs = parseDirectRefs,
+        throwOnEmptyVariableName = throwOnEmptyVariableName,
+    )?.let { return ModelDirective(it) }
     return null
 }
 
 internal fun SourceStream.parseVariableReference(parseDirectRefs: Boolean): ModelDirective? {
     if (currentChar == '@' && increment("@var(")) {
-        val directive = parseModelDirective(parseDirectRefs = true)
+        val directive = parseModelDirective(parseDirectRefs = true, throwOnEmptyVariableName = true)
         if (!increment(')')) {
             printErrorLineNumberAndCharacterIndex()
-            throw VariableReferenceParseException("expected ) got $currentChar at $pointer")
+            throw VariableReferenceParseException("expected ')' got $currentChar at $pointer")
         }
         return directive
     }
-    if (parseDirectRefs) return parseModelDirective(true)?.let { return it }
+    if (parseDirectRefs) return parseModelDirective(
+        parseDirectRefs = true,
+        throwOnEmptyVariableName = false
+    )?.let { return it }
     return null
 }

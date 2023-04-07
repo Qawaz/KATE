@@ -2,6 +2,7 @@ package com.wakaztahir.kate.parser
 
 import com.wakaztahir.kate.dsl.ScopedModelObject
 import com.wakaztahir.kate.model.*
+import com.wakaztahir.kate.model.model.KATEUnit
 import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.parser.stream.*
 import com.wakaztahir.kate.parser.stream.increment
@@ -69,6 +70,20 @@ fun LazyBlock.parseRawBlock(): RawBlock? {
                 inheritModel = true
             )
         )
+    }
+    return null
+}
+
+fun LazyBlock.parsePartialRawImplicitDirective() : CodeGen? {
+    source.parseVariableReference(
+        parseDirectRefs = true
+    )?.let {
+        it.propertyPath.lastOrNull()?.let { c -> c as? ModelReference.FunctionCall }?.let { call ->
+            return it.toEmptyPlaceholderInvocation(model, source.pointer)
+        } ?: run {
+            throw IllegalStateException("variable reference $it cannot be used inside @partial_raw")
+        }
+
     }
     return null
 }

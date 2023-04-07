@@ -90,7 +90,6 @@ interface LazyBlock {
 
     fun parseAtDirective(): CodeGen? {
         parseRuntimeGen()?.let { return it }
-        parseImplicitDirectives()?.let { return it }
         parseNestedAtDirective(this)?.let { return it }
         parseRawBlock()?.let { return it }
         parsePartialRaw()?.let { return it }
@@ -103,6 +102,7 @@ interface LazyBlock {
         parsePlaceholderInvocation()?.let { return it }
         parseFunctionDefinition(anonymousFunctionName = null)?.let { return it }
         parsePlaceholderUse()?.let { return it }
+        parseImplicitDirectives()?.let { return it }
         return null
     }
 

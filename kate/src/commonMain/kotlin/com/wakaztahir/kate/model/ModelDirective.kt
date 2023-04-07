@@ -14,7 +14,6 @@ sealed interface ModelReference {
 
     class FunctionCall(
         override val name: String,
-        var invokeOnly: Boolean = true,
         val parametersList: List<ReferencedValue>
     ) : ModelReference {
         override fun toString(): String {
@@ -34,8 +33,17 @@ open class ModelDirective(val propertyPath: List<ModelReference>) : ReferencedVa
         return null
     }
 
+    fun toEmptyPlaceholderInvocation(model: MutableKATEObject, endPointer: Int): PlaceholderInvocation {
+        model.getModelReferenceValue(model = model, path = propertyPath)
+        return PlaceholderInvocation(
+            placeholderName = KATEUnit.getKateType(model),
+            paramValue = KATEUnit,
+            invocationEndPointer = endPointer
+        )
+    }
+
     override fun getKTEValue(model: KATEObject): KATEValue {
-        return model.getModelReferenceValue(model = model, path = propertyPath, callFunctions = true)
+        return model.getModelReferenceValue(model = model, path = propertyPath)
     }
 
     override fun toString(): String = propertyPath.joinToString(".")

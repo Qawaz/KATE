@@ -4,6 +4,7 @@ import com.wakaztahir.kate.model.model.KATEObject
 import com.wakaztahir.kate.model.model.KATEUnit
 import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.parser.parseDefaultNoRaw
+import com.wakaztahir.kate.parser.parsePartialRawImplicitDirective
 import com.wakaztahir.kate.parser.parseVariableReference
 import com.wakaztahir.kate.parser.stream.DestinationStream
 import kotlin.jvm.JvmInline
@@ -40,14 +41,7 @@ open class PartialRawLazyBlockSlice(
 ) {
 
     override fun parseImplicitDirectives(): CodeGen? {
-        source.parseVariableReference(false)?.let {
-            it.propertyPath.lastOrNull()?.let { c -> c as? ModelReference.FunctionCall }?.let { call ->
-                call.invokeOnly = true
-                return it.toPlaceholderInvocation(model, source.pointer) ?: KATEUnit
-            } ?: run {
-                throw IllegalStateException("variable reference $it cannot be used inside @partial_raw")
-            }
-        }
+        parsePartialRawImplicitDirective()?.let { return it }
         return null
     }
 

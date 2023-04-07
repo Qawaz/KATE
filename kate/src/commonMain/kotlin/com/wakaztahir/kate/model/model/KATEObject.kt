@@ -20,22 +20,13 @@ interface KATEObject : ReferencedValue {
         )
     }
 
-    fun getModelReferenceValue(model: KATEObject, path: List<ModelReference>, callFunctions: Boolean): KATEValue {
+    fun getModelReferenceValue(model: KATEObject, path: List<ModelReference>): KATEValue {
         var currentVal: KATEValue = this
         for (prop in path) {
             when (prop) {
                 is ModelReference.FunctionCall -> {
                     (currentVal.getModelReference(prop) as? KATEFunction)?.let { func ->
-                        currentVal = if (callFunctions) {
-                            if (prop.invokeOnly) {
-                                func.invoke(model, currentVal, prop.parametersList)
-                                KATEUnit
-                            } else {
-                                func.invoke(model, currentVal, prop.parametersList)
-                            }
-                        } else {
-                            func
-                        }
+                        currentVal = func.invoke(model, currentVal, prop.parametersList)
                     } ?: run {
                         throw UnresolvedValueException("function ${path.pathUntil(prop)} does not exist on value : $currentVal")
                     }

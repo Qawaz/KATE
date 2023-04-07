@@ -8,13 +8,17 @@ import com.wakaztahir.kate.parser.stream.DestinationStream
 
 object KATEUnit : ReferencedValue, CodeGen {
 
-    override fun toString(): String = "KTEUnit"
+    override fun toString(): String = "KATEUnit"
 
-    private val KTEUnitType = StringValue("unit")
+    private val KATEUnitType = StringValue("unit")
+
+    override fun getKateType(model: KATEObject): String {
+        return KATEUnitType.value
+    }
 
     private val KTEUnitTypeFunction = object : KATEFunction() {
         override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
-            return KTEUnitType
+            return KATEUnitType
         }
 
         override fun toString(): String = this@KATEUnit.toString()

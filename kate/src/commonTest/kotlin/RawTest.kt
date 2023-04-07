@@ -39,7 +39,9 @@ class RawTest {
 
     @Test
     fun testPartialRaw() {
-        assertEquals("", GenerateCode("@partial_raw BlockValue @end_partial_raw"))
+        assertFails {
+            GenerateCode("@partial_raw BlockValue @end_partial_raw")
+        }
         assertFails {
             GenerateCode("@partial_raw @var i=5 @var(i) @end_partial_raw")
         }

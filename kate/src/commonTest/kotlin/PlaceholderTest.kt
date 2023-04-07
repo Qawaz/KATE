@@ -5,6 +5,7 @@ import com.wakaztahir.kate.parser.parsePlaceholderInvocation
 import com.wakaztahir.kate.parser.stream.TextDestinationStream
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFails
 
 class PlaceholderTest {
 
@@ -46,6 +47,17 @@ class PlaceholderTest {
         val invocation = "@placeholder(MyPH,@var(MyObject))"
         assertEquals("5", GenerateCode("$placeholderDefinition $objectDefinition $invocation"))
         assertEquals("5", GenerateCode("$objectDefinition $placeholderDefinition $invocation"))
+        assertEquals(
+            expected = "hello",
+            actual = GenerateCode("@define_placeholder(X) hello @end_define_placeholder @placeholder(X)")
+        )
+        assertEquals(
+            expected = "hello",
+            actual = GenerateCode("@define_placeholder(X) hello @end_define_placeholder @partial_raw @placeholder(X) @end_partial_raw")
+        )
+        assertFails {
+            GenerateCode("@partial_raw @define_placeholder(X) hello @end_define_placeholder @end_partial_raw @placeholder(X)")
+        }
     }
 
     @Test

@@ -7,10 +7,3 @@ fun ReferencedValue.asPrimitive(model: KATEObject): PrimitiveValue<*> {
     return asNullablePrimitive(model) ?: throw IllegalStateException("value is not a primitive")
 }
 
-fun indentation(indentationLevel: Int): String {
-    var indentation = ""
-    repeat(indentationLevel) {
-        indentation += '\t'
-    }
-    return indentation
-}

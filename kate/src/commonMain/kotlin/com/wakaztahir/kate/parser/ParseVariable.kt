@@ -46,7 +46,12 @@ class VariableDeclarationParseException(message: String) : Exception(message)
 internal fun Char.isVariableName(): Boolean = this.isLetterOrDigit() || this == '_'
 
 internal fun SourceStream.parseVariableName(): String? {
+    val previous = pointer
     if (currentChar == '@' && increment("@var")) {
+        if (currentChar == '(') {
+            setPointerAt(previous)
+            return null
+        }
         increment(' ')
         return parseTextWhile { currentChar.isVariableName() }
     }

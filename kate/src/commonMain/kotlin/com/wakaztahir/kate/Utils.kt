@@ -1,6 +1,9 @@
 package com.wakaztahir.kate
 
 import com.wakaztahir.kate.model.ModelReference
+import com.wakaztahir.kate.model.PlaceholderBlock
+import com.wakaztahir.kate.model.PlaceholderInvocation
+import com.wakaztahir.kate.model.model.KATEUnit
 import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.model.model.ReferencedValue
 
@@ -19,7 +22,6 @@ val EmptyReferencedValuesList = emptyList<ReferencedValue>()
 
 val GetTypeModelReference = ModelReference.FunctionCall(
     name = "getType",
-    invokeOnly = false,
     parametersList = EmptyReferencedValuesList
 )
 

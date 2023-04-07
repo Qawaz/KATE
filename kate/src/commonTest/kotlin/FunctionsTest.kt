@@ -76,6 +76,18 @@ class FunctionsTest {
                 """.trimMargin()
             )
         )
+        assertEquals(
+            expected = "world",
+            actual = GeneratePartialRaw(
+                """
+                |@function MyFunc(param1)
+                |@default_no_raw @var(param1) @end_default_no_raw
+                |@end_function
+                |@var world = "world"
+                |MyFunc(world)
+                """.trimMargin()
+            )
+        )
     }
 
     @Test
