@@ -43,6 +43,30 @@ class FunctionsTest {
             actual = GeneratePartialRaw(
                 """
                 |@function MyFunc(param1)
+                |@runtime.print_string(param1)
+                |@end_function
+                |MyFunc("world")
+                """.trimMargin()
+            )
+        )
+        assertEquals(
+            expected = "\t\t\t",
+            actual = GeneratePartialRaw(
+                """
+                |@function indent(indentation)
+                |   @for(@var i = 0;i<indentation;i++)
+                |      @runtime.print_char('\t')
+                |   @endfor
+                |@end_function
+                |indent(3)
+                """.trimMargin()
+            )
+        )
+        assertEquals(
+            expected = "world",
+            actual = GeneratePartialRaw(
+                """
+                |@function MyFunc(param1)
                 |@runtime.print_string(@var(param1))
                 |@end_function
                 |@var(MyFunc("world"))

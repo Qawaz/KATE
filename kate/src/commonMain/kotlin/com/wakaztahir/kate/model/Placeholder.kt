@@ -27,8 +27,7 @@ open class PlaceholderBlock(
     indentationLevel = indentationLevel
 ) {
 
-    override var model: MutableKATEObject = parent
-        protected set
+    override val model: MutableKATEObject = parent
 
     private var paramValue: KATEValue? = null
 
@@ -41,8 +40,9 @@ open class PlaceholderBlock(
     }
 
     override fun parseImplicitDirectives(): CodeGen? {
-        super.parseImplicitDirectives()?.let { return it }
-        if (!isWriteUnprocessedTextEnabled) {
+        if (isWriteUnprocessedTextEnabled) {
+            super.parseImplicitDirectives()?.let { return it }
+        } else {
             parsePartialRawImplicitDirective()?.let { return it }
         }
         return null

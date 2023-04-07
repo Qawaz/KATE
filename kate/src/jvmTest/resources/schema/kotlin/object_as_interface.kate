@@ -35,7 +35,7 @@
 	    @if(this.parent.contains("__append_i__"))
 	        @var appendI = this.parent.__append_i__
         @endif
-        @var(writeObjectAsKotlinInterface(__param__,appendI))
+        writeObjectAsKotlinInterface(__param__,appendI)
 	@end_define_placeholder
 
 @end_partial_raw

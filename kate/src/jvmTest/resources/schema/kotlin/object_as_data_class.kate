@@ -40,7 +40,7 @@
         @if(this.parent.contains("__overriding__"))
             @var overriding = this.parent.__overriding__
         @endif
-        @var(writeObjectAsKotlinDataClass(__param__,overriding))
+        writeObjectAsKotlinDataClass(__param__,overriding)
 	@end_define_placeholder
 
 @end_partial_raw

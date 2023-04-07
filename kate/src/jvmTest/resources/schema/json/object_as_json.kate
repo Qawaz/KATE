@@ -74,7 +74,7 @@
     @end_function
 
 	@define_placeholder(object,JsonObject)
-        @var(writeObjectAsJson(__param__,0))
+        writeObjectAsJson(__param__,0)
 	@end_define_placeholder
 
 @end_partial_raw
