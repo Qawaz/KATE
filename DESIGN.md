@@ -269,11 +269,11 @@ To define a placeholder , You use `@define_placeholder`
 @end_define_placeholder
 ```
 
-Placeholders take two parameters , First the name of the placeholder
-and second the name of the definition of placeholder
+Placeholders take three parameters , First the name of the placeholder
+and second the name of the definition of placeholder , third the parameter name
 
 If you define a placeholder with a single parameter , The same name will be assigned to both,
-the placeholder and its definition
+the placeholder and its definition and `__param__` will be used as parameter name
 
 ### Invocation
 
@@ -294,6 +294,15 @@ That's why this code is possible
 @for(@var i=0;i<5;i++)
     @placeholder(Variable)
 @endfor
+```
+
+If you'd like to change the name of the parameter for the block , You can do by adding a third parameter to the placeholder
+definition , You can skip passing the definition name so placeholder name would be used for it
+
+```
+@define_placeholder(Variable,,scope)
+    @var(scope.i)
+@end_define_placeholder
 ```
 
 Passing a custom object to placeholder

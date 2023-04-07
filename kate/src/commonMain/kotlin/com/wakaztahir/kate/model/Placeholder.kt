@@ -11,10 +11,11 @@ open class PlaceholderBlock(
     parentBlock: LazyBlock,
     val placeholderName: String,
     val definitionName: String,
+    val parameterName: String?,
     startPointer: Int,
     length: Int,
     blockEndPointer: Int,
-    parent: MutableKATEObject,
+    model: MutableKATEObject,
     allowTextOut: Boolean,
     indentationLevel: Int
 ) : LazyBlockSlice(
@@ -22,12 +23,10 @@ open class PlaceholderBlock(
     startPointer = startPointer,
     length = length,
     blockEndPointer = blockEndPointer,
-    model = parent,
+    model = model,
     isWriteUnprocessedTextEnabled = allowTextOut,
     indentationLevel = indentationLevel
 ) {
-
-    override val model: MutableKATEObject = parent
 
     private var paramValue: KATEValue? = null
 
@@ -49,19 +48,20 @@ open class PlaceholderBlock(
     }
 
     override fun generateTo(destination: DestinationStream) {
+        val paramName = parameterName ?: "__param__"
         if (paramValue != null) {
-            require(!model.contains("__param__")) {
-                "when passing @var(__param__) value to placeholder invocation , defining value with same name \"__param__\" is not allowed \n this can also happen " +
+            require(!model.contains(paramName)) {
+                "when passing @var($paramName) value to placeholder invocation , defining value with same name \"$paramName\" is not allowed \n this can also happen " +
                         "if you invoke a placeholder inside a placeholder definition , placeholders are not recursive , solution is to call a recursive function inside a placeholder"
             }
 //            (paramValue as? ModelDirective)?.propertyPath?.lastOrNull()?.name?.let {
 //                model.putValue("__kte_param_name__", it)
 //            }
-            model.putValue("__param__", paramValue!!)
+            model.putValue(paramName, paramValue!!)
         }
         generateActual(destination)
         if (paramValue != null) {
-            model.removeKey("__param__")
+            model.removeKey(paramName)
 //            if (paramValue is ModelDirective) {
 //                (paramValue as? ModelDirective)?.propertyPath?.lastOrNull()?.name?.let {
 //                    model.removeKey("__kte_param_name__")
@@ -77,6 +77,7 @@ class TextPlaceholderBlock(
     parent: LazyBlock,
     placeholderName: String,
     definitionName: String,
+    parameterName: String?,
 ) : PlaceholderBlock(
     parentBlock = parent,
     placeholderName = placeholderName,
@@ -84,9 +85,10 @@ class TextPlaceholderBlock(
     startPointer = 0,
     blockEndPointer = 0,
     length = text.length,
-    parent = parent.model,
+    model = parent.model,
     allowTextOut = false,
-    indentationLevel = 0
+    indentationLevel = 0,
+    parameterName = parameterName
 ) {
     override fun generateActual(destination: DestinationStream) {
         TextSourceStream(

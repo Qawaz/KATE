@@ -38,7 +38,37 @@ private fun SourceStream.parsePlaceHolderNameAndDefinition(): Pair<String, Strin
     return null
 }
 
-private fun LazyBlock.parsePlaceholderBlock(nameAndDef: Pair<String, String>): PlaceholderBlock {
+private fun SourceStream.parsePlaceHolderNameAndDefinitionAndParameter(): Triple<String, String, String?>? {
+    val placeholderName = parsePlaceHolderName()
+    if (placeholderName != null) {
+        return if (increment(',')) {
+            val definitionName = parseTextWhile { currentChar.isPlaceholderDefName() }.ifEmpty { placeholderName }
+            if (increment(')')) {
+                Triple(placeholderName, definitionName, null)
+            } else {
+                if (increment(',')) {
+                    val parameterName = parseTextWhile { currentChar.isVariableName() }.ifEmpty { null }
+                    if (increment(')')) {
+                        Triple(placeholderName, definitionName, parameterName)
+                    } else {
+                        throw IllegalStateException("expected ')' found $currentChar when defining placeholder $placeholderName,$definitionName,$parameterName")
+                    }
+                } else {
+                    throw IllegalStateException("expected ')' or ',' found $currentChar when defining placeholder $placeholderName,$definitionName")
+                }
+            }
+        } else {
+            if (increment(')')) {
+                Triple(placeholderName, placeholderName, null)
+            } else {
+                throw IllegalStateException("expected ')' found $currentChar when defining placeholder $placeholderName")
+            }
+        }
+    }
+    return null
+}
+
+private fun LazyBlock.parsePlaceholderBlock(nameAndDef: Triple<String, String, String?>): PlaceholderBlock {
 
     val blockValue = parseBlockSlice(
         startsWith = "@define_placeholder",
@@ -51,9 +81,10 @@ private fun LazyBlock.parsePlaceholderBlock(nameAndDef: Pair<String, String>): P
         parentBlock = this,
         placeholderName = nameAndDef.first,
         definitionName = nameAndDef.second,
+        parameterName = nameAndDef.third,
         startPointer = blockValue.startPointer,
         length = blockValue.length,
-        parent = blockValue.model,
+        model = blockValue.model,
         blockEndPointer = blockValue.blockEndPointer,
         allowTextOut = isWriteUnprocessedTextEnabled,
         indentationLevel = blockValue.indentationLevel
@@ -64,7 +95,7 @@ private fun LazyBlock.parsePlaceholderBlock(nameAndDef: Pair<String, String>): P
 
 fun LazyBlock.parsePlaceholderDefinition(): PlaceholderDefinition? {
     if (source.currentChar == '@' && source.increment("@define_placeholder")) {
-        val nameAndDef = source.parsePlaceHolderNameAndDefinition()
+        val nameAndDef = source.parsePlaceHolderNameAndDefinitionAndParameter()
         if (nameAndDef != null) {
             val blockValue = parsePlaceholderBlock(nameAndDef = nameAndDef)
             return PlaceholderDefinition(

@@ -22,61 +22,71 @@ object DefaultPlaceholderManagerInitializer {
                     text = "",
                     parent = source,
                     placeholderName = UnitPlaceholderName,
-                    definitionName = UnitPlaceholderName
+                    definitionName = UnitPlaceholderName,
+                    parameterName = null
                 ),
                 TextPlaceholderBlock(
                     text = "@runtime.print_string(@var(__param__.toString()))",
                     parent = source,
                     placeholderName = DoublePlaceholderName,
-                    definitionName = DoublePlaceholderName
+                    definitionName = DoublePlaceholderName,
+                    parameterName = null
                 ),
                 TextPlaceholderBlock(
                     text = "@runtime.print_string(@var(__param__.toString()))",
                     parent = source,
                     placeholderName = IntPlaceholderName,
-                    definitionName = IntPlaceholderName
+                    definitionName = IntPlaceholderName,
+                    parameterName = null
                 ),
                 TextPlaceholderBlock(
                     text = "@runtime.print_string(@var(__param__.toString()))",
                     parent = source,
                     placeholderName = LongPlaceholderName,
-                    definitionName = LongPlaceholderName
+                    definitionName = LongPlaceholderName,
+                    parameterName = null
                 ),
                 TextPlaceholderBlock(
                     text = "@runtime.print_string(@var(__param__))",
                     parent = source,
                     placeholderName = StringPlaceholderName,
-                    definitionName = StringPlaceholderName
+                    definitionName = StringPlaceholderName,
+                    parameterName = null
                 ),
                 TextPlaceholderBlock(
                     text = "@runtime.print_char(@var(__param__))",
                     parent = source,
                     placeholderName = CharPlaceholderName,
-                    definitionName = CharPlaceholderName
+                    definitionName = CharPlaceholderName,
+                    parameterName = null
                 ),
                 TextPlaceholderBlock(
                     text = "@if(@var(__param__)) @runtime.print_string(\"true\") @else @runtime.print_string(\"false\") @endif",
                     parent = source,
                     placeholderName = BooleanPlaceholderName,
-                    definitionName = BooleanPlaceholderName
+                    definitionName = BooleanPlaceholderName,
+                    parameterName = null
                 ),
                 TextPlaceholderBlock(
                     text = "@runtime.print_string(@var(__param__.joinToString()))",
                     parent = source,
                     placeholderName = ListPlaceholderName,
-                    definitionName = ListPlaceholderName
+                    definitionName = ListPlaceholderName,
+                    parameterName = null
                 ),
                 TextPlaceholderBlock(
                     text = "@runtime.print_string(@var(__param__.joinToString()))",
                     parent = source,
                     placeholderName = MutableListPlaceholderName,
-                    definitionName = MutableListPlaceholderName
+                    definitionName = MutableListPlaceholderName,
+                    parameterName = null
                 ),
                 TextPlaceholderBlock(
                     text = "@runtime.print_string(@var(__param__.toString()))",
                     parent = source,
                     placeholderName = ObjectPlaceholderName,
-                    definitionName = ObjectPlaceholderName
+                    definitionName = ObjectPlaceholderName,
+                    parameterName = null
                 )
             )
         )
