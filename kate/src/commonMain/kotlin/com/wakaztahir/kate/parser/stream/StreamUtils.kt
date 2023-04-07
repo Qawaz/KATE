@@ -115,7 +115,7 @@ internal fun SourceStream.parseTextUntilConsumed(str: String): String {
 
 internal inline fun SourceStream.incrementUntilDirectiveWithSkip(
     skip: String,
-    canIncrementDirective: () -> String?,
+    canIncrementDirective: (skips : Int) -> String?,
 ): String? {
     var skips = 0
     while (!hasEnded) {
@@ -124,7 +124,7 @@ internal inline fun SourceStream.incrementUntilDirectiveWithSkip(
                 skips++
                 continue
             } else {
-                val incremented = canIncrementDirective()
+                val incremented = canIncrementDirective(skips)
                 if (incremented != null) {
                     if (skips == 0) {
                         return incremented

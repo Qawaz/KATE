@@ -5,6 +5,9 @@ import com.wakaztahir.kate.model.asPrimitive
 import com.wakaztahir.kate.parser.parseCondition
 import com.wakaztahir.kate.parser.parseVariableDeclaration
 import com.wakaztahir.kate.parser.parseIfStatement
+import com.wakaztahir.kate.parser.stream.increment
+import com.wakaztahir.kate.parser.stream.incrementUntilDirectiveWithSkip
+import com.wakaztahir.kate.parser.stream.printLeft
 import kotlin.test.*
 
 class IfStatementTest {
@@ -29,10 +32,14 @@ class IfStatementTest {
     }
 
     @Test
-    fun testConstRef() {
+    fun testBlockValue() {
         val context = TemplateContext("@if(@var(var1)) blockValue @endif")
         context.stream.model.putValue("var1", true)
         assertEquals("blockValue", context.getDestinationAsString())
+        assertEquals(
+            expected = "x",
+            actual = GenerateCode("""@if(1 == 1) @if(2 == 2) x @else y @endif @endif""")
+        )
     }
 
     @Test

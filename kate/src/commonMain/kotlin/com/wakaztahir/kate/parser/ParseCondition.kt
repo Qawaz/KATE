@@ -33,7 +33,7 @@ internal fun SourceStream.parseConditionType(): ConditionType? {
     }
 }
 
-internal fun SourceStream.parseCondition(parseDirectRefs : Boolean): Condition? {
+internal fun SourceStream.parseCondition(parseDirectRefs: Boolean): Condition? {
 
     val propertyFirst = this.parseAnyExpressionOrValue(
         parseFirstStringOrChar = true,
@@ -88,14 +88,18 @@ private fun LazyBlock.parseIfBlockValue(ifType: IfType): LazyBlockSlice {
             if (source.increment("@endif")) "@endif" else null
         }
     } else {
-        source.incrementUntilDirectiveWithSkip("@if") {
-            if (source.increment("@elseif")) {
-                "@elseif"
-            } else if (source.increment("@else")) {
-                "@else"
-            } else if (source.increment("@endif")) {
-                "@endif"
-            } else null
+        source.incrementUntilDirectiveWithSkip("@if") { skips ->
+            if (skips == 0) {
+                if (source.increment("@elseif")) {
+                    "@elseif"
+                } else if (source.increment("@else")) {
+                    "@else"
+                } else if (source.increment("@endif")) {
+                    "@endif"
+                } else null
+            } else {
+                if (source.increment("@endif")) "@endif" else null
+            }
         }
     }
 
