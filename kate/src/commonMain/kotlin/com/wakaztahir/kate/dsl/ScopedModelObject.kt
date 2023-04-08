@@ -12,7 +12,7 @@ class ScopedModelObject(override val parent: MutableKATEObject) : ModelObjectImp
     }
 
     override fun putValue(key: String, value: KATEValue) {
-        if (parent.contains(key) || parent.containsInAncestors(key)) {
+        if (parent.containsInAncestors(key)) {
             parent.putValue(key, value)
         } else {
             super.putValue(key, value)

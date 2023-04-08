@@ -23,7 +23,11 @@ open class ModelObjectImpl(override var objectName: String, override val parent:
     }
 
     override fun containsInAncestors(key: String): Boolean {
-        return parent?.containsInAncestors(key) ?: false
+        return if (contains(key)) {
+            true
+        } else {
+            parent?.containsInAncestors(key) ?: false
+        }
     }
 
     override fun getModelReference(reference: ModelReference): KATEValue? {

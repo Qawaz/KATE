@@ -3,10 +3,11 @@ package com.wakaztahir.kate.model.model
 import com.wakaztahir.kate.GlobalModelObjectName
 import com.wakaztahir.kate.dsl.ModelObjectImpl
 import com.wakaztahir.kate.model.*
+import kotlin.jvm.JvmName
 
 interface MutableKATEObject : KATEObject {
 
-    fun insertValue(key: String, value: KATEValue) : Boolean
+    fun insertValue(key: String, value: KATEValue): Boolean
 
     // Put Functions
 
@@ -22,6 +23,10 @@ interface MutableKATEObject : KATEObject {
         putValue(key, IntValue(value))
     }
 
+    fun putValue(key: String, value: Float) {
+        putValue(key, DoubleValue(value.toDouble()))
+    }
+
     fun putValue(key: String, value: Double) {
         putValue(key, DoubleValue(value))
     }
@@ -30,25 +35,24 @@ interface MutableKATEObject : KATEObject {
         putValue(key, BooleanValue(value))
     }
 
-// TODO this function doesn't work
-//    fun copy(other: KTEObject) {
-//        for (each in other.contained) putValue(each.key, each.value)
-//    }
-
-//    fun putIterable(key: String, value: List<Int>) {
-//        putIterable(key, ModelListImpl(value.map { IntValue(it) }))
+//    fun putList(key: String, value: List<Int>) {
+//        putValue(key, KATEListImpl(value.map { IntValue(it) }))
 //    }
 //
-//    fun putIterable(key: String, value: List<Float>) {
-//        putIterable(key, ModelListImpl(value.map { FloatValue(it) }))
+//    fun putList(key: String, value: List<Float>) {
+//        putValue(key, KATEListImpl(value.map { DoubleValue(it.toDouble()) }))
 //    }
 //
-//    fun putIterable(key: String, value: List<Boolean>) {
-//        putIterable(key, ModelListImpl(value.map { BooleanValue(it) }))
+//    fun putList(key: String, value: List<Double>) {
+//        putValue(key, KATEListImpl(value.map { DoubleValue(it) }))
 //    }
 //
-//    fun putIterable(key: String, value: List<String>) {
-//        putIterable(key, ModelListImpl(value.map { StringValue(it) }))
+//    fun putList(key: String, value: List<Boolean>) {
+//        putValue(key, KATEListImpl(value.map { BooleanValue(it) }))
+//    }
+//
+//    fun putList(key: String, value: List<String>) {
+//        putValue(key, KATEListImpl(value.map { StringValue(it) }))
 //    }
 
     interface PutObjectsScope {
