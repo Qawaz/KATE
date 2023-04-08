@@ -1,0 +1,4 @@
+@partial_raw
+    @embed_once ./common.kate
+    @embed_once ./common_embedded.kate
+@end_partial_raw

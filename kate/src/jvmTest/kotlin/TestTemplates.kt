@@ -2,6 +2,8 @@ import com.wakaztahir.kate.InputSourceStream
 import com.wakaztahir.kate.OutputDestinationStream
 import com.wakaztahir.kate.RelativeResourceEmbeddingManager
 import com.wakaztahir.kate.TemplateContext
+import com.wakaztahir.kate.dsl.ModelObjectImpl
+import com.wakaztahir.kate.model.model.KATEObject
 import com.wakaztahir.kate.model.model.MutableKATEObject
 import org.junit.Test
 import java.io.File
@@ -55,13 +57,12 @@ class TestTemplates {
 
     @Test
     fun testInputSourceStream() {
-
-        val input = object {}.javaClass.getResource("schema/main.kate")!!.openStream()
+        val input = object {}.javaClass.getResource("tests/main.kate")!!.openStream()
         val reader = input.bufferedReader()
         val text = reader.readText()
         reader.close()
         val sourceStream = InputSourceStream(
-            inputStream = object {}.javaClass.getResource("schema/main.kate")!!.openStream(),
+            inputStream = object {}.javaClass.getResource("tests/main.kate")!!.openStream(),
             model = getObject()
         )
         assertFalse(sourceStream.hasEnded)
@@ -69,50 +70,73 @@ class TestTemplates {
         assertEquals(text, other)
     }
 
-    private fun testTemplate(basePath: String, inputPath: String, outputPath: String) {
-        val model = getObject()
-        val embedding = RelativeResourceEmbeddingManager("schema/$basePath", object {}.javaClass)
-        val context = TemplateContext(
+    private fun getContextFor(
+        basePath: String,
+        inputPath: String,
+        model: MutableKATEObject = MutableKATEObject { }
+    ): TemplateContext {
+        val embedding = RelativeResourceEmbeddingManager(basePath, object {}.javaClass)
+        return TemplateContext(
             stream = InputSourceStream(
                 inputStream = embedding.getStream(inputPath),
                 model = model,
                 embeddingManager = embedding,
             )
         )
+    }
+
+    private fun testTemplateAsText(
+        basePath: String,
+        inputPath: String,
+        model: MutableKATEObject = MutableKATEObject { }
+    ): String {
+        return getContextFor(basePath = basePath, inputPath, model = model).getDestinationAsString()
+    }
+
+    private fun testSchemaTemplate(basePath: String, inputPath: String, outputPath: String) {
+        val context = getContextFor(basePath = "schema/$basePath", inputPath = inputPath)
         val output = output("output/$basePath/$outputPath")
         context.generateTo(output)
         output.outputStream.close()
     }
 
     @Test
-    fun testRawTemplates(){
+    fun testEmbedOnce() {
+        assertEquals(
+            expected = "Works",
+            actual = testTemplateAsText("tests/embedding", "test.kate")
+        )
+    }
+
+    @Test
+    fun testRawTemplates() {
         val basePath = "test/raw"
-        testTemplate(basePath, "raw_obj.kate", "raw_obj.kate")
+        testSchemaTemplate(basePath, "raw_obj.kate", "raw_obj.kate")
     }
 
     @Test
-    fun testJsonObjectTemplate(){
+    fun testJsonObjectTemplate() {
         val basePath = "test/json"
-        testTemplate(basePath, "object_as_json.kate", "object_as_json.json")
+        testSchemaTemplate(basePath, "object_as_json.kate", "object_as_json.json")
     }
 
     @Test
-    fun testObjectAsGoStruct(){
+    fun testObjectAsGoStruct() {
         val basePath = "test/golang"
-        testTemplate(basePath, "object_as_golang.kate", "object_as_golang.go")
+        testSchemaTemplate(basePath, "object_as_golang.kate", "object_as_golang.go")
     }
 
     @Test
     fun testKotlinTemplates() {
         val basePath = "test/kotlin"
-        testTemplate(basePath, "obj_as_data_class.kate", "obj_as_data_class.kt")
-        testTemplate(basePath, "obj_as_interface.kate", "obj_as_interface.kt")
-        testTemplate(basePath, "obj_override_interface_data_class.kate", "obj_override_interface_data_class.kt")
+        testSchemaTemplate(basePath, "obj_as_data_class.kate", "obj_as_data_class.kt")
+        testSchemaTemplate(basePath, "obj_as_interface.kate", "obj_as_interface.kt")
+        testSchemaTemplate(basePath, "obj_override_interface_data_class.kate", "obj_override_interface_data_class.kt")
     }
 
     @Test
     fun testGenerateTemplates() {
-        testTemplate("","main.kate", "main.kt")
+        testTemplateAsText("tests","main.kate",model = getObject())
     }
 
 }

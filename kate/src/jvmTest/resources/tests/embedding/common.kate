@@ -1,0 +1,5 @@
+@partial_raw
+    @define_placeholder(Astra)
+        Works
+    @end_define_placeholder
+@end_partial_raw
