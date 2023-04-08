@@ -70,6 +70,9 @@ Every variable has a `getType` function available which returns type in string f
 | list.getType()         | "list"         |
 | mutable_list.getType() | "mutable_list" |
 | object.getType()       | "object"       |
+| unit.getType()         | "unit"         |
+
+Every variable also has a `toString` function to convert to a string
 
 ## Expressions
 
