@@ -1,5 +1,6 @@
 package com.wakaztahir.kate.model
 
+import com.wakaztahir.kate.dsl.ScopedModelObject
 import com.wakaztahir.kate.model.model.KATEObject
 import com.wakaztahir.kate.model.model.KATEValue
 import com.wakaztahir.kate.model.model.MutableKATEObject
@@ -15,7 +16,7 @@ open class PlaceholderBlock(
     startPointer: Int,
     length: Int,
     blockEndPointer: Int,
-    model: MutableKATEObject,
+    override var model: MutableKATEObject,
     allowTextOut: Boolean,
     indentationLevel: Int
 ) : LazyBlockSlice(
@@ -28,10 +29,16 @@ open class PlaceholderBlock(
     indentationLevel = indentationLevel
 ) {
 
+    private var isInvocationModelSet = false
     private var paramValue: KATEValue? = null
 
-    fun setParamValue(value: KATEValue) {
+    fun setParamValue(value: KATEValue?) {
         this.paramValue = value
+    }
+
+    fun setInvocationModel(model: MutableKATEObject) {
+        this.model = ScopedModelObject(model)
+        isInvocationModelSet = true
     }
 
     protected open fun generateActual(destination: DestinationStream) {
@@ -49,25 +56,20 @@ open class PlaceholderBlock(
 
     override fun generateTo(destination: DestinationStream) {
         val paramName = parameterName ?: "__param__"
+        require(isInvocationModelSet) {
+            "invocation model should be set before invoking placeholder($placeholderName,$definitionName,$paramName)"
+        }
         if (paramValue != null) {
-            require(!model.contains(paramName)) {
-                "when passing @var($paramName) value to placeholder invocation , defining value with same name \"$paramName\" is not allowed \n this can also happen " +
-                        "if you invoke a placeholder inside a placeholder definition , placeholders are not recursive , solution is to call a recursive function inside a placeholder"
+            require(model.insertValue(paramName, paramValue!!)) {
+                "couldn't insert value by the name $paramName and $paramValue for placeholder invocation placeholder($placeholderName,$definitionName,$paramName)"
             }
-//            (paramValue as? ModelDirective)?.propertyPath?.lastOrNull()?.name?.let {
-//                model.putValue("__kte_param_name__", it)
-//            }
             model.putValue(paramName, paramValue!!)
         }
         generateActual(destination)
         if (paramValue != null) {
             model.removeKey(paramName)
-//            if (paramValue is ModelDirective) {
-//                (paramValue as? ModelDirective)?.propertyPath?.lastOrNull()?.name?.let {
-//                    model.removeKey("__kte_param_name__")
-//                }
-//            }
         }
+        isInvocationModelSet = false
     }
 
 }
@@ -116,7 +118,8 @@ class PlaceholderInvocation(
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
         val placeholder = block.source.placeholderManager.getPlaceholder(placeholderName = placeholderName)
             ?: throw IllegalStateException("placeholder with name $placeholderName not found")
-        placeholder.setParamValue(paramValue?.getKTEValue(block.model) ?: block.model)
+        placeholder.setParamValue(paramValue?.getKTEValue(block.model))
+        placeholder.setInvocationModel(block.model)
         placeholder.generateTo(destination)
         block.source.setPointerAt(invocationEndPointer)
     }

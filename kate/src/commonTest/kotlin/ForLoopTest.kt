@@ -5,7 +5,7 @@ import com.wakaztahir.kate.model.model.KATEListImpl
 import com.wakaztahir.kate.model.ModelDirective
 import com.wakaztahir.kate.model.StringValue
 import com.wakaztahir.kate.model.asPrimitive
-import com.wakaztahir.kate.model.model.MutableKTEObject
+import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.parser.ArithmeticOperatorType
 import com.wakaztahir.kate.parser.ForLoop
 import com.wakaztahir.kate.parser.parseForLoop
@@ -104,7 +104,7 @@ class ForLoopTest {
 
     @Test
     fun testForLoopGeneration4() {
-        val context = TemplateContext("@for(@var elem : @var(list)) @var(elem) @endfor", MutableKTEObject {
+        val context = TemplateContext("@for(@var elem : @var(list)) @var(elem) @endfor", MutableKATEObject {
             putValue("list", KATEListImpl(listOf("H", "e", "ll", "o").map { StringValue(it) }))
         })
         assertEquals("Hello", context.getDestinationAsString())
@@ -112,7 +112,7 @@ class ForLoopTest {
 
     @Test
     fun testForLoopGeneration5() {
-        val kteObject = MutableKTEObject {
+        val kteObject = MutableKATEObject {
             putValue("list", KATEListImpl(listOf("H", "e", "ll", "o").map { StringValue(it) }))
         }
         val context = TemplateContext(
@@ -124,7 +124,7 @@ class ForLoopTest {
 
     @Test
     fun testForLoopGenerationWithDirectReference() {
-        val context = TemplateContext("@for(@var elem : list) @var(elem) @endfor", MutableKTEObject {
+        val context = TemplateContext("@for(@var elem : list) @var(elem) @endfor", MutableKATEObject {
             putValue("list", KATEListImpl(listOf("H", "e", "ll", "o").map { StringValue(it) }))
         })
         assertEquals("Hello", context.getDestinationAsString())

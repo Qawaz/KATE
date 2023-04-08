@@ -40,7 +40,7 @@ class PlaceholderTest {
     fun testPlaceholderScopeInheritance() {
         assertEquals(
             expected = "01234",
-            actual = GenerateCode("@define_placeholder(Name) @var(__param__.i) @end_define_placeholder @for(@var i=0;i<5;i++) @placeholder(Name) @endfor")
+            actual = GenerateCode("@define_placeholder(Name) @var(i) @end_define_placeholder @for(@var i=0;i<5;i++) @placeholder(Name) @endfor")
         )
         val objectDefinition = "@define_object(MyObject) @var myVal = 5 @end_define_object"
         val placeholderDefinition = "@define_placeholder(MyPH) @var(__param__.myVal) @end_define_placeholder"

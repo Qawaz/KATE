@@ -36,7 +36,7 @@ class VariablesTest {
     fun testLazyReferencedValue() {
         assertEquals(
             expected = "5",
-            actual = GenerateCode("@var(i)", MutableKTEObject {
+            actual = GenerateCode("@var(i)", MutableKATEObject {
                 putValue("i", LazyReferencedValue { IntValue(5) })
             })
         )
@@ -79,7 +79,7 @@ class VariablesTest {
     fun testFunctionValue() {
         assertEquals(
             expected = "10",
-            actual = GenerateCode("@var i = @var(myFunc()) @var(i)", MutableKTEObject {
+            actual = GenerateCode("@var i = @var(myFunc()) @var(i)", MutableKATEObject {
                 putValue("myFunc", object : KATEFunction() {
                     override fun invoke(
                         model: KATEObject,
@@ -101,7 +101,7 @@ class VariablesTest {
             expected = """{
 	                    |	var1 : test
                         |}""".trimMargin(),
-            actual = GenerateCode("@var(this)", MutableKTEObject { putValue("var1", "test") })
+            actual = GenerateCode("@var(this)", MutableKATEObject { putValue("var1", "test") })
         )
     }
 

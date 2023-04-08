@@ -104,7 +104,7 @@ class ModelDirectiveTest {
 
             override fun toString(): String = "funName()"
         }
-        val context = TemplateContext("@var(funName())@var(propName)()@partial_raw funName() @end_partial_raw", MutableKTEObject {
+        val context = TemplateContext("@var(funName())@var(propName)()@partial_raw funName() @end_partial_raw", MutableKATEObject {
             putValue("funName", myFunc)
             putValue("propName", "propVal")
         })
@@ -114,7 +114,7 @@ class ModelDirectiveTest {
 
     @Test
     fun testParseModelDirectiveCodeGen() {
-        val model = MutableKTEObject {
+        val model = MutableKATEObject {
             putValue("property1", true)
             putObject("property2") {
                 putValue("property3", "123")

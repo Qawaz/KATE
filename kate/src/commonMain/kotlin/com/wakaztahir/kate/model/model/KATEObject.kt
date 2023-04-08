@@ -9,7 +9,9 @@ interface KATEObject : ReferencedValue {
     val parent: KATEObject?
     val contained: Map<String, KATEValue>
 
-    fun contains(key: String): Boolean
+    fun contains(key : String) : Boolean
+
+    fun containsInAncestors(key: String): Boolean
 
     fun get(key : String) : KATEValue?
 

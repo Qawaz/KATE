@@ -4,7 +4,8 @@ import com.wakaztahir.kate.model.ModelReference
 import com.wakaztahir.kate.model.model.*
 import com.wakaztahir.kate.runtime.KTEObjectImplementation
 
-open class ModelObjectImpl(override var objectName: String, override val parent: KATEObject? = null) : MutableKATEObject {
+open class ModelObjectImpl(override var objectName: String, override val parent: KATEObject? = null) :
+    MutableKATEObject {
 
     private val container: MutableMap<String, KATEValue> by lazy { hashMapOf() }
 
@@ -21,8 +22,21 @@ open class ModelObjectImpl(override var objectName: String, override val parent:
         return container.containsKey(key)
     }
 
+    override fun containsInAncestors(key: String): Boolean {
+        return parent?.containsInAncestors(key) ?: false
+    }
+
     override fun getModelReference(reference: ModelReference): KATEValue? {
         return container[reference.name] ?: KTEObjectImplementation.propertyMap[reference.name]
+    }
+
+    override fun insertValue(key: String, value: KATEValue): Boolean {
+        return if (contains(key)) {
+            false
+        } else {
+            container[key] = value
+            true
+        }
     }
 
     // ----- Putters

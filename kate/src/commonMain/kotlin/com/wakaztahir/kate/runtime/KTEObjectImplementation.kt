@@ -9,12 +9,12 @@ object KTEObjectImplementation {
     val propertyMap by lazy { hashMapOf<String, KATEValue>().apply { putObjectFunctions() } }
 
     private fun HashMap<String, KATEValue>.putObjectFunctions() {
-        put("get",object : KATEFunction(){
+        put("get", object : KATEFunction() {
             override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
                 val value = invokedOn as? KATEObject
                 require(value != null) { "invoked on object cannot be null" }
                 val required = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
-                require(required != null){ "get requires a single parameter" }
+                require(required != null) { "get requires a single parameter" }
                 return value.get(required) ?: KATEUnit
             }
 
@@ -58,14 +58,26 @@ object KTEObjectImplementation {
         })
         put("contains", object : KATEFunction() {
             override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
-                val value = invokedOn as? KATEObject
+                val value = invokedOn.asNullableObject(model)
                 val required = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
                 require(value != null) { "invoked on object cannot be null" }
-                require(required != null) { "exists require a single parameter by the name of object" }
+                require(required != null) { "contains require a single parameter by the name of object" }
                 return BooleanValue(value.contains(required))
             }
 
             override fun toString(): String = "contains(name : string) : boolean"
+
+        })
+        put("containsInAncestors", object : KATEFunction() {
+            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
+                val value = invokedOn.asNullableObject(model)
+                val required = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
+                require(value != null) { "invoked on object cannot be null" }
+                require(required != null) { "containsInAncestors require a single parameter by the name of object" }
+                return BooleanValue(value.containsInAncestors(required))
+            }
+
+            override fun toString(): String = "containsInAncestors(name : string) : boolean"
 
         })
         put("rename", object : KATEFunction() {

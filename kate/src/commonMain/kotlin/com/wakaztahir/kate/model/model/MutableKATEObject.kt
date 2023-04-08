@@ -6,6 +6,8 @@ import com.wakaztahir.kate.model.*
 
 interface MutableKATEObject : KATEObject {
 
+    fun insertValue(key: String, value: KATEValue) : Boolean
+
     // Put Functions
 
     fun putValue(key: String, value: KATEValue)
@@ -67,9 +69,9 @@ interface MutableKATEObject : KATEObject {
         putValue(key, ModelObjectImpl(key).apply(block))
     }
 
-    fun changeName(name : String)
+    fun changeName(name: String)
 
-    fun rename(key : String,other : String)
+    fun rename(key: String, other: String)
 
     fun removeKey(key: String)
 
@@ -78,7 +80,7 @@ interface MutableKATEObject : KATEObject {
 
 }
 
-fun MutableKTEObject(name: String = GlobalModelObjectName, block: MutableKATEObject.() -> Unit): MutableKATEObject {
+fun MutableKATEObject(name: String = GlobalModelObjectName, block: MutableKATEObject.() -> Unit): MutableKATEObject {
     val modelObj = ModelObjectImpl(objectName = name)
     block(modelObj)
     return modelObj

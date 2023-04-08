@@ -40,7 +40,7 @@ The value of the variable can only be one of these
 
 To assign to another variable
 
- `@var i = j`
+`@var i = j`
 
 __KATE__ also supports assignment operators `+`,`-`,`*`,`/`,`%` so you can also `@var i *= j`
 
@@ -209,13 +209,14 @@ And then objects can be referenced just like any other variable `@var(MyObject)`
 
 Here's a table of functions that exist on objects
 
-| Value                                     | Description                       |
-|-------------------------------------------|-----------------------------------|
-| getKeys() : List<string>                  | Get keys of the object            |
-| getValues() : List<KTEValue>              | Get values of the object          |
-| contains(name : string) : boolean         | Returns true if contains key      |
-| delete(name : string) : unit              | Removes the key if exists         |
-| rename(key : string,with : string) : unit | Renames a child key to 'with' key |
+| Value                                        | Description                                   |
+|----------------------------------------------|-----------------------------------------------|
+| getKeys() : List<string>                     | Get keys of the object                        |
+| getValues() : List<KTEValue>                 | Get values of the object                      |
+| contains(name : string) : boolean            | Returns true if contains key                  |
+| containsInAncestors(name : string) : boolean | Returns true if contains key in its ancestors |
+| delete(name : string) : unit                 | Removes the key if exists                     |
+| rename(key : string,with : string) : unit    | Renames a child key to 'with' key             |
 
 ## Primitives
 
@@ -270,7 +271,7 @@ To define a placeholder , You use `@define_placeholder`
 ```
 
 Placeholders take three parameters , First the name of the placeholder
-and second the name of the definition of placeholder , third the parameter name
+, second the name of the definition of placeholder , third the parameter name
 
 If you define a placeholder with a single parameter , The same name will be assigned to both,
 the placeholder and its definition and `__param__` will be used as parameter name
@@ -283,21 +284,21 @@ To invoke / call a placeholder You use `@placeholder` with Placeholder name as t
 @placeholder(WelcomeText)
 ```
 
-Placeholders always get passed an object / parameter , If you don't pass a value , current scope is passed ,
-That's why this code is possible
+Placeholders inherit the scope of invocation , That's why this code is possible
 
 ```
 @define_placeholder(Variable)
-    @var(__param__.i)
+    @var(i)
 @end_define_placeholder
 
 @for(@var i=0;i<5;i++)
     @placeholder(Variable)
 @endfor
+
+<%-- 01234 --%>
 ```
 
-If you'd like to change the name of the parameter for the block , You can do by adding a third parameter to the placeholder
-definition , You can skip passing the definition name so placeholder name would be used for it
+You can change the name of parameter by passing the third parameter , You can skip passing the definition name so placeholder name would be used for it
 
 ```
 @define_placeholder(Variable,,scope)
@@ -316,6 +317,10 @@ Passing a custom object to placeholder
 ```
 
 Now welcome text can make a reference to `myVar` and it will be able to access it using `@var(__param__.myVar)`
+
+Otherwise `MyObject` is still accessible inside the placeholder because scope is being inherited
+
+You can check if the parameter has been passed to placeholder using `@var(this.contains("__param__"))`
 
 ### Redefinition
 
