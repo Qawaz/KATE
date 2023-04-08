@@ -10,10 +10,9 @@ import java.nio.file.Paths
 
 open class RelativeResourceEmbeddingManager(
     protected val basePath: String,
-    protected val classLoader: Class<Any> = object {}.javaClass
-) : EmbeddingManager {
-
+    protected val classLoader: Class<Any> = object {}.javaClass,
     override val embeddedStreams: MutableMap<String, Boolean> = mutableMapOf()
+) : EmbeddingManager {
 
     override fun handleException(path: String, stream: SourceStream, exception: Throwable) {
         val indo = stream.getErrorInfoAtCurrentPointer()
@@ -50,7 +49,8 @@ open class RelativeResourceEmbeddingManager(
             model = block.model,
             embeddingManager = RelativeResourceEmbeddingManager(
                 basePath = relativeParentPath(path),
-                classLoader = classLoader
+                classLoader = classLoader,
+                embeddedStreams = embeddedStreams
             ),
             placeholderManager = block.source.placeholderManager
         )

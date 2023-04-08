@@ -1,4 +1,5 @@
 @partial_raw
     @embed_once ./common.kate
     @embed_once ./common_embedded.kate
+    @placeholder(Astra)
 @end_partial_raw
