@@ -9,6 +9,7 @@ object KTEObjectImplementation {
     val propertyMap by lazy { hashMapOf<String, KATEValue>().apply { putObjectFunctions() } }
 
     private fun HashMap<String, KATEValue>.putObjectFunctions() {
+        with(KATEValueImplementation){ putObjectFunctions() }
         put("get", object : KATEFunction() {
             override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
                 val value = invokedOn as? KATEObject
@@ -105,16 +106,6 @@ object KTEObjectImplementation {
             }
 
             override fun toString(): String = "delete(name : string) : unit"
-        })
-        put("toString", object : KATEFunction() {
-            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
-                val obj = invokedOn.asNullableObject(model)
-                require(obj != null) { "object is null" }
-                return StringValue(obj.toString())
-            }
-
-            override fun toString(): String = "toString() : String"
-
         })
     }
 

@@ -14,21 +14,13 @@ object LongImplementation {
     val propertyMap by lazy { hashMapOf<String, KATEValue>().apply { putObjectFunctions() } }
 
     private fun HashMap<String, KATEValue>.putObjectFunctions() {
+        with(KATEValueImplementation){ putObjectFunctions() }
         put("getType", object : KATEFunction() {
             override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
                 return StringValue("long")
             }
 
             override fun toString(): String = "getType() : string"
-        })
-        put("toString", object : KATEFunction() {
-            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
-                val intVal = invokedOn.let { it as? LongValue }?.value
-                require(intVal != null) { "long value is null" }
-                return StringValue(intVal.toString())
-            }
-
-            override fun toString(): String = "toString() : string"
         })
         put("toInt", object : KATEFunction() {
             override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {

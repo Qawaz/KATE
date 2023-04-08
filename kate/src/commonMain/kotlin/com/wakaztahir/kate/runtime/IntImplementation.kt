@@ -11,21 +11,13 @@ object IntImplementation {
     val propertyMap by lazy { hashMapOf<String, KATEValue>().apply { putObjectFunctions() } }
 
     private fun HashMap<String, KATEValue>.putObjectFunctions() {
+        with(KATEValueImplementation){ putObjectFunctions() }
         put("getType", object : KATEFunction() {
             override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
                 return StringValue("int")
             }
 
             override fun toString(): String = "getType() : string"
-        })
-        put("toString", object : KATEFunction() {
-            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
-                val intVal = invokedOn.let { it as? IntValue }?.value
-                require(intVal != null) { "int value is null" }
-                return StringValue(intVal.toString())
-            }
-
-            override fun toString(): String = "toString() : string"
         })
         put("toDouble", object : KATEFunction() {
             override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {

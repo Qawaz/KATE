@@ -6,15 +6,16 @@ import com.wakaztahir.kate.model.model.KATEObject
 import com.wakaztahir.kate.model.model.KATEValue
 import com.wakaztahir.kate.model.model.ReferencedValue
 
-object BooleanImplementation {
-    val propertyMap by lazy { hashMapOf<String, KATEValue>().apply { putObjectFunctions() } }
-    private fun HashMap<String, KATEValue>.putObjectFunctions() {
-        with(KATEValueImplementation){ putObjectFunctions() }
-        put("getType", object : KATEFunction() {
+object KATEValueImplementation {
+
+    fun HashMap<String, KATEValue>.putObjectFunctions() {
+        put("toString", object : KATEFunction() {
             override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
-                return StringValue("boolean")
+                return StringValue(invokedOn.toString())
             }
-            override fun toString(): String = "getType() : string"
+
+            override fun toString(): String = "toString() : string"
         })
     }
+
 }
