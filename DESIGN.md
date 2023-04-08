@@ -241,6 +241,8 @@ Here's a table of functions available
 | decapitalize() : string            | Decapitalize the first character                        |
 | replace("find","replace") : string | Replace the string's find with replace value            |
 | contains("") : string              | Returns true if contains the string                     |
+| indexOf(str : string) : Int        | index of string within string or -1                     |
+| split(str : string) : List<string> | split at str and convert to a list                      |
 
 ### Integers
 
