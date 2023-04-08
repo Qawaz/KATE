@@ -7,6 +7,32 @@ import kotlin.test.assertFails
 class FunctionsTest {
 
     @Test
+    fun testCallFunctionByVar(){
+        assertEquals(
+            expected = "hello",
+            actual = GeneratePartialRaw(
+                """@function myFunc()
+                |@runtime.print_string("hello")
+                |@end_function
+                |@var another = myFunc
+                |another()""".trimMargin()
+            )
+        )
+        assertEquals(
+            expected = "hello",
+            actual = GeneratePartialRaw(
+                """@function myFunc(otherFunc)
+                |otherFunc()
+                |@end_function
+                |@function call()
+                |@runtime.print_string("hello")
+                |@end_function
+                |myFunc(call)""".trimMargin()
+            )
+        )
+    }
+
+    @Test
     fun testFunctionDefinition() {
         assertEquals(
             expected = "hello1",

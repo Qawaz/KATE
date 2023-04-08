@@ -2,6 +2,7 @@ package com.wakaztahir.kate.runtime
 
 import com.wakaztahir.kate.model.BooleanValue
 import com.wakaztahir.kate.model.IntValue
+import com.wakaztahir.kate.model.LazyReferencedValue
 import com.wakaztahir.kate.model.StringValue
 import com.wakaztahir.kate.model.model.*
 
@@ -60,7 +61,10 @@ object KTEListImplementation {
                 val list = invokedOn.asNullableList(model)
                 require(list != null) { "list is null" }
                 val separator = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as? String } ?: ","
-                return StringValue(list.collection.joinToString(separator))
+                val func = parameters.getOrNull(1)?.asNullableFunction(model)
+                return StringValue(list.collection.joinToString(separator){
+                    func?.invoke(model,it, listOf(LazyReferencedValue {it}))?.toString() ?: it.toString()
+                })
             }
 
             override fun toString(): String = "joinToString(separator : string?) : String"

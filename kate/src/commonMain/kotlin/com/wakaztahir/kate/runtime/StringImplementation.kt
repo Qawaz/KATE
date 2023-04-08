@@ -12,6 +12,7 @@ object StringImplementation {
             override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
                 return StringValue("string")
             }
+
             override fun toString(): String = "getType() : string"
         })
         put("get", object : KATEFunction() {
@@ -33,6 +34,28 @@ object StringImplementation {
             }
 
             override fun toString(): String = "size() : int"
+        })
+        put("indexOf", object : KATEFunction() {
+            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
+                val string = invokedOn.let { it as? StringValue }?.value
+                val find = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
+                require(find != null) { "indexOf requires a single string parameter" }
+                require(string != null) { "string value is null" }
+                return IntValue(string.indexOf(find))
+            }
+
+            override fun toString(): String = "indexOf(str : string) : int"
+        })
+        put("split", object : KATEFunction() {
+            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
+                val string = invokedOn.let { it as? StringValue }?.value
+                val find = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
+                require(find != null) { "split requires a single string parameter" }
+                require(string != null) { "string value is null" }
+                return KATEListImpl(string.split(find).map { StringValue(it) })
+            }
+
+            override fun toString(): String = "split(str : string) : List<string>"
         })
         put("toInt", object : KATEFunction() {
             override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {

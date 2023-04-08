@@ -1,6 +1,7 @@
 package primitives
 
 import com.wakaztahir.kate.GenerateCode
+import com.wakaztahir.kate.GeneratePartialRaw
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -31,6 +32,21 @@ class StringsTest {
         assertEquals(
             expected = "21hello",
             actual = GenerateCode("@var i = \"1\" @var l = \"l\" @var t = @var(i) @+ \"h\" @var t = \"2\" @+ @var(t) @+ \"e\" @var t += \"l\" @var t += @var(l) @var t += \"o\" @var(t)")
+        )
+    }
+
+    @Test
+    fun testJoinToString(){
+        assertEquals(
+            expected = "hxexlxlxox",
+            actual = GeneratePartialRaw(
+                """@var i = @list("h","e","l","l","o")
+                |@function adder(param)
+                |@return param + "x"
+                |@end_function
+                |@default_no_raw @var(i.joinToString("",adder)) @end_default_no_raw
+                |""".trimMargin()
+            )
         )
     }
 
