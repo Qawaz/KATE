@@ -4,6 +4,7 @@ import com.wakaztahir.kate.dsl.ModelObjectImpl
 import com.wakaztahir.kate.model.LazyBlock
 import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.parser.stream.*
+import com.wakaztahir.kate.runtime.GlobalObjectImplementation
 import java.io.File
 import java.io.InputStream
 
@@ -30,6 +31,7 @@ class InputSourceStream(
 
     init {
         DefaultPlaceholderManagerInitializer.initializerDefaultPlaceholders(this)
+        GlobalObjectImplementation.putIntoObject(model)
     }
 
     override var pointer: Int = 0

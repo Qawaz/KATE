@@ -3,6 +3,7 @@ package com.wakaztahir.kate.parser.stream
 import com.wakaztahir.kate.GlobalModelObjectName
 import com.wakaztahir.kate.dsl.ModelObjectImpl
 import com.wakaztahir.kate.model.model.MutableKATEObject
+import com.wakaztahir.kate.runtime.GlobalObjectImplementation
 
 class TextSourceStream(
     private val sourceCode: String,
@@ -13,6 +14,7 @@ class TextSourceStream(
 
     init {
         DefaultPlaceholderManagerInitializer.initializerDefaultPlaceholders(this)
+        GlobalObjectImplementation.putIntoObject(model)
     }
 
     override var pointer: Int = 0
