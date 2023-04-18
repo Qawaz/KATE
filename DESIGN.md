@@ -270,16 +270,24 @@ To define a placeholder , You use `@define_placeholder`
 `@define_placeholder(PlaceholderName,DefinitionName)`
 
 ```
-@define_placeholder(WelcomeText,GreetingText)
-    Hello World ! How are you ?
+@define_placeholder(WelcomeText,GreetingText,PersonName)
+    Hello World ! How are you @var(PersonName)?
 @end_define_placeholder
 ```
 
-Placeholders take three parameters , First the name of the placeholder
-, second the name of the definition of placeholder , third the parameter name
+`@define_placeholder` takes can take three parameters
+
+| Parameter       | Optional | Default         |
+|-----------------|----------|-----------------|
+| PlaceholderName | False    |                 |
+| DefinitionName  | True     | PlaceholderName |
+| Parameter Name  | True     | `__param__`     |
 
 If you define a placeholder with a single parameter , The same name will be assigned to both,
 the placeholder and its definition and `__param__` will be used as parameter name
+
+To skip passing Definition Name while passing parameter name , You can put two commas like
+this `@define_placeholder(WelcomeText,,PersonName)`
 
 ### Invocation
 
@@ -288,6 +296,17 @@ To invoke / call a placeholder You use `@placeholder` with Placeholder name as t
 ```
 @placeholder(WelcomeText)
 ```
+
+`@placeholder` invocation expects three parameters
+
+| Parameter       | Optional | Default         |
+|-----------------|----------|-----------------|
+| PlaceholderName | False    |                 |
+| DefinitionName  | True     | PlaceholderName |
+| Parameter Value | True     | Nothing         |
+
+To skip passing Definition Name while passing parameter value , You can put two commas like
+this `@placeholder(WelcomeText,,"Guy Name")`
 
 Placeholders inherit the scope of invocation , That's why this code is possible
 
@@ -319,7 +338,7 @@ Passing a custom object to placeholder
     @var myVar = 5
 @end_define_object
 
-@placeholder(WelcomeText,@var(MyObject))
+@placeholder(WelcomeText,,MyObject)
 ```
 
 Now welcome text can make a reference to `myVar` and it will be able to access it using `@var(__param__.myVar)`

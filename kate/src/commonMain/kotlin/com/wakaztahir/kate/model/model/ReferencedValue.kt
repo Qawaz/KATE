@@ -9,6 +9,7 @@ interface ReferencedValue : KATEValue {
         val type = value.getKateType(model) ?: return null
         return PlaceholderInvocation(
             placeholderName = type,
+            definitionName = null,
             paramValue = value,
             invocationEndPointer = endPointer
         )

@@ -112,12 +112,17 @@ class PlaceholderDefinition(val blockValue: PlaceholderBlock) : BlockContainer {
 
 class PlaceholderInvocation(
     val placeholderName: String,
+    val definitionName: String?,
     var paramValue: KATEValue?,
     val invocationEndPointer: Int
 ) : CodeGen {
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
-        val placeholder = block.source.placeholderManager.getPlaceholder(placeholderName = placeholderName)
-            ?: throw IllegalStateException("placeholder with name $placeholderName not found")
+        val placeholder = (if (definitionName == null)
+            block.source.placeholderManager.getPlaceholder(placeholderName = placeholderName)
+        else block.source.placeholderManager.getPlaceholder(
+            placeholderName = placeholderName,
+            definitionName = definitionName
+        )) ?: throw IllegalStateException("placeholder with name $placeholderName not found")
         placeholder.setParamValue(paramValue?.getKTEValue(block.model))
         placeholder.setInvocationModel(block.model)
         placeholder.generateTo(destination)

@@ -53,11 +53,11 @@ This code `@var i = 5 @var(i)` does two things
 
 2 - Reference a variable named `i`
 
-In Mode `Default No Raw` The variable reference `@var(i)` translates to `@placeholder(@var(i.getType()),@var(i))`
+In Mode `Default No Raw` The variable reference `@var(i)` translates to `@placeholder(@var(i.getType()),,@var(i))`
 
 The code `@var(i.getType())` returns type of a variable , which is `int` in this case
 
-so the placeholder invocation becomes `@placeholder(int,@var(i))`
+so the placeholder invocation becomes `@placeholder(int,,@var(i))`
 
 which means
 

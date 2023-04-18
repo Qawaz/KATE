@@ -38,7 +38,7 @@ private fun SourceStream.parsePlaceHolderNameAndDefinition(): Pair<String, Strin
     return null
 }
 
-private fun SourceStream.parsePlaceHolderNameAndDefinitionAndParameter(): Triple<String, String, String?>? {
+private fun <T> SourceStream.parsePlaceHolderNameAndDefinitionAndParameter(parseParameter: SourceStream.() -> T?): Triple<String, String, T?>? {
     val placeholderName = parsePlaceHolderName()
     if (placeholderName != null) {
         return if (increment(',')) {
@@ -47,7 +47,7 @@ private fun SourceStream.parsePlaceHolderNameAndDefinitionAndParameter(): Triple
                 Triple(placeholderName, definitionName, null)
             } else {
                 if (increment(',')) {
-                    val parameterName = parseTextWhile { currentChar.isVariableName() }.ifEmpty { null }
+                    val parameterName = parseParameter()
                     if (increment(')')) {
                         Triple(placeholderName, definitionName, parameterName)
                     } else {
@@ -95,7 +95,11 @@ private fun LazyBlock.parsePlaceholderBlock(nameAndDef: Triple<String, String, S
 
 fun LazyBlock.parsePlaceholderDefinition(): PlaceholderDefinition? {
     if (source.currentChar == '@' && source.increment("@define_placeholder")) {
-        val nameAndDef = source.parsePlaceHolderNameAndDefinitionAndParameter()
+        val nameAndDef = source.parsePlaceHolderNameAndDefinitionAndParameter(
+            parseParameter = {
+                parseTextWhile { currentChar.isVariableName() }.ifEmpty { null }
+            }
+        )
         if (nameAndDef != null) {
             val blockValue = parsePlaceholderBlock(nameAndDef = nameAndDef)
             return PlaceholderDefinition(
@@ -110,30 +114,20 @@ fun LazyBlock.parsePlaceholderDefinition(): PlaceholderDefinition? {
 
 fun LazyBlock.parsePlaceholderInvocation(): PlaceholderInvocation? {
     if (source.currentChar == '@' && source.increment("@placeholder")) {
-        val placeholderName = source.parsePlaceHolderName()
-        val genValue: KATEValue? = if (source.increment(',')) {
-            val refValue = source.parseVariableReference(parseDirectRefs = true)
-            if (refValue != null) {
-                if (source.increment(')')) {
-                    refValue
-                } else {
-                    throw IllegalStateException("expected ')' found ${source.currentChar} when invoking placeholder $placeholderName")
-                }
-            } else {
-                null
-            }
-        } else {
-            if (source.increment(')')) {
-                null
-            } else {
-                throw IllegalStateException("expected ')' found ${source.currentChar} when invoking placeholder $placeholderName")
-            }
+        val triple = source.parsePlaceHolderNameAndDefinitionAndParameter {
+            parseAnyExpressionOrValue(
+                parseFirstStringOrChar = true,
+                parseNotFirstStringOrChar = true,
+                parseDirectRefs = true,
+                allowAtLessExpressions = true
+            )
         }
-        if (placeholderName != null) {
+        if (triple != null) {
             return PlaceholderInvocation(
-                placeholderName = placeholderName,
+                placeholderName = triple.first,
+                definitionName = triple.second,
                 invocationEndPointer = source.pointer,
-                paramValue = genValue
+                paramValue = triple.third
             )
         } else {
             throw IllegalStateException("placeholder name is required when invoking a placeholder using @placeholder")

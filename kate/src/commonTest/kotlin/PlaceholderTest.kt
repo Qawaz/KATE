@@ -44,7 +44,7 @@ class PlaceholderTest {
         )
         val objectDefinition = "@define_object(MyObject) @var myVal = 5 @end_define_object"
         val placeholderDefinition = "@define_placeholder(MyPH) @var(__param__.myVal) @end_define_placeholder"
-        val invocation = "@placeholder(MyPH,@var(MyObject))"
+        val invocation = "@placeholder(MyPH,,@var(MyObject))"
         assertEquals("5", GenerateCode("$placeholderDefinition $objectDefinition $invocation"))
         assertEquals("5", GenerateCode("$objectDefinition $placeholderDefinition $invocation"))
         assertEquals(
@@ -58,6 +58,14 @@ class PlaceholderTest {
         assertFails {
             GenerateCode("@partial_raw @define_placeholder(X) hello @end_define_placeholder @end_partial_raw @placeholder(X)")
         }
+    }
+
+    @Test
+    fun testPlaceholderValue() {
+        assertEquals(
+            "Person",
+            GenerateCode("@define_placeholder(Hello) @var(__param__) @end_define_placeholder @placeholder(Hello,,\"Person\")")
+        )
     }
 
     @Test

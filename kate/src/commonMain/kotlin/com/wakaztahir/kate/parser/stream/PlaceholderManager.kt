@@ -35,14 +35,15 @@ interface PlaceholderManager {
     }
 
     fun getPlaceholder(placeholderName: String): PlaceholderBlock? {
-        val index = placeholders.indexOfFirst {
-            it.placeholderName == placeholderName
-        }
-        return if (index > -1) {
-            placeholders[index]
-        } else {
-            null
-        }
+        return placeholders.find { it.placeholderName == placeholderName }
+    }
+
+    fun getPlaceholder(placeholderName: String, definitionName: String): PlaceholderBlock? {
+        placeholders.find { it.placeholderName == placeholderName && it.definitionName == definitionName }
+            ?.let { return it }
+        undefinedPlaceholders.find { it.placeholderName == placeholderName && it.definitionName == definitionName }
+            ?.let { return it }
+        return null
     }
 
     fun checkIsBeingUsed(placeholderName: String, definitionName: String): Boolean {

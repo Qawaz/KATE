@@ -37,6 +37,7 @@ open class ModelDirective(val propertyPath: List<ModelReference>) : ReferencedVa
         model.getModelReferenceValue(model = model, path = propertyPath)
         return PlaceholderInvocation(
             placeholderName = KATEUnit.getKateType(model),
+            definitionName = null,
             paramValue = KATEUnit,
             invocationEndPointer = endPointer
         )
