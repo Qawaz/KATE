@@ -1,4 +1,5 @@
 import com.wakaztahir.kate.GenerateCode
+import com.wakaztahir.kate.GeneratePartialRaw
 import com.wakaztahir.kate.TemplateContext
 import com.wakaztahir.kate.parser.parsePlaceholderDefinition
 import com.wakaztahir.kate.parser.parsePlaceholderInvocation
@@ -65,6 +66,28 @@ class PlaceholderTest {
         assertEquals(
             "Person",
             GenerateCode("@define_placeholder(Hello) @var(__param__) @end_define_placeholder @placeholder(Hello,,\"Person\")")
+        )
+    }
+
+    @Test
+    fun testActivePlaceholder(){
+        val defaultH = "@define_placeholder(h) h1 @end_define_placeholder"
+        val h2 = "@define_placeholder(h,h2) h2 @end_define_placeholder"
+        assertEquals(
+            expected = "h2",
+            GenerateCode("$defaultH $h2 @placeholder(h)")
+        )
+        assertEquals(
+            expected = "h1",
+            GenerateCode("$defaultH $h2 @use_placeholder(h)@placeholder(h)")
+        )
+        assertEquals(
+            expected = "h1h2h2",
+            GenerateCode("$defaultH $h2 @placeholder(h,h)@placeholder(h)@placeholder(h,h2)")
+        )
+        assertEquals(
+            expected = "h1h1h2",
+            GenerateCode("$defaultH $h2 @use_placeholder(h,h)@placeholder(h,h)@placeholder(h)@placeholder(h,h2)")
         )
     }
 

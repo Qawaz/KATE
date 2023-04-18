@@ -38,11 +38,11 @@ private fun SourceStream.parsePlaceHolderNameAndDefinition(): Pair<String, Strin
     return null
 }
 
-private fun <T> SourceStream.parsePlaceHolderNameAndDefinitionAndParameter(parseParameter: SourceStream.() -> T?): Triple<String, String, T?>? {
+private fun <T> SourceStream.parsePlaceHolderNameAndDefinitionAndParameter(parseParameter: SourceStream.() -> T?): Triple<String, String?, T?>? {
     val placeholderName = parsePlaceHolderName()
     if (placeholderName != null) {
         return if (increment(',')) {
-            val definitionName = parseTextWhile { currentChar.isPlaceholderDefName() }.ifEmpty { placeholderName }
+            val definitionName = parseTextWhile { currentChar.isPlaceholderDefName() }.ifEmpty { null }
             if (increment(')')) {
                 Triple(placeholderName, definitionName, null)
             } else {
@@ -59,7 +59,7 @@ private fun <T> SourceStream.parsePlaceHolderNameAndDefinitionAndParameter(parse
             }
         } else {
             if (increment(')')) {
-                Triple(placeholderName, placeholderName, null)
+                Triple(placeholderName, null, null)
             } else {
                 throw IllegalStateException("expected ')' found $currentChar when defining placeholder $placeholderName")
             }
@@ -68,7 +68,7 @@ private fun <T> SourceStream.parsePlaceHolderNameAndDefinitionAndParameter(parse
     return null
 }
 
-private fun LazyBlock.parsePlaceholderBlock(nameAndDef: Triple<String, String, String?>): PlaceholderBlock {
+private fun LazyBlock.parsePlaceholderBlock(nameAndDef: Triple<String, String?, String?>): PlaceholderBlock {
 
     val blockValue = parseBlockSlice(
         startsWith = "@define_placeholder",
@@ -80,7 +80,7 @@ private fun LazyBlock.parsePlaceholderBlock(nameAndDef: Triple<String, String, S
     return PlaceholderBlock(
         parentBlock = this,
         placeholderName = nameAndDef.first,
-        definitionName = nameAndDef.second,
+        definitionName = nameAndDef.second ?: nameAndDef.first,
         parameterName = nameAndDef.third,
         startPointer = blockValue.startPointer,
         length = blockValue.length,
