@@ -98,10 +98,8 @@ class VariablesTest {
     @Test
     fun testThisObjectReference() {
         assertEquals(
-            expected = """{
-	                    |	var1 : test
-                        |}""".trimMargin(),
-            actual = GenerateCode("@var(this)", MutableKATEObject { putValue("var1", "test") })
+            expected = "test",
+            actual = GenerateCode("@var(this.var1)", MutableKATEObject { putValue("var1", "test") })
         )
     }
 
