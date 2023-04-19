@@ -14,7 +14,7 @@ class LazyReferencedValue(private val creator: () -> KATEValue) : ReferencedValu
             return _value!!
         }
 
-    override fun getKTEValue(model: KATEObject): KATEValue = value
+    override fun getKATEValue(model: KATEObject): KATEValue = value
 
     override fun getModelReference(reference: ModelReference): KATEValue? {
         return value.getModelReference(reference)

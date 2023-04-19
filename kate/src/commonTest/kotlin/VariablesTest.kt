@@ -1,4 +1,3 @@
-import com.wakaztahir.kate.GenerateCode
 import com.wakaztahir.kate.TemplateContext
 import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.model.model.*
@@ -6,9 +5,8 @@ import com.wakaztahir.kate.parser.*
 import com.wakaztahir.kate.parser.parseExpression
 import com.wakaztahir.kate.parser.parseVariableDeclaration
 import com.wakaztahir.kate.parser.parseVariableReference
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNotEquals
+import com.wakaztahir.kate.parser.stream.TextDestinationStream
+import kotlin.test.*
 
 class VariablesTest {
 
@@ -20,6 +18,17 @@ class VariablesTest {
         assertEquals(ref!!.propertyPath[0].name, "myVar")
         context.stream.model.putValue("myVar", StringValue("someValue"))
         assertEquals("someValue", ref.asPrimitive(context.stream.model).value)
+    }
+
+    @Test
+    fun testZeroPrefixedNumber() {
+        val context = TemplateContext("00345")
+        val number = context.stream.parseNumberValue()!!
+        assertEquals("00345", number.toString())
+        val invocation = number.toPlaceholderInvocation(context.stream.model, context.stream.pointer)!!
+        val generated = TextDestinationStream().also { invocation.generateTo(context.stream, it) }
+        assertEquals("00345", generated.getValue())
+        assertEquals("00345", GenerateCode("00345"))
     }
 
     @Test

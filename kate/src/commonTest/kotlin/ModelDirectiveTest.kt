@@ -1,4 +1,3 @@
-import com.wakaztahir.kate.GenerateCode
 import com.wakaztahir.kate.TemplateContext
 import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.model.model.*

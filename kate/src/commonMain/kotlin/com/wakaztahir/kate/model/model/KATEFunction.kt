@@ -10,7 +10,7 @@ abstract class KATEFunction : ReferencedValue {
         throw IllegalStateException("KTEFunction should be invoked to get the reference")
     }
 
-    override fun getKTEValue(model: KATEObject): KATEValue {
+    override fun getKATEValue(model: KATEObject): KATEValue {
         throw IllegalStateException("KTEFunction should be invoked to get the value")
     }
 

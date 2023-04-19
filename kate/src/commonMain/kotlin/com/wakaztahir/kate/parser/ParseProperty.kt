@@ -42,7 +42,7 @@ internal data class ExpressionValue(
         return asNullablePrimitive(model).compareTo(model, other)
     }
 
-    override fun getKTEValue(model: KATEObject): KATEValue {
+    override fun getKATEValue(model: KATEObject): KATEValue {
         return asNullablePrimitive(model)
     }
 

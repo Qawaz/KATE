@@ -1,5 +1,3 @@
-import com.wakaztahir.kate.GenerateCode
-import com.wakaztahir.kate.GeneratePartialRaw
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFails

@@ -22,13 +22,13 @@ internal data class VariableDeclaration(
 
     private fun getValue(model: MutableKATEObject): KATEValue {
         return if (arithmeticOperatorType == null) {
-            variableValue.getKTEValue(model)
+            variableValue.getKATEValue(model)
         } else {
             ExpressionValue(
                 first = model.getModelReference(ModelReference.Property(variableName)) ?: throwIt(),
                 operatorType = arithmeticOperatorType,
                 second = variableValue
-            ).getKTEValue(model)
+            ).getKATEValue(model)
         }
     }
 

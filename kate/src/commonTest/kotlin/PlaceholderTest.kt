@@ -1,5 +1,3 @@
-import com.wakaztahir.kate.GenerateCode
-import com.wakaztahir.kate.GeneratePartialRaw
 import com.wakaztahir.kate.TemplateContext
 import com.wakaztahir.kate.parser.parsePlaceholderDefinition
 import com.wakaztahir.kate.parser.parsePlaceholderInvocation

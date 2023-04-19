@@ -26,7 +26,7 @@ sealed interface ModelReference {
 open class ModelDirective(val propertyPath: List<ModelReference>) : ReferencedValue {
 
     override fun compareTo(model: KATEObject, other: KATEValue): Int {
-        return getKTEValue(model).compareTo(model, other)
+        return getKATEValue(model).compareTo(model, other)
     }
 
     override fun getModelReference(reference: ModelReference): KATEValue? {
@@ -43,7 +43,7 @@ open class ModelDirective(val propertyPath: List<ModelReference>) : ReferencedVa
         )
     }
 
-    override fun getKTEValue(model: KATEObject): KATEValue {
+    override fun getKATEValue(model: KATEObject): KATEValue {
         return model.getModelReferenceValue(model = model, path = propertyPath)
     }
 

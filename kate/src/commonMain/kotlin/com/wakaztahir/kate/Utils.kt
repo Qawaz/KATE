@@ -1,10 +1,6 @@
 package com.wakaztahir.kate
 
 import com.wakaztahir.kate.model.ModelReference
-import com.wakaztahir.kate.model.PlaceholderBlock
-import com.wakaztahir.kate.model.PlaceholderInvocation
-import com.wakaztahir.kate.model.model.KATEUnit
-import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.model.model.ReferencedValue
 
 
@@ -24,12 +20,3 @@ val GetTypeModelReference = ModelReference.FunctionCall(
     name = "getType",
     parametersList = EmptyReferencedValuesList
 )
-
-@Suppress("FunctionName")
-internal fun GenerateCode(code: String): String = TemplateContext(code).getDestinationAsString()
-
-@Suppress("FunctionName")
-internal fun GeneratePartialRaw(code: String) = GenerateCode("@partial_raw $code @end_partial_raw")
-
-@Suppress("FunctionName")
-internal fun GenerateCode(code: String, model: MutableKATEObject) = TemplateContext(code, model).getDestinationAsString()

@@ -123,7 +123,7 @@ class PlaceholderInvocation(
             placeholderName = placeholderName,
             definitionName = definitionName
         )) ?: throw IllegalStateException("placeholder with name $placeholderName not found")
-        placeholder.setParamValue(paramValue?.getKTEValue(block.model))
+        placeholder.setParamValue(paramValue?.getKATEValue(block.model))
         placeholder.setInvocationModel(block.model)
         placeholder.generateTo(destination)
         block.source.setPointerAt(invocationEndPointer)

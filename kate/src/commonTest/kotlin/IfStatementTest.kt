@@ -1,13 +1,9 @@
-import com.wakaztahir.kate.GenerateCode
 import com.wakaztahir.kate.TemplateContext
 import com.wakaztahir.kate.model.LogicalCondition
 import com.wakaztahir.kate.model.asPrimitive
 import com.wakaztahir.kate.parser.parseCondition
 import com.wakaztahir.kate.parser.parseVariableDeclaration
 import com.wakaztahir.kate.parser.parseIfStatement
-import com.wakaztahir.kate.parser.stream.increment
-import com.wakaztahir.kate.parser.stream.incrementUntilDirectiveWithSkip
-import com.wakaztahir.kate.parser.stream.printLeft
 import kotlin.test.*
 
 class IfStatementTest {

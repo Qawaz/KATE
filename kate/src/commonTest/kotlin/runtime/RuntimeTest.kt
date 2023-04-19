@@ -1,10 +1,9 @@
 package runtime
 
-import com.wakaztahir.kate.GenerateCode
-import com.wakaztahir.kate.GeneratePartialRaw
+import GenerateCode
+import GeneratePartialRaw
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFails
 import kotlin.test.assertFailsWith
 
 class RuntimeTest {

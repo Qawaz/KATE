@@ -8,8 +8,13 @@ import com.wakaztahir.kate.model.StringValue
 
 interface KATEValue {
 
-    fun getKTEValue(model: KATEObject): KATEValue {
+    fun getKATEValue(model: KATEObject): KATEValue {
         return this
+    }
+
+    @Deprecated("use getKATEValue", replaceWith = ReplaceWith(expression = "getKATEValue(model)"))
+    fun getKTEValue(model: KATEObject): KATEValue {
+        return getKATEValue(model)
     }
 
     fun getModelReference(reference: ModelReference): KATEValue?
@@ -26,29 +31,29 @@ interface KATEValue {
     override fun toString(): String
 
     fun asNullablePrimitive(model: KATEObject): PrimitiveValue<*>? {
-        return getKTEValue(model) as? PrimitiveValue<*>
+        return getKATEValue(model) as? PrimitiveValue<*>
     }
 
     fun asNullableList(model: KATEObject): KATEList<KATEValue>? {
         @Suppress("UNCHECKED_CAST")
-        return getKTEValue(model) as? KATEList<KATEValue>
+        return getKATEValue(model) as? KATEList<KATEValue>
     }
 
     fun asNullableMutableList(model: KATEObject): KATEMutableList<KATEValue>? {
         @Suppress("UNCHECKED_CAST")
-        return getKTEValue(model) as? KATEMutableList<KATEValue>
+        return getKATEValue(model) as? KATEMutableList<KATEValue>
     }
 
     fun asNullableObject(model: KATEObject): KATEObject? {
-        return getKTEValue(model) as? KATEObject
+        return getKATEValue(model) as? KATEObject
     }
 
     fun asNullableMutableObject(model: KATEObject): MutableKATEObject? {
-        return getKTEValue(model) as? MutableKATEObject
+        return getKATEValue(model) as? MutableKATEObject
     }
 
     fun asNullableFunction(model: KATEObject): KATEFunction? {
-        return getKTEValue(model) as? KATEFunction
+        return getKATEValue(model) as? KATEFunction
     }
 
     fun compareTo(model: KATEObject, other: KATEValue): Int

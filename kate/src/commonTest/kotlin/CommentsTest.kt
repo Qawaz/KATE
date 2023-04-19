@@ -1,4 +1,3 @@
-import com.wakaztahir.kate.GenerateCode
 import com.wakaztahir.kate.TemplateContext
 import com.wakaztahir.kate.parser.*
 import com.wakaztahir.kate.parser.CommentParseException

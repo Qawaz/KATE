@@ -88,7 +88,7 @@ abstract class KATERecursiveFunction(val slice: FunctionSlice, val parameterName
         slice.model = ScopedModelObject(slice.parentBlock.model)
         slice.model.forEachParam { paramName, index ->
             if (index < parameters.size) {
-                putValue(paramName, parameters[index].getKTEValue(model))
+                putValue(paramName, parameters[index].getKATEValue(model))
             } else {
                 throw IllegalStateException("function expects ${parameterNames?.size} parameters and not ${parameters.size}")
             }
@@ -96,7 +96,7 @@ abstract class KATERecursiveFunction(val slice: FunctionSlice, val parameterName
     }
 
     private fun endInvocation(): KATEValue {
-        val returnedValue = returnedValues.remove(invocationNumber)?.getKTEValue(slice.model) ?: KATEUnit
+        val returnedValue = returnedValues.remove(invocationNumber)?.getKATEValue(slice.model) ?: KATEUnit
         invocationNumber--
         if (previousModels.isNotEmpty()) slice.model = previousModels.removeLast()
         previousPointers.remove(invocationNumber)?.let {

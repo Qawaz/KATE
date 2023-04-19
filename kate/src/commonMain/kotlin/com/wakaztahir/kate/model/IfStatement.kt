@@ -74,7 +74,7 @@ internal class LogicalCondition(
     val propertySecond: ReferencedValue
 ) : Condition {
     override fun evaluate(context: KATEObject): Boolean {
-        return type.compare(context, propertyFirst.getKTEValue(context), propertySecond.getKTEValue(context))
+        return type.compare(context, propertyFirst.getKATEValue(context), propertySecond.getKATEValue(context))
     }
 }
 

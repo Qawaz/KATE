@@ -1,11 +1,9 @@
 package com.wakaztahir.kate.model
 
 import com.wakaztahir.kate.model.model.KATEObject
-import com.wakaztahir.kate.model.model.KATEUnit
 import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.parser.parseDefaultNoRaw
 import com.wakaztahir.kate.parser.parsePartialRawImplicitDirective
-import com.wakaztahir.kate.parser.parseVariableReference
 import com.wakaztahir.kate.parser.stream.DestinationStream
 import kotlin.jvm.JvmInline
 

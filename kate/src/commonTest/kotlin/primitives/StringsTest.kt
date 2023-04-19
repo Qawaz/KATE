@@ -1,7 +1,7 @@
 package primitives
 
-import com.wakaztahir.kate.GenerateCode
-import com.wakaztahir.kate.GeneratePartialRaw
+import GenerateCode
+import GeneratePartialRaw
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

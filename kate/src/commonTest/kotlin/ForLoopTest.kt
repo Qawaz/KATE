@@ -1,4 +1,3 @@
-import com.wakaztahir.kate.GenerateCode
 import com.wakaztahir.kate.TemplateContext
 import com.wakaztahir.kate.dsl.UnresolvedValueException
 import com.wakaztahir.kate.model.model.KATEListImpl
@@ -144,8 +143,10 @@ class ForLoopTest {
               |${'\t'}Line Number 1
               |${'\t'}Line Number 2
               |@endfor""".trimMargin("|")
-            ))
-        assertEquals("",
+            )
+        )
+        assertEquals(
+            "",
             actual = GenerateCode(
                 """@for(@var i=2;i<2;i+1)
               |${'\t'}Line Number 1
@@ -171,6 +172,18 @@ class ForLoopTest {
               |${'\t'}${'\t'}Line Number 2
               |${'\t'}@endfor
               |@endfor""".trimMargin("|")
+            )
+        )
+    }
+
+    @Test
+    fun testForLoopPropagatesPartialRaw() {
+        assertEquals(
+            expected = "xx",
+            actual = GeneratePartialRaw(
+                """@function print() @default_no_raw x @end_default_no_raw @end_function
+            @for(@var i = 0;i<2;i++) print() @endfor
+            """.trimIndent()
             )
         )
     }

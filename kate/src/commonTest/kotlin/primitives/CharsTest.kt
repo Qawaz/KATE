@@ -1,6 +1,6 @@
 package primitives
 
-import com.wakaztahir.kate.GenerateCode
+import GenerateCode
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

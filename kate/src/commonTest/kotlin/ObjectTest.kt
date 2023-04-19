@@ -1,4 +1,3 @@
-import com.wakaztahir.kate.GenerateCode
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
