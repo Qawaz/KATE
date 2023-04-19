@@ -61,4 +61,9 @@ class StringsTest {
         assertEquals("abc\"def\"", GenerateCode("@var i = \"abc\\\"def\\\"\" @var(i)"))
     }
 
+    @Test
+    fun testStringType(){
+        assertEquals("string",GenerateCode("@var i = \"hello\" @var(i.getType())"))
+    }
+
 }

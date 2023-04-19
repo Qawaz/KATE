@@ -9,6 +9,7 @@ class CharsTest {
     @Test
     fun testCharAssignment() {
         assertEquals("x", GenerateCode("@var x = 'x' @var(x)"))
+        assertEquals("char", GenerateCode("@var x = 'x' @var(x.getType())"))
     }
 
     @Test

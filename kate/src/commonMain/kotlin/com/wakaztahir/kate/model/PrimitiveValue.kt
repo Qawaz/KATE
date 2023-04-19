@@ -11,6 +11,8 @@ interface PrimitiveValue<T> : ReferencedValue {
 
     val value: T
 
+    override fun getKateType(model: KATEObject): String?
+
     fun compareTo(other: PrimitiveValue<T>): Int
 
     fun compareOther(other: PrimitiveValue<*>): Int
@@ -41,6 +43,8 @@ interface PrimitiveValue<T> : ReferencedValue {
 
 @JvmInline
 value class CharValue(override val value: Char) : PrimitiveValue<Char> {
+
+    override fun getKateType(model: KATEObject): String = "char"
 
     override fun compareTo(other: PrimitiveValue<Char>): Int {
         return value.compareTo(other.value)
@@ -82,6 +86,8 @@ value class CharValue(override val value: Char) : PrimitiveValue<Char> {
 
 @JvmInline
 value class IntValue(override val value: Int) : PrimitiveValue<Int> {
+
+    override fun getKateType(model: KATEObject): String = "int"
 
     override fun compareTo(other: PrimitiveValue<Int>): Int {
         return value.compareTo(other.value)
@@ -134,6 +140,8 @@ value class IntValue(override val value: Int) : PrimitiveValue<Int> {
 @JvmInline
 value class DoubleValue(override val value: Double) : PrimitiveValue<Double> {
 
+    override fun getKateType(model: KATEObject): String = "double"
+
     override fun compareTo(other: PrimitiveValue<Double>): Int {
         return value.compareTo(other.value)
     }
@@ -184,6 +192,8 @@ value class DoubleValue(override val value: Double) : PrimitiveValue<Double> {
 
 @JvmInline
 value class LongValue(override val value: Long) : PrimitiveValue<Long> {
+
+    override fun getKateType(model: KATEObject): String = "long"
 
     override fun compareTo(other: PrimitiveValue<Long>): Int {
         return value.compareTo(other.value)
@@ -236,6 +246,8 @@ value class LongValue(override val value: Long) : PrimitiveValue<Long> {
 @JvmInline
 value class BooleanValue(override val value: Boolean) : PrimitiveValue<Boolean> {
 
+    override fun getKateType(model: KATEObject): String = "boolean"
+
     override fun compareTo(other: PrimitiveValue<Boolean>): Int {
         return if (value == other.value) {
             0
@@ -266,6 +278,8 @@ value class BooleanValue(override val value: Boolean) : PrimitiveValue<Boolean> 
 
 @JvmInline
 value class StringValue(override val value: String) : PrimitiveValue<String> {
+
+    override fun getKateType(model: KATEObject): String = "string"
 
     override fun compareTo(other: PrimitiveValue<String>): Int {
         return if (value == other.value) {
