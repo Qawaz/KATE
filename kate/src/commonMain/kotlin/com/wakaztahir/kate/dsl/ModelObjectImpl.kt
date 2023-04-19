@@ -12,6 +12,8 @@ open class ModelObjectImpl(override var objectName: String, override val parent:
     override val contained: Map<String, KATEValue>
         get() = container
 
+    override fun getKateType(model: KATEObject): String? = "object"
+
     // ----- Getters
 
     override fun get(key: String): KATEValue? {

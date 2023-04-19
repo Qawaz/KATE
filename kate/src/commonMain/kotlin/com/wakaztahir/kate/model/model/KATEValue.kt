@@ -19,14 +19,7 @@ interface KATEValue {
 
     fun getModelReference(reference: ModelReference): KATEValue?
 
-    fun getKateType(model: KATEObject): String? {
-        val typeFunction = (getModelReference(GetTypeModelReference)?.let { it as KATEFunction }) ?: return null
-        return (typeFunction.invoke(
-            model = model,
-            invokedOn = this,
-            parameters = EmptyReferencedValuesList
-        ) as StringValue).value
-    }
+    fun getKateType(model: KATEObject): String?
 
     override fun toString(): String
 
