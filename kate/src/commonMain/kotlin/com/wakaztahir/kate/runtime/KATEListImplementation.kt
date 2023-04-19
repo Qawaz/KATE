@@ -6,7 +6,7 @@ import com.wakaztahir.kate.model.LazyReferencedValue
 import com.wakaztahir.kate.model.StringValue
 import com.wakaztahir.kate.model.model.*
 
-object KTEListImplementation {
+object KATEListImplementation {
 
     val propertyMap by lazy { hashMapOf<String, KATEValue>().apply { putObjectFunctions() } }
 

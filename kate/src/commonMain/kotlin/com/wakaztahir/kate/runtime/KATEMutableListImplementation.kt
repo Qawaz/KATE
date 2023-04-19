@@ -4,13 +4,13 @@ import com.wakaztahir.kate.model.BooleanValue
 import com.wakaztahir.kate.model.StringValue
 import com.wakaztahir.kate.model.model.*
 
-object KTEMutableListImplementation {
+object KATEMutableListImplementation {
 
     val propertyMap by lazy { hashMapOf<String, KATEValue>().apply { putObjectFunctions() } }
 
     private fun HashMap<String, KATEValue>.putObjectFunctions() {
         with(KATEValueImplementation){ putObjectFunctions() }
-        with(KTEListImplementation) { putObjectFunctions() }
+        with(KATEListImplementation) { putObjectFunctions() }
         put("getType", object : KATEFunction() {
             override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
                 return StringValue("mutable_list")

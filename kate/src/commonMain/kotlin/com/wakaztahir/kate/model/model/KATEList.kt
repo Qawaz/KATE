@@ -1,8 +1,8 @@
 package com.wakaztahir.kate.model.model
 
 import com.wakaztahir.kate.model.*
-import com.wakaztahir.kate.runtime.KTEListImplementation
-import com.wakaztahir.kate.runtime.KTEMutableListImplementation
+import com.wakaztahir.kate.runtime.KATEListImplementation
+import com.wakaztahir.kate.runtime.KATEMutableListImplementation
 import kotlin.jvm.JvmInline
 
 interface KATEList<T : KATEValue> : ReferencedValue {
@@ -18,7 +18,7 @@ value class KATEListImpl<T : KATEValue>(override val collection: List<T>) : KATE
 
     override fun getModelReference(reference: ModelReference): KATEValue? {
         if (reference is ModelReference.FunctionCall) {
-            return KTEListImplementation.propertyMap[reference.name]
+            return KATEListImplementation.propertyMap[reference.name]
         } else {
             throw IllegalStateException("${reference.name} is not a property on list")
         }
@@ -45,7 +45,7 @@ value class KATEMutableListImpl<T : KATEValue>(override val collection: MutableL
 
     override fun getModelReference(reference: ModelReference): KATEValue? {
         if (reference is ModelReference.FunctionCall) {
-            return KTEMutableListImplementation.propertyMap[reference.name]
+            return KATEMutableListImplementation.propertyMap[reference.name]
         } else {
             throw IllegalStateException("${reference.name} is not a property on list")
         }

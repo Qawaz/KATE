@@ -4,7 +4,7 @@ import com.wakaztahir.kate.model.BooleanValue
 import com.wakaztahir.kate.model.StringValue
 import com.wakaztahir.kate.model.model.*
 
-object KTEObjectImplementation {
+object KATEObjectImplementation {
 
     val propertyMap by lazy { hashMapOf<String, KATEValue>().apply { putObjectFunctions() } }
 

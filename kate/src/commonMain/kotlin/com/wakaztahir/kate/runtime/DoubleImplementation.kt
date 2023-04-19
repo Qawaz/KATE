@@ -5,7 +5,6 @@ import com.wakaztahir.kate.model.IntValue
 import com.wakaztahir.kate.model.LongValue
 import com.wakaztahir.kate.model.StringValue
 import com.wakaztahir.kate.model.model.*
-import com.wakaztahir.kate.runtime.KTEListImplementation.putObjectFunctions
 
 object DoubleImplementation {
 
