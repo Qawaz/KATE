@@ -13,6 +13,8 @@ interface PrimitiveValue<T> : ReferencedValue {
 
     override fun getKateType(model: KATEObject): String?
 
+    override fun toString(): String
+
     fun compareTo(other: PrimitiveValue<T>): Int
 
     fun compareOther(other: PrimitiveValue<*>): Int
