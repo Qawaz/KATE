@@ -6,6 +6,10 @@ import com.wakaztahir.kate.model.*
 
 interface ReferencedValue : KATEValue {
 
+    override fun getKATEType(model: KATEObject): KATEType {
+        return getKATEValue(model).getKATEType(model)
+    }
+
     override fun getKateType(model: KATEObject): String? {
         val typeFunction = (getModelReference(GetTypeModelReference)?.let { it as KATEFunction }) ?: return null
         return (typeFunction.invoke(

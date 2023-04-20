@@ -16,6 +16,8 @@ interface KATEMutableList<T : KATEValue> : KATEList<T> {
 @JvmInline
 value class KATEListImpl<T : KATEValue>(override val collection: List<T>) : KATEList<T> {
 
+    override fun getKATEType(model: KATEObject): KATEType = KATEType.List(isNullable = false)
+
     override fun getKateType(model: KATEObject): String? = "list"
 
     override fun getModelReference(reference: ModelReference): KATEValue? {

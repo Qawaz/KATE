@@ -1,16 +1,18 @@
 package com.wakaztahir.kate.dsl
 
+import com.wakaztahir.kate.model.KATEType
 import com.wakaztahir.kate.model.ModelReference
 import com.wakaztahir.kate.model.model.*
 import com.wakaztahir.kate.runtime.KATEObjectImplementation
 
-open class ModelObjectImpl(override var objectName: String, override val parent: KATEObject? = null) :
-    MutableKATEObject {
+open class ModelObjectImpl(override var objectName: String, override val parent: KATEObject? = null) : MutableKATEObject {
 
     private val container: MutableMap<String, KATEValue> by lazy { hashMapOf() }
 
     override val contained: Map<String, KATEValue>
         get() = container
+
+    override fun getKATEType(model: KATEObject): KATEType = KATEType.Object(isNullable = false)
 
     override fun getKateType(model: KATEObject): String? = "object"
 

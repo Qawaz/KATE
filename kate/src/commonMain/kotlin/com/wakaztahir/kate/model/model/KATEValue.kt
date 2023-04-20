@@ -1,10 +1,8 @@
 package com.wakaztahir.kate.model.model
 
-import com.wakaztahir.kate.EmptyReferencedValuesList
-import com.wakaztahir.kate.GetTypeModelReference
+import com.wakaztahir.kate.model.KATEType
 import com.wakaztahir.kate.model.ModelReference
 import com.wakaztahir.kate.model.PrimitiveValue
-import com.wakaztahir.kate.model.StringValue
 
 interface KATEValue {
 
@@ -18,6 +16,8 @@ interface KATEValue {
     }
 
     fun getModelReference(reference: ModelReference): KATEValue?
+
+    fun getKATEType(model: KATEObject): KATEType
 
     fun getKateType(model: KATEObject): String?
 
