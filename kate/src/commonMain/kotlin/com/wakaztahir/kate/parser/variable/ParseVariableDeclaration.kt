@@ -19,12 +19,6 @@ internal data class VariableDeclaration(
     override val isEmptyWriter: Boolean
         get() = true
 
-    fun satisfyType(model: MutableKATEObject) {
-        if (type != null) {
-            variableValue.getKATEType(model).satisfyOrThrow(type)
-        }
-    }
-
     fun storeValue(model: MutableKATEObject) {
         if (!model.insertValue(variableName, variableValue.getKATEValue(model))) {
             throw VariableDeclarationException("couldn't declare variable $variableName which already exists")
@@ -32,7 +26,6 @@ internal data class VariableDeclaration(
     }
 
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
-        satisfyType(block.model)
         storeValue(block.model)
     }
 
@@ -91,11 +84,10 @@ internal fun LazyBlock.parseVariableDeclaration(): VariableDeclaration? {
                 throw IllegalStateException("expected '=' when assigning a value to variable \"$variableName\" but got '${source.currentChar}' in variable declaration")
             }
             source.escapeSpaces()
-            val property = source.parseAnyExpressionOrValue(
-                parseFirstStringOrChar = true,
-                parseNotFirstStringOrChar = true,
-                parseDirectRefs = true,
-                allowAtLessExpressions = true
+            val property = parseValueOfType(
+                type = type ?: KATEType.Any(false),
+                allowAtLessExpressions = true,
+                parseDirectRefs = true
             )
             return if (property != null) {
                 VariableDeclaration(

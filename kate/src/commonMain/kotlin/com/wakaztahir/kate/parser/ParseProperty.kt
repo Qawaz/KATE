@@ -7,7 +7,29 @@ import com.wakaztahir.kate.model.model.ReferencedValue
 import com.wakaztahir.kate.parser.stream.SourceStream
 import com.wakaztahir.kate.parser.variable.parseVariableReference
 
-internal fun SourceStream.parseValueInsideExpression(parseStringAndChar: Boolean,parseDirectRefs : Boolean): ReferencedValue? {
+internal interface ExpressionValueParser {
+    fun SourceStream.parseExpressionValue(): ReferencedValue?
+}
+
+class DefaultExpressionValueParser(
+    private val parseStringAndChar: Boolean,
+    private val parseDirectRefs: Boolean
+) : ExpressionValueParser {
+    override fun SourceStream.parseExpressionValue(): ReferencedValue? {
+        if (parseStringAndChar) {
+            parseStringValue()?.let { return it }
+            parseCharacterValue()?.let { return it }
+        }
+        parseNumberValue()?.let { return it }
+        parseVariableReference(parseDirectRefs = parseDirectRefs)?.let { return it }
+        return null
+    }
+}
+
+internal fun SourceStream.parseValueInsideExpression(
+    parseStringAndChar: Boolean,
+    parseDirectRefs: Boolean
+): ReferencedValue? {
     if (parseStringAndChar) {
         parseStringValue()?.let { return it }
         parseCharacterValue()?.let { return it }
