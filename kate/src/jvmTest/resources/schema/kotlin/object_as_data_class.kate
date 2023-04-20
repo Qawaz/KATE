@@ -38,7 +38,7 @@
 	@define_placeholder(object,KotlinDataClass)
         @var overriding = false
         @if(this.parent.contains("__overriding__"))
-            @var overriding = this.parent.__overriding__
+            overriding = this.parent.__overriding__
         @endif
         writeObjectAsKotlinDataClass(__param__,overriding)
 	@end_define_placeholder

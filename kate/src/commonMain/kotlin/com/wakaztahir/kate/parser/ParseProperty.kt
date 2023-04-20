@@ -5,6 +5,7 @@ import com.wakaztahir.kate.model.model.KATEObject
 import com.wakaztahir.kate.model.model.KATEValue
 import com.wakaztahir.kate.model.model.ReferencedValue
 import com.wakaztahir.kate.parser.stream.SourceStream
+import com.wakaztahir.kate.parser.variable.parseVariableReference
 
 internal fun SourceStream.parseValueInsideExpression(parseStringAndChar: Boolean,parseDirectRefs : Boolean): ReferencedValue? {
     if (parseStringAndChar) {

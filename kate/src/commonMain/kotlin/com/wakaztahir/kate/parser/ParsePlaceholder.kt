@@ -5,6 +5,7 @@ import com.wakaztahir.kate.model.model.KATEValue
 import com.wakaztahir.kate.parser.stream.*
 import com.wakaztahir.kate.parser.stream.increment
 import com.wakaztahir.kate.parser.stream.parseTextWhile
+import com.wakaztahir.kate.parser.variable.isVariableName
 
 private fun Char.isPlaceholderName() = this.isLetterOrDigit() || this == '_'
 

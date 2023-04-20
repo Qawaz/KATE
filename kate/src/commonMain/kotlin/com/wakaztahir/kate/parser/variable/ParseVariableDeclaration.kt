@@ -1,49 +1,31 @@
-package com.wakaztahir.kate.parser
+package com.wakaztahir.kate.parser.variable
 
 import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.model.*
-import com.wakaztahir.kate.model.model.KATEValue
 import com.wakaztahir.kate.model.model.ReferencedValue
+import com.wakaztahir.kate.parser.parseAnyExpressionOrValue
+import com.wakaztahir.kate.parser.parseArithmeticOperator
 import com.wakaztahir.kate.parser.stream.*
 import com.wakaztahir.kate.parser.stream.increment
 
-internal data class VariableDeclaration(
-    val variableName: String,
-    val arithmeticOperatorType: ArithmeticOperatorType?,
-    val variableValue: ReferencedValue
-) : AtDirective {
+class VariableDeclarationException(message: String) : Exception(message)
+
+internal data class VariableDeclaration(val variableName: String, val variableValue: ReferencedValue) : AtDirective {
 
     override val isEmptyWriter: Boolean
         get() = true
 
-    private fun throwIt(): Nothing {
-        throw IllegalStateException("error setting value of variable $variableName , couldn't get original value")
-    }
-
-    private fun getValue(model: MutableKATEObject): KATEValue {
-        return if (arithmeticOperatorType == null) {
-            variableValue.getKATEValue(model)
-        } else {
-            ExpressionValue(
-                first = model.getModelReference(ModelReference.Property(variableName)) ?: throwIt(),
-                operatorType = arithmeticOperatorType,
-                second = variableValue
-            ).getKATEValue(model)
-        }
-    }
-
     fun storeValue(model: MutableKATEObject) {
-        model.putValue(variableName, getValue(model))
+        if (!model.insertValue(variableName, variableValue.getKATEValue(model))) {
+            throw VariableDeclarationException("couldn't declare variable $variableName which already exists")
+        }
     }
 
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
         storeValue(block.model)
     }
+
 }
-
-class VariableDeclarationParseException(message: String) : Exception(message)
-
-internal fun Char.isVariableName(): Boolean = this.isLetterOrDigit() || this == '_'
 
 internal fun SourceStream.parseVariableName(): String? {
     val previous = pointer
@@ -58,26 +40,13 @@ internal fun SourceStream.parseVariableName(): String? {
     return null
 }
 
-private fun isTakenVariableName(name: String): Boolean {
-    return when (name) {
-        "this" -> true
-        "parent" -> true
-        else -> false
-    }
-}
-
 internal fun LazyBlock.parseVariableDeclaration(): VariableDeclaration? {
     val variableName = source.parseVariableName()
     if (variableName != null) {
         if (variableName.isNotEmpty()) {
-            if (variableName.first().isDigit()) {
-                throw IllegalStateException("variable name cannot start with a digit $variableName")
-            }
-            if (isTakenVariableName(variableName)) {
-                throw IllegalStateException("variable name cannot be $variableName")
-            }
+            val valid = isValidVariableName(variableName)
+            if (valid.isFailure) throw valid.exceptionOrNull()!!
             source.escapeSpaces()
-            val arithmeticOperator = source.parseArithmeticOperator()
             if (!source.increment('=')) {
                 throw IllegalStateException("expected '=' when assigning a value to variable $variableName but got ${source.currentChar} in variable declaration")
             }
@@ -91,18 +60,17 @@ internal fun LazyBlock.parseVariableDeclaration(): VariableDeclaration? {
             return if (property != null) {
                 VariableDeclaration(
                     variableName = variableName,
-                    arithmeticOperatorType = arithmeticOperator,
                     variableValue = property
                 )
             } else {
-                throw VariableDeclarationParseException("constant's value not found when declaring variable $variableName")
+                throw VariableDeclarationException("constant's value not found when declaring variable $variableName")
             }
         } else {
             if (source.hasEnded) {
                 throw UnexpectedEndOfStream("unexpected end of stream at pointer : ${source.pointer}")
             } else {
                 source.printLeft()
-                throw VariableDeclarationParseException("variable's name not given or is empty")
+                throw VariableDeclarationException("variable's name not given or is empty")
             }
         }
     }

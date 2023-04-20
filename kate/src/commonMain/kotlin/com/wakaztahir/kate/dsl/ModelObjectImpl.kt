@@ -45,6 +45,15 @@ open class ModelObjectImpl(override var objectName: String, override val parent:
         }
     }
 
+    override fun setValue(key: String, value: KATEValue): Boolean {
+        return if (contains(key)) {
+            container[key] = value
+            true
+        } else {
+            false
+        }
+    }
+
     // ----- Putters
 
     override fun putValue(key: String, value: KATEValue) {

@@ -62,7 +62,7 @@ class ForLoopTest {
 
     @Test
     fun testForLoopRuns() {
-        val context = TemplateContext("@var runs = 0@for(@var i=0;i<3;i+1) @var runs = @var(i) @endfor@var(runs)")
+        val context = TemplateContext("@var runs = 0@for(@var i=0;i<3;i+1) @set_var runs = @var(i) @endfor@var(runs)")
         assertEquals("2", context.getDestinationAsString())
     }
 
@@ -76,6 +76,13 @@ class ForLoopTest {
             expected = "015016017",
             actual = GenerateCode("@for(@var i = 5;i<8;i++) @for(@var j = 0;j<3;j++) @if(@var(j) == 2) @breakfor @else @var(j) @endif @endfor @var(i) @endfor")
         )
+    }
+
+    @Test
+    fun testLoopModelClear() {
+        assertEquals("012",GenerateCode("@for(@var i = 0;i<3;i++) @var f = @var(i) @var(f) @endfor"))
+        assertEquals("012",GenerateCode("@for(@var i : @list(0,1,2)) @var f = @var(i) @var(f) @endfor"))
+//        assertEquals("012",GenerateCode("@var i = 0 @for(true) @if(i > 5) @breakfor @endif @var f = @var(i) @set_var i = i + 1 @var(f) @endfor"))
     }
 
     @Test

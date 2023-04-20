@@ -9,6 +9,8 @@ interface MutableKATEObject : KATEObject {
 
     fun insertValue(key: String, value: KATEValue): Boolean
 
+    fun setValue(key: String, value: KATEValue): Boolean
+
     // Put Functions
 
     fun putValue(key: String, value: KATEValue)

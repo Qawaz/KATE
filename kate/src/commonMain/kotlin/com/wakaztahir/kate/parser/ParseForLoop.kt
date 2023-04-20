@@ -7,6 +7,9 @@ import com.wakaztahir.kate.model.model.*
 import com.wakaztahir.kate.parser.stream.*
 import com.wakaztahir.kate.parser.stream.increment
 import com.wakaztahir.kate.parser.stream.parseTextWhile
+import com.wakaztahir.kate.parser.variable.isVariableName
+import com.wakaztahir.kate.parser.variable.parseVariableName
+import com.wakaztahir.kate.parser.variable.parseVariableReference
 
 internal sealed interface ForLoop : BlockContainer {
 
@@ -34,6 +37,7 @@ internal sealed interface ForLoop : BlockContainer {
         override fun iterate(block: (iteration: Int) -> Unit) {
             var i = 0
             while (condition.evaluate(model)) {
+                blockValue.model.removeAll()
                 block(i)
                 i++
             }
@@ -70,6 +74,7 @@ internal sealed interface ForLoop : BlockContainer {
                 ?: throw IllegalStateException("list property is not iterable in for loop")
             val total = iterable.collection.size
             while (index < total) {
+                blockValue.model.removeAll()
                 store(index)
                 store(iterable.collection.getOrElse(index) {
                     throw IllegalStateException("element at $index in for loop not found")
@@ -109,6 +114,7 @@ internal sealed interface ForLoop : BlockContainer {
             val conditionValue = conditional.intVal(model)
             val incrementerValue = incrementer.intVal(model)
             while (conditionType.verifyCompare(i.compareTo(conditionValue))) {
+                blockValue.model.removeAll()
                 model.storeIndex(i)
                 block(i)
                 i = arithmeticOperatorType.operate(i, incrementerValue)

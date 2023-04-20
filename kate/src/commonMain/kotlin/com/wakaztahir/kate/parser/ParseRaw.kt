@@ -6,6 +6,7 @@ import com.wakaztahir.kate.model.model.KATEUnit
 import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.parser.stream.*
 import com.wakaztahir.kate.parser.stream.increment
+import com.wakaztahir.kate.parser.variable.parseVariableReference
 
 fun LazyBlock.parseBlockSlice(
     startsWith: String,

@@ -7,6 +7,7 @@ import com.wakaztahir.kate.parser.stream.DestinationStream
 import com.wakaztahir.kate.parser.stream.SourceStream
 import com.wakaztahir.kate.parser.stream.increment
 import com.wakaztahir.kate.parser.stream.parseTextWhile
+import com.wakaztahir.kate.parser.variable.isVariableName
 
 class FunctionSlice(
     parentBlock: LazyBlock,

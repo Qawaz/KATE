@@ -23,15 +23,15 @@ class StringsTest {
         )
         assertEquals(
             expected = "hello",
-            actual = GenerateCode("@var l = \"l\" @var t = \"h\" @var t = @var(t) @+ \"e\" @var t = @var(t) @+ \"l\" @var t = @var(t) @+ @var(l) @var t = @var(t) @+ \"o\" @var(t)")
+            actual = GenerateCode("@var l = \"l\" @var t = \"h\" @set_var t = @var(t) @+ \"e\" @set_var t = @var(t) @+ \"l\" @set_var t = @var(t) @+ @var(l) @set_var t = @var(t) @+ \"o\" @var(t)")
         )
         assertEquals(
             expected = "21hello",
-            actual = GenerateCode("@var i = \"1\" @var l = \"l\" @var t = @var(i) @+ \"h\" @var t = \"2\" @+ @var(t) @+ \"e\" @var t = @var(t) @+ \"l\" @var t = @var(t) @+ @var(l) @var t = @var(t) @+ \"o\" @var(t)")
+            actual = GenerateCode("@var i = \"1\" @var l = \"l\" @var t = @var(i) @+ \"h\" @set_var t = \"2\" @+ @var(t) @+ \"e\" @set_var t = @var(t) @+ \"l\" @set_var t = @var(t) @+ @var(l) @set_var t = @var(t) @+ \"o\" @var(t)")
         )
         assertEquals(
             expected = "21hello",
-            actual = GenerateCode("@var i = \"1\" @var l = \"l\" @var t = @var(i) @+ \"h\" @var t = \"2\" @+ @var(t) @+ \"e\" @var t += \"l\" @var t += @var(l) @var t += \"o\" @var(t)")
+            actual = GenerateCode("@var i = \"1\" @var l = \"l\" @var t = @var(i) @+ \"h\" @set_var t = \"2\" @+ @var(t) @+ \"e\" @set_var t += \"l\" @set_var t += @var(l) @set_var t += \"o\" @var(t)")
         )
     }
 

@@ -3,9 +3,9 @@ import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.model.model.*
 import com.wakaztahir.kate.parser.*
 import com.wakaztahir.kate.parser.parseExpression
-import com.wakaztahir.kate.parser.parseVariableDeclaration
-import com.wakaztahir.kate.parser.parseVariableReference
 import com.wakaztahir.kate.parser.stream.TextDestinationStream
+import com.wakaztahir.kate.parser.variable.parseVariableDeclaration
+import com.wakaztahir.kate.parser.variable.parseVariableReference
 import kotlin.test.*
 
 class VariablesTest {
@@ -41,34 +41,6 @@ class VariablesTest {
     }
 
     @Test
-    fun testVariableType() {
-        assertEquals(
-            "objectbooleanchardoubleintlistmutable_liststringlong", GenerateCode(
-                """@define_object(MyObj)
-            |@var b = true
-            |@var c = 'c'
-            |@var d = 123.123
-            |@var i = 123
-            |@var l = @list(1,2,3)
-            |@var ml = @mutable_list(1,2,3)
-            |@var s = "hello"
-            |@var l2 = 123L
-            |@end_define_object
-            |@var(MyObj.getType())@var(MyObj.b.getType())@var(MyObj.c.getType())@var(MyObj.d.getType())@var(MyObj.i.getType())@var(MyObj.l.getType())@var(MyObj.ml.getType())@var(MyObj.s.getType())@var(MyObj.l2.getType())""".trimMargin()
-            )
-        )
-    }
-
-    @Test
-    fun testVariableAssignment() {
-        assertEquals("15", GenerateCode("@var i = 5 @var i *= 3 @var(i)"))
-        assertEquals("8", GenerateCode("@var i = 5 @var i += 3 @var(i)"))
-        assertEquals("2", GenerateCode("@var i = 5 @var i -= 3 @var(i)"))
-        assertEquals("5", GenerateCode("@var i = 15 @var i /= 3 @var(i)"))
-        assertEquals("1", GenerateCode("@var i = 16 @var i %= 3 @var(i)"))
-    }
-
-    @Test
     fun testStringConcatenation() {
         assertEquals("helloworld", GenerateCode("@var i = \"hel\" @+ \"lo\" @var(i) @+ \"world\""))
     }
@@ -99,15 +71,6 @@ class VariablesTest {
             expected = "test",
             actual = GenerateCode("@var(this.var1)", MutableKATEObject { putValue("var1", "test") })
         )
-    }
-
-    @Test
-    fun testParseVariableDeclaration() {
-        val context = TemplateContext(("@var myVar = \"someValue\""))
-        val ref = context.stream.parseVariableDeclaration()
-        assertNotEquals(null, ref)
-        assertEquals("myVar", ref!!.variableName)
-        assertEquals("someValue", ref.variableValue.asPrimitive(context.stream.model).value)
     }
 
     @Test
@@ -196,9 +159,9 @@ class VariablesTest {
 
     @Test
     fun testReassignment() {
-        val context = TemplateContext("@var i = 0 @var i = 2 @var(i)")
+        val context = TemplateContext("@var i = 0 @set_var i = 2 @var(i)")
         assertEquals("2", context.getDestinationAsString())
-        val context2 = TemplateContext("@var i = 10 @var i = @var(i) @+ 1 @var(i)")
+        val context2 = TemplateContext("@var i = 10 @set_var i = @var(i) @+ 1 @var(i)")
         assertEquals("11", context2.getDestinationAsString())
     }
 

@@ -1,7 +1,7 @@
 import com.wakaztahir.kate.TemplateContext
 import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.model.model.*
-import com.wakaztahir.kate.parser.parseVariableReference
+import com.wakaztahir.kate.parser.variable.parseVariableReference
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue

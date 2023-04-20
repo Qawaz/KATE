@@ -6,8 +6,8 @@ import com.wakaztahir.kate.model.model.KATEValue
 import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.parser.parseFunctionDefinition
 import com.wakaztahir.kate.parser.parseObjectDeclaration
-import com.wakaztahir.kate.parser.parseVariableDeclaration
 import com.wakaztahir.kate.parser.stream.DestinationStream
+import com.wakaztahir.kate.parser.variable.parseVariableDeclaration
 
 class ObjectDeclarationModel(
     objectName: String,

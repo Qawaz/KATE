@@ -6,6 +6,8 @@ import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.parser.*
 import com.wakaztahir.kate.parser.stream.*
 import com.wakaztahir.kate.parser.stream.increment
+import com.wakaztahir.kate.parser.variable.parseVariableAssignment
+import com.wakaztahir.kate.parser.variable.parseVariableDeclaration
 
 interface LazyBlock {
 
@@ -94,7 +96,6 @@ interface LazyBlock {
         parseRawBlock()?.let { return it }
         parsePartialRaw()?.let { return it }
         parseEmbedding()?.let { return it }
-        parseVariableDeclaration()?.let { return it }
         parseObjectDeclaration()?.let { return it }
         parseIfStatement()?.let { return it }
         parseForLoop()?.let { return it }
@@ -102,6 +103,8 @@ interface LazyBlock {
         parsePlaceholderInvocation()?.let { return it }
         parseFunctionDefinition(anonymousFunctionName = null)?.let { return it }
         parsePlaceholderUse()?.let { return it }
+        parseVariableDeclaration()?.let { return it }
+        parseVariableAssignment()?.let { return it }
         parseImplicitDirectives()?.let { return it }
         return null
     }

@@ -1,8 +1,10 @@
-package com.wakaztahir.kate.parser
+package com.wakaztahir.kate.parser.variable
 
 import com.wakaztahir.kate.model.ModelDirective
 import com.wakaztahir.kate.model.ModelReference
 import com.wakaztahir.kate.model.model.ReferencedValue
+import com.wakaztahir.kate.parser.parseAnyExpressionOrValue
+import com.wakaztahir.kate.parser.parseNumberValue
 import com.wakaztahir.kate.parser.stream.*
 import com.wakaztahir.kate.parser.stream.increment
 import com.wakaztahir.kate.parser.stream.parseTextWhile

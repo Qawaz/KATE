@@ -20,9 +20,21 @@ this template), It won't be embedded again
 
 ## Variables
 
+### Declaration
+
 `@var variableName = "My Name"`
 
-To reassign the variable to a different value , same expression is used
+### Assignment
+
+`@set_var variableName = "otherValue"`
+
+If the variable doesn't exist , It will cause an error
+
+__KATE__ also supports assignment operators `+`,`-`,`*`,`/`,`%` so you can also `@set_var i *= j`
+
+In Partial Raw , You can skip `@set_var`
+
+### Variable Value
 
 The value of the variable can only be one of these
 
@@ -41,8 +53,6 @@ The value of the variable can only be one of these
 To assign to another variable
 
 `@var i = j`
-
-__KATE__ also supports assignment operators `+`,`-`,`*`,`/`,`%` so you can also `@var i *= j`
 
 To access the object of current scope , You can do
 

@@ -2,8 +2,8 @@ import com.wakaztahir.kate.TemplateContext
 import com.wakaztahir.kate.model.LogicalCondition
 import com.wakaztahir.kate.model.asPrimitive
 import com.wakaztahir.kate.parser.parseCondition
-import com.wakaztahir.kate.parser.parseVariableDeclaration
 import com.wakaztahir.kate.parser.parseIfStatement
+import com.wakaztahir.kate.parser.variable.parseVariableDeclaration
 import kotlin.test.*
 
 class IfStatementTest {
