@@ -11,6 +11,8 @@ interface KATEObject : ReferencedValue {
 
     fun get(key: String): KATEValue?
 
+    fun getExplicitTypeInTreeUpwards(key : String) : KATEType?
+
     fun getExplicitType(key: String): KATEType?
 
     fun contains(key: String): Boolean

@@ -3,13 +3,14 @@ package com.wakaztahir.kate.model.model
 import com.wakaztahir.kate.GlobalModelObjectName
 import com.wakaztahir.kate.dsl.ModelObjectImpl
 import com.wakaztahir.kate.model.*
-import kotlin.jvm.JvmName
 
 interface MutableKATEObject : KATEObject {
 
     fun insertValue(key: String, value: KATEValue): Boolean
 
     fun setValue(key: String, value: KATEValue): Boolean
+
+    fun setValueInTreeUpwardsTypeSafely(key : String, value : KATEValue) : Boolean
 
     // Put Functions
 

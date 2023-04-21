@@ -5,7 +5,7 @@ import com.wakaztahir.kate.model.ModelReference
 import com.wakaztahir.kate.model.model.*
 import com.wakaztahir.kate.runtime.KATEObjectImplementation
 
-open class ModelObjectImpl(override var objectName: String, override val parent: KATEObject? = null) :
+open class ModelObjectImpl(override var objectName: String, override val parent: MutableKATEObject? = null) :
     MutableKATEObject {
 
     private val container: MutableMap<String, KATEValue> by lazy { hashMapOf() }
@@ -23,6 +23,10 @@ open class ModelObjectImpl(override var objectName: String, override val parent:
 
     override fun get(key: String): KATEValue? {
         return container[key]
+    }
+
+    override fun getExplicitTypeInTreeUpwards(key: String): KATEType? {
+        return explicitTypes[key] ?: parent?.getExplicitTypeInTreeUpwards(key)
     }
 
     override fun getExplicitType(key: String): KATEType? {
@@ -61,6 +65,18 @@ open class ModelObjectImpl(override var objectName: String, override val parent:
         } else {
             false
         }
+    }
+
+    override fun setValueInTreeUpwardsTypeSafely(key: String, value: KATEValue): Boolean {
+        return container[key]?.let { oldValue ->
+            (explicitTypes[key] ?: oldValue.getKATEType(this)).let { explicitType ->
+                if (!value.getKATEType(this).satisfies(explicitType)) {
+                    throw IllegalStateException("variable type ${value.getKATEType(this)} does not satisfy type $explicitType")
+                }
+            }
+            container[key] = value
+            true
+        } ?: parent?.setValueInTreeUpwardsTypeSafely(key, value) ?: false
     }
 
     // ----- Putters

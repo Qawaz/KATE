@@ -25,8 +25,6 @@ internal data class VariableAssignment(
     }
 
     private fun getValue(model: MutableKATEObject): KATEValue {
-        // TODO do not store value after resolving it
-        // TODO store reference for referenced value
         return if (arithmeticOperatorType == null) {
             variableValue.getKATEValue(model)
         } else {
@@ -39,7 +37,7 @@ internal data class VariableAssignment(
     }
 
     fun storeValue(model: MutableKATEObject) {
-        if (!model.setValue(variableName, getValue(model))) {
+        if (!model.setValueInTreeUpwardsTypeSafely(variableName, getValue(model))) {
             throw VariableAssignmentException("couldn't assign variable $variableName because it doesn't exist")
         }
     }

@@ -20,10 +20,13 @@ internal data class VariableDeclaration(
     fun storeValue(model: MutableKATEObject) {
         val value = variableValue.getKATEValue(model)
         if (type != null) {
-            if (!value.getKATEType(model).satisfies(type)) {
-                throw IllegalStateException("cannot satisfy type $type with ${value.getKATEType(model)}")
+            val actualType = value.getKATEType(model)
+            if (!actualType.satisfies(type)) {
+                throw IllegalStateException("cannot satisfy type $type with $actualType")
             }
-            model.setExplicitType(variableName, type)
+            if(type != actualType) {
+                model.setExplicitType(variableName, type)
+            }
         }
         if (!model.insertValue(variableName, value)) {
             throw VariableDeclarationException("couldn't declare variable $variableName which already exists")

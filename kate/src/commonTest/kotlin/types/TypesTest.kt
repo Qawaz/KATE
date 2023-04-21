@@ -34,6 +34,16 @@ class TypesTest {
         assertFails { GenerateCode("@var i = false @var j : string = @var(i)") }
         assertFails { GenerateCode("@var i = 'x' @var j : string = @var(i)") }
 
+        // Reassigning a value with value of same type succeeds
+        assertEquals("empty", GenerateCode("@var i : string = \"\" @set_var i = \"empty\" @var(i)"))
+
+        // Reassigning a value with value of different type fails
+        assertFails { GenerateCode("@var i : string = \"\" @set_var i = 0") }
+        assertFails { GenerateCode("@var i : string = \"\" @set_var i = 0.0") }
+        assertFails { GenerateCode("@var i : string = \"\" @set_var i = 0L") }
+        assertFails { GenerateCode("@var i : string = \"\" @set_var i = true") }
+        assertFails { GenerateCode("@var i : string = \"\" @set_var i = false") }
+        assertFails { GenerateCode("@var i : string = \"\" @set_var i = 'x'") }
     }
 
     @Test
@@ -58,6 +68,15 @@ class TypesTest {
         assertFails { GenerateCode("@var i = true @var j : int = @var(i)") }
         assertFails { GenerateCode("@var i = false @var j : int = @var(i)") }
         assertFails { GenerateCode("@var i = 'x' @var j : int = @var(i)") }
+
+        assertEquals("15", GenerateCode("@var i : int = 3 @set_var i = 15 @var(i)"))
+
+        assertFails { GenerateCode("@var i : int = 5 @set_var i = \"\"") }
+        assertFails { GenerateCode("@var i : int = 5 @set_var i = 0.0") }
+        assertFails { GenerateCode("@var i : int = 5 @set_var i = 0L") }
+        assertFails { GenerateCode("@var i : int = 5 @set_var i = true") }
+        assertFails { GenerateCode("@var i : int = 5 @set_var i = false") }
+        assertFails { GenerateCode("@var i : int = 5 @set_var i = 'x'") }
     }
 
     @Test
@@ -81,6 +100,15 @@ class TypesTest {
         assertFails { GenerateCode("@var i = true @var j : double = @var(i)") }
         assertFails { GenerateCode("@var i = false @var j : double = @var(i)") }
         assertFails { GenerateCode("@var i = 'x' @var j : double = @var(i)") }
+
+        assertEquals("5.0", GenerateCode("@var i : double = 3. @set_var i = 5. @var(i)"))
+
+        assertFails { GenerateCode("@var i : double = 3. @set_var i = \"\"") }
+        assertFails { GenerateCode("@var i : double = 3. @set_var i = 0") }
+        assertFails { GenerateCode("@var i : double = 3. @set_var i = 0L") }
+        assertFails { GenerateCode("@var i : double = 3. @set_var i = true") }
+        assertFails { GenerateCode("@var i : double = 3. @set_var i = false") }
+        assertFails { GenerateCode("@var i : double = 3. @set_var i = 'x'") }
     }
 
     @Test
@@ -107,6 +135,15 @@ class TypesTest {
         assertFails { GenerateCode("@var i = 0.0 @var j : boolean = @var(i)") }
         assertFails { GenerateCode("@var i = 'x' @var j : boolean = @var(i)") }
 
+        assertEquals("false", GenerateCode("@var i : boolean = true @set_var i = false @var(i)"))
+        assertEquals("true", GenerateCode("@var i : boolean = false @set_var i = true @var(i)"))
+
+        assertFails { GenerateCode("@var i : boolean = true @set_var i = \"\"") }
+        assertFails { GenerateCode("@var i : boolean = true @set_var i = 0") }
+        assertFails { GenerateCode("@var i : boolean = true @set_var i = 0L") }
+        assertFails { GenerateCode("@var i : boolean = true @set_var i = 0.0") }
+        assertFails { GenerateCode("@var i : boolean = true @set_var i = 'x'") }
+
     }
 
     @Test
@@ -123,6 +160,7 @@ class TypesTest {
         assertFails { GenerateCode("@var i : long = false") }
         assertFails { GenerateCode("@var i : long = 'x'") }
 
+        assertEquals("long", GenerateCode("@var i : long = 55 @var j = @var(i) @var(j.getType())"))
         assertEquals("55",GenerateCode("@var i : long = 55L @var j : long = @var(i) @var(j)"))
 
         assertFails { GenerateCode("@var i = \"\" @var j : long = @var(i)") }
@@ -153,6 +191,15 @@ class TypesTest {
         assertFails { GenerateCode("@var i = 0L @var j : char = @var(i)") }
         assertFails { GenerateCode("@var i = true @var j : char = @var(i)") }
         assertFails { GenerateCode("@var i = false @var j : char = @var(i)") }
+
+        assertEquals("s", GenerateCode("@var i : char = 'x' @set_var i = 's' @var(i)"))
+
+        assertFails { GenerateCode("@var i : char = 's' @set_var i = \"\"") }
+        assertFails { GenerateCode("@var i : char = 's' @set_var i = 0") }
+        assertFails { GenerateCode("@var i : char = 's' @set_var i = 0.0") }
+        assertFails { GenerateCode("@var i : char = 's' @set_var i = 0L") }
+        assertFails { GenerateCode("@var i : char = 's' @set_var i = true") }
+        assertFails { GenerateCode("@var i : char = 's' @set_var i = false") }
     }
 
     @Test
