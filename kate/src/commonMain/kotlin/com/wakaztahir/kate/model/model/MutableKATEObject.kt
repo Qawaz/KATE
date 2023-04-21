@@ -6,38 +6,62 @@ import com.wakaztahir.kate.model.*
 
 interface MutableKATEObject : KATEObject {
 
-    fun insertValue(key: String, value: KATEValue): Boolean
-
     fun setValue(key: String, value: KATEValue): Boolean
 
-    fun setValueInTreeUpwardsTypeSafely(key : String, value : KATEValue) : Boolean
+    fun setValueInTreeUpwardsTypeSafely(key: String, value: KATEValue): Boolean
 
     // Put Functions
 
+    @Deprecated("use insertValue", replaceWith = ReplaceWith("insertValue(key,value)"))
     fun putValue(key: String, value: KATEValue)
 
-    fun setExplicitType(key : String,type : KATEType)
+    fun setExplicitType(key: String, type: KATEType)
 
     // Extensions
 
+    @Deprecated("use setValue", replaceWith = ReplaceWith("setValue(key,value)"))
     fun putValue(key: String, value: String) {
-        putValue(key, StringValue(value))
+        setValue(key, StringValue(value))
     }
 
+    @Deprecated("use setValue", replaceWith = ReplaceWith("setValue(key,value)"))
     fun putValue(key: String, value: Int) {
-        putValue(key, IntValue(value))
+        setValue(key, IntValue(value))
     }
 
+    @Deprecated("use setValue", replaceWith = ReplaceWith("setValue(key,value)"))
     fun putValue(key: String, value: Float) {
-        putValue(key, DoubleValue(value.toDouble()))
+        setValue(key, DoubleValue(value.toDouble()))
     }
 
+    @Deprecated("use setValue", replaceWith = ReplaceWith("setValue(key,value)"))
     fun putValue(key: String, value: Double) {
-        putValue(key, DoubleValue(value))
+        setValue(key, DoubleValue(value))
     }
 
+    @Deprecated("use setValue", replaceWith = ReplaceWith("setValue(key,value)"))
     fun putValue(key: String, value: Boolean) {
-        putValue(key, BooleanValue(value))
+        setValue(key, BooleanValue(value))
+    }
+
+    fun setValue(key: String, value: String) {
+        setValue(key, StringValue(value))
+    }
+
+    fun setValue(key: String, value: Int) {
+        setValue(key, IntValue(value))
+    }
+
+    fun setValue(key: String, value: Float) {
+        setValue(key, DoubleValue(value.toDouble()))
+    }
+
+    fun setValue(key: String, value: Double) {
+        setValue(key, DoubleValue(value))
+    }
+
+    fun setValue(key: String, value: Boolean) {
+        setValue(key, BooleanValue(value))
     }
 
 //    fun putList(key: String, value: List<Int>) {
@@ -71,11 +95,11 @@ interface MutableKATEObject : KATEObject {
                 objects.add(ModelObjectImpl("$key${objects.size}").apply(block))
             }
         })
-        putValue(key, KATEMutableListImpl(objects))
+        setValue(key, KATEMutableListImpl(objects))
     }
 
     fun putObject(key: String, block: MutableKATEObject.() -> Unit) {
-        putValue(key, ModelObjectImpl(key).apply(block))
+        setValue(key, ModelObjectImpl(key).apply(block))
     }
 
     fun changeName(name: String)

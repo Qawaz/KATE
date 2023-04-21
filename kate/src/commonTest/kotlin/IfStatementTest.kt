@@ -30,7 +30,7 @@ class IfStatementTest {
     @Test
     fun testBlockValue() {
         val context = TemplateContext("@if(@var(var1)) blockValue @endif")
-        context.stream.model.putValue("var1", true)
+        context.stream.model.setValue("var1", true)
         assertEquals("blockValue", context.getDestinationAsString())
         assertEquals(
             expected = "x",
@@ -39,7 +39,7 @@ class IfStatementTest {
     }
 
     @Test
-    fun testIfDirectRefs(){
+    fun testIfDirectRefs() {
         assertEquals(
             expected = "blockValue",
             actual = GenerateCode("@var i = 5 @if(i == 5) blockValue @endif")
@@ -66,7 +66,7 @@ class IfStatementTest {
     fun testConstRefParsing() {
         val text = "@if(@var(var1)) blockValue @endif"
         val context = TemplateContext(text)
-        context.stream.model.putValue("var1", true)
+        context.stream.model.setValue("var1", true)
         val statement = context.stream.parseIfStatement()!!
         assertEquals("blockValue", statement.singleIfs[0].blockValue.getValueAsString())
         assertNotEquals(null, statement.evaluate(context))

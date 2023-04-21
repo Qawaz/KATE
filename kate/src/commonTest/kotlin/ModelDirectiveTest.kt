@@ -25,10 +25,10 @@ class ModelDirectiveTest {
         val context = TemplateContext("@var(MyObject)")
         context.stream.model.apply {
             this.putObject("MyObject") {
-                this.putValue("myInt", 15)
-                this.putValue("myDouble", 16.000)
-                this.putValue("myStr", "something is here")
-                this.putValue(
+                this.setValue("myInt", 15)
+                this.setValue("myDouble", 16.000)
+                this.setValue("myStr", "something is here")
+                this.setValue(
                     key = "myList", value = KATEListImpl<IntValue>(
                         collection = listOf(
                             IntValue(10),
@@ -39,13 +39,13 @@ class ModelDirectiveTest {
                     )
                 )
                 this.putObject(key = "MyNestedObject") {
-                    this.putValue("myInt", 15)
-                    this.putValue("myDouble", 16.000)
-                    this.putValue("myStr", "something is here")
+                    this.setValue("myInt", 15)
+                    this.setValue("myDouble", 16.000)
+                    this.setValue("myStr", "something is here")
                     this.putObject(key = "MoreNestedObject") {
-                        this.putValue("myInt", 15)
-                        this.putValue("myDouble", 16.000)
-                        this.putValue("myStr", "something is here")
+                        this.setValue("myInt", 15)
+                        this.setValue("myDouble", 16.000)
+                        this.setValue("myStr", "something is here")
                     }
                 }
             }
@@ -110,8 +110,8 @@ class ModelDirectiveTest {
             override fun toString(): String = "funName()"
         }
         val context = TemplateContext("@var(funName())@var(propName)()@partial_raw funName() @end_partial_raw", MutableKATEObject {
-            putValue("funName", myFunc)
-            putValue("propName", "propVal")
+            setValue("funName", myFunc)
+            setValue("propName", "propVal")
         })
         assertEquals("funValpropVal()", context.getDestinationAsString())
         assertEquals(2, invocations)
@@ -120,11 +120,11 @@ class ModelDirectiveTest {
     @Test
     fun testParseModelDirectiveCodeGen() {
         val model = MutableKATEObject {
-            putValue("property1", true)
+            setValue("property1", true)
             putObject("property2") {
-                putValue("property3", "123")
+                setValue("property3", "123")
             }
-            putValue("callSum", object : KATEFunction() {
+            setValue("callSum", object : KATEFunction() {
                 override fun invoke(
                     model: KATEObject,
                     path: List<ModelReference>,

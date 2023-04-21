@@ -51,6 +51,6 @@ class ObjectDeclaration(val objectName: String, val declarationBlock: ObjectDecl
     override fun getBlockValue(model: KATEObject): LazyBlock = declarationBlock
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
         declarationBlock.generateTo(destination)
-        block.model.putValue(objectName, declarationBlock.model)
+        block.model.setValue(objectName, declarationBlock.model)
     }
 }

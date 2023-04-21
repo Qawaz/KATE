@@ -111,7 +111,7 @@ class ForLoopTest {
     @Test
     fun testForLoopGeneration4() {
         val context = TemplateContext("@for(@var elem : @var(list)) @var(elem) @endfor", MutableKATEObject {
-            putValue("list", KATEListImpl(listOf("H", "e", "ll", "o").map { StringValue(it) }))
+            setValue("list", KATEListImpl(listOf("H", "e", "ll", "o").map { StringValue(it) }))
         })
         assertEquals("Hello", context.getDestinationAsString())
     }
@@ -119,7 +119,7 @@ class ForLoopTest {
     @Test
     fun testForLoopGeneration5() {
         val kteObject = MutableKATEObject {
-            putValue("list", KATEListImpl(listOf("H", "e", "ll", "o").map { StringValue(it) }))
+            setValue("list", KATEListImpl(listOf("H", "e", "ll", "o").map { StringValue(it) }))
         }
         val context = TemplateContext(
             "@var(list.size())@var(list.get(2))@var(list.contains(\"ll\"))@var(list.contains(\"v\"))",
@@ -131,7 +131,7 @@ class ForLoopTest {
     @Test
     fun testForLoopGenerationWithDirectReference() {
         val context = TemplateContext("@for(@var elem : list) @var(elem) @endfor", MutableKATEObject {
-            putValue("list", KATEListImpl(listOf("H", "e", "ll", "o").map { StringValue(it) }))
+            setValue("list", KATEListImpl(listOf("H", "e", "ll", "o").map { StringValue(it) }))
         })
         assertEquals("Hello", context.getDestinationAsString())
     }

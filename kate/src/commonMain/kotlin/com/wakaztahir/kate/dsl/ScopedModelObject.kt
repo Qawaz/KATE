@@ -11,20 +11,6 @@ class ScopedModelObject(override val parent: MutableKATEObject) : ModelObjectImp
         return super.getModelReference(reference) ?: parent.getModelReference(reference)
     }
 
-    override fun setValue(key: String, value: KATEValue): Boolean {
-        return if(!super.setValue(key, value)){
-            parent.setValue(key,value)
-        } else true
-    }
-
-    override fun putValue(key: String, value: KATEValue) {
-        if (parent.containsInAncestors(key)) {
-            parent.putValue(key, value)
-        } else {
-            super.putValue(key, value)
-        }
-    }
-
     override fun toString(): String {
         return super.toString() + " extends " + parent.toString()
     }

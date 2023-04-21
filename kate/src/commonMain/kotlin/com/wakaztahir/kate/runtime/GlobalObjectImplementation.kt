@@ -8,7 +8,7 @@ object GlobalObjectImplementation {
 
     private val consoleObject by lazy {
         MutableKATEObject {
-            putValue("log", object : KATEFunction() {
+            setValue("log", object : KATEFunction() {
                 override fun invoke(
                     model: KATEObject,
                     path: List<ModelReference>,
@@ -48,8 +48,8 @@ object GlobalObjectImplementation {
     }
 
     fun putIntoObject(obj: MutableKATEObject) {
-        obj.putValue("console", consoleObject)
-        obj.putValue("throw", throwMethod)
+        obj.setValue("console", consoleObject)
+        obj.setValue("throw", throwMethod)
     }
 
 }

@@ -60,10 +60,10 @@ open class PlaceholderBlock(
             "invocation model should be set before invoking placeholder($placeholderName,$definitionName,$paramName)"
         }
         if (paramValue != null) {
-            require(model.insertValue(paramName, paramValue!!)) {
+            require(model.setValue(paramName, paramValue!!)) {
                 "couldn't insert value by the name $paramName and $paramValue for placeholder invocation placeholder($placeholderName,$definitionName,$paramName)"
             }
-            model.putValue(paramName, paramValue!!)
+            model.setValue(paramName, paramValue!!)
         }
         generateActual(destination)
         if (paramValue != null) {

@@ -28,7 +28,7 @@ internal data class VariableDeclaration(
                 model.setExplicitType(variableName, type)
             }
         }
-        if (!model.insertValue(variableName, value)) {
+        if (!model.setValue(variableName, value)) {
             throw VariableDeclarationException("couldn't declare variable $variableName which already exists")
         }
     }

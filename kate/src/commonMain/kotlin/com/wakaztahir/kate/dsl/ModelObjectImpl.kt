@@ -49,21 +49,12 @@ open class ModelObjectImpl(override var objectName: String, override val parent:
         return container[reference.name] ?: KATEObjectImplementation.propertyMap[reference.name]
     }
 
-    override fun insertValue(key: String, value: KATEValue): Boolean {
-        return if (contains(key)) {
-            false
-        } else {
-            container[key] = value
-            true
-        }
-    }
-
     override fun setValue(key: String, value: KATEValue): Boolean {
         return if (contains(key)) {
+            false
+        } else {
             container[key] = value
             true
-        } else {
-            false
         }
     }
 

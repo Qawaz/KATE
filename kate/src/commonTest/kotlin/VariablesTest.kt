@@ -15,7 +15,7 @@ class VariablesTest {
         val ref = context.stream.parseVariableReference(true)
         assertNotEquals(null, ref)
         assertEquals(ref!!.propertyPath[0].name, "myVar")
-        context.stream.model.putValue("myVar", StringValue("someValue"))
+        context.stream.model.setValue("myVar", StringValue("someValue"))
         assertEquals("someValue", ref.asPrimitive(context.stream.model).value)
     }
 
@@ -34,7 +34,7 @@ class VariablesTest {
         assertEquals(
             expected = "5",
             actual = GenerateCode("@var(i)", MutableKATEObject {
-                putValue("i", LazyReferencedValue { IntValue(5) })
+                setValue("i", LazyReferencedValue { IntValue(5) })
             })
         )
     }
@@ -49,7 +49,7 @@ class VariablesTest {
         assertEquals(
             expected = "10",
             actual = GenerateCode("@var i = @var(myFunc()) @var(i)", MutableKATEObject {
-                putValue("myFunc", object : KATEFunction() {
+                setValue("myFunc", object : KATEFunction() {
                     override fun invoke(
                         model: KATEObject,
                         path: List<ModelReference>,
@@ -70,7 +70,7 @@ class VariablesTest {
     fun testThisObjectReference() {
         assertEquals(
             expected = "test",
-            actual = GenerateCode("@var(this.var1)", MutableKATEObject { putValue("var1", "test") })
+            actual = GenerateCode("@var(this.var1)", MutableKATEObject { setValue("var1", "test") })
         )
     }
 
@@ -228,7 +228,7 @@ class VariablesTest {
     @Test
     fun testParseDynamicProperty() {
         val context = TemplateContext(("@var(myVar)"))
-        context.stream.model.putValue("myVar", StringValue("someValue"))
+        context.stream.model.setValue("myVar", StringValue("someValue"))
         val property = context.stream.parseExpression(
             parseFirstStringOrChar = true,
             parseNotFirstStringOrChar = true,

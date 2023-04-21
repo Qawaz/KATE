@@ -89,7 +89,7 @@ abstract class KATERecursiveFunction(val slice: FunctionSlice, val parameterName
         slice.model = ScopedModelObject(slice.parentBlock.model)
         slice.model.forEachParam { paramName, index ->
             if (index < parameters.size) {
-                putValue(paramName, parameters[index].getKATEValue(model))
+                setValue(paramName, parameters[index].getKATEValue(model))
             } else {
                 throw IllegalStateException("function expects ${parameterNames?.size} parameters and not ${parameters.size}")
             }
@@ -128,6 +128,7 @@ class FunctionDefinition(val slice: FunctionSlice, val functionName: String, val
         ): KATEValue {
             return generateNow(model = model, parameters)
         }
+
         override fun toString(): String = "$functionName()"
     }
 
@@ -137,7 +138,7 @@ class FunctionDefinition(val slice: FunctionSlice, val functionName: String, val
 
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
         definition.destination = destination
-        block.model.putValue(functionName, definition)
+        block.model.setValue(functionName, definition)
     }
 }
 

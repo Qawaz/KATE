@@ -53,12 +53,12 @@ internal sealed interface ForLoop : BlockContainer {
 
         private fun store(value: Int) {
             if (indexConstName != null) {
-                model.putValue(indexConstName, value)
+                model.setValue(indexConstName, value)
             }
         }
 
         private fun store(value: KATEValue) {
-            model.putValue(elementConstName, value)
+            model.setValue(elementConstName, value)
         }
 
         private fun remove() {
@@ -102,7 +102,7 @@ internal sealed interface ForLoop : BlockContainer {
         }
 
         private fun MutableKATEObject.storeIndex(value: Int) {
-            putValue(variableName, value)
+            setValue(variableName, value)
         }
 
         private fun MutableKATEObject.removeIndex() {
