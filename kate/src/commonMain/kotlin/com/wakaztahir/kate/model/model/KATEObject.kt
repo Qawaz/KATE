@@ -6,9 +6,16 @@ import com.wakaztahir.kate.model.*
 interface KATEObject : KATEValue {
 
     val objectName: String
+
     val parent: KATEObject?
-    val itemType : KATEType
+
+    val itemType: KATEType
+
     val contained: Map<String, KATEValue>
+
+    override fun getKnownKATEType(): KATEType
+
+    override fun getKATEType(model: KATEObject): KATEType = getKnownKATEType()
 
     fun get(key: String): KATEValue?
 
@@ -16,7 +23,7 @@ interface KATEObject : KATEValue {
 
     fun getVariableType(key: String): KATEType?
 
-    fun getExplicitTypeInTreeUpwards(key: String): KATEType?
+    fun getVariableTypeInTreeUpwards(key: String): KATEType?
 
     fun contains(key: String): Boolean
 
@@ -45,14 +52,14 @@ interface KATEObject : KATEValue {
         }
     }
 
-    fun getModelReferenceValue(model: KATEObject, path: List<ModelReference>): KATEValue {
+    fun getModelReferenceValue(path: List<ModelReference>): KATEValue {
         var currentVal: KATEValue = this
         var i = 0
         while (i < path.size) {
             when (val prop = path[i]) {
                 is ModelReference.FunctionCall -> {
                     (currentVal.getModelReference(i, prop) as? KATEFunction)?.let { func ->
-                        currentVal = func.invoke(model, path, i, currentVal, prop.parametersList)
+                        currentVal = func.invoke(this, path, i, currentVal, prop.parametersList)
                     } ?: throwUnresolved(path, prop, currentVal)
                 }
 

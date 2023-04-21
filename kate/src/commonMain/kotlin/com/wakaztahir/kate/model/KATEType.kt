@@ -129,7 +129,7 @@ sealed class KATEType {
 
         override fun getKATEType(): kotlin.String = "mutable_list<${itemType.getKATEType()}>"
 
-        override fun satisfies(type: KATEType): kotlin.Boolean = type.actualType.let { it is Any || it is MutableList }
+        override fun satisfies(type: KATEType): kotlin.Boolean = type.actualType.let { it is Any || it is List }
 
     }
 

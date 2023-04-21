@@ -110,13 +110,13 @@ fun LazyBlock.parseValueOfType(
         }
 
         is KATEType.MutableList -> {
-            parseMutableListDefinition()?.let { return it }
+            parseMutableListDefinition(itemType = type.itemType)?.let { return it }
             source.parseVariableReference(parseDirectRefs = parseDirectRefs)?.let { return it }
         }
 
         is KATEType.List -> {
-            parseListDefinition()?.let { return it }
-            parseMutableListDefinition()?.let { return it }
+            parseListDefinition(itemType = type.itemType)?.let { return it }
+            parseMutableListDefinition(itemType = type.itemType)?.let { return it }
             source.parseVariableReference(parseDirectRefs = parseDirectRefs)?.let { return it }
         }
 

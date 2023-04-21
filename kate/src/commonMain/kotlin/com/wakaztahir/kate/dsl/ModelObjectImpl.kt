@@ -13,12 +13,12 @@ open class ModelObjectImpl(
 
     private val container: MutableMap<String, KATEValue> by lazy { hashMapOf() }
 
-    private val explicitTypes: MutableMap<String, KATEType> by lazy { hashMapOf() }
+    private val type: MutableMap<String, KATEType> by lazy { hashMapOf() }
 
     override val contained: Map<String, KATEValue>
         get() = container
 
-    override fun getKATEType(model: KATEObject): KATEType = KATEType.Object(itemType)
+    override fun getKnownKATEType(): KATEType = KATEType.Object(itemType)
 
     // ----- Getters
 
@@ -26,12 +26,12 @@ open class ModelObjectImpl(
         return container[key]
     }
 
-    override fun getExplicitTypeInTreeUpwards(key: String): KATEType? {
-        return explicitTypes[key] ?: parent?.getExplicitTypeInTreeUpwards(key)
+    override fun getVariableTypeInTreeUpwards(key: String): KATEType? {
+        return type[key] ?: parent?.getVariableTypeInTreeUpwards(key)
     }
 
     override fun getVariableType(key: String): KATEType? {
-        return explicitTypes[key]
+        return type[key]
     }
 
     override fun contains(key: String): Boolean {
@@ -65,7 +65,7 @@ open class ModelObjectImpl(
 
     override fun setValueInTreeUpwardsTypeSafely(key: String, value: KATEValue): Boolean {
         return container[key]?.let { oldValue ->
-            (explicitTypes[key] ?: oldValue.getKATEType(this)).let { explicitType ->
+            (type[key] ?: oldValue.getKATEType(this)).let { explicitType ->
                 if (!value.getKATEType(this).satisfies(explicitType)) {
                     throw IllegalStateException("variable type ${value.getKATEType(this)} does not satisfy type $explicitType")
                 }
@@ -78,7 +78,7 @@ open class ModelObjectImpl(
     // ----- Putters
 
     override fun setVariableType(key: String, type: KATEType) {
-        explicitTypes[key] = type
+        this.type[key] = type
     }
 
     override fun changeName(name: String) {

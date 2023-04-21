@@ -47,6 +47,10 @@ internal data class ExpressionValue(
         return null
     }
 
+    override fun getKnownKATEType(): KATEType? {
+        return null
+    }
+
     override fun getKATEType(model: KATEObject): KATEType {
         return getKATEValue(model).getKATEType(model)
     }

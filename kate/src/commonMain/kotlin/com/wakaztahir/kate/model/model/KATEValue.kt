@@ -18,6 +18,8 @@ interface KATEValue {
 
     fun getModelReference(reference: ModelReference): KATEValue?
 
+    fun getKnownKATEType(): KATEType?
+
     fun getKATEType(model: KATEObject): KATEType
 
     override fun toString(): String

@@ -5,8 +5,15 @@ import com.wakaztahir.kate.runtime.KATEListImplementation
 import com.wakaztahir.kate.runtime.KATEMutableListImplementation
 
 interface KATEList<T : KATEValue> : KATEValue {
+
     val itemType : KATEType
+
     val collection: List<T>
+
+    override fun getKnownKATEType(): KATEType
+
+    override fun getKATEType(model: KATEObject): KATEType = getKnownKATEType()
+
 }
 
 interface KATEMutableList<T : KATEValue> : KATEList<T> {
@@ -15,7 +22,7 @@ interface KATEMutableList<T : KATEValue> : KATEList<T> {
 
 class KATEListImpl<T : KATEValue>(override val collection: List<T>,override val itemType : KATEType) : KATEList<T> {
 
-    override fun getKATEType(model: KATEObject): KATEType = KATEType.List(itemType)
+    override fun getKnownKATEType(): KATEType = KATEType.List(itemType)
 
     override fun getModelReference(reference: ModelReference): KATEValue? {
         if (reference is ModelReference.FunctionCall) {
@@ -51,7 +58,7 @@ class KATEMutableListImpl<T : KATEValue>(override val collection: MutableList<T>
         }
     }
 
-    override fun getKATEType(model: KATEObject): KATEType = KATEType.MutableList(itemType)
+    override fun getKnownKATEType(): KATEType = KATEType.MutableList(itemType)
 
     override fun compareTo(model: KATEObject, other: KATEValue): Int {
         throw IllegalStateException("list $this cannot be compared to $other")

@@ -237,7 +237,7 @@ class TypesTest {
         assertFails { GenerateCode("@var i : list<int> = @list(\"hello\")") }
 
         // Assigning referenced value with correct type succeeds
-        assertEquals("0", GenerateCode("@var i : list<int> = @list(1,2,3) @var j : list<int> = @var(i) @var(j)"))
+        assertEquals("1,2,3", GenerateCode("@var i : list<int> = @list(1,2,3) @var j : list<int> = @var(i) @var(j)"))
 
         // Assigning referenced value with wrong type fails
         assertFails { GenerateCode("@var i = 0 @var j : list<any> = @var(i)") }
@@ -248,7 +248,7 @@ class TypesTest {
         assertFails { GenerateCode("@var i = 'x' @var j : list<any> = @var(i)") }
 
         // Reassigning a value with value of same type succeeds
-        assertEquals("empty", GenerateCode("@var i : list<any> = @list(1,2,3) @set_var i = @list(4,5,6) @var(i)"))
+        assertEquals("4,5,6", GenerateCode("@var i : list<any> = @list(1,2,3) @set_var i = @list(4,5,6) @var(i)"))
 
         // Reassigning a value with value of different type fails
         assertFails { GenerateCode("@var i : list<any> = @list(1,2,3) @set_var i = 0") }
@@ -281,7 +281,7 @@ class TypesTest {
         assertFails { GenerateCode("@var i : mutable_list<any> = @list(\"hello\")") }
 
         // Assigning referenced value with correct type succeeds
-        assertEquals("0", GenerateCode("@var i : mutable_list<int> = @mutable_list(1,2,3) @var j : mutable_list<int> = @var(i) @var(j)"))
+        assertEquals("1,2,3", GenerateCode("@var i : mutable_list<int> = @mutable_list(1,2,3) @var j : mutable_list<int> = @var(i) @var(j)"))
 
         // Assigning referenced value with wrong type fails
         assertFails { GenerateCode("@var i = 0 @var j : mutable_list<any> = @var(i)") }
@@ -292,7 +292,7 @@ class TypesTest {
         assertFails { GenerateCode("@var i = 'x' @var j : mutable_list<any> = @var(i)") }
 
         // Reassigning a value with value of same type succeeds
-        assertEquals("empty", GenerateCode("@var i : mutable_list<any> = @mutable_list(1,2,3) @set_var i = @mutable_list(4,5,6) @var(i)"))
+        assertEquals("4,5,6", GenerateCode("@var i : mutable_list<any> = @mutable_list(1,2,3) @set_var i = @mutable_list(4,5,6) @var(i)"))
 
         // Reassigning a value with value of different type fails
         assertFails { GenerateCode("@var i : mutable_list<any> = @mutable_list(1,2,3) @set_var i = 0") }

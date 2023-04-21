@@ -39,13 +39,17 @@ open class ModelDirective(val propertyPath: List<ModelReference>) : ReferencedVa
         throw IllegalStateException("ReferencedValue cannot give a model reference")
     }
 
+    override fun getKnownKATEType(): KATEType? {
+        return null
+    }
+
     override fun getKATEType(model: KATEObject): KATEType {
         return propertyPath.getOrNull(propertyPath.size - 2)?.name?.let { model.getVariableType(it) }
             ?: getKATEValue(model).getKATEType(model)
     }
 
     fun toEmptyPlaceholderInvocation(model: MutableKATEObject, endPointer: Int): PlaceholderInvocation {
-        model.getModelReferenceValue(model = model, path = propertyPath)
+        model.getModelReferenceValue(path = propertyPath)
         return PlaceholderInvocation(
             placeholderName = KATEType.Unit().getKATEType(),
             definitionName = null,
@@ -55,7 +59,7 @@ open class ModelDirective(val propertyPath: List<ModelReference>) : ReferencedVa
     }
 
     override fun getKATEValue(model: KATEObject): KATEValue {
-        return model.getModelReferenceValue(model = model, path = propertyPath)
+        return model.getModelReferenceValue(path = propertyPath)
     }
 
     override fun toString(): String = propertyPath.joinToString(".")

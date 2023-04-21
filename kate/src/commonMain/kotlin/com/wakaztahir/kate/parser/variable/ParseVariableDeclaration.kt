@@ -24,7 +24,7 @@ internal data class VariableDeclaration(
             if (!actualType.satisfies(type)) {
                 throw IllegalStateException("cannot satisfy type $type with $actualType")
             }
-            if(type != actualType) {
+            if (type != actualType) {
                 model.setVariableType(variableName, type)
             }
         }
@@ -52,13 +52,12 @@ internal fun SourceStream.parseVariableName(): String? {
     return null
 }
 
-private fun Char.isTypeName(): Boolean = this.isLetter()
+private fun Char.isTypeName(): Boolean = this.isLetter() || this == '_'
 
 internal fun SourceStream.parseKATEType(): KATEType? {
     val previous = pointer
     val type = parseTextWhile { currentChar.isTypeName() }
     if (type.isNotEmpty()) {
-        val isNullable = increment('?')
         val typeName = when (type) {
             "any" -> KATEType.Any()
             "char" -> KATEType.Char()
@@ -67,9 +66,19 @@ internal fun SourceStream.parseKATEType(): KATEType? {
             "double" -> KATEType.Double()
             "long" -> KATEType.Long()
             "boolean" -> KATEType.Boolean()
-            else -> null
+            "list", "mutable_list" -> {
+                source.increment('<')
+                val itemType = parseKATEType() ?: KATEType.NullableKateType(KATEType.Any())
+                source.increment('>')
+                if (type == "list") KATEType.List(itemType) else KATEType.MutableList(itemType)
+            }
+
+            else -> {
+                throw IllegalStateException("unknown type name $type")
+            }
         }
-        typeName?.let { return if (isNullable) KATEType.NullableKateType(it) else it }
+        val isNullable = increment('?')
+        typeName.let { return if (isNullable) KATEType.NullableKateType(it) else it }
     }
     setPointerAt(previous)
     return null

@@ -13,6 +13,10 @@ class LazyReferencedValue(private val creator: () -> KATEValue) : KATEValue {
             return _value!!
         }
 
+    override fun getKnownKATEType(): KATEType? {
+        return value.getKnownKATEType()
+    }
+
     override fun getKATEType(model: KATEObject): KATEType {
         return value.getKATEType(model)
     }

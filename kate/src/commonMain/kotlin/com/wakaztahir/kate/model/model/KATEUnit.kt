@@ -12,7 +12,9 @@ object KATEUnit : KATEValue, CodeGen {
         return KATEValueImplementation.propertyMap[reference.name]
     }
 
-    override fun getKATEType(model: KATEObject): KATEType = KATEType.Unit()
+    override fun getKnownKATEType(): KATEType = KATEType.Unit()
+
+    override fun getKATEType(model: KATEObject): KATEType = getKnownKATEType()
 
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
         // Generates nothing

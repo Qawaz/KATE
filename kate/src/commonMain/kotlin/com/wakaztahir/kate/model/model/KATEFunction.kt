@@ -11,6 +11,10 @@ abstract class KATEFunction : KATEValue {
         throw IllegalStateException("KATEFunction should be invoked to get the reference")
     }
 
+    override fun getKnownKATEType(): KATEType? {
+        throw IllegalStateException("KATEFunction should be invoked to get the value")
+    }
+
     override fun getKATEValue(model: KATEObject): KATEValue {
         throw IllegalStateException("KATEFunction should be invoked to get the value")
     }
