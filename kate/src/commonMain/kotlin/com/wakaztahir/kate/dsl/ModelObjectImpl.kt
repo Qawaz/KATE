@@ -49,6 +49,10 @@ open class ModelObjectImpl(override var objectName: String, override val parent:
         return container[reference.name] ?: KATEObjectImplementation.propertyMap[reference.name]
     }
 
+    override fun getModelReferenceInTreeUpwards(reference: ModelReference): KATEValue? {
+        return getModelReference(reference) ?: parent?.getModelReferenceInTreeUpwards(reference)
+    }
+
     override fun setValue(key: String, value: KATEValue): Boolean {
         return if (contains(key)) {
             false
@@ -71,10 +75,6 @@ open class ModelObjectImpl(override var objectName: String, override val parent:
     }
 
     // ----- Putters
-
-    override fun putValue(key: String, value: KATEValue) {
-        container[key] = value
-    }
 
     override fun setExplicitType(key: String, type: KATEType) {
         explicitTypes[key] = type

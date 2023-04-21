@@ -12,11 +12,7 @@ import com.wakaztahir.kate.parser.variable.parseVariableDeclaration
 class ObjectDeclarationModel(
     objectName: String,
     override val parent: MutableKATEObject
-) : ModelObjectImpl(objectName) {
-    override fun getModelReference(reference: ModelReference): KATEValue? {
-        return super.getModelReference(reference) ?: parent.getModelReference(reference)
-    }
-}
+) : ModelObjectImpl(objectName,parent = parent)
 
 class ObjectDeclarationBlockSlice(
     parentBlock: LazyBlock,

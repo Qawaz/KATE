@@ -13,7 +13,9 @@ interface MutableKATEObject : KATEObject {
     // Put Functions
 
     @Deprecated("use insertValue", replaceWith = ReplaceWith("insertValue(key,value)"))
-    fun putValue(key: String, value: KATEValue)
+    fun putValue(key: String, value: KATEValue) {
+        setValue(key, value)
+    }
 
     fun setExplicitType(key: String, type: KATEType)
 

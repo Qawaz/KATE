@@ -25,6 +25,12 @@ sealed interface ModelReference {
 
 open class ModelDirective(val propertyPath: List<ModelReference>) : ReferencedValue {
 
+    init {
+        require(propertyPath.isNotEmpty()){
+            "model directive with empty path is not allowed"
+        }
+    }
+
     override fun compareTo(model: KATEObject, other: KATEValue): Int {
         return getKATEValue(model).compareTo(model, other)
     }

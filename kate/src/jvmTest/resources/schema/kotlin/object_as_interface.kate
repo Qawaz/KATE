@@ -33,7 +33,7 @@
 	@define_placeholder(object,KotlinInterface)
 	    @var appendI = false
 	    @if(this.parent.contains("__append_i__"))
-	        @set_var appendI = this.parent.__append_i__
+	        @set_var appendI = this.parent.parent.__append_i__
         @endif
         writeObjectAsKotlinInterface(__param__,appendI)
 	@end_define_placeholder

@@ -10,13 +10,9 @@ import kotlin.test.assertEquals
 class IntsTest {
 
     @Test
-    fun testZeroPrefixedNumber() {
-        val context = TemplateContext("00345")
-        val number = context.stream.parseNumberValue()!!
-        assertEquals("00345", number.toString())
-        val invocation = number.toPlaceholderInvocation(context.stream.model, context.stream.pointer)!!
-        val generated = TextDestinationStream().also { invocation.generateTo(context.stream, it) }
-        assertEquals("00345", generated.getValue())
+    fun testExactGeneration(){
+        assertEquals("00345.000", GenerateCode("00345.000"))
+        assertEquals("00345.", GenerateCode("00345."))
         assertEquals("00345", GenerateCode("00345"))
     }
 

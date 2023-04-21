@@ -2,6 +2,7 @@ package com.wakaztahir.kate.model.model
 
 import com.wakaztahir.kate.dsl.UnresolvedValueException
 import com.wakaztahir.kate.model.*
+import com.wakaztahir.kate.runtime.KATEObjectImplementation
 
 interface KATEObject : ReferencedValue {
 
@@ -11,7 +12,7 @@ interface KATEObject : ReferencedValue {
 
     fun get(key: String): KATEValue?
 
-    fun getExplicitTypeInTreeUpwards(key : String) : KATEType?
+    fun getExplicitTypeInTreeUpwards(key: String): KATEType?
 
     fun getExplicitType(key: String): KATEType?
 
@@ -26,27 +27,47 @@ interface KATEObject : ReferencedValue {
         )
     }
 
+    fun getModelReferenceInTreeUpwards(reference: ModelReference): KATEValue?
+
+    private fun throwUnresolved(path: List<ModelReference>, prop: ModelReference, current: KATEValue): Nothing {
+        if (prop is ModelReference.FunctionCall) {
+            throw UnresolvedValueException("function ${path.pathUntil(prop)} does not exist on value : $current")
+        } else {
+            throw UnresolvedValueException("property ${path.pathUntil(prop)} does not exist on value : $current")
+        }
+    }
+
+    private fun KATEValue.getModelReference(index: Int, ref: ModelReference): KATEValue? {
+        return if (index == 0) {
+            (this as KATEObject).getModelReferenceInTreeUpwards(ref)
+        } else {
+            this.getModelReference(ref)
+        }
+    }
+
     fun getModelReferenceValue(model: KATEObject, path: List<ModelReference>): KATEValue {
         var currentVal: KATEValue = this
         var i = 0
         while (i < path.size) {
             when (val prop = path[i]) {
                 is ModelReference.FunctionCall -> {
-                    (currentVal.getModelReference(prop) as? KATEFunction)?.let { func ->
+                    (currentVal.getModelReference(i, prop) as? KATEFunction)?.let { func ->
                         currentVal = func.invoke(model, path, i, currentVal, prop.parametersList)
-                    } ?: run {
-                        throw UnresolvedValueException("function ${path.pathUntil(prop)} does not exist on value : $currentVal")
-                    }
+                    } ?: throwUnresolved(path, prop, currentVal)
                 }
 
                 is ModelReference.Property -> {
-                    currentVal = currentVal.getModelReference(prop) ?: run {
-                        if (prop.name == "this") {
-                            currentVal
-                        } else if (prop.name == "parent" && parent != null) {
-                            parent!!
-                        } else {
-                            throw UnresolvedValueException("property ${path.pathUntil(prop)} does not exist on value : $currentVal")
+                    currentVal = currentVal.getModelReference(i, prop) ?: run {
+                        when (prop.name) {
+                            "this" -> {
+                                currentVal
+                            }
+
+                            "parent" -> {
+                                (currentVal as? KATEObject)?.parent ?: throwUnresolved(path, prop, currentVal)
+                            }
+
+                            else -> throwUnresolved(path, prop, currentVal)
                         }
                     }
                 }
