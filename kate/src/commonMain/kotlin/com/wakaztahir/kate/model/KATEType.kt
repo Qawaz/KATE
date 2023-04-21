@@ -4,6 +4,8 @@ sealed class KATEType {
 
     protected val actualType get() = if (this is NullableKateType) this.actual else this
 
+    abstract fun getPlaceholderName() : kotlin.String
+
     abstract fun getKATEType(): kotlin.String
 
     abstract fun satisfies(type: KATEType): kotlin.Boolean
@@ -20,6 +22,8 @@ sealed class KATEType {
 
     class NullableKateType(val actual: KATEType) : KATEType() {
 
+        override fun getPlaceholderName(): kotlin.String = actual.getPlaceholderName()
+
         override fun getKATEType(): kotlin.String = actual.getKATEType() + '?'
 
         override fun satisfies(type: KATEType): kotlin.Boolean {
@@ -31,81 +35,111 @@ sealed class KATEType {
 
     class Any : KATEType() {
 
+        override fun getPlaceholderName(): kotlin.String = "any"
+
         override fun getKATEType(): kotlin.String = "any"
 
         override fun satisfies(type: KATEType): kotlin.Boolean = type.actualType is Any
 
     }
 
+    class Unit : KATEType(){
+
+        override fun getPlaceholderName(): kotlin.String = "unit"
+
+        override fun getKATEType(): kotlin.String = "unit"
+
+        override fun satisfies(type: KATEType): kotlin.Boolean = type.actualType is Unit
+
+    }
+
     class Char : KATEType() {
+
+        override fun getPlaceholderName(): kotlin.String = "char"
 
         override fun getKATEType(): kotlin.String = "char"
 
-        override fun satisfies(type: KATEType): kotlin.Boolean = type.actualType is Char
+        override fun satisfies(type: KATEType): kotlin.Boolean = type.actualType.let { it is Any || it is Char }
 
     }
 
     class String : KATEType() {
 
+        override fun getPlaceholderName(): kotlin.String = "string"
+
         override fun getKATEType(): kotlin.String = "string"
 
-        override fun satisfies(type: KATEType): kotlin.Boolean = type.actualType is String
+        override fun satisfies(type: KATEType): kotlin.Boolean = type.actualType.let { it is Any || it is String }
 
     }
 
     class Int : KATEType() {
 
+        override fun getPlaceholderName(): kotlin.String = "int"
+
         override fun getKATEType(): kotlin.String = "int"
 
-        override fun satisfies(type: KATEType): kotlin.Boolean = type.actualType is Int
+        override fun satisfies(type: KATEType): kotlin.Boolean = type.actualType.let { it is Any || it is Int }
 
     }
 
     class Double : KATEType() {
 
+        override fun getPlaceholderName(): kotlin.String = "double"
+
         override fun getKATEType(): kotlin.String = "double"
 
-        override fun satisfies(type: KATEType): kotlin.Boolean = type.actualType is Double
+        override fun satisfies(type: KATEType): kotlin.Boolean = type.actualType.let { it is Any || it is Double }
 
     }
 
     class Long : KATEType() {
 
+        override fun getPlaceholderName(): kotlin.String = "long"
+
         override fun getKATEType(): kotlin.String = "long"
 
-        override fun satisfies(type: KATEType): kotlin.Boolean = type.actualType is Long
+        override fun satisfies(type: KATEType): kotlin.Boolean = type.actualType.let { it is Any || it is Long }
 
     }
 
     class Boolean : KATEType() {
 
+        override fun getPlaceholderName(): kotlin.String = "boolean"
+
         override fun getKATEType(): kotlin.String = "boolean"
 
-        override fun satisfies(type: KATEType): kotlin.Boolean = type.actualType is Boolean
+        override fun satisfies(type: KATEType): kotlin.Boolean = type.actualType.let { it is Any || it is Boolean }
 
     }
 
-    open class List : KATEType() {
+    open class List(val itemType: KATEType) : KATEType() {
 
-        override fun getKATEType(): kotlin.String = "list"
+        override fun getPlaceholderName(): kotlin.String = "list"
 
-        override fun satisfies(type: KATEType): kotlin.Boolean = type.actualType is List
+        override fun getKATEType(): kotlin.String = "list<${itemType.getKATEType()}>"
 
-    }
-
-    class MutableList : List() {
-
-        override fun getKATEType(): kotlin.String = "mutable_list"
-
-        override fun satisfies(type: KATEType): kotlin.Boolean = type.actualType is MutableList
+        override fun satisfies(type: KATEType): kotlin.Boolean = type.actualType.let { it is Any || it is List }
 
     }
 
-    class Object : KATEType() {
+    class MutableList(itemType: KATEType) : List(itemType) {
 
-        override fun getKATEType(): kotlin.String = "object"
+        override fun getPlaceholderName(): kotlin.String = "mutable_list"
 
-        override fun satisfies(type: KATEType): kotlin.Boolean = type.actualType is Object
+        override fun getKATEType(): kotlin.String = "mutable_list<${itemType.getKATEType()}>"
+
+        override fun satisfies(type: KATEType): kotlin.Boolean = type.actualType.let { it is Any || it is MutableList }
+
+    }
+
+    class Object(val itemType: KATEType) : KATEType() {
+
+        override fun getPlaceholderName(): kotlin.String = "object"
+
+        override fun getKATEType(): kotlin.String = "object<${itemType.getKATEType()}>"
+
+        override fun satisfies(type: KATEType): kotlin.Boolean = type.actualType.let { it is Any || it is Object }
 
     }
 

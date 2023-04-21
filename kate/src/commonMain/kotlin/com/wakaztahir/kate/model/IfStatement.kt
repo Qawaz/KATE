@@ -69,16 +69,16 @@ interface Condition {
 }
 
 internal class LogicalCondition(
-    val propertyFirst: ReferencedValue,
+    val propertyFirst: KATEValue,
     val type: ConditionType,
-    val propertySecond: ReferencedValue
+    val propertySecond: KATEValue
 ) : Condition {
     override fun evaluate(context: KATEObject): Boolean {
         return type.compare(context, propertyFirst.getKATEValue(context), propertySecond.getKATEValue(context))
     }
 }
 
-internal class ReferencedBoolean(val value: ReferencedValue) : Condition {
+internal class ReferencedBoolean(val value: KATEValue) : Condition {
     override fun evaluate(context: KATEObject): Boolean {
         val value = value.asNullablePrimitive(context)
         if (value != null && value is BooleanValue) {

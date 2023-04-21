@@ -28,16 +28,7 @@ class ModelDirectiveTest {
                 this.setValue("myInt", 15)
                 this.setValue("myDouble", 16.000)
                 this.setValue("myStr", "something is here")
-                this.setValue(
-                    key = "myList", value = KATEListImpl<IntValue>(
-                        collection = listOf(
-                            IntValue(10),
-                            IntValue(20),
-                            IntValue(30),
-                            IntValue(40),
-                        )
-                    )
-                )
+                this.setValue(key = "myList", value = listOf(10, 20, 30, 40))
                 this.putObject(key = "MyNestedObject") {
                     this.setValue("myInt", 15)
                     this.setValue("myDouble", 16.000)
@@ -101,7 +92,7 @@ class ModelDirectiveTest {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 invokedOn: KATEValue,
-                parameters: List<ReferencedValue>
+                parameters: List<KATEValue>
             ): KATEValue {
                 invocations++
                 return StringValue("funVal")
@@ -130,7 +121,7 @@ class ModelDirectiveTest {
                     path: List<ModelReference>,
                     pathIndex: Int,
                     invokedOn: KATEValue,
-                    parameters: List<ReferencedValue>
+                    parameters: List<KATEValue>
                 ): KATEValue {
                     return IntValue(parameters.map { it.asPrimitive(model) }.sumOf { it.value as Int })
                 }

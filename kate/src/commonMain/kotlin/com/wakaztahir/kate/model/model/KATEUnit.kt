@@ -1,37 +1,18 @@
 package com.wakaztahir.kate.model.model
 
-import com.wakaztahir.kate.model.CodeGen
-import com.wakaztahir.kate.model.LazyBlock
-import com.wakaztahir.kate.model.ModelReference
-import com.wakaztahir.kate.model.StringValue
+import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.parser.stream.DestinationStream
+import com.wakaztahir.kate.runtime.KATEValueImplementation
 
 object KATEUnit : ReferencedValue, CodeGen {
 
     override fun toString(): String = "KATEUnit"
 
-    private val KATEUnitType = StringValue("unit")
-
-    override fun getKateType(model: KATEObject): String = KATEUnitType.value
-
-    private val KTEUnitTypeFunction = object : KATEFunction() {
-        override fun invoke(
-            model: KATEObject,
-            path: List<ModelReference>,
-            pathIndex: Int,
-            invokedOn: KATEValue,
-            parameters: List<ReferencedValue>
-        ): KATEValue = KATEUnitType
-        override fun toString(): String = this@KATEUnit.toString()
-    }
-
     override fun getModelReference(reference: ModelReference): KATEValue? {
-        return if (reference.name == "getType") {
-            KTEUnitTypeFunction
-        } else {
-            null
-        }
+        return KATEValueImplementation.propertyMap[reference.name]
     }
+
+    override fun getKATEType(model: KATEObject): KATEType = KATEType.Unit()
 
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
         // Generates nothing

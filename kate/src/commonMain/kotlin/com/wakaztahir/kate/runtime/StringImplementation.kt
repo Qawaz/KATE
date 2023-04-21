@@ -15,7 +15,7 @@ object StringImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 invokedOn: KATEValue,
-                parameters: List<ReferencedValue>
+                parameters: List<KATEValue>
             ): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 val index = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as? Int }
@@ -32,7 +32,7 @@ object StringImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 invokedOn: KATEValue,
-                parameters: List<ReferencedValue>
+                parameters: List<KATEValue>
             ): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
@@ -47,7 +47,7 @@ object StringImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 invokedOn: KATEValue,
-                parameters: List<ReferencedValue>
+                parameters: List<KATEValue>
             ): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 val find = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
@@ -64,13 +64,13 @@ object StringImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 invokedOn: KATEValue,
-                parameters: List<ReferencedValue>
+                parameters: List<KATEValue>
             ): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 val find = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
                 require(find != null) { "split requires a single string parameter" }
                 require(string != null) { "string value is null" }
-                return KATEListImpl(string.split(find).map { StringValue(it) })
+                return KATEListImpl(string.split(find).map { StringValue(it) },itemType = KATEType.String())
             }
 
             override fun toString(): String = "split(str : string) : List<string>"
@@ -81,7 +81,7 @@ object StringImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 invokedOn: KATEValue,
-                parameters: List<ReferencedValue>
+                parameters: List<KATEValue>
             ): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
@@ -96,7 +96,7 @@ object StringImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 invokedOn: KATEValue,
-                parameters: List<ReferencedValue>
+                parameters: List<KATEValue>
             ): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
@@ -111,7 +111,7 @@ object StringImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 invokedOn: KATEValue,
-                parameters: List<ReferencedValue>
+                parameters: List<KATEValue>
             ): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
@@ -131,7 +131,7 @@ object StringImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 invokedOn: KATEValue,
-                parameters: List<ReferencedValue>
+                parameters: List<KATEValue>
             ): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
@@ -146,7 +146,7 @@ object StringImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 invokedOn: KATEValue,
-                parameters: List<ReferencedValue>
+                parameters: List<KATEValue>
             ): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
@@ -161,7 +161,7 @@ object StringImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 invokedOn: KATEValue,
-                parameters: List<ReferencedValue>
+                parameters: List<KATEValue>
             ): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
@@ -176,7 +176,7 @@ object StringImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 invokedOn: KATEValue,
-                parameters: List<ReferencedValue>
+                parameters: List<KATEValue>
             ): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
@@ -191,7 +191,7 @@ object StringImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 invokedOn: KATEValue,
-                parameters: List<ReferencedValue>
+                parameters: List<KATEValue>
             ): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
@@ -211,7 +211,7 @@ object StringImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 invokedOn: KATEValue,
-                parameters: List<ReferencedValue>
+                parameters: List<KATEValue>
             ): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
@@ -230,7 +230,7 @@ object StringImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 invokedOn: KATEValue,
-                parameters: List<ReferencedValue>
+                parameters: List<KATEValue>
             ): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
@@ -249,7 +249,7 @@ object StringImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 invokedOn: KATEValue,
-                parameters: List<ReferencedValue>
+                parameters: List<KATEValue>
             ): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
@@ -268,7 +268,7 @@ object StringImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 invokedOn: KATEValue,
-                parameters: List<ReferencedValue>
+                parameters: List<KATEValue>
             ): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
@@ -287,7 +287,7 @@ object StringImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 invokedOn: KATEValue,
-                parameters: List<ReferencedValue>
+                parameters: List<KATEValue>
             ): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }

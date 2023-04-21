@@ -2,6 +2,7 @@ package com.wakaztahir.kate.parser.variable
 
 import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.model.*
+import com.wakaztahir.kate.model.model.KATEValue
 import com.wakaztahir.kate.model.model.ReferencedValue
 import com.wakaztahir.kate.parser.stream.*
 import com.wakaztahir.kate.parser.stream.increment
@@ -11,7 +12,7 @@ class VariableDeclarationException(message: String) : Exception(message)
 internal data class VariableDeclaration(
     val variableName: String,
     val type: KATEType?,
-    val variableValue: ReferencedValue
+    val variableValue: KATEValue
 ) : AtDirective {
 
     override val isEmptyWriter: Boolean
@@ -25,7 +26,7 @@ internal data class VariableDeclaration(
                 throw IllegalStateException("cannot satisfy type $type with $actualType")
             }
             if(type != actualType) {
-                model.setExplicitType(variableName, type)
+                model.setVariableType(variableName, type)
             }
         }
         if (!model.setValue(variableName, value)) {
@@ -52,14 +53,15 @@ internal fun SourceStream.parseVariableName(): String? {
     return null
 }
 
-private fun Char.isTypeName(): Boolean = this.isLetter() || this == '<' || this == '>'
+private fun Char.isTypeName(): Boolean = this.isLetter()
 
-internal fun SourceStream.parseVariableDeclarationType(): KATEType? {
+internal fun SourceStream.parseKATEType(): KATEType? {
     val previous = pointer
     val type = parseTextWhile { currentChar.isTypeName() }
     if (type.isNotEmpty()) {
         val isNullable = increment('?')
         val typeName = when (type) {
+            "any" -> KATEType.Any()
             "char" -> KATEType.Char()
             "string" -> KATEType.String()
             "int" -> KATEType.Int()
@@ -83,7 +85,7 @@ internal fun LazyBlock.parseVariableDeclaration(): VariableDeclaration? {
             source.escapeSpaces()
             val type: KATEType? = if (source.increment(':')) {
                 source.escapeSpaces()
-                source.parseVariableDeclarationType()
+                source.parseKATEType()
             } else {
                 null
             }

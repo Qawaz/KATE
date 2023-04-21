@@ -19,8 +19,6 @@ interface KATEValue {
 
     fun getKATEType(model: KATEObject): KATEType
 
-    fun getKateType(model: KATEObject): String?
-
     override fun toString(): String
 
     fun asNullablePrimitive(model: KATEObject): PrimitiveValue<*>? {

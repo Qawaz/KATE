@@ -1,31 +1,14 @@
 package com.wakaztahir.kate.model.model
 
-import com.wakaztahir.kate.EmptyReferencedValuesList
-import com.wakaztahir.kate.GetTypeModelReference
 import com.wakaztahir.kate.model.*
 
 interface ReferencedValue : KATEValue {
 
-    override fun getKATEType(model: KATEObject): KATEType {
-        return getKATEValue(model).getKATEType(model)
-    }
-
-    override fun getKateType(model: KATEObject): String? {
-        val typeFunction = (getModelReference(GetTypeModelReference)?.let { it as KATEFunction }) ?: return null
-        return (typeFunction.invoke(
-            model = model,
-            path = listOf(GetTypeModelReference),
-            pathIndex = 0,
-            invokedOn = this,
-            parameters = EmptyReferencedValuesList
-        ) as StringValue).value
-    }
-
     fun toPlaceholderInvocation(model: MutableKATEObject, endPointer: Int): PlaceholderInvocation? {
         val value = getKATEValue(model)
-        val type = value.getKateType(model) ?: return null
+        val type = value.getKATEType(model)
         return PlaceholderInvocation(
-            placeholderName = type,
+            placeholderName = type.getPlaceholderName(),
             definitionName = null,
             paramValue = value,
             invocationEndPointer = endPointer

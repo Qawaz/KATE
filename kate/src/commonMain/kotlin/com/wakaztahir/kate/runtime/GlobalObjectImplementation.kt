@@ -14,7 +14,7 @@ object GlobalObjectImplementation {
                     path: List<ModelReference>,
                     pathIndex: Int,
                     invokedOn: KATEValue,
-                    parameters: List<ReferencedValue>
+                    parameters: List<KATEValue>
                 ): KATEValue {
                     for (param in parameters) {
                         (param.asNullablePrimitive(model) as? StringValue)?.let { println(it) }
@@ -34,7 +34,7 @@ object GlobalObjectImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 invokedOn: KATEValue,
-                parameters: List<ReferencedValue>
+                parameters: List<KATEValue>
             ): KATEValue {
                 val first = parameters.firstOrNull()?.asNullablePrimitive(model)?.let { it as? StringValue }
                 require(parameters.size == 1 && first != null) {

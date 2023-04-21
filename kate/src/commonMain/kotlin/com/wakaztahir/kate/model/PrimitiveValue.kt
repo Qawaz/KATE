@@ -13,8 +13,6 @@ interface PrimitiveValue<T> : ReferencedValue {
 
     override fun getKATEType(model: KATEObject): KATEType
 
-    override fun getKateType(model: KATEObject): String?
-
     override fun toString(): String
 
     fun compareTo(other: PrimitiveValue<T>): Int
@@ -49,8 +47,6 @@ interface PrimitiveValue<T> : ReferencedValue {
 value class CharValue(override val value: Char) : PrimitiveValue<Char> {
 
     override fun getKATEType(model: KATEObject): KATEType = KATEType.Char()
-
-    override fun getKateType(model: KATEObject): String = "char"
 
     override fun compareTo(other: PrimitiveValue<Char>): Int {
         return value.compareTo(other.value)
@@ -94,8 +90,6 @@ value class CharValue(override val value: Char) : PrimitiveValue<Char> {
 value class IntValue(override val value: Int) : PrimitiveValue<Int> {
 
     override fun getKATEType(model: KATEObject): KATEType = KATEType.Int()
-
-    override fun getKateType(model: KATEObject): String = "int"
 
     override fun compareTo(other: PrimitiveValue<Int>): Int {
         return value.compareTo(other.value)
@@ -150,8 +144,6 @@ value class DoubleValue(override val value: Double) : PrimitiveValue<Double> {
 
     override fun getKATEType(model: KATEObject): KATEType = KATEType.Double()
 
-    override fun getKateType(model: KATEObject): String = "double"
-
     override fun compareTo(other: PrimitiveValue<Double>): Int {
         return value.compareTo(other.value)
     }
@@ -204,8 +196,6 @@ value class DoubleValue(override val value: Double) : PrimitiveValue<Double> {
 value class LongValue(override val value: Long) : PrimitiveValue<Long> {
 
     override fun getKATEType(model: KATEObject): KATEType = KATEType.Long()
-
-    override fun getKateType(model: KATEObject): String = "long"
 
     override fun compareTo(other: PrimitiveValue<Long>): Int {
         return value.compareTo(other.value)
@@ -260,8 +250,6 @@ value class BooleanValue(override val value: Boolean) : PrimitiveValue<Boolean> 
 
     override fun getKATEType(model: KATEObject): KATEType = KATEType.Boolean()
 
-    override fun getKateType(model: KATEObject): String = "boolean"
-
     override fun compareTo(other: PrimitiveValue<Boolean>): Int {
         return if (value == other.value) {
             0
@@ -294,8 +282,6 @@ value class BooleanValue(override val value: Boolean) : PrimitiveValue<Boolean> 
 value class StringValue(override val value: String) : PrimitiveValue<String> {
 
     override fun getKATEType(model: KATEObject): KATEType = KATEType.String()
-
-    override fun getKateType(model: KATEObject): String = "string"
 
     override fun compareTo(other: PrimitiveValue<String>): Int {
         return if (value == other.value) {

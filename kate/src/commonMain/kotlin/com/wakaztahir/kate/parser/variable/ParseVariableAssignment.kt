@@ -14,7 +14,7 @@ import com.wakaztahir.kate.parser.stream.increment
 internal data class VariableAssignment(
     val variableName: String,
     val arithmeticOperatorType: ArithmeticOperatorType?,
-    val variableValue: ReferencedValue
+    val variableValue: KATEValue
 ) : AtDirective {
 
     override val isEmptyWriter: Boolean

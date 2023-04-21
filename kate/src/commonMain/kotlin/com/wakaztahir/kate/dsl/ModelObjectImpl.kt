@@ -5,8 +5,11 @@ import com.wakaztahir.kate.model.ModelReference
 import com.wakaztahir.kate.model.model.*
 import com.wakaztahir.kate.runtime.KATEObjectImplementation
 
-open class ModelObjectImpl(override var objectName: String, override val parent: MutableKATEObject? = null) :
-    MutableKATEObject {
+open class ModelObjectImpl(
+    override var objectName: String,
+    override val itemType : KATEType,
+    override val parent: MutableKATEObject? = null,
+) : MutableKATEObject {
 
     private val container: MutableMap<String, KATEValue> by lazy { hashMapOf() }
 
@@ -15,9 +18,7 @@ open class ModelObjectImpl(override var objectName: String, override val parent:
     override val contained: Map<String, KATEValue>
         get() = container
 
-    override fun getKATEType(model: KATEObject): KATEType = KATEType.Object()
-
-    override fun getKateType(model: KATEObject): String? = "object"
+    override fun getKATEType(model: KATEObject): KATEType = KATEType.Object(itemType)
 
     // ----- Getters
 
@@ -29,7 +30,7 @@ open class ModelObjectImpl(override var objectName: String, override val parent:
         return explicitTypes[key] ?: parent?.getExplicitTypeInTreeUpwards(key)
     }
 
-    override fun getExplicitType(key: String): KATEType? {
+    override fun getVariableType(key: String): KATEType? {
         return explicitTypes[key]
     }
 
@@ -76,7 +77,7 @@ open class ModelObjectImpl(override var objectName: String, override val parent:
 
     // ----- Putters
 
-    override fun setExplicitType(key: String, type: KATEType) {
+    override fun setVariableType(key: String, type: KATEType) {
         explicitTypes[key] = type
     }
 

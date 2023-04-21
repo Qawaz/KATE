@@ -48,6 +48,10 @@ internal data class ExpressionValue(
         return null
     }
 
+    override fun getKATEType(model: KATEObject): KATEType {
+        return getKATEValue(model).getKATEType(model)
+    }
+
     override fun compareTo(model: KATEObject, other: KATEValue): Int {
         return asNullablePrimitive(model).compareTo(model, other)
     }

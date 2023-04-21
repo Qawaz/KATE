@@ -12,12 +12,12 @@ interface MutableKATEObject : KATEObject {
 
     // Put Functions
 
-    @Deprecated("use insertValue", replaceWith = ReplaceWith("insertValue(key,value)"))
+    @Deprecated("use insertValue", replaceWith = ReplaceWith("setValue(key,value)"))
     fun putValue(key: String, value: KATEValue) {
         setValue(key, value)
     }
 
-    fun setExplicitType(key: String, type: KATEType)
+    fun setVariableType(key: String, type: KATEType)
 
     // Extensions
 
@@ -66,25 +66,9 @@ interface MutableKATEObject : KATEObject {
         setValue(key, BooleanValue(value))
     }
 
-//    fun putList(key: String, value: List<Int>) {
-//        putValue(key, KATEListImpl(value.map { IntValue(it) }))
-//    }
-//
-//    fun putList(key: String, value: List<Float>) {
-//        putValue(key, KATEListImpl(value.map { DoubleValue(it.toDouble()) }))
-//    }
-//
-//    fun putList(key: String, value: List<Double>) {
-//        putValue(key, KATEListImpl(value.map { DoubleValue(it) }))
-//    }
-//
-//    fun putList(key: String, value: List<Boolean>) {
-//        putValue(key, KATEListImpl(value.map { BooleanValue(it) }))
-//    }
-//
-//    fun putList(key: String, value: List<String>) {
-//        putValue(key, KATEListImpl(value.map { StringValue(it) }))
-//    }
+    fun setValue(key: String, value: List<Int>) {
+        setValue(key, KATEListImpl(value.map { IntValue(it) }, itemType = KATEType.Int()))
+    }
 
     interface PutObjectsScope {
         fun putObject(block: MutableKATEObject.() -> Unit)
@@ -94,14 +78,14 @@ interface MutableKATEObject : KATEObject {
         val objects = mutableListOf<KATEObject>()
         block(object : PutObjectsScope {
             override fun putObject(block: MutableKATEObject.() -> Unit) {
-                objects.add(ModelObjectImpl("$key${objects.size}").apply(block))
+                objects.add(ModelObjectImpl("$key${objects.size}", itemType = KATEType.Any()).apply(block))
             }
         })
-        setValue(key, KATEMutableListImpl(objects))
+        setValue(key, KATEMutableListImpl(objects, itemType = KATEType.Object(itemType = KATEType.Any())))
     }
 
     fun putObject(key: String, block: MutableKATEObject.() -> Unit) {
-        setValue(key, ModelObjectImpl(key).apply(block))
+        setValue(key, ModelObjectImpl(key, itemType = KATEType.Any()).apply(block))
     }
 
     fun changeName(name: String)
@@ -116,7 +100,7 @@ interface MutableKATEObject : KATEObject {
 }
 
 fun MutableKATEObject(name: String = GlobalModelObjectName, block: MutableKATEObject.() -> Unit): MutableKATEObject {
-    val modelObj = ModelObjectImpl(objectName = name)
+    val modelObj = ModelObjectImpl(objectName = name, itemType = KATEType.Any())
     block(modelObj)
     return modelObj
 }

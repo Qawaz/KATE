@@ -7,7 +7,7 @@
 		@var keys = object.getKeys()
 
 		@for(@var i=0;i<keys.size();i++)
-            @if(object[keys[i]].getType() == "object")
+            @if(object[keys[i]].getType().startsWith("object"))
                 @var(writeObjectAsKotlinInterface(object[keys[i]],appendI))
                 @runtime.print_string("\n\n")
             @endif

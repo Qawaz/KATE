@@ -11,8 +11,13 @@ import com.wakaztahir.kate.parser.variable.parseVariableDeclaration
 
 class ObjectDeclarationModel(
     objectName: String,
-    override val parent: MutableKATEObject
-) : ModelObjectImpl(objectName,parent = parent)
+    override val parent: MutableKATEObject,
+    itemType: KATEType,
+) : ModelObjectImpl(
+    objectName = objectName,
+    parent = parent,
+    itemType = itemType
+)
 
 class ObjectDeclarationBlockSlice(
     parentBlock: LazyBlock,

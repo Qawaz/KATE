@@ -2,19 +2,21 @@ package com.wakaztahir.kate.model.model
 
 import com.wakaztahir.kate.dsl.UnresolvedValueException
 import com.wakaztahir.kate.model.*
-import com.wakaztahir.kate.runtime.KATEObjectImplementation
 
 interface KATEObject : ReferencedValue {
 
     val objectName: String
     val parent: KATEObject?
+    val itemType : KATEType
     val contained: Map<String, KATEValue>
 
     fun get(key: String): KATEValue?
 
-    fun getExplicitTypeInTreeUpwards(key: String): KATEType?
+    fun getModelReferenceInTreeUpwards(reference: ModelReference): KATEValue?
 
-    fun getExplicitType(key: String): KATEType?
+    fun getVariableType(key: String): KATEType?
+
+    fun getExplicitTypeInTreeUpwards(key: String): KATEType?
 
     fun contains(key: String): Boolean
 
@@ -26,8 +28,6 @@ interface KATEObject : ReferencedValue {
             limit = indexOf(prop) + 1
         )
     }
-
-    fun getModelReferenceInTreeUpwards(reference: ModelReference): KATEValue?
 
     private fun throwUnresolved(path: List<ModelReference>, prop: ModelReference, current: KATEValue): Nothing {
         if (prop is ModelReference.FunctionCall) {

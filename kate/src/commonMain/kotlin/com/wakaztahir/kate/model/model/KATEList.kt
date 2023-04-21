@@ -3,9 +3,9 @@ package com.wakaztahir.kate.model.model
 import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.runtime.KATEListImplementation
 import com.wakaztahir.kate.runtime.KATEMutableListImplementation
-import kotlin.jvm.JvmInline
 
 interface KATEList<T : KATEValue> : ReferencedValue {
+    val itemType : KATEType
     val collection: List<T>
 }
 
@@ -13,12 +13,9 @@ interface KATEMutableList<T : KATEValue> : KATEList<T> {
     override val collection: MutableList<T>
 }
 
-@JvmInline
-value class KATEListImpl<T : KATEValue>(override val collection: List<T>) : KATEList<T> {
+class KATEListImpl<T : KATEValue>(override val collection: List<T>,override val itemType : KATEType) : KATEList<T> {
 
-    override fun getKATEType(model: KATEObject): KATEType = KATEType.List()
-
-    override fun getKateType(model: KATEObject): String? = "list"
+    override fun getKATEType(model: KATEObject): KATEType = KATEType.List(itemType)
 
     override fun getModelReference(reference: ModelReference): KATEValue? {
         if (reference is ModelReference.FunctionCall) {
@@ -44,8 +41,7 @@ value class KATEListImpl<T : KATEValue>(override val collection: List<T>) : KATE
 
 }
 
-@JvmInline
-value class KATEMutableListImpl<T : KATEValue>(override val collection: MutableList<T>) : KATEMutableList<T> {
+class KATEMutableListImpl<T : KATEValue>(override val collection: MutableList<T>,override val itemType: KATEType) : KATEMutableList<T> {
 
     override fun getModelReference(reference: ModelReference): KATEValue? {
         if (reference is ModelReference.FunctionCall) {
@@ -55,9 +51,7 @@ value class KATEMutableListImpl<T : KATEValue>(override val collection: MutableL
         }
     }
 
-    override fun getKATEType(model: KATEObject): KATEType = KATEType.MutableList()
-
-    override fun getKateType(model: KATEObject): String? = "mutable_list"
+    override fun getKATEType(model: KATEObject): KATEType = KATEType.MutableList(itemType)
 
     override fun compareTo(model: KATEObject, other: KATEValue): Int {
         throw IllegalStateException("list $this cannot be compared to $other")

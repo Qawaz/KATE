@@ -55,7 +55,7 @@ class VariablesTest {
                         path: List<ModelReference>,
                         pathIndex: Int,
                         invokedOn: KATEValue,
-                        parameters: List<ReferencedValue>
+                        parameters: List<KATEValue>
                     ): KATEValue {
                         return IntValue(10)
                     }
@@ -103,14 +103,6 @@ class VariablesTest {
         assertEquals(
             "66",
             GenerateCode("@var myList = @mutable_list(12,55,66,77,88,99) @var(myList[2])")
-        )
-    }
-
-    @Test
-    fun testObjectListType() {
-        assertEquals(
-            expected = "list",
-            actual = GenerateCode("@define_object(Test) @var list = @list(1,2,3) @end_define_object @var(Test.list.getType())")
         )
     }
 

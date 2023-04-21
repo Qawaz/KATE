@@ -1,6 +1,7 @@
 package com.wakaztahir.kate
 
 import com.wakaztahir.kate.dsl.ModelObjectImpl
+import com.wakaztahir.kate.model.KATEType
 import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.parser.stream.DestinationStream
 import com.wakaztahir.kate.parser.stream.SourceStream
@@ -8,7 +9,7 @@ import com.wakaztahir.kate.parser.stream.TextSourceStream
 
 class TemplateContext(stream: SourceStream) {
 
-    constructor(text: String, model: MutableKATEObject = ModelObjectImpl(GlobalModelObjectName)) : this(
+    constructor(text: String, model: MutableKATEObject = ModelObjectImpl(GlobalModelObjectName,itemType = KATEType.Any())) : this(
         TextSourceStream(
             text,
             model

@@ -27,7 +27,7 @@ class FunctionSlice(
 
     override var model: MutableKATEObject = parentBlock.model
     var keepIterating: () -> Boolean = { true }
-    var onReturnValueFound: (ReferencedValue) -> Unit = {}
+    var onReturnValueFound: (KATEValue) -> Unit = {}
 
     override fun canIterate(): Boolean = super.canIterate() && keepIterating()
 
@@ -80,7 +80,7 @@ abstract class KATERecursiveFunction(val slice: FunctionSlice, val parameterName
         }
     }
 
-    private fun startInvocation(model: KATEObject, parameters: List<ReferencedValue>) {
+    private fun startInvocation(model: KATEObject, parameters: List<KATEValue>) {
         invocationNumber++
         if (invocationNumber > 1) {
             previousModels.add(slice.model)
@@ -106,7 +106,7 @@ abstract class KATERecursiveFunction(val slice: FunctionSlice, val parameterName
         return returnedValue
     }
 
-    fun generateNow(model: KATEObject, parameters: List<ReferencedValue>): KATEValue {
+    fun generateNow(model: KATEObject, parameters: List<KATEValue>): KATEValue {
         startInvocation(model = model, parameters = parameters)
         slice.generateTo(destination!!)
         return endInvocation()
@@ -124,7 +124,7 @@ class FunctionDefinition(val slice: FunctionSlice, val functionName: String, val
             path: List<ModelReference>,
             pathIndex: Int,
             invokedOn: KATEValue,
-            parameters: List<ReferencedValue>
+            parameters: List<KATEValue>
         ): KATEValue {
             return generateNow(model = model, parameters)
         }
@@ -142,7 +142,7 @@ class FunctionDefinition(val slice: FunctionSlice, val functionName: String, val
     }
 }
 
-private fun LazyBlock.parseFunctionReturn(): ReferencedValue? {
+private fun LazyBlock.parseFunctionReturn(): KATEValue? {
     if (source.currentChar == '@' && source.increment("@return ")) {
         return source.parseAnyExpressionOrValue(
             parseFirstStringOrChar = true,

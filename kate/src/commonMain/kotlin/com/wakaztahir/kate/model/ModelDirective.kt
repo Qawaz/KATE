@@ -14,7 +14,7 @@ sealed interface ModelReference {
 
     class FunctionCall(
         override val name: String,
-        val parametersList: List<ReferencedValue>
+        val parametersList: List<KATEValue>
     ) : ModelReference {
         override fun toString(): String {
             return name + '(' + parametersList.joinToString(",") + ')'
@@ -26,7 +26,7 @@ sealed interface ModelReference {
 open class ModelDirective(val propertyPath: List<ModelReference>) : ReferencedValue {
 
     init {
-        require(propertyPath.isNotEmpty()){
+        require(propertyPath.isNotEmpty()) {
             "model directive with empty path is not allowed"
         }
     }
@@ -39,10 +39,15 @@ open class ModelDirective(val propertyPath: List<ModelReference>) : ReferencedVa
         return null
     }
 
+    override fun getKATEType(model: KATEObject): KATEType {
+        return propertyPath.getOrNull(propertyPath.size - 2)?.name?.let { model.getVariableType(it) }
+            ?: getKATEValue(model).getKATEType(model)
+    }
+
     fun toEmptyPlaceholderInvocation(model: MutableKATEObject, endPointer: Int): PlaceholderInvocation {
         model.getModelReferenceValue(model = model, path = propertyPath)
         return PlaceholderInvocation(
-            placeholderName = KATEUnit.getKateType(model),
+            placeholderName = KATEType.Unit().getKATEType(),
             definitionName = null,
             paramValue = KATEUnit,
             invocationEndPointer = endPointer

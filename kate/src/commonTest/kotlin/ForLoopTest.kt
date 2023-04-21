@@ -1,5 +1,6 @@
 import com.wakaztahir.kate.TemplateContext
 import com.wakaztahir.kate.dsl.UnresolvedValueException
+import com.wakaztahir.kate.model.KATEType
 import com.wakaztahir.kate.model.model.KATEListImpl
 import com.wakaztahir.kate.model.ModelDirective
 import com.wakaztahir.kate.model.StringValue
@@ -80,8 +81,8 @@ class ForLoopTest {
 
     @Test
     fun testLoopModelClear() {
-        assertEquals("012",GenerateCode("@for(@var i = 0;i<3;i++) @var f = @var(i) @var(f) @endfor"))
-        assertEquals("012",GenerateCode("@for(@var i : @list(0,1,2)) @var f = @var(i) @var(f) @endfor"))
+        assertEquals("012", GenerateCode("@for(@var i = 0;i<3;i++) @var f = @var(i) @var(f) @endfor"))
+        assertEquals("012", GenerateCode("@for(@var i : @list(0,1,2)) @var f = @var(i) @var(f) @endfor"))
 //        assertEquals("012",GenerateCode("@var i = 0 @for(true) @if(i > 5) @breakfor @endif @var f = @var(i) @set_var i = i + 1 @var(f) @endfor"))
     }
 
@@ -111,7 +112,10 @@ class ForLoopTest {
     @Test
     fun testForLoopGeneration4() {
         val context = TemplateContext("@for(@var elem : @var(list)) @var(elem) @endfor", MutableKATEObject {
-            setValue("list", KATEListImpl(listOf("H", "e", "ll", "o").map { StringValue(it) }))
+            setValue(
+                "list",
+                KATEListImpl(listOf("H", "e", "ll", "o").map { StringValue(it) }, itemType = KATEType.String())
+            )
         })
         assertEquals("Hello", context.getDestinationAsString())
     }
@@ -119,7 +123,10 @@ class ForLoopTest {
     @Test
     fun testForLoopGeneration5() {
         val kteObject = MutableKATEObject {
-            setValue("list", KATEListImpl(listOf("H", "e", "ll", "o").map { StringValue(it) }))
+            setValue(
+                "list",
+                KATEListImpl(listOf("H", "e", "ll", "o").map { StringValue(it) }, itemType = KATEType.String())
+            )
         }
         val context = TemplateContext(
             "@var(list.size())@var(list.get(2))@var(list.contains(\"ll\"))@var(list.contains(\"v\"))",
@@ -131,7 +138,10 @@ class ForLoopTest {
     @Test
     fun testForLoopGenerationWithDirectReference() {
         val context = TemplateContext("@for(@var elem : list) @var(elem) @endfor", MutableKATEObject {
-            setValue("list", KATEListImpl(listOf("H", "e", "ll", "o").map { StringValue(it) }))
+            setValue(
+                key = "list",
+                value = KATEListImpl(listOf("H", "e", "ll", "o").map { StringValue(it) }, KATEType.String()),
+            )
         })
         assertEquals("Hello", context.getDestinationAsString())
     }

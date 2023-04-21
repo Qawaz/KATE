@@ -28,7 +28,7 @@ To explicitly give type to the variable use
 
 `@var variableName : string = "My Name"`
 
-You can give `string`,`char`,`boolean`,`int`,`double`,`long`,`list<ItemType>`,`object<ItemType>`
+You can give `string`,`char`,`boolean`,`int`,`double`,`long`,`list<ItemType>`,`mutable_list<ItemType>`,`object<ItemType>`
 
 ### Assignment
 

@@ -1,6 +1,7 @@
 package com.wakaztahir.kate.runtime
 
 import com.wakaztahir.kate.model.BooleanValue
+import com.wakaztahir.kate.model.KATEType
 import com.wakaztahir.kate.model.ModelReference
 import com.wakaztahir.kate.model.StringValue
 import com.wakaztahir.kate.model.model.*
@@ -17,7 +18,7 @@ object KATEObjectImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 invokedOn: KATEValue,
-                parameters: List<ReferencedValue>
+                parameters: List<KATEValue>
             ): KATEValue {
                 val value = invokedOn as? KATEObject
                 require(value != null) { "invoked on object cannot be null" }
@@ -34,7 +35,7 @@ object KATEObjectImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 invokedOn: KATEValue,
-                parameters: List<ReferencedValue>
+                parameters: List<KATEValue>
             ): KATEValue {
                 val value = invokedOn as? KATEObject
                 require(value != null) { "invoked on object cannot be null" }
@@ -49,11 +50,11 @@ object KATEObjectImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 invokedOn: KATEValue,
-                parameters: List<ReferencedValue>
+                parameters: List<KATEValue>
             ): KATEValue {
                 val value = invokedOn as? KATEObject
                 require(value != null) { "invoked on object cannot be null" }
-                return KATEListImpl(value.contained.keys.map { StringValue(it) })
+                return KATEListImpl(value.contained.keys.map { StringValue(it) },itemType = KATEType.String())
             }
 
             override fun toString(): String = "getKeys() : List<string>"
@@ -65,11 +66,11 @@ object KATEObjectImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 invokedOn: KATEValue,
-                parameters: List<ReferencedValue>
+                parameters: List<KATEValue>
             ): KATEValue {
                 val value = invokedOn as? KATEObject
                 require(value != null) { "invoked on object cannot be null" }
-                return KATEListImpl(value.contained.values.toList())
+                return KATEListImpl(value.contained.values.toList(),itemType = value.itemType)
             }
 
             override fun toString(): String = "getValues() : List<KTEValue>"
@@ -81,7 +82,7 @@ object KATEObjectImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 invokedOn: KATEValue,
-                parameters: List<ReferencedValue>
+                parameters: List<KATEValue>
             ): KATEValue {
                 val value = invokedOn.asNullableObject(model)
                 val required = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
@@ -99,7 +100,7 @@ object KATEObjectImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 invokedOn: KATEValue,
-                parameters: List<ReferencedValue>
+                parameters: List<KATEValue>
             ): KATEValue {
                 val value = invokedOn.asNullableObject(model)
                 val required = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
@@ -117,7 +118,7 @@ object KATEObjectImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 invokedOn: KATEValue,
-                parameters: List<ReferencedValue>
+                parameters: List<KATEValue>
             ): KATEValue {
                 val value = invokedOn as? MutableKATEObject
                 val key = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
@@ -137,7 +138,7 @@ object KATEObjectImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 invokedOn: KATEValue,
-                parameters: List<ReferencedValue>
+                parameters: List<KATEValue>
             ): KATEValue {
                 val value = invokedOn as? MutableKATEObject
                 val required = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }

@@ -5,9 +5,10 @@ import com.wakaztahir.kate.model.StringValue
 import com.wakaztahir.kate.model.model.KATEFunction
 import com.wakaztahir.kate.model.model.KATEObject
 import com.wakaztahir.kate.model.model.KATEValue
-import com.wakaztahir.kate.model.model.ReferencedValue
 
 object KATEValueImplementation {
+
+    val propertyMap: HashMap<String, KATEValue> = hashMapOf<String, KATEValue>().apply { putObjectFunctions() }
 
     fun HashMap<String, KATEValue>.putObjectFunctions() {
         put("getType", object : KATEFunction() {
@@ -16,10 +17,10 @@ object KATEValueImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 invokedOn: KATEValue,
-                parameters: List<ReferencedValue>
+                parameters: List<KATEValue>
             ): KATEValue {
                 return StringValue(
-                    value = path.getOrNull(pathIndex - 1)?.name?.let { model.getExplicitType(it) }?.getKATEType()
+                    value = path.getOrNull(pathIndex - 1)?.name?.let { model.getVariableType(it) }?.getKATEType()
                         ?: invokedOn.getKATEType(model).getKATEType()
                 )
             }
@@ -32,7 +33,7 @@ object KATEValueImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 invokedOn: KATEValue,
-                parameters: List<ReferencedValue>
+                parameters: List<KATEValue>
             ): KATEValue {
                 return StringValue(invokedOn.toString())
             }

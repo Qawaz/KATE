@@ -88,15 +88,15 @@ internal sealed interface ForLoop : BlockContainer {
 
     class NumberedFor(
         val variableName: String,
-        val initializer: ReferencedValue,
+        val initializer: KATEValue,
         val conditionType: ConditionType,
-        val conditional: ReferencedValue,
+        val conditional: KATEValue,
         val arithmeticOperatorType: ArithmeticOperatorType,
         val incrementer: ReferencedValue,
         override val blockValue: LazyBlockSlice
     ) : ForLoop {
 
-        private fun ReferencedValue.intVal(context: MutableKATEObject): Int {
+        private fun KATEValue.intVal(context: MutableKATEObject): Int {
             (asNullablePrimitive(context) as? IntValue)?.value?.let { return it }
                 ?: throw IllegalStateException("for loop variable must be an integer")
         }

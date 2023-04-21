@@ -8,6 +8,19 @@ import kotlin.test.assertFails
 class TypesTest {
 
     @Test
+    fun testAnyType() {
+        assertEquals(expected = "any", actual = GenerateCode("@var i : any = \"hello\" @var(i.getType())"))
+        assertEquals(expected = "any", actual = GenerateCode("@var i : any = 0 @var(i.getType())"))
+        assertEquals(expected = "any", actual = GenerateCode("@var i : any = 0.0 @var(i.getType())"))
+        assertEquals(expected = "any", actual = GenerateCode("@var i : any = 0L @var(i.getType())"))
+        assertEquals(expected = "any", actual = GenerateCode("@var i : any = true @var(i.getType())"))
+        assertEquals(expected = "any", actual = GenerateCode("@var i : any = false @var(i.getType())"))
+        assertEquals(expected = "any", actual = GenerateCode("@var i : any = 'x' @var(i.getType())"))
+        assertEquals(expected = "any", actual = GenerateCode("@var i : any = @list(1,2,3) @var(i.getType())"))
+        assertEquals(expected = "any", actual = GenerateCode("@var i : any =  @mutable_list(1,2,3) @var(i.getType())"))
+    }
+
+    @Test
     fun testStringType() {
 
         // Assigning correct value to explicit type succeeds
@@ -60,7 +73,7 @@ class TypesTest {
         assertFails { GenerateCode("@var i : int = false") }
         assertFails { GenerateCode("@var i : int = 'x'") }
 
-        assertEquals("55",GenerateCode("@var i : int = 55 @var j : int = @var(i) @var(j)"))
+        assertEquals("55", GenerateCode("@var i : int = 55 @var j : int = @var(i) @var(j)"))
 
         assertFails { GenerateCode("@var i = \"\" @var j : int = @var(i)") }
         assertFails { GenerateCode("@var i = 0.0 @var j : int = @var(i)") }
@@ -92,7 +105,7 @@ class TypesTest {
         assertFails { GenerateCode("@var i : double = false") }
         assertFails { GenerateCode("@var i : double = 'x'") }
 
-        assertEquals("55.0",GenerateCode("@var i : double = 55. @var j : double = @var(i) @var(j)"))
+        assertEquals("55.0", GenerateCode("@var i : double = 55. @var j : double = @var(i) @var(j)"))
 
         assertFails { GenerateCode("@var i = \"\" @var j : double = @var(i)") }
         assertFails { GenerateCode("@var i = 0 @var j : double = @var(i)") }
@@ -126,8 +139,8 @@ class TypesTest {
         assertFails { GenerateCode("@var i : boolean = 0.0") }
         assertFails { GenerateCode("@var i : boolean = 'x'") }
 
-        assertEquals("true",GenerateCode("@var i : boolean = true @var j : boolean = @var(i) @var(j)"))
-        assertEquals("false",GenerateCode("@var i : boolean = false @var j : boolean = @var(i) @var(j)"))
+        assertEquals("true", GenerateCode("@var i : boolean = true @var j : boolean = @var(i) @var(j)"))
+        assertEquals("false", GenerateCode("@var i : boolean = false @var j : boolean = @var(i) @var(j)"))
 
         assertFails { GenerateCode("@var i = \"\" @var j : boolean = @var(i)") }
         assertFails { GenerateCode("@var i = 0 @var j : boolean = @var(i)") }
@@ -161,7 +174,7 @@ class TypesTest {
         assertFails { GenerateCode("@var i : long = 'x'") }
 
         assertEquals("long", GenerateCode("@var i : long = 55 @var j = @var(i) @var(j.getType())"))
-        assertEquals("55",GenerateCode("@var i : long = 55L @var j : long = @var(i) @var(j)"))
+        assertEquals("55", GenerateCode("@var i : long = 55L @var j : long = @var(i) @var(j)"))
 
         assertFails { GenerateCode("@var i = \"\" @var j : long = @var(i)") }
         assertFails { GenerateCode("@var i = 0.0 @var j : long = @var(i)") }
@@ -183,7 +196,7 @@ class TypesTest {
         assertFails { GenerateCode("@var i : char = true") }
         assertFails { GenerateCode("@var i : char = false") }
 
-        assertEquals("s",GenerateCode("@var i : char = 's' @var j : char = @var(i) @var(j)"))
+        assertEquals("s", GenerateCode("@var i : char = 's' @var j : char = @var(i) @var(j)"))
 
         assertFails { GenerateCode("@var i = \"\" @var j : char = @var(i)") }
         assertFails { GenerateCode("@var i = 0 @var j : char = @var(i)") }
@@ -204,17 +217,106 @@ class TypesTest {
 
     @Test
     fun testListType() {
-        assertEquals("list", GenerateCode("@var i = @list(1,2,3) @var(i.getType())"))
+
+        // Assigning correct value to explicit type succeeds
+        assertEquals("list<any>",GenerateCode("@var i = @list() @var(i.getType())"))
+        assertEquals("list<int>", GenerateCode("@var i = @list(1,2,3) @var(i.getType())"))
+        assertEquals("list<int>", GenerateCode("@var i : list<int> = @mutable_list(1,2,3) @var(i.getType())"))
+        assertEquals("list<int>", GenerateCode("@var i : list<int> = @list(1,2,3) @var(i.getType())"))
+        assertEquals("list<int>?", GenerateCode("@var i : list<int>? = @list(1,2,3) @var(i.getType())"))
+        assertEquals("list<any>?", GenerateCode("@var i : list<any>? = @list(1,'2',\"3\") @var(i.getType())"))
+
+        // Assigning wrong value to explicit type fails
+        assertFails { GenerateCode("@var i : list<int> = \"0\"") }
+        assertFails { GenerateCode("@var i : list<int> = 0") }
+        assertFails { GenerateCode("@var i : list<int> = 0.0") }
+        assertFails { GenerateCode("@var i : list<int> = 0L") }
+        assertFails { GenerateCode("@var i : list<int> = true") }
+        assertFails { GenerateCode("@var i : list<int> = false") }
+        assertFails { GenerateCode("@var i : list<int> = 'x'") }
+        assertFails { GenerateCode("@var i : list<int> = @list(\"hello\")") }
+
+        // Assigning referenced value with correct type succeeds
+        assertEquals("0", GenerateCode("@var i : list<int> = @list(1,2,3) @var j : list<int> = @var(i) @var(j)"))
+
+        // Assigning referenced value with wrong type fails
+        assertFails { GenerateCode("@var i = 0 @var j : list<any> = @var(i)") }
+        assertFails { GenerateCode("@var i = 0.0 @var j : list<any> = @var(i)") }
+        assertFails { GenerateCode("@var i = 0L @var j : list<any> = @var(i)") }
+        assertFails { GenerateCode("@var i = true @var j : list<any> = @var(i)") }
+        assertFails { GenerateCode("@var i = false @var j : list<any> = @var(i)") }
+        assertFails { GenerateCode("@var i = 'x' @var j : list<any> = @var(i)") }
+
+        // Reassigning a value with value of same type succeeds
+        assertEquals("empty", GenerateCode("@var i : list<any> = @list(1,2,3) @set_var i = @list(4,5,6) @var(i)"))
+
+        // Reassigning a value with value of different type fails
+        assertFails { GenerateCode("@var i : list<any> = @list(1,2,3) @set_var i = 0") }
+        assertFails { GenerateCode("@var i : list<any> = @list(1,2,3) @set_var i = 0.0") }
+        assertFails { GenerateCode("@var i : list<any> = @list(1,2,3) @set_var i = 0L") }
+        assertFails { GenerateCode("@var i : list<any> = @list(1,2,3) @set_var i = true") }
+        assertFails { GenerateCode("@var i : list<any> = @list(1,2,3) @set_var i = false") }
+        assertFails { GenerateCode("@var i : list<any> = @list(1,2,3) @set_var i = 'x'") }
     }
 
     @Test
     fun testMutableListType() {
-        assertEquals("mutable_list", GenerateCode("@var i = @mutable_list(1,2,3) @var(i.getType())"))
+
+        // Assigning correct value to explicit type succeeds
+        assertEquals("mutable_list<any>",GenerateCode("@var i = @mutable_list() @var(i.getType())"))
+        assertEquals("mutable_list<int>", GenerateCode("@var i = @mutable_list(1,2,3) @var(i.getType())"))
+        assertEquals("mutable_list<int>", GenerateCode("@var i : mutable_list<int> = @mutable_list(1,2,3) @var(i.getType())"))
+        assertEquals("mutable_list<int>?", GenerateCode("@var i : mutable_list<int>? = @mutable_list(1,2,3) @var(i.getType())"))
+        assertEquals("mutable_list<any>?", GenerateCode("@var i : mutable_list<any>? = @mutable_list(1,'2',\"3\") @var(i.getType())"))
+
+        // Assigning wrong value to explicit type fails
+        assertFails { GenerateCode("@var i : mutable_list<int> = \"0\"") }
+        assertFails { GenerateCode("@var i : mutable_list<int> = 0") }
+        assertFails { GenerateCode("@var i : mutable_list<int> = 0.0") }
+        assertFails { GenerateCode("@var i : mutable_list<int> = 0L") }
+        assertFails { GenerateCode("@var i : mutable_list<int> = true") }
+        assertFails { GenerateCode("@var i : mutable_list<int> = false") }
+        assertFails { GenerateCode("@var i : mutable_list<int> = 'x'") }
+        assertFails { GenerateCode("@var i : mutable_list<int> = @mutable_list(\"hello\")") }
+        assertFails { GenerateCode("@var i : mutable_list<any> = @list(\"hello\")") }
+
+        // Assigning referenced value with correct type succeeds
+        assertEquals("0", GenerateCode("@var i : mutable_list<int> = @mutable_list(1,2,3) @var j : mutable_list<int> = @var(i) @var(j)"))
+
+        // Assigning referenced value with wrong type fails
+        assertFails { GenerateCode("@var i = 0 @var j : mutable_list<any> = @var(i)") }
+        assertFails { GenerateCode("@var i = 0.0 @var j : mutable_list<any> = @var(i)") }
+        assertFails { GenerateCode("@var i = 0L @var j : mutable_list<any> = @var(i)") }
+        assertFails { GenerateCode("@var i = true @var j : mutable_list<any> = @var(i)") }
+        assertFails { GenerateCode("@var i = false @var j : mutable_list<any> = @var(i)") }
+        assertFails { GenerateCode("@var i = 'x' @var j : mutable_list<any> = @var(i)") }
+
+        // Reassigning a value with value of same type succeeds
+        assertEquals("empty", GenerateCode("@var i : mutable_list<any> = @mutable_list(1,2,3) @set_var i = @mutable_list(4,5,6) @var(i)"))
+
+        // Reassigning a value with value of different type fails
+        assertFails { GenerateCode("@var i : mutable_list<any> = @mutable_list(1,2,3) @set_var i = 0") }
+        assertFails { GenerateCode("@var i : mutable_list<any> = @mutable_list(1,2,3) @set_var i = 0.0") }
+        assertFails { GenerateCode("@var i : mutable_list<any> = @mutable_list(1,2,3) @set_var i = 0L") }
+        assertFails { GenerateCode("@var i : mutable_list<any> = @mutable_list(1,2,3) @set_var i = true") }
+        assertFails { GenerateCode("@var i : mutable_list<any> = @mutable_list(1,2,3) @set_var i = false") }
+        assertFails { GenerateCode("@var i : mutable_list<any> = @mutable_list(1,2,3) @set_var i = 'x'") }
     }
 
     @Test
     fun testObjectType() {
-        assertEquals("object", GenerateCode("@define_object(MyObj) @end_define_object @var(MyObj.getType())"))
+        assertEquals("object<any>", GenerateCode("@define_object(MyObj) @end_define_object @var(MyObj.getType())"))
+        assertEquals("object<int>", GenerateCode("@define_object<int>(MyObj) @end_define_object @var(MyObj.getType())"))
+        assertEquals("object<int>", GenerateCode("@define_object<int>(MyObj) @var i = 5 @end_define_object @var(MyObj.getType())"))
+        assertEquals("object<int?>", GenerateCode("@define_object<int?>(MyObj) @var i = 5 @end_define_object @var(MyObj.getType())"))
+    }
+
+    @Test
+    fun testObjectListType() {
+        assertEquals(
+            expected = "list<int>",
+            actual = GenerateCode("@define_object(Test) @var list = @list(1,2,3) @end_define_object @var(Test.list.getType())")
+        )
     }
 
 }

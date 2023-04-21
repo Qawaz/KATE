@@ -15,7 +15,7 @@ object IntImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 invokedOn: KATEValue,
-                parameters: List<ReferencedValue>
+                parameters: List<KATEValue>
             ): KATEValue {
                 val intVal = invokedOn.let { it as? IntValue }?.value
                 require(intVal != null) { "int value is null" }
@@ -30,7 +30,7 @@ object IntImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 invokedOn: KATEValue,
-                parameters: List<ReferencedValue>
+                parameters: List<KATEValue>
             ): KATEValue {
                 val intVal = invokedOn.let { it as? IntValue }?.value
                 require(intVal != null) { "int value is null" }

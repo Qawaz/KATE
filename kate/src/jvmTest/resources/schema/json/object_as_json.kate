@@ -26,13 +26,13 @@
         @end_function
 
         @function jsonValue(param)
-            @if(param.getType() == "object")
+            @if(param.getType().startsWith("object"))
                 @default_no_raw
                     @var(writeObjectAsJson(param,indentation + 1))
                 @end_default_no_raw
-            @elseif(param.getType() == "list")
+            @elseif(param.getType().startsWith("list"))
                 @var(listValue(param))
-            @elseif(param.getType() == "mutable_list")
+            @elseif(param.getType().startsWith("mutable_list"))
                 @var(listValue(param))
             @elseif(param.getType() == "string")
                 @default_no_raw "@var(param)" @end_default_no_raw

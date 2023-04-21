@@ -1,11 +1,11 @@
 @partial_raw
 
 @function getKotlinType(param)
-    @if(@var(param.getType()) == "object")
+    @if(@var(param.getType().startsWith("object")))
         @return param.getName().capitalize()
-    @elseif(@var(param.getType()) == "list")
+    @elseif(@var(param.getType().startsWith("list")))
         @return "List<" + getKotlinType(param[0]) + ">"
-    @elseif(@var(param.getType()) == "mutable_list")
+    @elseif(@var(param.getType().startsWith("mutable_list")))
         @return "List<" + getKotlinType(param[0]) + ">"
     @else
         @return param.getType().capitalize()

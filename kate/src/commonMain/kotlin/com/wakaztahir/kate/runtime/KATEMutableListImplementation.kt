@@ -17,7 +17,7 @@ object KATEMutableListImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 invokedOn: KATEValue,
-                parameters: List<ReferencedValue>
+                parameters: List<KATEValue>
             ): KATEValue {
                 require(parameters.size == 1) {
                     "mutable_list.add(e : Element) expects a single parameter instead of ${parameters.size}"
@@ -33,7 +33,7 @@ object KATEMutableListImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 invokedOn: KATEValue,
-                parameters: List<ReferencedValue>
+                parameters: List<KATEValue>
             ): KATEValue {
                 val index = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value as? Int
                 require(parameters.size == 2 && index != null) {
@@ -51,7 +51,7 @@ object KATEMutableListImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 invokedOn: KATEValue,
-                parameters: List<ReferencedValue>
+                parameters: List<KATEValue>
             ): KATEValue {
                 require(parameters.size == 1) {
                     "mutable_list.remove(e : Element) expects a single parameter instead of ${parameters.size}"
@@ -67,7 +67,7 @@ object KATEMutableListImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 invokedOn: KATEValue,
-                parameters: List<ReferencedValue>
+                parameters: List<KATEValue>
             ): KATEValue {
                 val index = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value as? Int
                 require(index != null) {

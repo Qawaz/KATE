@@ -1,12 +1,10 @@
 package com.wakaztahir.kate.parser
 
-import com.wakaztahir.kate.model.LazyBlock
-import com.wakaztahir.kate.model.ObjectDeclaration
-import com.wakaztahir.kate.model.ObjectDeclarationBlockSlice
-import com.wakaztahir.kate.model.ObjectDeclarationModel
+import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.parser.stream.SourceStream
 import com.wakaztahir.kate.parser.stream.increment
 import com.wakaztahir.kate.parser.stream.parseTextWhile
+import com.wakaztahir.kate.parser.variable.parseKATEType
 
 private fun Char.isObjectName(): Boolean = isLetterOrDigit() || this == '_'
 
@@ -23,7 +21,7 @@ private fun SourceStream.parseObjectName(): String {
     }
 }
 
-private fun LazyBlock.parseObjectDeclarationSlice(objectName: String): ObjectDeclarationBlockSlice {
+private fun LazyBlock.parseObjectDeclarationSlice(objectName: String, itemType: KATEType): ObjectDeclarationBlockSlice {
     val slice = parseBlockSlice(
         startsWith = "@define_object",
         endsWith = "@end_define_object",
@@ -35,17 +33,26 @@ private fun LazyBlock.parseObjectDeclarationSlice(objectName: String): ObjectDec
         startPointer = slice.startPointer,
         length = slice.length,
         blockEndPointer = slice.blockEndPointer,
-        model = ObjectDeclarationModel(objectName = objectName, parent = model),
+        model = ObjectDeclarationModel(objectName = objectName, parent = model, itemType = itemType),
         indentationLevel = indentationLevel + 1
     )
 }
 
 fun LazyBlock.parseObjectDeclaration(): ObjectDeclaration? {
     if (source.currentChar == '@' && source.increment("@define_object")) {
+        val itemType: KATEType? = if (source.increment('<')) {
+            val type = source.parseKATEType()
+            if (!source.increment('>')) {
+                throw IllegalStateException("expected '>' after type declaration got '${source.currentChar}'")
+            }
+            type
+        } else {
+            null
+        }
         val objectName = source.parseObjectName()
         return ObjectDeclaration(
             objectName = objectName,
-            declarationBlock = parseObjectDeclarationSlice(objectName)
+            declarationBlock = parseObjectDeclarationSlice(objectName = objectName, itemType = itemType ?: KATEType.Any())
         )
     }
     return null

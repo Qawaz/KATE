@@ -15,7 +15,7 @@ object KATEListImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 invokedOn: KATEValue,
-                parameters: List<ReferencedValue>
+                parameters: List<KATEValue>
             ): KATEValue {
                 val index = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value as? Int
                 require(index != null) {
@@ -33,7 +33,7 @@ object KATEListImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 invokedOn: KATEValue,
-                parameters: List<ReferencedValue>
+                parameters: List<KATEValue>
             ): KATEValue {
                 return IntValue(invokedOn.asNullableList(model)!!.collection.size)
             }
@@ -46,7 +46,7 @@ object KATEListImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 invokedOn: KATEValue,
-                parameters: List<ReferencedValue>
+                parameters: List<KATEValue>
             ): KATEValue {
                 return BooleanValue(invokedOn.asNullableList(model)!!.collection.containsAll(parameters))
             }
@@ -60,7 +60,7 @@ object KATEListImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 invokedOn: KATEValue,
-                parameters: List<ReferencedValue>
+                parameters: List<KATEValue>
             ): KATEValue {
                 require(parameters.size == 1) {
                     "indexOf requires a single parameter"
@@ -77,7 +77,7 @@ object KATEListImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 invokedOn: KATEValue,
-                parameters: List<ReferencedValue>
+                parameters: List<KATEValue>
             ): KATEValue {
                 val list = invokedOn.asNullableList(model)
                 require(list != null) { "list is null" }

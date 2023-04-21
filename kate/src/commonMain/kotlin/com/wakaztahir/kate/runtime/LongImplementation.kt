@@ -4,7 +4,6 @@ import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.model.model.KATEFunction
 import com.wakaztahir.kate.model.model.KATEObject
 import com.wakaztahir.kate.model.model.KATEValue
-import com.wakaztahir.kate.model.model.ReferencedValue
 
 object LongImplementation {
 
@@ -18,7 +17,7 @@ object LongImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 invokedOn: KATEValue,
-                parameters: List<ReferencedValue>
+                parameters: List<KATEValue>
             ): KATEValue {
                 val intVal = invokedOn.let { it as? LongValue }?.value
                 require(intVal != null) { "long value is null" }
@@ -33,7 +32,7 @@ object LongImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 invokedOn: KATEValue,
-                parameters: List<ReferencedValue>
+                parameters: List<KATEValue>
             ): KATEValue {
                 val intVal = invokedOn.let { it as? LongValue }?.value
                 require(intVal != null) { "long value is null" }
