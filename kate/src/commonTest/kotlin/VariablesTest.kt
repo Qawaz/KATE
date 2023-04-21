@@ -3,7 +3,6 @@ import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.model.model.*
 import com.wakaztahir.kate.parser.*
 import com.wakaztahir.kate.parser.parseExpression
-import com.wakaztahir.kate.parser.stream.TextDestinationStream
 import com.wakaztahir.kate.parser.variable.parseVariableDeclaration
 import com.wakaztahir.kate.parser.variable.parseVariableReference
 import kotlin.test.*
@@ -53,6 +52,8 @@ class VariablesTest {
                 putValue("myFunc", object : KATEFunction() {
                     override fun invoke(
                         model: KATEObject,
+                        path: List<ModelReference>,
+                        pathIndex: Int,
                         invokedOn: KATEValue,
                         parameters: List<ReferencedValue>
                     ): KATEValue {

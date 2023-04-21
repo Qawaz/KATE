@@ -15,6 +15,8 @@ interface MutableKATEObject : KATEObject {
 
     fun putValue(key: String, value: KATEValue)
 
+    fun setExplicitType(key : String,type : KATEType)
+
     // Extensions
 
     fun putValue(key: String, value: String) {

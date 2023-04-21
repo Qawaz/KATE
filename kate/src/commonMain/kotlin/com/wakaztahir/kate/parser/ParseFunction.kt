@@ -119,7 +119,13 @@ class FunctionDefinition(val slice: FunctionSlice, val functionName: String, val
     CodeGen, BlockContainer {
 
     private val definition = object : KATERecursiveFunction(slice, parameterNames) {
-        override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
+        override fun invoke(
+            model: KATEObject,
+            path: List<ModelReference>,
+            pathIndex: Int,
+            invokedOn: KATEValue,
+            parameters: List<ReferencedValue>
+        ): KATEValue {
             return generateNow(model = model, parameters)
         }
         override fun toString(): String = "$functionName()"

@@ -16,7 +16,7 @@ interface KATEMutableList<T : KATEValue> : KATEList<T> {
 @JvmInline
 value class KATEListImpl<T : KATEValue>(override val collection: List<T>) : KATEList<T> {
 
-    override fun getKATEType(model: KATEObject): KATEType = KATEType.List(isNullable = false)
+    override fun getKATEType(model: KATEObject): KATEType = KATEType.List()
 
     override fun getKateType(model: KATEObject): String? = "list"
 
@@ -54,6 +54,8 @@ value class KATEMutableListImpl<T : KATEValue>(override val collection: MutableL
             throw IllegalStateException("${reference.name} is not a property on list")
         }
     }
+
+    override fun getKATEType(model: KATEObject): KATEType = KATEType.MutableList()
 
     override fun getKateType(model: KATEObject): String? = "mutable_list"
 

@@ -4,7 +4,9 @@ import com.wakaztahir.kate.model.ModelReference
 
 abstract class KATEFunction : ReferencedValue {
 
-    abstract fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue
+//    abstract fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue
+
+    abstract fun invoke(model: KATEObject,path : List<ModelReference>,pathIndex : Int, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue
 
     override fun getModelReference(reference: ModelReference): KATEValue? {
         throw IllegalStateException("KTEFunction should be invoked to get the reference")

@@ -1,9 +1,6 @@
 package com.wakaztahir.kate.runtime
 
-import com.wakaztahir.kate.model.DoubleValue
-import com.wakaztahir.kate.model.IntValue
-import com.wakaztahir.kate.model.LongValue
-import com.wakaztahir.kate.model.StringValue
+import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.model.model.KATEFunction
 import com.wakaztahir.kate.model.model.KATEObject
 import com.wakaztahir.kate.model.model.KATEValue
@@ -15,15 +12,14 @@ object LongImplementation {
 
     private fun HashMap<String, KATEValue>.putObjectFunctions() {
         with(KATEValueImplementation){ putObjectFunctions() }
-        put("getType", object : KATEFunction() {
-            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
-                return StringValue("long")
-            }
-
-            override fun toString(): String = "getType() : string"
-        })
         put("toInt", object : KATEFunction() {
-            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
+            override fun invoke(
+                model: KATEObject,
+                path: List<ModelReference>,
+                pathIndex: Int,
+                invokedOn: KATEValue,
+                parameters: List<ReferencedValue>
+            ): KATEValue {
                 val intVal = invokedOn.let { it as? LongValue }?.value
                 require(intVal != null) { "long value is null" }
                 return IntValue(intVal.toInt())
@@ -32,7 +28,13 @@ object LongImplementation {
             override fun toString(): String = "toInt() : int"
         })
         put("toDouble", object : KATEFunction() {
-            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
+            override fun invoke(
+                model: KATEObject,
+                path: List<ModelReference>,
+                pathIndex: Int,
+                invokedOn: KATEValue,
+                parameters: List<ReferencedValue>
+            ): KATEValue {
                 val intVal = invokedOn.let { it as? LongValue }?.value
                 require(intVal != null) { "long value is null" }
                 return DoubleValue(intVal.toDouble())

@@ -1,5 +1,6 @@
 package com.wakaztahir.kate.runtime
 
+import com.wakaztahir.kate.model.ModelReference
 import com.wakaztahir.kate.model.StringValue
 import com.wakaztahir.kate.model.model.*
 
@@ -10,6 +11,8 @@ object GlobalObjectImplementation {
             putValue("log", object : KATEFunction() {
                 override fun invoke(
                     model: KATEObject,
+                    path: List<ModelReference>,
+                    pathIndex: Int,
                     invokedOn: KATEValue,
                     parameters: List<ReferencedValue>
                 ): KATEValue {
@@ -26,7 +29,13 @@ object GlobalObjectImplementation {
 
     private val throwMethod by lazy {
         object : KATEFunction() {
-            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
+            override fun invoke(
+                model: KATEObject,
+                path: List<ModelReference>,
+                pathIndex: Int,
+                invokedOn: KATEValue,
+                parameters: List<ReferencedValue>
+            ): KATEValue {
                 val first = parameters.firstOrNull()?.asNullablePrimitive(model)?.let { it as? StringValue }
                 require(parameters.size == 1 && first != null) {
                     "${toString()} expects a single parameter of type string"

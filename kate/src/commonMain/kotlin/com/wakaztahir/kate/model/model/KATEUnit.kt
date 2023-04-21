@@ -15,7 +15,13 @@ object KATEUnit : ReferencedValue, CodeGen {
     override fun getKateType(model: KATEObject): String = KATEUnitType.value
 
     private val KTEUnitTypeFunction = object : KATEFunction() {
-        override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue = KATEUnitType
+        override fun invoke(
+            model: KATEObject,
+            path: List<ModelReference>,
+            pathIndex: Int,
+            invokedOn: KATEValue,
+            parameters: List<ReferencedValue>
+        ): KATEValue = KATEUnitType
         override fun toString(): String = this@KATEUnit.toString()
     }
 

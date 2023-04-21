@@ -9,11 +9,13 @@ interface KATEObject : ReferencedValue {
     val parent: KATEObject?
     val contained: Map<String, KATEValue>
 
-    fun contains(key : String) : Boolean
+    fun get(key: String): KATEValue?
+
+    fun getExplicitType(key: String): KATEType?
+
+    fun contains(key: String): Boolean
 
     fun containsInAncestors(key: String): Boolean
-
-    fun get(key : String) : KATEValue?
 
     private fun List<ModelReference>.pathUntil(prop: ModelReference): String {
         return joinToString(
@@ -24,11 +26,12 @@ interface KATEObject : ReferencedValue {
 
     fun getModelReferenceValue(model: KATEObject, path: List<ModelReference>): KATEValue {
         var currentVal: KATEValue = this
-        for (prop in path) {
-            when (prop) {
+        var i = 0
+        while (i < path.size) {
+            when (val prop = path[i]) {
                 is ModelReference.FunctionCall -> {
                     (currentVal.getModelReference(prop) as? KATEFunction)?.let { func ->
-                        currentVal = func.invoke(model, currentVal, prop.parametersList)
+                        currentVal = func.invoke(model, path, i, currentVal, prop.parametersList)
                     } ?: run {
                         throw UnresolvedValueException("function ${path.pathUntil(prop)} does not exist on value : $currentVal")
                     }
@@ -46,6 +49,7 @@ interface KATEObject : ReferencedValue {
                     }
                 }
             }
+            i++
         }
         return currentVal
     }

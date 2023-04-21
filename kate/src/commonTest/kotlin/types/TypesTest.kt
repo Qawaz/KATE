@@ -11,7 +11,7 @@ class TypesTest {
     fun testStringType() {
         assertEquals("string", GenerateCode("@var i = \"\" @var(i.getType())"))
         assertEquals("string", GenerateCode("@var i : string = \"\" @var(i.getType())"))
-        assertEquals("string", GenerateCode("@var i : string? = \"\" @var(i.getType())"))
+        assertEquals("string?", GenerateCode("@var i : string? = \"\" @var(i.getType())"))
         assertFails { GenerateCode("@var i : string = 0") }
         assertFails { GenerateCode("@var i : string = 0.0") }
         assertFails { GenerateCode("@var i : string = 0L") }
@@ -24,7 +24,7 @@ class TypesTest {
     fun testIntType() {
         assertEquals("int", GenerateCode("@var i = 55 @var(i.getType())"))
         assertEquals("int", GenerateCode("@var i : int = 55 @var(i.getType())"))
-        assertEquals("int", GenerateCode("@var i : int? = 55 @var(i.getType())"))
+        assertEquals("int?", GenerateCode("@var i : int? = 55 @var(i.getType())"))
         assertFails { GenerateCode("@var i : int = \"\"") }
         assertFails { GenerateCode("@var i : int = 0.0") }
         assertFails { GenerateCode("@var i : int = 0L") }
@@ -37,7 +37,7 @@ class TypesTest {
     fun testDoubleType() {
         assertEquals("double", GenerateCode("@var i = 55. @var(i.getType())"))
         assertEquals("double", GenerateCode("@var i : double = 55. @var(i.getType())"))
-        assertEquals("double", GenerateCode("@var i : double? = 55. @var(i.getType())"))
+        assertEquals("double?", GenerateCode("@var i : double? = 55. @var(i.getType())"))
         assertFails { GenerateCode("@var i : double = \"\"") }
         assertFails { GenerateCode("@var i : double = 0") }
         assertFails { GenerateCode("@var i : double = 0L") }
@@ -52,8 +52,8 @@ class TypesTest {
         assertEquals("boolean", GenerateCode("@var i = false @var(i.getType())"))
         assertEquals("boolean", GenerateCode("@var i : boolean = true @var(i.getType())"))
         assertEquals("boolean", GenerateCode("@var i : boolean = false @var(i.getType())"))
-        assertEquals("boolean", GenerateCode("@var i : boolean? = true @var(i.getType())"))
-        assertEquals("boolean", GenerateCode("@var i : boolean? = false @var(i.getType())"))
+        assertEquals("boolean?", GenerateCode("@var i : boolean? = true @var(i.getType())"))
+        assertEquals("boolean?", GenerateCode("@var i : boolean? = false @var(i.getType())"))
         assertFails { GenerateCode("@var i : boolean = \"\"") }
         assertFails { GenerateCode("@var i : boolean = 0") }
         assertFails { GenerateCode("@var i : boolean = 0L") }
@@ -66,8 +66,8 @@ class TypesTest {
         assertEquals("long", GenerateCode("@var i = 55L @var(i.getType())"))
         assertEquals("long", GenerateCode("@var i : long = 55L @var(i.getType())"))
         assertEquals("long", GenerateCode("@var i : long = 55 @var(i.getType())"))
-        assertEquals("long", GenerateCode("@var i : long? = 55L @var(i.getType())"))
-        assertEquals("long", GenerateCode("@var i : long? = 55 @var(i.getType())"))
+        assertEquals("long?", GenerateCode("@var i : long? = 55L @var(i.getType())"))
+        assertEquals("long?", GenerateCode("@var i : long? = 55 @var(i.getType())"))
         assertFails { GenerateCode("@var i : long = \"\"") }
         assertFails { GenerateCode("@var i : long = 0.0") }
         assertFails { GenerateCode("@var i : long = true") }
@@ -79,7 +79,7 @@ class TypesTest {
     fun testCharType() {
         assertEquals("char", GenerateCode("@var i = 's' @var(i.getType())"))
         assertEquals("char", GenerateCode("@var i : char = 's' @var(i.getType())"))
-        assertEquals("char", GenerateCode("@var i : char? = 's' @var(i.getType())"))
+        assertEquals("char?", GenerateCode("@var i : char? = 's' @var(i.getType())"))
         assertFails { GenerateCode("@var i : char = \"\"") }
         assertFails { GenerateCode("@var i : char = 0") }
         assertFails { GenerateCode("@var i : char = 0.0") }

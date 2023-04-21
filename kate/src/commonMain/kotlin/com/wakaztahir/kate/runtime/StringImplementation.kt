@@ -9,15 +9,14 @@ object StringImplementation {
 
     private fun HashMap<String, KATEValue>.putObjectFunctions() {
         with(KATEValueImplementation){ putObjectFunctions() }
-        put("getType", object : KATEFunction() {
-            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
-                return StringValue("string")
-            }
-
-            override fun toString(): String = "getType() : string"
-        })
         put("get", object : KATEFunction() {
-            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
+            override fun invoke(
+                model: KATEObject,
+                path: List<ModelReference>,
+                pathIndex: Int,
+                invokedOn: KATEValue,
+                parameters: List<ReferencedValue>
+            ): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 val index = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as? Int }
                 require(string != null) { "string value is null" }
@@ -28,7 +27,13 @@ object StringImplementation {
             override fun toString(): String = "get(int) : chat"
         })
         put("size", object : KATEFunction() {
-            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
+            override fun invoke(
+                model: KATEObject,
+                path: List<ModelReference>,
+                pathIndex: Int,
+                invokedOn: KATEValue,
+                parameters: List<ReferencedValue>
+            ): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
                 return IntValue(string.length)
@@ -37,7 +42,13 @@ object StringImplementation {
             override fun toString(): String = "size() : int"
         })
         put("indexOf", object : KATEFunction() {
-            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
+            override fun invoke(
+                model: KATEObject,
+                path: List<ModelReference>,
+                pathIndex: Int,
+                invokedOn: KATEValue,
+                parameters: List<ReferencedValue>
+            ): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 val find = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
                 require(find != null) { "indexOf requires a single string parameter" }
@@ -48,7 +59,13 @@ object StringImplementation {
             override fun toString(): String = "indexOf(str : string) : int"
         })
         put("split", object : KATEFunction() {
-            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
+            override fun invoke(
+                model: KATEObject,
+                path: List<ModelReference>,
+                pathIndex: Int,
+                invokedOn: KATEValue,
+                parameters: List<ReferencedValue>
+            ): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 val find = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
                 require(find != null) { "split requires a single string parameter" }
@@ -59,7 +76,13 @@ object StringImplementation {
             override fun toString(): String = "split(str : string) : List<string>"
         })
         put("toInt", object : KATEFunction() {
-            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
+            override fun invoke(
+                model: KATEObject,
+                path: List<ModelReference>,
+                pathIndex: Int,
+                invokedOn: KATEValue,
+                parameters: List<ReferencedValue>
+            ): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
                 return string.toIntOrNull()?.let { IntValue(it) } ?: KATEUnit
@@ -68,7 +91,13 @@ object StringImplementation {
             override fun toString(): String = "toInt() : int"
         })
         put("toDouble", object : KATEFunction() {
-            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
+            override fun invoke(
+                model: KATEObject,
+                path: List<ModelReference>,
+                pathIndex: Int,
+                invokedOn: KATEValue,
+                parameters: List<ReferencedValue>
+            ): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
                 return string.toDoubleOrNull()?.let { DoubleValue(it) } ?: KATEUnit
@@ -77,7 +106,13 @@ object StringImplementation {
             override fun toString(): String = "toDouble() : double"
         })
         put("substring", object : KATEFunction() {
-            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
+            override fun invoke(
+                model: KATEObject,
+                path: List<ModelReference>,
+                pathIndex: Int,
+                invokedOn: KATEValue,
+                parameters: List<ReferencedValue>
+            ): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
                 val firstIndex = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as Int }
@@ -91,7 +126,13 @@ object StringImplementation {
             override fun toString(): String = "substring(int,int) : string"
         })
         put("uppercase", object : KATEFunction() {
-            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
+            override fun invoke(
+                model: KATEObject,
+                path: List<ModelReference>,
+                pathIndex: Int,
+                invokedOn: KATEValue,
+                parameters: List<ReferencedValue>
+            ): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
                 return StringValue(string.uppercase())
@@ -100,7 +141,13 @@ object StringImplementation {
             override fun toString(): String = "uppercase() : string"
         })
         put("lowercase", object : KATEFunction() {
-            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
+            override fun invoke(
+                model: KATEObject,
+                path: List<ModelReference>,
+                pathIndex: Int,
+                invokedOn: KATEValue,
+                parameters: List<ReferencedValue>
+            ): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
                 return StringValue(string.lowercase())
@@ -109,7 +156,13 @@ object StringImplementation {
             override fun toString(): String = "lowercase() : string"
         })
         put("capitalize", object : KATEFunction() {
-            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
+            override fun invoke(
+                model: KATEObject,
+                path: List<ModelReference>,
+                pathIndex: Int,
+                invokedOn: KATEValue,
+                parameters: List<ReferencedValue>
+            ): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
                 return StringValue(string.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() })
@@ -118,7 +171,13 @@ object StringImplementation {
             override fun toString(): String = "capitalize() : string"
         })
         put("decapitalize", object : KATEFunction() {
-            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
+            override fun invoke(
+                model: KATEObject,
+                path: List<ModelReference>,
+                pathIndex: Int,
+                invokedOn: KATEValue,
+                parameters: List<ReferencedValue>
+            ): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
                 return StringValue(string.replaceFirstChar { it.lowercase() })
@@ -127,7 +186,13 @@ object StringImplementation {
             override fun toString(): String = "decapitalize() : string"
         })
         put("replace", object : KATEFunction() {
-            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
+            override fun invoke(
+                model: KATEObject,
+                path: List<ModelReference>,
+                pathIndex: Int,
+                invokedOn: KATEValue,
+                parameters: List<ReferencedValue>
+            ): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
                 val find = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
@@ -141,7 +206,13 @@ object StringImplementation {
             override fun toString(): String = "replace(string,string) : string"
         })
         put("contains", object : KATEFunction() {
-            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
+            override fun invoke(
+                model: KATEObject,
+                path: List<ModelReference>,
+                pathIndex: Int,
+                invokedOn: KATEValue,
+                parameters: List<ReferencedValue>
+            ): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
                 val firstStr = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }

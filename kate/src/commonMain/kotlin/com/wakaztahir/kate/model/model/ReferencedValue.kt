@@ -14,6 +14,8 @@ interface ReferencedValue : KATEValue {
         val typeFunction = (getModelReference(GetTypeModelReference)?.let { it as KATEFunction }) ?: return null
         return (typeFunction.invoke(
             model = model,
+            path = listOf(GetTypeModelReference),
+            pathIndex = 0,
             invokedOn = this,
             parameters = EmptyReferencedValuesList
         ) as StringValue).value

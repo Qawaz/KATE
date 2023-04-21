@@ -96,7 +96,13 @@ class ModelDirectiveTest {
     fun testFunction() {
         var invocations = 0
         val myFunc = object : KATEFunction() {
-            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
+            override fun invoke(
+                model: KATEObject,
+                path: List<ModelReference>,
+                pathIndex: Int,
+                invokedOn: KATEValue,
+                parameters: List<ReferencedValue>
+            ): KATEValue {
                 invocations++
                 return StringValue("funVal")
             }
@@ -121,6 +127,8 @@ class ModelDirectiveTest {
             putValue("callSum", object : KATEFunction() {
                 override fun invoke(
                     model: KATEObject,
+                    path: List<ModelReference>,
+                    pathIndex: Int,
                     invokedOn: KATEValue,
                     parameters: List<ReferencedValue>
                 ): KATEValue {

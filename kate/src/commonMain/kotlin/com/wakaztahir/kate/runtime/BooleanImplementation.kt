@@ -10,11 +10,5 @@ object BooleanImplementation {
     val propertyMap by lazy { hashMapOf<String, KATEValue>().apply { putObjectFunctions() } }
     private fun HashMap<String, KATEValue>.putObjectFunctions() {
         with(KATEValueImplementation){ putObjectFunctions() }
-        put("getType", object : KATEFunction() {
-            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
-                return StringValue("boolean")
-            }
-            override fun toString(): String = "getType() : string"
-        })
     }
 }

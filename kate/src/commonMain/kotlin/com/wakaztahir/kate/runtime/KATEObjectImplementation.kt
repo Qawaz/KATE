@@ -1,6 +1,7 @@
 package com.wakaztahir.kate.runtime
 
 import com.wakaztahir.kate.model.BooleanValue
+import com.wakaztahir.kate.model.ModelReference
 import com.wakaztahir.kate.model.StringValue
 import com.wakaztahir.kate.model.model.*
 
@@ -11,7 +12,13 @@ object KATEObjectImplementation {
     private fun HashMap<String, KATEValue>.putObjectFunctions() {
         with(KATEValueImplementation){ putObjectFunctions() }
         put("get", object : KATEFunction() {
-            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
+            override fun invoke(
+                model: KATEObject,
+                path: List<ModelReference>,
+                pathIndex: Int,
+                invokedOn: KATEValue,
+                parameters: List<ReferencedValue>
+            ): KATEValue {
                 val value = invokedOn as? KATEObject
                 require(value != null) { "invoked on object cannot be null" }
                 val required = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
@@ -22,7 +29,13 @@ object KATEObjectImplementation {
             override fun toString(): String = "get() : KATEValue"
         })
         put("getName", object : KATEFunction() {
-            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
+            override fun invoke(
+                model: KATEObject,
+                path: List<ModelReference>,
+                pathIndex: Int,
+                invokedOn: KATEValue,
+                parameters: List<ReferencedValue>
+            ): KATEValue {
                 val value = invokedOn as? KATEObject
                 require(value != null) { "invoked on object cannot be null" }
                 return StringValue(value.objectName)
@@ -30,15 +43,14 @@ object KATEObjectImplementation {
 
             override fun toString(): String = "getName() : string"
         })
-        put("getType", object : KATEFunction() {
-            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
-                return StringValue("object")
-            }
-
-            override fun toString(): String = "getType() : string"
-        })
         put("getKeys", object : KATEFunction() {
-            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
+            override fun invoke(
+                model: KATEObject,
+                path: List<ModelReference>,
+                pathIndex: Int,
+                invokedOn: KATEValue,
+                parameters: List<ReferencedValue>
+            ): KATEValue {
                 val value = invokedOn as? KATEObject
                 require(value != null) { "invoked on object cannot be null" }
                 return KATEListImpl(value.contained.keys.map { StringValue(it) })
@@ -48,7 +60,13 @@ object KATEObjectImplementation {
 
         })
         put("getValues", object : KATEFunction() {
-            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
+            override fun invoke(
+                model: KATEObject,
+                path: List<ModelReference>,
+                pathIndex: Int,
+                invokedOn: KATEValue,
+                parameters: List<ReferencedValue>
+            ): KATEValue {
                 val value = invokedOn as? KATEObject
                 require(value != null) { "invoked on object cannot be null" }
                 return KATEListImpl(value.contained.values.toList())
@@ -58,7 +76,13 @@ object KATEObjectImplementation {
 
         })
         put("contains", object : KATEFunction() {
-            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
+            override fun invoke(
+                model: KATEObject,
+                path: List<ModelReference>,
+                pathIndex: Int,
+                invokedOn: KATEValue,
+                parameters: List<ReferencedValue>
+            ): KATEValue {
                 val value = invokedOn.asNullableObject(model)
                 val required = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
                 require(value != null) { "invoked on object cannot be null" }
@@ -70,7 +94,13 @@ object KATEObjectImplementation {
 
         })
         put("containsInAncestors", object : KATEFunction() {
-            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
+            override fun invoke(
+                model: KATEObject,
+                path: List<ModelReference>,
+                pathIndex: Int,
+                invokedOn: KATEValue,
+                parameters: List<ReferencedValue>
+            ): KATEValue {
                 val value = invokedOn.asNullableObject(model)
                 val required = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
                 require(value != null) { "invoked on object cannot be null" }
@@ -82,7 +112,13 @@ object KATEObjectImplementation {
 
         })
         put("rename", object : KATEFunction() {
-            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
+            override fun invoke(
+                model: KATEObject,
+                path: List<ModelReference>,
+                pathIndex: Int,
+                invokedOn: KATEValue,
+                parameters: List<ReferencedValue>
+            ): KATEValue {
                 val value = invokedOn as? MutableKATEObject
                 val key = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
                 val other = parameters.getOrNull(1)?.asNullablePrimitive(model)?.value?.let { it as String }
@@ -96,7 +132,13 @@ object KATEObjectImplementation {
             override fun toString(): String = "delete(name : string) : unit"
         })
         put("delete", object : KATEFunction() {
-            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
+            override fun invoke(
+                model: KATEObject,
+                path: List<ModelReference>,
+                pathIndex: Int,
+                invokedOn: KATEValue,
+                parameters: List<ReferencedValue>
+            ): KATEValue {
                 val value = invokedOn as? MutableKATEObject
                 val required = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
                 require(value != null) { "invoked on object cannot be null" }

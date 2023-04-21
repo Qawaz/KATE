@@ -5,14 +5,17 @@ import com.wakaztahir.kate.model.ModelReference
 import com.wakaztahir.kate.model.model.*
 import com.wakaztahir.kate.runtime.KATEObjectImplementation
 
-open class ModelObjectImpl(override var objectName: String, override val parent: KATEObject? = null) : MutableKATEObject {
+open class ModelObjectImpl(override var objectName: String, override val parent: KATEObject? = null) :
+    MutableKATEObject {
 
     private val container: MutableMap<String, KATEValue> by lazy { hashMapOf() }
+
+    private val explicitTypes: MutableMap<String, KATEType> by lazy { hashMapOf() }
 
     override val contained: Map<String, KATEValue>
         get() = container
 
-    override fun getKATEType(model: KATEObject): KATEType = KATEType.Object(isNullable = false)
+    override fun getKATEType(model: KATEObject): KATEType = KATEType.Object()
 
     override fun getKateType(model: KATEObject): String? = "object"
 
@@ -20,6 +23,10 @@ open class ModelObjectImpl(override var objectName: String, override val parent:
 
     override fun get(key: String): KATEValue? {
         return container[key]
+    }
+
+    override fun getExplicitType(key: String): KATEType? {
+        return explicitTypes[key]
     }
 
     override fun contains(key: String): Boolean {
@@ -60,6 +67,10 @@ open class ModelObjectImpl(override var objectName: String, override val parent:
 
     override fun putValue(key: String, value: KATEValue) {
         container[key] = value
+    }
+
+    override fun setExplicitType(key: String, type: KATEType) {
+        explicitTypes[key] = type
     }
 
     override fun changeName(name: String) {

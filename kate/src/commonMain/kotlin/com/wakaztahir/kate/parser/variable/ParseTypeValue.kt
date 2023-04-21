@@ -58,6 +58,14 @@ fun LazyBlock.parseValueOfType(
     parseDirectRefs: Boolean
 ): ReferencedValue? {
     return when (type) {
+        is KATEType.NullableKateType -> {
+            parseValueOfType(
+                type = type.actual,
+                allowAtLessExpressions = allowAtLessExpressions,
+                parseDirectRefs = parseDirectRefs,
+            )
+        }
+
         is KATEType.Any -> {
             source.parseAnyExpressionOrValue(
                 parseFirstStringOrChar = true,

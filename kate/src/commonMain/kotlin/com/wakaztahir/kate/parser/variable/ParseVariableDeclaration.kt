@@ -20,6 +20,9 @@ internal data class VariableDeclaration(
         get() = true
 
     fun storeValue(model: MutableKATEObject) {
+        if (type != null) {
+            model.setExplicitType(variableName, type)
+        }
         if (!model.insertValue(variableName, variableValue.getKATEValue(model))) {
             throw VariableDeclarationException("couldn't declare variable $variableName which already exists")
         }
@@ -52,15 +55,15 @@ internal fun SourceStream.parseVariableDeclarationType(): KATEType? {
     if (type.isNotEmpty()) {
         val isNullable = increment('?')
         val typeName = when (type) {
-            "char" -> KATEType.Char(isNullable)
-            "string" -> KATEType.String(isNullable)
-            "int" -> KATEType.Int(isNullable)
-            "double" -> KATEType.Double(isNullable)
-            "long" -> KATEType.Long(isNullable)
-            "boolean" -> KATEType.Boolean(isNullable)
+            "char" -> KATEType.Char()
+            "string" -> KATEType.String()
+            "int" -> KATEType.Int()
+            "double" -> KATEType.Double()
+            "long" -> KATEType.Long()
+            "boolean" -> KATEType.Boolean()
             else -> null
         }
-        typeName?.let { return it }
+        typeName?.let { return if (isNullable) KATEType.NullableKateType(it) else it }
     }
     setPointerAt(previous)
     return null
@@ -85,7 +88,7 @@ internal fun LazyBlock.parseVariableDeclaration(): VariableDeclaration? {
             }
             source.escapeSpaces()
             val property = parseValueOfType(
-                type = type ?: KATEType.Any(false),
+                type = type ?: KATEType.Any(),
                 allowAtLessExpressions = true,
                 parseDirectRefs = true
             )

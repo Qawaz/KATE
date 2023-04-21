@@ -26,19 +26,6 @@ class DefaultExpressionValueParser(
     }
 }
 
-internal fun SourceStream.parseValueInsideExpression(
-    parseStringAndChar: Boolean,
-    parseDirectRefs: Boolean
-): ReferencedValue? {
-    if (parseStringAndChar) {
-        parseStringValue()?.let { return it }
-        parseCharacterValue()?.let { return it }
-    }
-    parseNumberValue()?.let { return it }
-    parseVariableReference(parseDirectRefs = parseDirectRefs)?.let { return it }
-    return null
-}
-
 internal data class ExpressionValue(
     val first: KATEValue,
     val operatorType: ArithmeticOperatorType,

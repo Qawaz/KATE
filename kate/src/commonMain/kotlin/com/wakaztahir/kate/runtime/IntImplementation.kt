@@ -1,9 +1,6 @@
 package com.wakaztahir.kate.runtime
 
-import com.wakaztahir.kate.model.DoubleValue
-import com.wakaztahir.kate.model.IntValue
-import com.wakaztahir.kate.model.LongValue
-import com.wakaztahir.kate.model.StringValue
+import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.model.model.*
 
 object IntImplementation {
@@ -12,15 +9,14 @@ object IntImplementation {
 
     private fun HashMap<String, KATEValue>.putObjectFunctions() {
         with(KATEValueImplementation){ putObjectFunctions() }
-        put("getType", object : KATEFunction() {
-            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
-                return StringValue("int")
-            }
-
-            override fun toString(): String = "getType() : string"
-        })
         put("toDouble", object : KATEFunction() {
-            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
+            override fun invoke(
+                model: KATEObject,
+                path: List<ModelReference>,
+                pathIndex: Int,
+                invokedOn: KATEValue,
+                parameters: List<ReferencedValue>
+            ): KATEValue {
                 val intVal = invokedOn.let { it as? IntValue }?.value
                 require(intVal != null) { "int value is null" }
                 return DoubleValue(intVal.toDouble())
@@ -29,7 +25,13 @@ object IntImplementation {
             override fun toString(): String = "toDouble() : double"
         })
         put("toLong", object : KATEFunction() {
-            override fun invoke(model: KATEObject, invokedOn: KATEValue, parameters: List<ReferencedValue>): KATEValue {
+            override fun invoke(
+                model: KATEObject,
+                path: List<ModelReference>,
+                pathIndex: Int,
+                invokedOn: KATEValue,
+                parameters: List<ReferencedValue>
+            ): KATEValue {
                 val intVal = invokedOn.let { it as? IntValue }?.value
                 require(intVal != null) { "int value is null" }
                 return LongValue(intVal.toLong())
