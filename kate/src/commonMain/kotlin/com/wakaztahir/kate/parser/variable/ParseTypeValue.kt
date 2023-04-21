@@ -7,7 +7,7 @@ import com.wakaztahir.kate.parser.*
 import com.wakaztahir.kate.parser.stream.SourceStream
 
 private class CharacterValueExpressionParser(private val parseDirectRefs: Boolean) : ExpressionValueParser {
-    override fun SourceStream.parseExpressionValue(): ReferencedValue? {
+    override fun SourceStream.parseExpressionValue(): KATEValue? {
         parseCharacterValue()?.let { return it }
         parseVariableReference(parseDirectRefs = parseDirectRefs)?.let { return it }
         return null
@@ -15,7 +15,7 @@ private class CharacterValueExpressionParser(private val parseDirectRefs: Boolea
 }
 
 private class StringValueExpressionParser(private val parseDirectRefs: Boolean) : ExpressionValueParser {
-    override fun SourceStream.parseExpressionValue(): ReferencedValue? {
+    override fun SourceStream.parseExpressionValue(): KATEValue? {
         parseStringValue()?.let { return it }
         parseVariableReference(parseDirectRefs = parseDirectRefs)?.let { return it }
         return null
@@ -24,7 +24,7 @@ private class StringValueExpressionParser(private val parseDirectRefs: Boolean) 
 
 private class NumberValueExpressionParser(private val type: KATEType, private val parseDirectRefs: Boolean) :
     ExpressionValueParser {
-    override fun SourceStream.parseExpressionValue(): ReferencedValue? {
+    override fun SourceStream.parseExpressionValue(): KATEValue? {
         parseNumberValue()?.let { value ->
             when (value) {
                 is IntValue -> {

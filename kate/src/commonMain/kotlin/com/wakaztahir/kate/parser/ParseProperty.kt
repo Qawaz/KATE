@@ -8,14 +8,14 @@ import com.wakaztahir.kate.parser.stream.SourceStream
 import com.wakaztahir.kate.parser.variable.parseVariableReference
 
 internal interface ExpressionValueParser {
-    fun SourceStream.parseExpressionValue(): ReferencedValue?
+    fun SourceStream.parseExpressionValue(): KATEValue?
 }
 
 class DefaultExpressionValueParser(
     private val parseStringAndChar: Boolean,
     private val parseDirectRefs: Boolean
 ) : ExpressionValueParser {
-    override fun SourceStream.parseExpressionValue(): ReferencedValue? {
+    override fun SourceStream.parseExpressionValue(): KATEValue? {
         if (parseStringAndChar) {
             parseStringValue()?.let { return it }
             parseCharacterValue()?.let { return it }

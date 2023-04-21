@@ -92,7 +92,7 @@ internal sealed interface ForLoop : BlockContainer {
         val conditionType: ConditionType,
         val conditional: KATEValue,
         val arithmeticOperatorType: ArithmeticOperatorType,
-        val incrementer: ReferencedValue,
+        val incrementer: KATEValue,
         override val blockValue: LazyBlockSlice
     ) : ForLoop {
 
@@ -233,10 +233,10 @@ private fun LazyBlock.parseIterableForLoopAfterVariable(variableName: String): F
 
 private class NumberedForLoopIncrementer(
     val operatorType: ArithmeticOperatorType,
-    val incrementerValue: ReferencedValue
+    val incrementerValue: KATEValue
 )
 
-private fun SourceStream.parseNumberOrReference(parseDirectRefs: Boolean): ReferencedValue? {
+private fun SourceStream.parseNumberOrReference(parseDirectRefs: Boolean): KATEValue? {
     parseNumberValue()?.let { return it }
     parseVariableReference(parseDirectRefs = parseDirectRefs)?.let { return it }
     return null

@@ -150,7 +150,7 @@ private class ValueAndOperatorStack {
         for (i in container.size - 1 downTo 0) other.container.add(container[i])
     }
 
-    fun putValue(value: ReferencedValue) {
+    fun putValue(value: KATEValue) {
         container.add(value)
     }
 
@@ -191,8 +191,8 @@ private class ValueAndOperatorStack {
         while (container.isNotEmpty()) {
             when (val item = container.removeFirst()) {
                 is ArithmeticOperatorType -> {
-                    val second = stack.container.removeLast() as ReferencedValue
-                    val first = stack.container.removeLast() as ReferencedValue
+                    val second = stack.container.removeLast() as KATEValue
+                    val first = stack.container.removeLast() as KATEValue
                     stack.putValue(
                         ExpressionValue(
                             first = first,
@@ -206,7 +206,7 @@ private class ValueAndOperatorStack {
 
                 }
 
-                is ReferencedValue -> {
+                is KATEValue -> {
                     stack.putValue(item)
                 }
 
@@ -225,7 +225,7 @@ private class ValueAndOperatorStack {
 private fun LazyBlock.parseValueAndOperator(
     valueParser: ExpressionValueParser,
     allowAtLessExpressions: Boolean
-): Pair<ReferencedValue, ArithmeticOperatorType?>? {
+): Pair<KATEValue, ArithmeticOperatorType?>? {
     val firstValue = with(source) { with(valueParser) { parseExpressionValue() } }
     if (firstValue != null) {
         val pointerAfterFirstValue = source.pointer
@@ -322,7 +322,7 @@ internal fun LazyBlock.parseExpression(
     parseNotFirstStringOrChar: Boolean,
     allowAtLessExpressions: Boolean,
     parseDirectRefs: Boolean
-): ReferencedValue? = parseExpression(
+): KATEValue? = parseExpression(
     firstValueParser = DefaultExpressionValueParser(
         parseStringAndChar = parseFirstStringOrChar,
         parseDirectRefs = parseDirectRefs
@@ -340,7 +340,7 @@ internal fun LazyBlock.parseExpression(
     firstValueParser: ExpressionValueParser,
     notFirstValueParser: () -> ExpressionValueParser,
     allowAtLessExpressions: Boolean,
-): ReferencedValue? {
+): KATEValue? {
     val valueAndOp = parseValueAndOperator(
         valueParser = firstValueParser,
         allowAtLessExpressions = allowAtLessExpressions

@@ -7,7 +7,7 @@ import com.wakaztahir.kate.parser.ArithmeticOperatorType
 import com.wakaztahir.kate.runtime.*
 import kotlin.jvm.JvmInline
 
-interface PrimitiveValue<T> : ReferencedValue {
+interface PrimitiveValue<T> : KATEValue {
 
     val value: T
 

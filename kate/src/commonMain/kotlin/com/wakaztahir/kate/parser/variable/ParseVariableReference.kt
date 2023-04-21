@@ -38,7 +38,7 @@ internal fun SourceStream.parseFunctionParameters(): List<KATEValue>? {
     return null
 }
 
-private fun SourceStream.parseIndexingOperatorValue(parseDirectRefs: Boolean): ReferencedValue? {
+private fun SourceStream.parseIndexingOperatorValue(parseDirectRefs: Boolean): KATEValue? {
     parseNumberValue()?.let { return it }
     parseVariableReference(parseDirectRefs = parseDirectRefs)?.let { return it }
     return null
