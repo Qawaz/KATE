@@ -3,7 +3,7 @@ package com.wakaztahir.kate.model.model
 import com.wakaztahir.kate.dsl.UnresolvedValueException
 import com.wakaztahir.kate.model.*
 
-interface KATEObject : ReferencedValue {
+interface KATEObject : KATEValue {
 
     val objectName: String
     val parent: KATEObject?

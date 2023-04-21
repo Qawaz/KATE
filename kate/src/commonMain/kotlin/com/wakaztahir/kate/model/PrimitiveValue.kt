@@ -2,7 +2,6 @@ package com.wakaztahir.kate.model
 
 import com.wakaztahir.kate.model.model.KATEObject
 import com.wakaztahir.kate.model.model.KATEValue
-import com.wakaztahir.kate.model.model.ReferencedValue
 import com.wakaztahir.kate.parser.ArithmeticOperatorType
 import com.wakaztahir.kate.runtime.*
 import kotlin.jvm.JvmInline

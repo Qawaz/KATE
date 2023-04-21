@@ -36,7 +36,7 @@ open class ModelDirective(val propertyPath: List<ModelReference>) : ReferencedVa
     }
 
     override fun getModelReference(reference: ModelReference): KATEValue? {
-        return null
+        throw IllegalStateException("ReferencedValue cannot give a model reference")
     }
 
     override fun getKATEType(model: KATEObject): KATEType {

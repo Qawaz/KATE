@@ -3,7 +3,7 @@ package com.wakaztahir.kate.model.model
 import com.wakaztahir.kate.model.KATEType
 import com.wakaztahir.kate.model.ModelReference
 
-abstract class KATEFunction : ReferencedValue {
+abstract class KATEFunction : KATEValue {
 
     abstract fun invoke(model: KATEObject,path : List<ModelReference>,pathIndex : Int, invokedOn: KATEValue, parameters: List<KATEValue>): KATEValue
 

@@ -47,7 +47,7 @@ internal sealed interface ForLoop : BlockContainer {
     class IterableFor(
         val indexConstName: String?,
         val elementConstName: String,
-        val listProperty: ReferencedValue,
+        val listProperty: KATEValue,
         override val blockValue: LazyBlockSlice
     ) : ForLoop {
 
@@ -197,7 +197,7 @@ private fun LazyBlock.parseConditionalFor(): ForLoop.ConditionalFor? {
     return null
 }
 
-private fun SourceStream.parseListReferencedValue(parseDirectRefs : Boolean): ReferencedValue? {
+private fun SourceStream.parseListReferencedValue(parseDirectRefs : Boolean): KATEValue? {
     parseListDefinition()?.let { return it }
     parseMutableListDefinition()?.let { return it }
     parseVariableReference(parseDirectRefs = parseDirectRefs)?.let { return it }

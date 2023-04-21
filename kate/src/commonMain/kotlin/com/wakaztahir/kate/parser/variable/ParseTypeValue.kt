@@ -2,7 +2,6 @@ package com.wakaztahir.kate.parser.variable
 
 import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.model.model.KATEValue
-import com.wakaztahir.kate.model.model.ReferencedValue
 import com.wakaztahir.kate.parser.*
 import com.wakaztahir.kate.parser.stream.SourceStream
 

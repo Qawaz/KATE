@@ -4,7 +4,7 @@ import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.parser.stream.DestinationStream
 import com.wakaztahir.kate.runtime.KATEValueImplementation
 
-object KATEUnit : ReferencedValue, CodeGen {
+object KATEUnit : KATEValue, CodeGen {
 
     override fun toString(): String = "KATEUnit"
 

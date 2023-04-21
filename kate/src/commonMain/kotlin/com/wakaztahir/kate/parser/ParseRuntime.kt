@@ -5,7 +5,6 @@ import com.wakaztahir.kate.model.CodeGen
 import com.wakaztahir.kate.model.LazyBlock
 import com.wakaztahir.kate.model.StringValue
 import com.wakaztahir.kate.model.model.KATEValue
-import com.wakaztahir.kate.model.model.ReferencedValue
 import com.wakaztahir.kate.parser.stream.DestinationStream
 import com.wakaztahir.kate.parser.stream.SourceStream
 import com.wakaztahir.kate.parser.stream.increment

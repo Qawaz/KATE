@@ -4,7 +4,7 @@ import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.runtime.KATEListImplementation
 import com.wakaztahir.kate.runtime.KATEMutableListImplementation
 
-interface KATEList<T : KATEValue> : ReferencedValue {
+interface KATEList<T : KATEValue> : KATEValue {
     val itemType : KATEType
     val collection: List<T>
 }

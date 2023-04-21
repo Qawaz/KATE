@@ -5,7 +5,6 @@ import com.wakaztahir.kate.model.LazyBlock
 import com.wakaztahir.kate.model.model.KATEListImpl
 import com.wakaztahir.kate.model.model.KATEMutableListImpl
 import com.wakaztahir.kate.model.model.KATEValue
-import com.wakaztahir.kate.model.model.ReferencedValue
 import com.wakaztahir.kate.parser.stream.increment
 import com.wakaztahir.kate.parser.variable.parseKATEType
 
@@ -45,7 +44,7 @@ private fun LazyBlock.parseListItemType(): KATEType? {
     }
 }
 
-fun LazyBlock.parseListDefinition(): ReferencedValue? {
+fun LazyBlock.parseListDefinition(): KATEValue? {
     if (source.currentChar == '@' && source.increment("@list")) {
         val itemType = parseListItemType() ?: KATEType.Any()
         if (source.increment('(')) {
@@ -58,7 +57,7 @@ fun LazyBlock.parseListDefinition(): ReferencedValue? {
     return null
 }
 
-fun LazyBlock.parseMutableListDefinition(): ReferencedValue? {
+fun LazyBlock.parseMutableListDefinition(): KATEValue? {
     if (source.currentChar == '@' && source.increment("@mutable_list")) {
         val itemType = parseListItemType() ?: KATEType.Any()
         if (source.increment('(')) {

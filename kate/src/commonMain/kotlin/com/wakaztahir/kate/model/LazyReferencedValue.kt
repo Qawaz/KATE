@@ -2,9 +2,8 @@ package com.wakaztahir.kate.model
 
 import com.wakaztahir.kate.model.model.KATEObject
 import com.wakaztahir.kate.model.model.KATEValue
-import com.wakaztahir.kate.model.model.ReferencedValue
 
-class LazyReferencedValue(private val creator: () -> KATEValue) : ReferencedValue {
+class LazyReferencedValue(private val creator: () -> KATEValue) : KATEValue {
 
     private var _value: KATEValue? = null
 
