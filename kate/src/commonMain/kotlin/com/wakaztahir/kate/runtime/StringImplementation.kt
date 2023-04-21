@@ -70,7 +70,7 @@ object StringImplementation {
                 val find = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
                 require(find != null) { "split requires a single string parameter" }
                 require(string != null) { "string value is null" }
-                return KATEListImpl(string.split(find).map { StringValue(it) },itemType = KATEType.String())
+                return KATEListImpl(string.split(find).map { StringValue(it) },itemType = KATEType.String)
             }
 
             override fun toString(): String = "split(str : string) : List<string>"

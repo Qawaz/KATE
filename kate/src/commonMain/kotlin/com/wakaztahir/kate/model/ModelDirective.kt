@@ -51,7 +51,7 @@ open class ModelDirective(val propertyPath: List<ModelReference>) : ReferencedVa
     fun toEmptyPlaceholderInvocation(model: MutableKATEObject, endPointer: Int): PlaceholderInvocation {
         model.getModelReferenceValue(path = propertyPath)
         return PlaceholderInvocation(
-            placeholderName = KATEType.Unit().getKATEType(),
+            placeholderName = KATEType.Unit.getKATEType(),
             definitionName = null,
             paramValue = KATEUnit,
             invocationEndPointer = endPointer

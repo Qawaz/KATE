@@ -11,7 +11,7 @@ import java.io.InputStream
 
 class InputSourceStream(
     private val inputStream: InputStream,
-    override val model: MutableKATEObject = ModelObjectImpl(GlobalModelObjectName, itemType = KATEType.Any()),
+    override val model: MutableKATEObject = ModelObjectImpl(GlobalModelObjectName, itemType = KATEType.Any),
     override val embeddingManager: EmbeddingManager = NoEmbeddings,
     override val placeholderManager: PlaceholderManager = EmptyPlaceholderManager()
 ) : SourceStream() {

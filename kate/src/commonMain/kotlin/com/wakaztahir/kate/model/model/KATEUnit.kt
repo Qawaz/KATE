@@ -12,7 +12,7 @@ object KATEUnit : KATEValue, CodeGen {
         return KATEValueImplementation.propertyMap[reference.name]
     }
 
-    override fun getKnownKATEType(): KATEType = KATEType.Unit()
+    override fun getKnownKATEType(): KATEType = KATEType.Unit
 
     override fun getKATEType(model: KATEObject): KATEType = getKnownKATEType()
 

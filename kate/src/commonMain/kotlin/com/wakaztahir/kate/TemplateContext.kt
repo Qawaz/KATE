@@ -9,7 +9,7 @@ import com.wakaztahir.kate.parser.stream.TextSourceStream
 
 class TemplateContext(stream: SourceStream) {
 
-    constructor(text: String, model: MutableKATEObject = ModelObjectImpl(GlobalModelObjectName,itemType = KATEType.Any())) : this(
+    constructor(text: String, model: MutableKATEObject = ModelObjectImpl(GlobalModelObjectName,itemType = KATEType.Any)) : this(
         TextSourceStream(
             text,
             model

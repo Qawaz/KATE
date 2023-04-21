@@ -8,7 +8,7 @@ import com.wakaztahir.kate.runtime.GlobalObjectImplementation
 
 class TextSourceStream(
     private val sourceCode: String,
-    override val model: MutableKATEObject = ModelObjectImpl(objectName = GlobalModelObjectName,itemType = KATEType.Any()),
+    override val model: MutableKATEObject = ModelObjectImpl(objectName = GlobalModelObjectName,itemType = KATEType.Any),
     override val placeholderManager: PlaceholderManager = EmptyPlaceholderManager(),
     override val embeddingManager: EmbeddingManager = NoEmbeddings
 ) : SourceStream() {

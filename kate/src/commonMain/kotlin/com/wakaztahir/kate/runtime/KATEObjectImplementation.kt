@@ -54,7 +54,7 @@ object KATEObjectImplementation {
             ): KATEValue {
                 val value = invokedOn as? KATEObject
                 require(value != null) { "invoked on object cannot be null" }
-                return KATEListImpl(value.contained.keys.map { StringValue(it) },itemType = KATEType.String())
+                return KATEListImpl(value.contained.keys.map { StringValue(it) },itemType = KATEType.String)
             }
 
             override fun toString(): String = "getKeys() : List<string>"

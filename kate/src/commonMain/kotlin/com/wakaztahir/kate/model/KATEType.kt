@@ -33,7 +33,7 @@ sealed class KATEType {
 
     }
 
-    class Any : KATEType() {
+    object Any : KATEType() {
 
         override fun getPlaceholderName(): kotlin.String = "any"
 
@@ -43,7 +43,7 @@ sealed class KATEType {
 
     }
 
-    class Unit : KATEType(){
+    object Unit : KATEType(){
 
         override fun getPlaceholderName(): kotlin.String = "unit"
 
@@ -53,7 +53,7 @@ sealed class KATEType {
 
     }
 
-    class Char : KATEType() {
+    object Char : KATEType() {
 
         override fun getPlaceholderName(): kotlin.String = "char"
 
@@ -63,7 +63,7 @@ sealed class KATEType {
 
     }
 
-    class String : KATEType() {
+    object String : KATEType() {
 
         override fun getPlaceholderName(): kotlin.String = "string"
 
@@ -73,7 +73,7 @@ sealed class KATEType {
 
     }
 
-    class Int : KATEType() {
+    object Int : KATEType() {
 
         override fun getPlaceholderName(): kotlin.String = "int"
 
@@ -83,7 +83,7 @@ sealed class KATEType {
 
     }
 
-    class Double : KATEType() {
+    object Double : KATEType() {
 
         override fun getPlaceholderName(): kotlin.String = "double"
 
@@ -93,7 +93,7 @@ sealed class KATEType {
 
     }
 
-    class Long : KATEType() {
+    object Long : KATEType() {
 
         override fun getPlaceholderName(): kotlin.String = "long"
 
@@ -103,7 +103,7 @@ sealed class KATEType {
 
     }
 
-    class Boolean : KATEType() {
+    object Boolean : KATEType() {
 
         override fun getPlaceholderName(): kotlin.String = "boolean"
 

@@ -114,7 +114,7 @@ class ForLoopTest {
         val context = TemplateContext("@for(@var elem : @var(list)) @var(elem) @endfor", MutableKATEObject {
             setValue(
                 "list",
-                KATEListImpl(listOf("H", "e", "ll", "o").map { StringValue(it) }, itemType = KATEType.String())
+                KATEListImpl(listOf("H", "e", "ll", "o").map { StringValue(it) }, itemType = KATEType.String)
             )
         })
         assertEquals("Hello", context.getDestinationAsString())
@@ -125,7 +125,7 @@ class ForLoopTest {
         val kteObject = MutableKATEObject {
             setValue(
                 "list",
-                KATEListImpl(listOf("H", "e", "ll", "o").map { StringValue(it) }, itemType = KATEType.String())
+                KATEListImpl(listOf("H", "e", "ll", "o").map { StringValue(it) }, itemType = KATEType.String)
             )
         }
         val context = TemplateContext(
@@ -140,7 +140,7 @@ class ForLoopTest {
         val context = TemplateContext("@for(@var elem : list) @var(elem) @endfor", MutableKATEObject {
             setValue(
                 key = "list",
-                value = KATEListImpl(listOf("H", "e", "ll", "o").map { StringValue(it) }, KATEType.String()),
+                value = KATEListImpl(listOf("H", "e", "ll", "o").map { StringValue(it) }, KATEType.String),
             )
         })
         assertEquals("Hello", context.getDestinationAsString())

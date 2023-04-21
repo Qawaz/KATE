@@ -65,10 +65,10 @@ private fun LazyBlock.parseListParameters(
 fun LazyBlock.parseListDefinition(itemType: KATEType? = null): KATEValue? {
     if (source.currentChar == '@' && source.increment("@list")) {
         if (source.increment('(')) {
-            val parameters = parseListParameters(allowEmpty = true, itemType = itemType ?: KATEType.Any())
+            val parameters = parseListParameters(allowEmpty = true, itemType = itemType ?: KATEType.Any)
             return KATEListImpl(
                 collection = parameters,
-                itemType = itemType ?: parameters.inferItemType() ?: KATEType.Any()
+                itemType = itemType ?: parameters.inferItemType() ?: KATEType.Any
             )
         } else {
             throw IllegalStateException("expected '(' got ${source.currentChar}")
@@ -80,10 +80,10 @@ fun LazyBlock.parseListDefinition(itemType: KATEType? = null): KATEValue? {
 fun LazyBlock.parseMutableListDefinition(itemType: KATEType? = null): KATEValue? {
     if (source.currentChar == '@' && source.increment("@mutable_list")) {
         if (source.increment('(')) {
-            val parameters = parseListParameters(allowEmpty = true, itemType = itemType ?: KATEType.Any())
+            val parameters = parseListParameters(allowEmpty = true, itemType = itemType ?: KATEType.Any)
             return KATEMutableListImpl(
                 collection = parameters,
-                itemType = itemType ?: parameters.inferItemType() ?: KATEType.Any()
+                itemType = itemType ?: parameters.inferItemType() ?: KATEType.Any
             )
         } else {
             throw IllegalStateException("expected '(' got ${source.currentChar}")

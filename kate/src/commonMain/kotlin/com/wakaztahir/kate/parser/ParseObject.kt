@@ -52,7 +52,7 @@ fun LazyBlock.parseObjectDeclaration(): ObjectDeclaration? {
         val objectName = source.parseObjectName()
         return ObjectDeclaration(
             objectName = objectName,
-            declarationBlock = parseObjectDeclarationSlice(objectName = objectName, itemType = itemType ?: KATEType.Any())
+            declarationBlock = parseObjectDeclarationSlice(objectName = objectName, itemType = itemType ?: KATEType.Any)
         )
     }
     return null

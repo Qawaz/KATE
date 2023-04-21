@@ -59,16 +59,16 @@ internal fun SourceStream.parseKATEType(): KATEType? {
     val type = parseTextWhile { currentChar.isTypeName() }
     if (type.isNotEmpty()) {
         val typeName = when (type) {
-            "any" -> KATEType.Any()
-            "char" -> KATEType.Char()
-            "string" -> KATEType.String()
-            "int" -> KATEType.Int()
-            "double" -> KATEType.Double()
-            "long" -> KATEType.Long()
-            "boolean" -> KATEType.Boolean()
+            "any" -> KATEType.Any
+            "char" -> KATEType.Char
+            "string" -> KATEType.String
+            "int" -> KATEType.Int
+            "double" -> KATEType.Double
+            "long" -> KATEType.Long
+            "boolean" -> KATEType.Boolean
             "list", "mutable_list" -> {
                 source.increment('<')
-                val itemType = parseKATEType() ?: KATEType.NullableKateType(KATEType.Any())
+                val itemType = parseKATEType() ?: KATEType.NullableKateType(KATEType.Any)
                 source.increment('>')
                 if (type == "list") KATEType.List(itemType) else KATEType.MutableList(itemType)
             }
@@ -103,7 +103,7 @@ internal fun LazyBlock.parseVariableDeclaration(): VariableDeclaration? {
             }
             source.escapeSpaces()
             val property = parseValueOfType(
-                type = type ?: KATEType.Any(),
+                type = type ?: KATEType.Any,
                 allowAtLessExpressions = true,
                 parseDirectRefs = true
             )
