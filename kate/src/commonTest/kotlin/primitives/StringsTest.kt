@@ -51,6 +51,14 @@ class StringsTest {
     }
 
     @Test
+    fun testOtherStringFunctions(){
+        assertEquals(
+            expected = "truefalsetruefalselohel",
+            actual = GenerateCode("@var i = \"hello\" @var(i.startsWith(\"he\"))@var(i.startsWith(\"so\"))@var(i.endsWith(\"lo\"))@var(i.endsWith(\"ol\"))@var(i.removePrefix(\"hel\"))@var(i.removeSuffix(\"lo\"))")
+        )
+    }
+
+    @Test
     fun testStringEscapes(){
         assertEquals("abc\bdef\b", GenerateCode("@var i = \"abc\\bdef\\b\" @var(i)"))
         assertEquals("abc\ndef\n", GenerateCode("@var i = \"abc\\ndef\\n\" @var(i)"))

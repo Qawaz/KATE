@@ -36,7 +36,7 @@ class TemplateContext(stream: SourceStream) {
         return embedMap[path]
     }
 
-    @OptIn(KTEDelicateFunction::class)
+    @OptIn(KATEDelicateFunction::class)
     fun getDestinationAsString(): String {
         return stream.getDestinationString()
     }

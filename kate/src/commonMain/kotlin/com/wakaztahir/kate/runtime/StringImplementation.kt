@@ -222,7 +222,83 @@ object StringImplementation {
                 return BooleanValue(string.contains(firstStr))
             }
 
-            override fun toString(): String = "contains(string) : string"
+            override fun toString(): String = "contains(string) : boolean"
+        })
+        put("startsWith", object : KATEFunction() {
+            override fun invoke(
+                model: KATEObject,
+                path: List<ModelReference>,
+                pathIndex: Int,
+                invokedOn: KATEValue,
+                parameters: List<ReferencedValue>
+            ): KATEValue {
+                val string = invokedOn.let { it as? StringValue }?.value
+                require(string != null) { "string value is null" }
+                val firstStr = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
+                require(firstStr != null) {
+                    "startsWith requires a string parameter"
+                }
+                return BooleanValue(string.startsWith(firstStr))
+            }
+
+            override fun toString(): String = "startsWith(value : string) : boolean"
+        })
+        put("endsWith", object : KATEFunction() {
+            override fun invoke(
+                model: KATEObject,
+                path: List<ModelReference>,
+                pathIndex: Int,
+                invokedOn: KATEValue,
+                parameters: List<ReferencedValue>
+            ): KATEValue {
+                val string = invokedOn.let { it as? StringValue }?.value
+                require(string != null) { "string value is null" }
+                val firstStr = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
+                require(firstStr != null) {
+                    "endsWith requires a string parameter"
+                }
+                return BooleanValue(string.endsWith(firstStr))
+            }
+
+            override fun toString(): String = "endsWith(value : string) : boolean"
+        })
+        put("removePrefix", object : KATEFunction() {
+            override fun invoke(
+                model: KATEObject,
+                path: List<ModelReference>,
+                pathIndex: Int,
+                invokedOn: KATEValue,
+                parameters: List<ReferencedValue>
+            ): KATEValue {
+                val string = invokedOn.let { it as? StringValue }?.value
+                require(string != null) { "string value is null" }
+                val firstStr = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
+                require(firstStr != null) {
+                    "removePrefix requires a string parameter"
+                }
+                return StringValue(string.removePrefix(firstStr))
+            }
+
+            override fun toString(): String = "removePrefix(value : string) : string"
+        })
+        put("removeSuffix", object : KATEFunction() {
+            override fun invoke(
+                model: KATEObject,
+                path: List<ModelReference>,
+                pathIndex: Int,
+                invokedOn: KATEValue,
+                parameters: List<ReferencedValue>
+            ): KATEValue {
+                val string = invokedOn.let { it as? StringValue }?.value
+                require(string != null) { "string value is null" }
+                val firstStr = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
+                require(firstStr != null) {
+                    "removeSuffix requires a string parameter"
+                }
+                return StringValue(string.removeSuffix(firstStr))
+            }
+
+            override fun toString(): String = "removeSuffix(value : string) : string"
         })
     }
 

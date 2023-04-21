@@ -24,6 +24,12 @@ this template), It won't be embedded again
 
 `@var variableName = "My Name"`
 
+To explicitly give type to the variable use
+
+`@var variableName : string = "My Name"`
+
+You can give `string`,`char`,`boolean`,`int`,`double`,`long`,`list<ItemType>`,`object<ItemType>`
+
 ### Assignment
 
 `@set_var variableName = "otherValue"`
@@ -241,21 +247,25 @@ A string can be defined like this
 
 Here's a table of functions available
 
-| Function                           | Description                                             |
-|------------------------------------|---------------------------------------------------------|
-| str[0]                             | Indexing , Equivalent to .get(0) returns first char     |
-| size() : int                       | Returns the size as an int                              |
-| toInt() : int                      | Tries to convert to int , or returns Unit               |
-| toDouble() : double                | Tries to convert to double , or returns Unit            |
-| substring(0,5) : string            | Returns a substring from 0 (inclusive) to 5 (exclusive) |
-| uppercase() : string               | Convert the whole string to uppercase                   |
-| lowercase() : string               | Convert the whole string to lowercase                   |
-| capitalize() : string              | Capitalize the first character                          |
-| decapitalize() : string            | Decapitalize the first character                        |
-| replace("find","replace") : string | Replace the string's find with replace value            |
-| contains("") : string              | Returns true if contains the string                     |
-| indexOf(str : string) : Int        | index of string within string or -1                     |
-| split(str : string) : List<string> | split at str and convert to a list                      |
+| Function                            | Description                                                       |
+|-------------------------------------|-------------------------------------------------------------------|
+| str[0]                              | Indexing , Equivalent to .get(0) returns first char               |
+| size() : int                        | Returns the size as an int                                        |
+| toInt() : int                       | Tries to convert to int , or returns Unit                         |
+| toDouble() : double                 | Tries to convert to double , or returns Unit                      |
+| substring(0,5) : string             | Returns a substring from 0 (inclusive) to 5 (exclusive)           |
+| uppercase() : string                | Convert the whole string to uppercase                             |
+| lowercase() : string                | Convert the whole string to lowercase                             |
+| capitalize() : string               | Capitalize the first character                                    |
+| decapitalize() : string             | Decapitalize the first character                                  |
+| replace("find","replace") : string  | Replace the string's find with replace value                      |
+| contains("") : string               | Returns true if contains the string                               |
+| indexOf(str : string) : Int         | index of string within string or -1                               |
+| split(str : string) : List<string>  | split at str and convert to a list                                |
+| startsWith(str : string) : boolean  | returns true if the string starts with given string else false    |
+| endsWith(str : string) : boolean    | returns true if the string ends with given string else false      |
+| removePrefix(str : string) : string | returns string after removing prefixed str , or original if fails |
+| removeSuffix(str : string) : string | returns string after removing prefixed str , or original if fails |
 
 ### Integers
 

@@ -9,10 +9,10 @@ import com.wakaztahir.kate.model.model.ReferencedValue
     level = RequiresOptIn.Level.WARNING,
     message = "Must be used with care"
 )
-annotation class KTEDelicateFunction
+annotation class KATEDelicateFunction
 
-const val GlobalModelObjectName = "Global"
-const val ScopedModelObjectName = "ScopedObject"
+internal const val GlobalModelObjectName = "Global"
+internal const val ScopedModelObjectName = "ScopedObject"
 
 val EmptyReferencedValuesList = emptyList<ReferencedValue>()
 

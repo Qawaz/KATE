@@ -1,6 +1,6 @@
 package com.wakaztahir.kate.model
 
-import com.wakaztahir.kate.KTEDelicateFunction
+import com.wakaztahir.kate.KATEDelicateFunction
 import com.wakaztahir.kate.model.model.KATEUnit
 import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.parser.*
@@ -122,7 +122,7 @@ interface LazyBlock {
 
     }
 
-    @KTEDelicateFunction
+    @KATEDelicateFunction
     fun getDestinationString(): String {
         val destination = TextDestinationStream()
         generateTo(destination)
