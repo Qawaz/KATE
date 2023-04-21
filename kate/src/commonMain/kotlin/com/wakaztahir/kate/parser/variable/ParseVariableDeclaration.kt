@@ -2,9 +2,7 @@ package com.wakaztahir.kate.parser.variable
 
 import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.model.*
-import com.wakaztahir.kate.model.model.KATEValue
 import com.wakaztahir.kate.model.model.ReferencedValue
-import com.wakaztahir.kate.parser.parseAnyExpressionOrValue
 import com.wakaztahir.kate.parser.stream.*
 import com.wakaztahir.kate.parser.stream.increment
 
@@ -20,10 +18,14 @@ internal data class VariableDeclaration(
         get() = true
 
     fun storeValue(model: MutableKATEObject) {
+        val value = variableValue.getKATEValue(model)
         if (type != null) {
+            if (!value.getKATEType(model).satisfies(type)) {
+                throw IllegalStateException("cannot satisfy type $type with ${value.getKATEType(model)}")
+            }
             model.setExplicitType(variableName, type)
         }
-        if (!model.insertValue(variableName, variableValue.getKATEValue(model))) {
+        if (!model.insertValue(variableName, value)) {
             throw VariableDeclarationException("couldn't declare variable $variableName which already exists")
         }
     }

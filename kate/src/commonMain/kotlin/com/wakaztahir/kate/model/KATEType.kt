@@ -2,42 +2,29 @@ package com.wakaztahir.kate.model
 
 sealed class KATEType {
 
-    protected val isNullable get() = this is NullableKateType
+    protected val actualType get() = if (this is NullableKateType) this.actual else this
 
     abstract fun getKATEType(): kotlin.String
 
-    abstract fun equalsWithoutNullable(other: KATEType): kotlin.Boolean
+    abstract fun satisfies(type: KATEType): kotlin.Boolean
 
     override fun toString(): kotlin.String = getKATEType()
 
-    override fun equals(other: kotlin.Any?): kotlin.Boolean =
-        (other?.let { it as? KATEType }?.let { equalsWithoutNullable(it) && isNullable == it.isNullable } ?: false)
-
-    override fun hashCode(): kotlin.Int =
-        this::class.hashCode() * isNullable.hashCode()
-
-    fun satisfyOrThrow(type : KATEType) {
-        if (!type.isNullable && isNullable) {
-            throw Throwable("type $this is nullable and cannot satisfy non-nullable type $type")
-        }
-        if (!equalsWithoutNullable(type)) {
-            throw Throwable("type $this cannot satisfy type $type")
-        }
+    override fun equals(other: kotlin.Any?): kotlin.Boolean {
+        if (this === other) return true
+        if (other !is KATEType) return false
+        return this::class == other::class
     }
 
-    class NullableKateType(val actual : KATEType) : KATEType(){
+    override fun hashCode(): kotlin.Int = this::class.hashCode()
+
+    class NullableKateType(val actual: KATEType) : KATEType() {
 
         override fun getKATEType(): kotlin.String = actual.getKATEType() + '?'
 
-        override fun equalsWithoutNullable(other: KATEType): kotlin.Boolean = other is Any
-
-        override fun equals(other: kotlin.Any?): kotlin.Boolean {
-            if (other === this) return true
-            return other is Any && isNullable == other.isNullable
-        }
-
-        override fun hashCode(): kotlin.Int {
-            return this::class.hashCode() * isNullable.hashCode()
+        override fun satisfies(type: KATEType): kotlin.Boolean {
+            if (type !is NullableKateType) return false
+            return this.actual.satisfies(type.actual)
         }
 
     }
@@ -46,16 +33,7 @@ sealed class KATEType {
 
         override fun getKATEType(): kotlin.String = "any"
 
-        override fun equalsWithoutNullable(other: KATEType): kotlin.Boolean = other is Any
-
-        override fun equals(other: kotlin.Any?): kotlin.Boolean {
-            if (other === this) return true
-            return other is Any && isNullable == other.isNullable
-        }
-
-        override fun hashCode(): kotlin.Int {
-            return this::class.hashCode() * isNullable.hashCode()
-        }
+        override fun satisfies(type: KATEType): kotlin.Boolean = type.actualType is Any
 
     }
 
@@ -63,7 +41,7 @@ sealed class KATEType {
 
         override fun getKATEType(): kotlin.String = "char"
 
-        override fun equalsWithoutNullable(other: KATEType): kotlin.Boolean = other is Char
+        override fun satisfies(type: KATEType): kotlin.Boolean = type.actualType is Char
 
     }
 
@@ -71,7 +49,7 @@ sealed class KATEType {
 
         override fun getKATEType(): kotlin.String = "string"
 
-        override fun equalsWithoutNullable(other: KATEType): kotlin.Boolean = other is String
+        override fun satisfies(type: KATEType): kotlin.Boolean = type.actualType is String
 
     }
 
@@ -79,7 +57,7 @@ sealed class KATEType {
 
         override fun getKATEType(): kotlin.String = "int"
 
-        override fun equalsWithoutNullable(other: KATEType): kotlin.Boolean = other is Int
+        override fun satisfies(type: KATEType): kotlin.Boolean = type.actualType is Int
 
     }
 
@@ -87,7 +65,7 @@ sealed class KATEType {
 
         override fun getKATEType(): kotlin.String = "double"
 
-        override fun equalsWithoutNullable(other: KATEType): kotlin.Boolean = other is Double
+        override fun satisfies(type: KATEType): kotlin.Boolean = type.actualType is Double
 
     }
 
@@ -95,7 +73,7 @@ sealed class KATEType {
 
         override fun getKATEType(): kotlin.String = "long"
 
-        override fun equalsWithoutNullable(other: KATEType): kotlin.Boolean = other is Long
+        override fun satisfies(type: KATEType): kotlin.Boolean = type.actualType is Long
 
     }
 
@@ -103,7 +81,7 @@ sealed class KATEType {
 
         override fun getKATEType(): kotlin.String = "boolean"
 
-        override fun equalsWithoutNullable(other: KATEType): kotlin.Boolean = other is Boolean
+        override fun satisfies(type: KATEType): kotlin.Boolean = type.actualType is Boolean
 
     }
 
@@ -111,7 +89,7 @@ sealed class KATEType {
 
         override fun getKATEType(): kotlin.String = "list"
 
-        override fun equalsWithoutNullable(other: KATEType): kotlin.Boolean = other is List
+        override fun satisfies(type: KATEType): kotlin.Boolean = type.actualType is List
 
     }
 
@@ -119,15 +97,15 @@ sealed class KATEType {
 
         override fun getKATEType(): kotlin.String = "mutable_list"
 
-        override fun equalsWithoutNullable(other: KATEType): kotlin.Boolean = other is MutableList
+        override fun satisfies(type: KATEType): kotlin.Boolean = type.actualType is MutableList
 
     }
 
-    class Object : KATEType(){
+    class Object : KATEType() {
 
         override fun getKATEType(): kotlin.String = "object"
 
-        override fun equalsWithoutNullable(other: KATEType): kotlin.Boolean = other is Object
+        override fun satisfies(type: KATEType): kotlin.Boolean = type.actualType is Object
 
     }
 
