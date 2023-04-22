@@ -1,7 +1,7 @@
 package com.wakaztahir.kate.parser
 
 import com.wakaztahir.kate.model.LazyBlock
-import com.wakaztahir.kate.model.model.KATEValue
+import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
 import com.wakaztahir.kate.parser.stream.SourceStream
 import com.wakaztahir.kate.parser.stream.increment
 
@@ -149,7 +149,7 @@ private class ValueAndOperatorStack {
         for (i in container.size - 1 downTo 0) other.container.add(container[i])
     }
 
-    fun putValue(value: KATEValue) {
+    fun putValue(value: ReferencedOrDirectValue) {
         container.add(value)
     }
 
@@ -165,8 +165,8 @@ private class ValueAndOperatorStack {
         return container.lastOrNull()?.let { it as? ArithmeticOperatorType }
     }
 
-    fun peakValue(): KATEValue? {
-        return container.lastOrNull()?.let { it as? KATEValue }
+    fun peakValue(): ReferencedOrDirectValue? {
+        return container.lastOrNull()?.let { it as? ReferencedOrDirectValue }
     }
 
     fun peakChar(): Char? {
@@ -177,8 +177,8 @@ private class ValueAndOperatorStack {
         return container.removeLast() as ArithmeticOperatorType
     }
 
-    fun popValue(): KATEValue {
-        return container.removeLast() as KATEValue
+    fun popValue(): ReferencedOrDirectValue {
+        return container.removeLast() as ReferencedOrDirectValue
     }
 
     fun popChar(): Char {
@@ -190,8 +190,8 @@ private class ValueAndOperatorStack {
         while (container.isNotEmpty()) {
             when (val item = container.removeFirst()) {
                 is ArithmeticOperatorType -> {
-                    val second = stack.container.removeLast() as KATEValue
-                    val first = stack.container.removeLast() as KATEValue
+                    val second = stack.container.removeLast() as ReferencedOrDirectValue
+                    val first = stack.container.removeLast() as ReferencedOrDirectValue
                     stack.putValue(
                         ExpressionValue(
                             first = first,
@@ -205,7 +205,7 @@ private class ValueAndOperatorStack {
 
                 }
 
-                is KATEValue -> {
+                is ReferencedOrDirectValue -> {
                     stack.putValue(item)
                 }
 
@@ -224,7 +224,7 @@ private class ValueAndOperatorStack {
 private fun LazyBlock.parseValueAndOperator(
     valueParser: ExpressionValueParser,
     allowAtLessExpressions: Boolean
-): Pair<KATEValue, ArithmeticOperatorType?>? {
+): Pair<ReferencedOrDirectValue, ArithmeticOperatorType?>? {
     val firstValue = with(source) { with(valueParser) { parseExpressionValue() } }
     if (firstValue != null) {
         val pointerAfterFirstValue = source.pointer
@@ -321,7 +321,7 @@ internal fun LazyBlock.parseExpression(
     parseNotFirstStringOrChar: Boolean,
     allowAtLessExpressions: Boolean,
     parseDirectRefs: Boolean
-): KATEValue? = parseExpression(
+): ReferencedOrDirectValue? = parseExpression(
     firstValueParser = DefaultExpressionValueParser(
         parseStringAndChar = parseFirstStringOrChar,
         parseDirectRefs = parseDirectRefs
@@ -339,7 +339,7 @@ internal fun LazyBlock.parseExpression(
     firstValueParser: ExpressionValueParser,
     notFirstValueParser: () -> ExpressionValueParser,
     allowAtLessExpressions: Boolean,
-): KATEValue? {
+): ReferencedOrDirectValue? {
     val valueAndOp = parseValueAndOperator(
         valueParser = firstValueParser,
         allowAtLessExpressions = allowAtLessExpressions
@@ -371,7 +371,7 @@ internal fun SourceStream.parseAnyExpressionOrValue(
     parseNotFirstStringOrChar: Boolean = true,
     parseDirectRefs: Boolean = false,
     allowAtLessExpressions: Boolean = false
-): KATEValue? {
+): ReferencedOrDirectValue? {
     parseListDefinition()?.let { return it }
     parseMutableListDefinition()?.let { return it }
     parseBooleanValue()?.let { return it }

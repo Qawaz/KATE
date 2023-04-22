@@ -4,7 +4,7 @@ sealed class KATEType {
 
     protected val actualType get() = if (this is NullableKateType) this.actual else this
 
-    abstract fun getPlaceholderName() : kotlin.String
+    abstract fun getPlaceholderName(): kotlin.String
 
     abstract fun getKATEType(): kotlin.String
 
@@ -43,7 +43,7 @@ sealed class KATEType {
 
     }
 
-    object Unit : KATEType(){
+    object Unit : KATEType() {
 
         override fun getPlaceholderName(): kotlin.String = "unit"
 
@@ -138,6 +138,17 @@ sealed class KATEType {
         override fun getPlaceholderName(): kotlin.String = "object"
 
         override fun getKATEType(): kotlin.String = "object<${itemType.getKATEType()}>"
+
+        override fun satisfies(type: KATEType): kotlin.Boolean = type.actualType.let { it is Any || it is Object }
+
+    }
+
+    class Function(val returnedType: KATEType, val parameterTypes: kotlin.collections.List<KATEType>?) : KATEType() {
+
+        override fun getPlaceholderName(): kotlin.String = "function"
+
+        override fun getKATEType(): kotlin.String =
+            "(${(parameterTypes?.joinToString(",") { it.getKATEType() }) ?: ""}) -> $returnedType"
 
         override fun satisfies(type: KATEType): kotlin.Boolean = type.actualType.let { it is Any || it is Object }
 

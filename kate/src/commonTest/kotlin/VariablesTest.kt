@@ -2,6 +2,7 @@ import com.wakaztahir.kate.TemplateContext
 import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.model.model.*
 import com.wakaztahir.kate.parser.*
+import com.wakaztahir.kate.parser.function.KATEParsedFunction
 import com.wakaztahir.kate.parser.parseExpression
 import com.wakaztahir.kate.parser.variable.parseVariableDeclaration
 import com.wakaztahir.kate.parser.variable.parseVariableReference
@@ -15,7 +16,7 @@ class VariablesTest {
         val ref = context.stream.parseVariableReference(true)
         assertNotEquals(null, ref)
         assertEquals(ref!!.propertyPath[0].name, "myVar")
-        context.stream.model.setValue("myVar", StringValue("someValue"))
+        context.stream.model.insertValue("myVar", StringValue("someValue"))
         assertEquals("someValue", ref.asPrimitive(context.stream.model).value)
     }
 
@@ -34,7 +35,7 @@ class VariablesTest {
         assertEquals(
             expected = "5",
             actual = GenerateCode("@var(i)", MutableKATEObject {
-                setValue("i", LazyReferencedValue { IntValue(5) })
+                insertValue("i", IntValue(5))
             })
         )
     }
@@ -49,19 +50,11 @@ class VariablesTest {
         assertEquals(
             expected = "10",
             actual = GenerateCode("@var i = @var(myFunc()) @var(i)", MutableKATEObject {
-                setValue("myFunc", object : KATEFunction() {
-                    override fun invoke(
-                        model: KATEObject,
-                        path: List<ModelReference>,
-                        pathIndex: Int,
-                        invokedOn: KATEValue,
-                        parameters: List<KATEValue>
-                    ): KATEValue {
-                        return IntValue(10)
+                insertValue("myFunc",
+                    KATEParsedFunction("myFunc ()-> int") { model, path, pathIndex, invokedOn, parameters ->
+                        IntValue(10)
                     }
-
-                    override fun toString(): String = "myFunc() : Int"
-                })
+                )
             })
         )
     }
@@ -220,7 +213,7 @@ class VariablesTest {
     @Test
     fun testParseDynamicProperty() {
         val context = TemplateContext(("@var(myVar)"))
-        context.stream.model.setValue("myVar", StringValue("someValue"))
+        context.stream.model.insertValue("myVar", StringValue("someValue"))
         val property = context.stream.parseExpression(
             parseFirstStringOrChar = true,
             parseNotFirstStringOrChar = true,

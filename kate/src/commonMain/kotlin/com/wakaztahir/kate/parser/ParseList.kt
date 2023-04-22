@@ -2,12 +2,9 @@ package com.wakaztahir.kate.parser
 
 import com.wakaztahir.kate.model.KATEType
 import com.wakaztahir.kate.model.LazyBlock
-import com.wakaztahir.kate.model.model.KATEListImpl
-import com.wakaztahir.kate.model.model.KATEMutableListImpl
-import com.wakaztahir.kate.model.model.KATEValue
-import com.wakaztahir.kate.model.model.ReferencedValue
+import com.wakaztahir.kate.model.ModelReference
+import com.wakaztahir.kate.model.model.*
 import com.wakaztahir.kate.parser.stream.increment
-import com.wakaztahir.kate.parser.variable.parseKATEType
 import com.wakaztahir.kate.parser.variable.parseValueOfType
 
 private fun KATEType.actual() = if (this is KATEType.NullableKateType) this.actual else this
@@ -20,11 +17,11 @@ private fun comparedNullable(first: KATEType, other: KATEType): KATEType? {
     return null
 }
 
-private fun List<KATEValue>.inferItemType(): KATEType? {
+private fun List<ReferencedOrDirectValue>.inferItemType(): KATEType? {
     var type: KATEType? = null
     for (value in this) {
         // todo not checking unknown type
-        val valueType = value.getKnownKATEType() ?: continue
+        val valueType = (if(value is KATEValue) value.getKnownKATEType() else null) ?: continue
         type = if (type == null) {
             valueType
         } else {
@@ -35,10 +32,10 @@ private fun List<KATEValue>.inferItemType(): KATEType? {
 }
 
 private fun LazyBlock.parseListParameters(
-    list: MutableList<KATEValue> = mutableListOf(),
+    list: MutableList<ReferencedOrDirectValue> = mutableListOf(),
     itemType: KATEType,
     allowEmpty: Boolean
-): MutableList<KATEValue> {
+): MutableList<ReferencedOrDirectValue> {
     do {
         val value = source.parseValueOfType(
             type = itemType,
@@ -62,13 +59,51 @@ private fun LazyBlock.parseListParameters(
     }
 }
 
-fun LazyBlock.parseListDefinition(itemType: KATEType? = null): KATEValue? {
+class ListOfReferencedOrDirectValues(
+    private val parameters: MutableList<ReferencedOrDirectValue>,
+    private val itemType: KATEType,
+    private val isMutable: Boolean
+) : ReferencedOrDirectValue {
+
+    var value: KATEList<KATEValue>? = null
+        private set
+
+    // todo not at all fast
+    override fun getKATEValue(model: KATEObject): KATEValue {
+        if (value == null) {
+            value = if (isMutable) KATEMutableListImpl(
+                collection = parameters.map { it.getKATEValue(model) }.toMutableList(),
+                itemType = itemType
+            ) else {
+                KATEListImpl(
+                    collection = parameters.map { it.getKATEValue(model) },
+                    itemType = itemType
+                )
+            }
+        }
+        return value!!
+    }
+
+    override fun getKATEType(model: KATEObject): KATEType = getKATEValue(model).getKnownKATEType()
+
+    override fun toString(): String {
+        TODO("Not yet implemented")
+    }
+
+    override fun compareTo(model: KATEObject, other: ReferencedOrDirectValue): Int {
+        TODO("Not yet implemented")
+    }
+
+}
+
+fun LazyBlock.parseListDefinition(itemType: KATEType? = null): ReferencedOrDirectValue? {
     if (source.currentChar == '@' && source.increment("@list")) {
         if (source.increment('(')) {
             val parameters = parseListParameters(allowEmpty = true, itemType = itemType ?: KATEType.Any)
-            return KATEListImpl(
-                collection = parameters,
-                itemType = itemType ?: parameters.inferItemType() ?: KATEType.Any
+            return ListOfReferencedOrDirectValues(
+                parameters = parameters,
+                itemType = itemType ?: parameters.inferItemType() ?: KATEType.Any,
+                isMutable = false
             )
         } else {
             throw IllegalStateException("expected '(' got ${source.currentChar}")
@@ -77,13 +112,14 @@ fun LazyBlock.parseListDefinition(itemType: KATEType? = null): KATEValue? {
     return null
 }
 
-fun LazyBlock.parseMutableListDefinition(itemType: KATEType? = null): KATEValue? {
+fun LazyBlock.parseMutableListDefinition(itemType: KATEType? = null): ReferencedOrDirectValue? {
     if (source.currentChar == '@' && source.increment("@mutable_list")) {
         if (source.increment('(')) {
             val parameters = parseListParameters(allowEmpty = true, itemType = itemType ?: KATEType.Any)
-            return KATEMutableListImpl(
-                collection = parameters,
-                itemType = itemType ?: parameters.inferItemType() ?: KATEType.Any
+            return ListOfReferencedOrDirectValues(
+                parameters = parameters,
+                itemType = itemType ?: parameters.inferItemType() ?: KATEType.Any,
+                isMutable = true
             )
         } else {
             throw IllegalStateException("expected '(' got ${source.currentChar}")

@@ -1,6 +1,8 @@
 import com.wakaztahir.kate.TemplateContext
 import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.model.model.*
+import com.wakaztahir.kate.parser.function.KATEInvocation
+import com.wakaztahir.kate.parser.function.KATEParsedFunction
 import com.wakaztahir.kate.parser.variable.parseVariableReference
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -86,24 +88,17 @@ class ModelDirectiveTest {
     @Test
     fun testFunction() {
         var invocations = 0
-        val myFunc = object : KATEFunction() {
-            override fun invoke(
-                model: KATEObject,
-                path: List<ModelReference>,
-                pathIndex: Int,
-                invokedOn: KATEValue,
-                parameters: List<KATEValue>
-            ): KATEValue {
-                invocations++
-                return StringValue("funVal")
-            }
-
-            override fun toString(): String = "funName()"
-        }
-        val context = TemplateContext("@var(funName())@var(propName)()@partial_raw funName() @end_partial_raw", MutableKATEObject {
-            setValue("funName", myFunc)
-            setValue("propName", "propVal")
-        })
+        val context = TemplateContext(
+            "@var(funName())@var(propName)()@partial_raw funName() @end_partial_raw",
+            MutableKATEObject {
+                insertValue(
+                    "funName",
+                    KATEParsedFunction("funName ()->string") { model, path, pathIndex, invokedOn, parameters ->
+                        invocations++
+                        StringValue("funVal")
+                    })
+                setValue("propName", "propVal")
+            })
         assertEquals("funValpropVal()", context.getDestinationAsString())
         assertEquals(2, invocations)
     }
@@ -115,19 +110,11 @@ class ModelDirectiveTest {
             putObject("property2") {
                 setValue("property3", "123")
             }
-            setValue("callSum", object : KATEFunction() {
-                override fun invoke(
-                    model: KATEObject,
-                    path: List<ModelReference>,
-                    pathIndex: Int,
-                    invokedOn: KATEValue,
-                    parameters: List<KATEValue>
-                ): KATEValue {
-                    return IntValue(parameters.map { it.asPrimitive(model) }.sumOf { it.value as Int })
-                }
-
-                override fun toString(): String = "callSum(integers) : Int"
-            })
+            insertValue(
+                "callSum",
+                KATEParsedFunction("callSum ()->string") { model, path, pathIndex, invokedOn, parameters ->
+                    IntValue(parameters.map { it.asPrimitive(model) }.sumOf { it.value as Int })
+                })
         }
         assertEquals("true1233", GenerateCode("@var(property1)@var(property2.property3)@var(callSum(1,2))", model))
         assertEquals("3", GenerateCode("@var sum = @var(callSum(1,2)) @var(sum)", model))

@@ -47,18 +47,18 @@ internal sealed interface ForLoop : BlockContainer {
     class IterableFor(
         val indexConstName: String?,
         val elementConstName: String,
-        val listProperty: KATEValue,
+        val listProperty: ReferencedOrDirectValue,
         override val blockValue: LazyBlockSlice
     ) : ForLoop {
 
         private fun store(value: Int) {
             if (indexConstName != null) {
-                model.setValue(indexConstName, value)
+                model.insertValue(indexConstName, value)
             }
         }
 
         private fun store(value: KATEValue) {
-            model.setValue(elementConstName, value)
+            model.insertValue(elementConstName, value)
         }
 
         private fun remove() {
@@ -88,21 +88,21 @@ internal sealed interface ForLoop : BlockContainer {
 
     class NumberedFor(
         val variableName: String,
-        val initializer: KATEValue,
+        val initializer: ReferencedOrDirectValue,
         val conditionType: ConditionType,
-        val conditional: KATEValue,
+        val conditional: ReferencedOrDirectValue,
         val arithmeticOperatorType: ArithmeticOperatorType,
-        val incrementer: KATEValue,
+        val incrementer: ReferencedOrDirectValue,
         override val blockValue: LazyBlockSlice
     ) : ForLoop {
 
-        private fun KATEValue.intVal(context: MutableKATEObject): Int {
+        private fun ReferencedOrDirectValue.intVal(context: MutableKATEObject): Int {
             (asNullablePrimitive(context) as? IntValue)?.value?.let { return it }
                 ?: throw IllegalStateException("for loop variable must be an integer")
         }
 
         private fun MutableKATEObject.storeIndex(value: Int) {
-            setValue(variableName, value)
+            insertValue(variableName, value)
         }
 
         private fun MutableKATEObject.removeIndex() {
@@ -197,7 +197,7 @@ private fun LazyBlock.parseConditionalFor(): ForLoop.ConditionalFor? {
     return null
 }
 
-private fun SourceStream.parseListReferencedValue(parseDirectRefs : Boolean): KATEValue? {
+private fun SourceStream.parseListReferencedValue(parseDirectRefs : Boolean): ReferencedOrDirectValue? {
     parseListDefinition()?.let { return it }
     parseMutableListDefinition()?.let { return it }
     parseVariableReference(parseDirectRefs = parseDirectRefs)?.let { return it }
@@ -233,10 +233,10 @@ private fun LazyBlock.parseIterableForLoopAfterVariable(variableName: String): F
 
 private class NumberedForLoopIncrementer(
     val operatorType: ArithmeticOperatorType,
-    val incrementerValue: KATEValue
+    val incrementerValue: ReferencedOrDirectValue
 )
 
-private fun SourceStream.parseNumberOrReference(parseDirectRefs: Boolean): KATEValue? {
+private fun SourceStream.parseNumberOrReference(parseDirectRefs: Boolean): ReferencedOrDirectValue? {
     parseNumberValue()?.let { return it }
     parseVariableReference(parseDirectRefs = parseDirectRefs)?.let { return it }
     return null

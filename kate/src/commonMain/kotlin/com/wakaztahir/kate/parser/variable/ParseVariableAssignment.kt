@@ -3,6 +3,7 @@ package com.wakaztahir.kate.parser.variable
 import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.model.model.KATEValue
+import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
 import com.wakaztahir.kate.parser.ArithmeticOperatorType
 import com.wakaztahir.kate.parser.ExpressionValue
 import com.wakaztahir.kate.parser.parseAnyExpressionOrValue
@@ -13,7 +14,7 @@ import com.wakaztahir.kate.parser.stream.increment
 internal data class VariableAssignment(
     val variableName: String,
     val arithmeticOperatorType: ArithmeticOperatorType?,
-    val variableValue: KATEValue
+    val variableValue: ReferencedOrDirectValue
 ) : AtDirective {
 
     override val isEmptyWriter: Boolean

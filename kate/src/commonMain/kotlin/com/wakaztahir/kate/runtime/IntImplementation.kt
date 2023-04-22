@@ -9,12 +9,13 @@ object IntImplementation {
 
     private fun HashMap<String, KATEValue>.putObjectFunctions() {
         with(KATEValueImplementation){ putObjectFunctions() }
-        put("toDouble", object : KATEFunction() {
+        put("toDouble", object : KATEFunction(KATEType.Double,KATEType.Int) {
             override fun invoke(
                 model: KATEObject,
                 path: List<ModelReference>,
                 pathIndex: Int,
-                invokedOn: KATEValue,
+                parent: ReferencedOrDirectValue?,
+                invokedOn: ReferencedOrDirectValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 val intVal = invokedOn.let { it as? IntValue }?.value
@@ -24,12 +25,13 @@ object IntImplementation {
 
             override fun toString(): String = "toDouble() : double"
         })
-        put("toLong", object : KATEFunction() {
+        put("toLong", object : KATEFunction(KATEType.Long,KATEType.Int) {
             override fun invoke(
                 model: KATEObject,
                 path: List<ModelReference>,
                 pathIndex: Int,
-                invokedOn: KATEValue,
+                parent: ReferencedOrDirectValue?,
+                invokedOn: ReferencedOrDirectValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 val intVal = invokedOn.let { it as? IntValue }?.value

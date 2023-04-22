@@ -4,6 +4,7 @@ import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.model.model.KATEFunction
 import com.wakaztahir.kate.model.model.KATEObject
 import com.wakaztahir.kate.model.model.KATEValue
+import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
 
 object LongImplementation {
 
@@ -11,12 +12,13 @@ object LongImplementation {
 
     private fun HashMap<String, KATEValue>.putObjectFunctions() {
         with(KATEValueImplementation){ putObjectFunctions() }
-        put("toInt", object : KATEFunction() {
+        put("toInt", object : KATEFunction(KATEType.Int) {
             override fun invoke(
                 model: KATEObject,
                 path: List<ModelReference>,
                 pathIndex: Int,
-                invokedOn: KATEValue,
+                parent: ReferencedOrDirectValue?,
+                invokedOn: ReferencedOrDirectValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 val intVal = invokedOn.let { it as? LongValue }?.value
@@ -26,12 +28,13 @@ object LongImplementation {
 
             override fun toString(): String = "toInt() : int"
         })
-        put("toDouble", object : KATEFunction() {
+        put("toDouble", object : KATEFunction(KATEType.Double) {
             override fun invoke(
                 model: KATEObject,
                 path: List<ModelReference>,
                 pathIndex: Int,
-                invokedOn: KATEValue,
+                parent: ReferencedOrDirectValue?,
+                invokedOn: ReferencedOrDirectValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 val intVal = invokedOn.let { it as? LongValue }?.value

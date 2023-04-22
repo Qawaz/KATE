@@ -14,13 +14,11 @@ object KATEUnit : KATEValue, CodeGen {
 
     override fun getKnownKATEType(): KATEType = KATEType.Unit
 
-    override fun getKATEType(model: KATEObject): KATEType = getKnownKATEType()
-
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
         // Generates nothing
     }
 
-    override fun compareTo(model: KATEObject, other: KATEValue): Int {
+    override fun compareTo(model: KATEObject, other: ReferencedOrDirectValue): Int {
         throw IllegalStateException("$this cannot be compared to $other")
     }
 

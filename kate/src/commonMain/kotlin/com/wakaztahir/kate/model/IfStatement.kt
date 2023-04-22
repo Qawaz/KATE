@@ -2,55 +2,55 @@ package com.wakaztahir.kate.model
 
 import com.wakaztahir.kate.TemplateContext
 import com.wakaztahir.kate.model.model.KATEObject
-import com.wakaztahir.kate.model.model.KATEValue
+import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
 import com.wakaztahir.kate.parser.stream.DestinationStream
 
 
 internal enum class ConditionType {
     ReferentiallyEquals {
-        override fun compare(model: KATEObject, first: KATEValue, second: KATEValue): Boolean =
+        override fun compare(model: KATEObject, first: ReferencedOrDirectValue, second: ReferencedOrDirectValue): Boolean =
             first === second
 
         override fun verifyCompare(result: Int) = result == 0
     },
     Equals {
-        override fun compare(model: KATEObject, first: KATEValue, second: KATEValue) =
+        override fun compare(model: KATEObject, first: ReferencedOrDirectValue, second: ReferencedOrDirectValue) =
             first.compareTo(model, second) == 0
 
         override fun verifyCompare(result: Int) = result == 0
     },
     NotEquals {
-        override fun compare(model: KATEObject, first: KATEValue, second: KATEValue) =
+        override fun compare(model: KATEObject, first: ReferencedOrDirectValue, second: ReferencedOrDirectValue) =
             first.compareTo(model, second) != 0
 
         override fun verifyCompare(result: Int) = result != 0
     },
     GreaterThan {
-        override fun compare(model: KATEObject, first: KATEValue, second: KATEValue) =
+        override fun compare(model: KATEObject, first: ReferencedOrDirectValue, second: ReferencedOrDirectValue) =
             first.compareTo(model, second) > 0
 
         override fun verifyCompare(result: Int) = result == 1
     },
     LessThan {
-        override fun compare(model: KATEObject, first: KATEValue, second: KATEValue) =
+        override fun compare(model: KATEObject, first: ReferencedOrDirectValue, second: ReferencedOrDirectValue) =
             first.compareTo(model, second) < 0
 
         override fun verifyCompare(result: Int) = result == -1
     },
     GreaterThanEqualTo {
-        override fun compare(model: KATEObject, first: KATEValue, second: KATEValue) =
+        override fun compare(model: KATEObject, first: ReferencedOrDirectValue, second: ReferencedOrDirectValue) =
             first.compareTo(model, second).let { it > 0 || it == 0 }
 
         override fun verifyCompare(result: Int) = result == 1 || result == 0
     },
     LessThanEqualTo {
-        override fun compare(model: KATEObject, first: KATEValue, second: KATEValue) =
+        override fun compare(model: KATEObject, first: ReferencedOrDirectValue, second: ReferencedOrDirectValue) =
             first.compareTo(model, second).let { it < 0 || it == 0 }
 
         override fun verifyCompare(result: Int) = result == -1 || result == 0
     };
 
-    abstract fun compare(model: KATEObject, first: KATEValue, second: KATEValue): Boolean
+    abstract fun compare(model: KATEObject, first: ReferencedOrDirectValue, second: ReferencedOrDirectValue): Boolean
     abstract fun verifyCompare(result: Int): Boolean
 
 }
@@ -68,16 +68,16 @@ interface Condition {
 }
 
 internal class LogicalCondition(
-    val propertyFirst: KATEValue,
+    val propertyFirst: ReferencedOrDirectValue,
     val type: ConditionType,
-    val propertySecond: KATEValue
+    val propertySecond: ReferencedOrDirectValue
 ) : Condition {
     override fun evaluate(context: KATEObject): Boolean {
         return type.compare(context, propertyFirst.getKATEValue(context), propertySecond.getKATEValue(context))
     }
 }
 
-internal class ReferencedBoolean(val value: KATEValue) : Condition {
+internal class ReferencedBoolean(val value: ReferencedOrDirectValue) : Condition {
     override fun evaluate(context: KATEObject): Boolean {
         val value = value.asNullablePrimitive(context)
         if (value != null && value is BooleanValue) {

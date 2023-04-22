@@ -9,12 +9,13 @@ object StringImplementation {
 
     private fun HashMap<String, KATEValue>.putObjectFunctions() {
         with(KATEValueImplementation){ putObjectFunctions() }
-        put("get", object : KATEFunction() {
+        put("get", object : KATEFunction(KATEType.Char) {
             override fun invoke(
                 model: KATEObject,
                 path: List<ModelReference>,
                 pathIndex: Int,
-                invokedOn: KATEValue,
+                parent: ReferencedOrDirectValue?,
+                invokedOn: ReferencedOrDirectValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
@@ -26,12 +27,13 @@ object StringImplementation {
 
             override fun toString(): String = "get(int) : chat"
         })
-        put("size", object : KATEFunction() {
+        put("size", object : KATEFunction(KATEType.Int) {
             override fun invoke(
                 model: KATEObject,
                 path: List<ModelReference>,
                 pathIndex: Int,
-                invokedOn: KATEValue,
+                parent: ReferencedOrDirectValue?,
+                invokedOn: ReferencedOrDirectValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
@@ -41,12 +43,13 @@ object StringImplementation {
 
             override fun toString(): String = "size() : int"
         })
-        put("indexOf", object : KATEFunction() {
+        put("indexOf", object : KATEFunction(KATEType.Int,KATEType.String) {
             override fun invoke(
                 model: KATEObject,
                 path: List<ModelReference>,
                 pathIndex: Int,
-                invokedOn: KATEValue,
+                parent: ReferencedOrDirectValue?,
+                invokedOn: ReferencedOrDirectValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
@@ -58,12 +61,13 @@ object StringImplementation {
 
             override fun toString(): String = "indexOf(str : string) : int"
         })
-        put("split", object : KATEFunction() {
+        put("split", object : KATEFunction(KATEType.List(KATEType.Any)) {
             override fun invoke(
                 model: KATEObject,
                 path: List<ModelReference>,
                 pathIndex: Int,
-                invokedOn: KATEValue,
+                parent: ReferencedOrDirectValue?,
+                invokedOn: ReferencedOrDirectValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
@@ -75,12 +79,13 @@ object StringImplementation {
 
             override fun toString(): String = "split(str : string) : List<string>"
         })
-        put("toInt", object : KATEFunction() {
+        put("toInt", object : KATEFunction(KATEType.Int) {
             override fun invoke(
                 model: KATEObject,
                 path: List<ModelReference>,
                 pathIndex: Int,
-                invokedOn: KATEValue,
+                parent: ReferencedOrDirectValue?,
+                invokedOn: ReferencedOrDirectValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
@@ -90,12 +95,13 @@ object StringImplementation {
 
             override fun toString(): String = "toInt() : int"
         })
-        put("toDouble", object : KATEFunction() {
+        put("toDouble", object : KATEFunction(KATEType.Double) {
             override fun invoke(
                 model: KATEObject,
                 path: List<ModelReference>,
                 pathIndex: Int,
-                invokedOn: KATEValue,
+                parent: ReferencedOrDirectValue?,
+                invokedOn: ReferencedOrDirectValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
@@ -105,12 +111,13 @@ object StringImplementation {
 
             override fun toString(): String = "toDouble() : double"
         })
-        put("substring", object : KATEFunction() {
+        put("substring", object : KATEFunction(KATEType.String,KATEType.Int,KATEType.Int) {
             override fun invoke(
                 model: KATEObject,
                 path: List<ModelReference>,
                 pathIndex: Int,
-                invokedOn: KATEValue,
+                parent: ReferencedOrDirectValue?,
+                invokedOn: ReferencedOrDirectValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
@@ -125,12 +132,13 @@ object StringImplementation {
 
             override fun toString(): String = "substring(int,int) : string"
         })
-        put("uppercase", object : KATEFunction() {
+        put("uppercase", object : KATEFunction(KATEType.String) {
             override fun invoke(
                 model: KATEObject,
                 path: List<ModelReference>,
                 pathIndex: Int,
-                invokedOn: KATEValue,
+                parent: ReferencedOrDirectValue?,
+                invokedOn: ReferencedOrDirectValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
@@ -140,12 +148,13 @@ object StringImplementation {
 
             override fun toString(): String = "uppercase() : string"
         })
-        put("lowercase", object : KATEFunction() {
+        put("lowercase", object : KATEFunction(KATEType.String) {
             override fun invoke(
                 model: KATEObject,
                 path: List<ModelReference>,
                 pathIndex: Int,
-                invokedOn: KATEValue,
+                parent: ReferencedOrDirectValue?,
+                invokedOn: ReferencedOrDirectValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
@@ -155,12 +164,13 @@ object StringImplementation {
 
             override fun toString(): String = "lowercase() : string"
         })
-        put("capitalize", object : KATEFunction() {
+        put("capitalize", object : KATEFunction(KATEType.String) {
             override fun invoke(
                 model: KATEObject,
                 path: List<ModelReference>,
                 pathIndex: Int,
-                invokedOn: KATEValue,
+                parent: ReferencedOrDirectValue?,
+                invokedOn: ReferencedOrDirectValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
@@ -170,12 +180,13 @@ object StringImplementation {
 
             override fun toString(): String = "capitalize() : string"
         })
-        put("decapitalize", object : KATEFunction() {
+        put("decapitalize", object : KATEFunction(KATEType.String) {
             override fun invoke(
                 model: KATEObject,
                 path: List<ModelReference>,
                 pathIndex: Int,
-                invokedOn: KATEValue,
+                parent: ReferencedOrDirectValue?,
+                invokedOn: ReferencedOrDirectValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
@@ -185,12 +196,13 @@ object StringImplementation {
 
             override fun toString(): String = "decapitalize() : string"
         })
-        put("replace", object : KATEFunction() {
+        put("replace", object : KATEFunction(KATEType.String,KATEType.String,KATEType.String) {
             override fun invoke(
                 model: KATEObject,
                 path: List<ModelReference>,
                 pathIndex: Int,
-                invokedOn: KATEValue,
+                parent: ReferencedOrDirectValue?,
+                invokedOn: ReferencedOrDirectValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
@@ -205,12 +217,13 @@ object StringImplementation {
 
             override fun toString(): String = "replace(string,string) : string"
         })
-        put("contains", object : KATEFunction() {
+        put("contains", object : KATEFunction(KATEType.Boolean,KATEType.String) {
             override fun invoke(
                 model: KATEObject,
                 path: List<ModelReference>,
                 pathIndex: Int,
-                invokedOn: KATEValue,
+                parent: ReferencedOrDirectValue?,
+                invokedOn: ReferencedOrDirectValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
@@ -224,12 +237,13 @@ object StringImplementation {
 
             override fun toString(): String = "contains(string) : boolean"
         })
-        put("startsWith", object : KATEFunction() {
+        put("startsWith", object : KATEFunction(KATEType.Boolean,KATEType.String) {
             override fun invoke(
                 model: KATEObject,
                 path: List<ModelReference>,
                 pathIndex: Int,
-                invokedOn: KATEValue,
+                parent: ReferencedOrDirectValue?,
+                invokedOn: ReferencedOrDirectValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
@@ -243,12 +257,13 @@ object StringImplementation {
 
             override fun toString(): String = "startsWith(value : string) : boolean"
         })
-        put("endsWith", object : KATEFunction() {
+        put("endsWith", object : KATEFunction(KATEType.Boolean,KATEType.String) {
             override fun invoke(
                 model: KATEObject,
                 path: List<ModelReference>,
                 pathIndex: Int,
-                invokedOn: KATEValue,
+                parent: ReferencedOrDirectValue?,
+                invokedOn: ReferencedOrDirectValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
@@ -262,12 +277,13 @@ object StringImplementation {
 
             override fun toString(): String = "endsWith(value : string) : boolean"
         })
-        put("removePrefix", object : KATEFunction() {
+        put("removePrefix", object : KATEFunction(KATEType.String) {
             override fun invoke(
                 model: KATEObject,
                 path: List<ModelReference>,
                 pathIndex: Int,
-                invokedOn: KATEValue,
+                parent: ReferencedOrDirectValue?,
+                invokedOn: ReferencedOrDirectValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value
@@ -281,12 +297,13 @@ object StringImplementation {
 
             override fun toString(): String = "removePrefix(value : string) : string"
         })
-        put("removeSuffix", object : KATEFunction() {
+        put("removeSuffix", object : KATEFunction(KATEType.String) {
             override fun invoke(
                 model: KATEObject,
                 path: List<ModelReference>,
                 pathIndex: Int,
-                invokedOn: KATEValue,
+                parent: ReferencedOrDirectValue?,
+                invokedOn: ReferencedOrDirectValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 val string = invokedOn.let { it as? StringValue }?.value

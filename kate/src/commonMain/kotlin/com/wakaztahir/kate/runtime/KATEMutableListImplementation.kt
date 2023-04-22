@@ -1,6 +1,7 @@
 package com.wakaztahir.kate.runtime
 
 import com.wakaztahir.kate.model.BooleanValue
+import com.wakaztahir.kate.model.KATEType
 import com.wakaztahir.kate.model.ModelReference
 import com.wakaztahir.kate.model.model.*
 
@@ -11,12 +12,13 @@ object KATEMutableListImplementation {
     private fun HashMap<String, KATEValue>.putObjectFunctions() {
         with(KATEValueImplementation){ putObjectFunctions() }
         with(KATEListImplementation) { putObjectFunctions() }
-        put("add", object : KATEFunction() {
+        put("add", object : KATEFunction(KATEType.Boolean,KATEType.Any) {
             override fun invoke(
                 model: KATEObject,
                 path: List<ModelReference>,
                 pathIndex: Int,
-                invokedOn: KATEValue,
+                parent: ReferencedOrDirectValue?,
+                invokedOn: ReferencedOrDirectValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 require(parameters.size == 1) {
@@ -27,12 +29,13 @@ object KATEMutableListImplementation {
 
             override fun toString(): String = "add(e : Element) : KTEValue"
         })
-        put("addAt", object : KATEFunction() {
+        put("addAt", object : KATEFunction(KATEType.Unit,KATEType.Int,KATEType.Any) {
             override fun invoke(
                 model: KATEObject,
                 path: List<ModelReference>,
                 pathIndex: Int,
-                invokedOn: KATEValue,
+                parent: ReferencedOrDirectValue?,
+                invokedOn: ReferencedOrDirectValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 val index = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value as? Int
@@ -45,12 +48,13 @@ object KATEMutableListImplementation {
 
             override fun toString(): String = "addAt(index : Int,e : Element) : Boolean"
         })
-        put("remove", object : KATEFunction() {
+        put("remove", object : KATEFunction(KATEType.Boolean,KATEType.Any) {
             override fun invoke(
                 model: KATEObject,
                 path: List<ModelReference>,
                 pathIndex: Int,
-                invokedOn: KATEValue,
+                parent: ReferencedOrDirectValue?,
+                invokedOn: ReferencedOrDirectValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 require(parameters.size == 1) {
@@ -61,12 +65,13 @@ object KATEMutableListImplementation {
 
             override fun toString(): String = "remove(e : Element) : Boolean"
         })
-        put("removeAt", object : KATEFunction() {
+        put("removeAt", object : KATEFunction(KATEType.Any,KATEType.Int) {
             override fun invoke(
                 model: KATEObject,
                 path: List<ModelReference>,
                 pathIndex: Int,
-                invokedOn: KATEValue,
+                parent: ReferencedOrDirectValue?,
+                invokedOn: ReferencedOrDirectValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 val index = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value as? Int

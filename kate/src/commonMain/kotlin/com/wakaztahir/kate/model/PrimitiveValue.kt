@@ -2,6 +2,7 @@ package com.wakaztahir.kate.model
 
 import com.wakaztahir.kate.model.model.KATEObject
 import com.wakaztahir.kate.model.model.KATEValue
+import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
 import com.wakaztahir.kate.parser.ArithmeticOperatorType
 import com.wakaztahir.kate.runtime.*
 import kotlin.jvm.JvmInline
@@ -12,15 +13,13 @@ interface PrimitiveValue<T> : KATEValue {
 
     override fun getKnownKATEType(): KATEType
 
-    override fun getKATEType(model: KATEObject): KATEType = getKnownKATEType()
-
     override fun toString(): String
 
     fun compareTo(other: PrimitiveValue<T>): Int
 
     fun compareOther(other: PrimitiveValue<*>): Int
 
-    override fun compareTo(model: KATEObject, other: KATEValue): Int {
+    override fun compareTo(model: KATEObject, other: ReferencedOrDirectValue): Int {
         @Suppress("UNCHECKED_CAST")
         (other as? PrimitiveValue<T>)?.let { return compareTo(it) }
         other.asNullablePrimitive(model)?.let { return compareOther(it) }
@@ -47,7 +46,7 @@ interface PrimitiveValue<T> : KATEValue {
 @JvmInline
 value class CharValue(override val value: Char) : PrimitiveValue<Char> {
 
-    override fun getKnownKATEType(): KATEType = KATEType.Char
+    override fun getKnownKATEType() = KATEType.Char
 
     override fun compareTo(other: PrimitiveValue<Char>): Int {
         return value.compareTo(other.value)
@@ -90,7 +89,7 @@ value class CharValue(override val value: Char) : PrimitiveValue<Char> {
 @JvmInline
 value class IntValue(override val value: Int) : PrimitiveValue<Int> {
 
-    override fun getKnownKATEType(): KATEType = KATEType.Int
+    override fun getKnownKATEType() = KATEType.Int
 
     override fun compareTo(other: PrimitiveValue<Int>): Int {
         return value.compareTo(other.value)
@@ -143,7 +142,7 @@ value class IntValue(override val value: Int) : PrimitiveValue<Int> {
 @JvmInline
 value class DoubleValue(override val value: Double) : PrimitiveValue<Double> {
 
-    override fun getKnownKATEType(): KATEType = KATEType.Double
+    override fun getKnownKATEType() = KATEType.Double
 
     override fun compareTo(other: PrimitiveValue<Double>): Int {
         return value.compareTo(other.value)
@@ -196,7 +195,7 @@ value class DoubleValue(override val value: Double) : PrimitiveValue<Double> {
 @JvmInline
 value class LongValue(override val value: Long) : PrimitiveValue<Long> {
 
-    override fun getKnownKATEType(): KATEType = KATEType.Long
+    override fun getKnownKATEType() = KATEType.Long
 
     override fun compareTo(other: PrimitiveValue<Long>): Int {
         return value.compareTo(other.value)
@@ -249,7 +248,7 @@ value class LongValue(override val value: Long) : PrimitiveValue<Long> {
 @JvmInline
 value class BooleanValue(override val value: Boolean) : PrimitiveValue<Boolean> {
 
-    override fun getKnownKATEType(): KATEType = KATEType.Boolean
+    override fun getKnownKATEType() = KATEType.Boolean
 
     override fun compareTo(other: PrimitiveValue<Boolean>): Int {
         return if (value == other.value) {
@@ -282,7 +281,7 @@ value class BooleanValue(override val value: Boolean) : PrimitiveValue<Boolean> 
 @JvmInline
 value class StringValue(override val value: String) : PrimitiveValue<String> {
 
-    override fun getKnownKATEType(): KATEType = KATEType.String
+    override fun getKnownKATEType() = KATEType.String
 
     override fun compareTo(other: PrimitiveValue<String>): Int {
         return if (value == other.value) {

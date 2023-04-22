@@ -3,18 +3,19 @@ package com.wakaztahir.kate.parser
 import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.model.model.KATEObject
 import com.wakaztahir.kate.model.model.KATEValue
+import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
 import com.wakaztahir.kate.parser.stream.SourceStream
 import com.wakaztahir.kate.parser.variable.parseVariableReference
 
 internal interface ExpressionValueParser {
-    fun SourceStream.parseExpressionValue(): KATEValue?
+    fun SourceStream.parseExpressionValue(): ReferencedOrDirectValue?
 }
 
 class DefaultExpressionValueParser(
     private val parseStringAndChar: Boolean,
     private val parseDirectRefs: Boolean
 ) : ExpressionValueParser {
-    override fun SourceStream.parseExpressionValue(): KATEValue? {
+    override fun SourceStream.parseExpressionValue(): ReferencedOrDirectValue? {
         if (parseStringAndChar) {
             parseStringValue()?.let { return it }
             parseCharacterValue()?.let { return it }
@@ -26,10 +27,10 @@ class DefaultExpressionValueParser(
 }
 
 internal data class ExpressionValue(
-    val first: KATEValue,
+    val first: ReferencedOrDirectValue,
     val operatorType: ArithmeticOperatorType,
-    val second: KATEValue
-) : KATEValue {
+    val second: ReferencedOrDirectValue
+) : ReferencedOrDirectValue {
 
     override fun asNullablePrimitive(model: KATEObject): PrimitiveValue<*> {
         return first.asNullablePrimitive(model)?.let { first ->
@@ -43,19 +44,11 @@ internal data class ExpressionValue(
         }
     }
 
-    override fun getModelReference(reference: ModelReference): KATEValue? {
-        return null
-    }
-
-    override fun getKnownKATEType(): KATEType? {
-        return null
-    }
-
     override fun getKATEType(model: KATEObject): KATEType {
         return getKATEValue(model).getKATEType(model)
     }
 
-    override fun compareTo(model: KATEObject, other: KATEValue): Int {
+    override fun compareTo(model: KATEObject, other: ReferencedOrDirectValue): Int {
         return asNullablePrimitive(model).compareTo(model, other)
     }
 

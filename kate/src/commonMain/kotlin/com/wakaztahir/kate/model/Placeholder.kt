@@ -3,6 +3,7 @@ package com.wakaztahir.kate.model
 import com.wakaztahir.kate.dsl.ScopedModelObject
 import com.wakaztahir.kate.model.model.KATEObject
 import com.wakaztahir.kate.model.model.KATEValue
+import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
 import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.parser.parsePartialRawImplicitDirective
 import com.wakaztahir.kate.parser.stream.DestinationStream
@@ -60,10 +61,9 @@ open class PlaceholderBlock(
             "invocation model should be set before invoking placeholder($placeholderName,$definitionName,$paramName)"
         }
         if (paramValue != null) {
-            require(model.setValue(paramName, paramValue!!)) {
+            require(model.insertValue(paramName, paramValue!!)) {
                 "couldn't insert value by the name $paramName and $paramValue for placeholder invocation placeholder($placeholderName,$definitionName,$paramName)"
             }
-            model.setValue(paramName, paramValue!!)
         }
         generateActual(destination)
         if (paramValue != null) {
@@ -113,7 +113,7 @@ class PlaceholderDefinition(val blockValue: PlaceholderBlock) : BlockContainer {
 class PlaceholderInvocation(
     val placeholderName: String,
     val definitionName: String?,
-    var paramValue: KATEValue?,
+    var paramValue: ReferencedOrDirectValue?,
     val invocationEndPointer: Int
 ) : CodeGen {
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {

@@ -7,7 +7,7 @@ import com.wakaztahir.kate.runtime.KATEObjectImplementation
 
 open class ModelObjectImpl(
     override var objectName: String,
-    override val itemType : KATEType,
+    override val itemType: KATEType,
     override val parent: MutableKATEObject? = null,
 ) : MutableKATEObject {
 
@@ -46,14 +46,43 @@ open class ModelObjectImpl(
         }
     }
 
+    private fun containsReference(reference: ModelReference): Boolean {
+        return container.containsKey(reference.name) || KATEObjectImplementation.propertyMap.containsKey(reference.name)
+    }
+
     override fun getModelReference(reference: ModelReference): KATEValue? {
         return container[reference.name] ?: KATEObjectImplementation.propertyMap[reference.name]
+    }
+
+    override fun findContainingObjectUpwards(reference: ModelReference): KATEObject? {
+        return if(containsReference(reference)) this else parent?.findContainingObjectUpwards(reference)
     }
 
     override fun getModelReferenceInTreeUpwards(reference: ModelReference): KATEValue? {
         return getModelReference(reference) ?: parent?.getModelReferenceInTreeUpwards(reference)
     }
 
+    override fun insertValue(key: String, value: KATEValue, type: KATEType): Boolean {
+        return if (contains(key)) {
+            false
+        } else {
+            container[key] = value
+            this.type[key] = type
+            true
+        }
+    }
+
+    @Deprecated("use insertValue with type", replaceWith = ReplaceWith("insertValue(key,value)"))
+    override fun setValue(key: String, value: KATEValue, type: KATEType): Boolean {
+        return if (contains(key)) {
+            false
+        } else {
+            container[key] = value
+            true
+        }
+    }
+
+    @Deprecated("use setValue with type")
     override fun setValue(key: String, value: KATEValue): Boolean {
         return if (contains(key)) {
             false
@@ -120,7 +149,7 @@ open class ModelObjectImpl(
         return str
     }
 
-    override fun compareTo(model: KATEObject, other: KATEValue): Int {
+    override fun compareTo(model: KATEObject, other: ReferencedOrDirectValue): Int {
         if (other is ModelObjectImpl) {
             if (this.container.isEmpty() && other.container.isEmpty()) return -1
             if (this.container.size != other.container.size) return -1

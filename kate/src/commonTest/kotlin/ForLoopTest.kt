@@ -112,7 +112,7 @@ class ForLoopTest {
     @Test
     fun testForLoopGeneration4() {
         val context = TemplateContext("@for(@var elem : @var(list)) @var(elem) @endfor", MutableKATEObject {
-            setValue(
+            insertValue(
                 "list",
                 KATEListImpl(listOf("H", "e", "ll", "o").map { StringValue(it) }, itemType = KATEType.String)
             )
@@ -123,7 +123,7 @@ class ForLoopTest {
     @Test
     fun testForLoopGeneration5() {
         val kteObject = MutableKATEObject {
-            setValue(
+            insertValue(
                 "list",
                 KATEListImpl(listOf("H", "e", "ll", "o").map { StringValue(it) }, itemType = KATEType.String)
             )
@@ -138,9 +138,9 @@ class ForLoopTest {
     @Test
     fun testForLoopGenerationWithDirectReference() {
         val context = TemplateContext("@for(@var elem : list) @var(elem) @endfor", MutableKATEObject {
-            setValue(
+            insertValue(
                 key = "list",
-                value = KATEListImpl(listOf("H", "e", "ll", "o").map { StringValue(it) }, KATEType.String),
+                value = KATEListImpl(listOf("H", "e", "ll", "o").map { StringValue(it) }, KATEType.String)
             )
         })
         assertEquals("Hello", context.getDestinationAsString())

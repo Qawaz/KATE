@@ -1,33 +1,18 @@
 package com.wakaztahir.kate.parser
 
 import com.wakaztahir.kate.model.*
-import com.wakaztahir.kate.model.model.KATEObject
-import com.wakaztahir.kate.model.model.KATEValue
 import com.wakaztahir.kate.parser.stream.*
 import com.wakaztahir.kate.parser.stream.increment
 
-private class PrefixedPrimitiveValue<T>(
+private class PrimitiveValueWithString<T>(
     private val primitive: PrimitiveValue<T>,
-    private val prefixed: String
+    private val content: String
 ) : PrimitiveValue<T> by primitive {
-    override fun toString(): String {
-        var reString = prefixed
-        val number = primitive.toString()
-        var start = 0
-        if (number.getOrNull(0) == '-') {
-            reString += '-'
-            start += 1
-        }
-        while (start < number.length) {
-            reString += number[start]
-            start++
-        }
-        return reString
-    }
+    override fun toString(): String = content
 }
 
-private fun <T> PrimitiveValue<T>.zeroPrefix(prefixed: String): PrimitiveValue<T> {
-    return if (prefixed.isNotEmpty()) PrefixedPrimitiveValue(this, prefixed) else this
+private fun <T> PrimitiveValue<T>.checkStr(content: String): PrimitiveValue<T> {
+    return if (this.toString() != content) PrimitiveValueWithString(this, content) else this
 }
 
 fun SourceStream.parseNumberValue(): PrimitiveValue<*>? {
@@ -38,15 +23,7 @@ fun SourceStream.parseNumberValue(): PrimitiveValue<*>? {
         textValue += "-"
     }
 
-    var hasPrefixed = false
-    var zeroPrefix = ""
-
     while (!hasEnded && currentChar.isDigit()) {
-        if (currentChar == '0' && !hasPrefixed) {
-            zeroPrefix += currentChar
-        } else {
-            hasPrefixed = true
-        }
         textValue += currentChar
         incrementPointer()
     }
@@ -60,12 +37,12 @@ fun SourceStream.parseNumberValue(): PrimitiveValue<*>? {
         textValue.toDoubleOrNull()?.let { DoubleValue(it) }
     } else {
         if (increment('L')) {
-            textValue.toLongOrNull()?.let { LongValue(it).zeroPrefix(zeroPrefix) } ?: run {
+            textValue.toLongOrNull()?.let { LongValue(it).checkStr(textValue) } ?: run {
                 decrementPointer()
                 null
             }
         } else {
-            textValue.toIntOrNull()?.let { IntValue(it).zeroPrefix(zeroPrefix) }
+            textValue.toIntOrNull()?.let { IntValue(it).checkStr(textValue) }
         }
     } ?: run {
         if (textValue == "." || textValue == "-") decrementPointer()

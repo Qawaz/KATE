@@ -2,28 +2,33 @@ package com.wakaztahir.kate.model.model
 
 import com.wakaztahir.kate.model.KATEType
 import com.wakaztahir.kate.model.ModelReference
+import com.wakaztahir.kate.runtime.KATEValueImplementation
 
-abstract class KATEFunction : KATEValue {
+abstract class KATEFunction(val returnedType: KATEType, val parameterTypes: List<KATEType>?) : KATEValue {
 
-    abstract fun invoke(model: KATEObject,path : List<ModelReference>,pathIndex : Int, invokedOn: KATEValue, parameters: List<KATEValue>): KATEValue
+    constructor(returnedType: KATEType, vararg parameterTypes: KATEType) : this(
+        returnedType = returnedType,
+        parameterTypes = parameterTypes.ifEmpty { null }?.toList()
+    )
+
+    abstract fun invoke(
+        model: KATEObject,
+        path: List<ModelReference>,
+        pathIndex: Int,
+        parent: ReferencedOrDirectValue?,
+        invokedOn: ReferencedOrDirectValue,
+        parameters: List<KATEValue>
+    ): KATEValue
 
     override fun getModelReference(reference: ModelReference): KATEValue? {
-        throw IllegalStateException("KATEFunction should be invoked to get the reference")
+        return KATEValueImplementation.propertyMap[reference.name]
     }
 
-    override fun getKnownKATEType(): KATEType? {
-        throw IllegalStateException("KATEFunction should be invoked to get the value")
-    }
+    override fun getKnownKATEType() = KATEType.Function(returnedType, parameterTypes)
 
-    override fun getKATEValue(model: KATEObject): KATEValue {
-        throw IllegalStateException("KATEFunction should be invoked to get the value")
-    }
+    override fun toString(): String = getKnownKATEType().toString()
 
-    override fun getKATEType(model: KATEObject): KATEType {
-        throw IllegalStateException("KATEFunction should be invoked to get the value and then type")
-    }
-
-    override fun compareTo(model: KATEObject, other: KATEValue): Int {
+    override fun compareTo(model: KATEObject, other: ReferencedOrDirectValue): Int {
         throw IllegalStateException("KATEFunction should be invoked first to get the value to compare with the other")
     }
 

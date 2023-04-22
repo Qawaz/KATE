@@ -2,19 +2,19 @@ package com.wakaztahir.kate.parser.variable
 
 import com.wakaztahir.kate.model.ModelDirective
 import com.wakaztahir.kate.model.ModelReference
-import com.wakaztahir.kate.model.model.KATEValue
+import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
 import com.wakaztahir.kate.parser.parseAnyExpressionOrValue
 import com.wakaztahir.kate.parser.parseNumberValue
 import com.wakaztahir.kate.parser.stream.*
 import com.wakaztahir.kate.parser.stream.increment
 import com.wakaztahir.kate.parser.stream.parseTextWhile
 
-internal fun SourceStream.parseFunctionParameters(): List<KATEValue>? {
+internal fun SourceStream.parseFunctionParameters(): List<ReferencedOrDirectValue>? {
     if (increment('(')) {
         if (increment(')')) {
             return emptyList()
         }
-        val parameters = mutableListOf<KATEValue>()
+        val parameters = mutableListOf<ReferencedOrDirectValue>()
         do {
             val parameter = this.parseAnyExpressionOrValue(
                 parseFirstStringOrChar = true,
@@ -37,7 +37,7 @@ internal fun SourceStream.parseFunctionParameters(): List<KATEValue>? {
     return null
 }
 
-private fun SourceStream.parseIndexingOperatorValue(parseDirectRefs: Boolean): KATEValue? {
+private fun SourceStream.parseIndexingOperatorValue(parseDirectRefs: Boolean): ReferencedOrDirectValue? {
     parseNumberValue()?.let { return it }
     parseVariableReference(parseDirectRefs = parseDirectRefs)?.let { return it }
     return null

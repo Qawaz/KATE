@@ -15,9 +15,9 @@ interface KATEObject : KATEValue {
 
     override fun getKnownKATEType(): KATEType
 
-    override fun getKATEType(model: KATEObject): KATEType = getKnownKATEType()
-
     fun get(key: String): KATEValue?
+
+    fun findContainingObjectUpwards(reference: ModelReference): KATEObject?
 
     fun getModelReferenceInTreeUpwards(reference: ModelReference): KATEValue?
 
@@ -29,62 +29,58 @@ interface KATEObject : KATEValue {
 
     fun containsInAncestors(key: String): Boolean
 
-    private fun List<ModelReference>.pathUntil(prop: ModelReference): String {
-        return joinToString(
-            separator = ".",
-            limit = indexOf(prop) + 1
-        )
-    }
+    private fun List<ModelReference>.pathUntil(index: Int): String = joinToString(separator = ".", limit = index)
 
-    private fun throwUnresolved(path: List<ModelReference>, prop: ModelReference, current: KATEValue): Nothing {
-        if (prop is ModelReference.FunctionCall) {
-            throw UnresolvedValueException("function ${path.pathUntil(prop)} does not exist on value : $current")
+    private fun List<ModelReference>.pathUntil(prop: ModelReference): String = pathUntil(indexOf(prop) + 1)
+
+    private fun throwUnresolved(path: List<ModelReference>, index: Int, current: ReferencedOrDirectValue): Nothing {
+        if (path[index] is ModelReference.FunctionCall) {
+            throw UnresolvedValueException("function ${path.pathUntil(index)} does not exist on value : $current")
         } else {
-            throw UnresolvedValueException("property ${path.pathUntil(prop)} does not exist on value : $current")
+            throw UnresolvedValueException("property ${path.pathUntil(index)} does not exist on value : $current")
         }
     }
 
-    private fun KATEValue.getModelReference(index: Int, ref: ModelReference): KATEValue? {
-        return if (index == 0) {
-            (this as KATEObject).getModelReferenceInTreeUpwards(ref)
-        } else {
-            this.getModelReference(ref)
+    private fun findResolvedModelReference(container : KATEValue?, current: KATEValue, path: List<ModelReference>, index: Int): KATEValue {
+        val value = container?.getModelReference(path[index])
+        return when (val prop = path[index]) {
+            is ModelReference.FunctionCall -> {
+                (value as? KATEFunction)?.invoke(
+                    model = this,
+                    path = path,
+                    pathIndex = index,
+                    parent = container,
+                    invokedOn = current,
+                    parameters = prop.parametersList.map { it.getKATEValue(this) }
+                ) ?: throwUnresolved(path, index, current)
+            }
+
+            is ModelReference.Property -> {
+                value ?: ((when (prop.name) {
+                    "this" -> current
+                    "parent" -> (current as? KATEObject)?.parent
+                    else -> null
+                }) ?: throwUnresolved(path, index, current))
+            }
         }
     }
 
-    fun getModelReferenceValue(path: List<ModelReference>): KATEValue {
-        var currentVal: KATEValue = this
+    fun getModelReferenceValue(path: List<ModelReference>): ReferencedOrDirectValue {
+        var current: KATEValue = this
         var i = 0
         while (i < path.size) {
-            when (val prop = path[i]) {
-                is ModelReference.FunctionCall -> {
-                    (currentVal.getModelReference(i, prop) as? KATEFunction)?.let { func ->
-                        currentVal = func.invoke(this, path, i, currentVal, prop.parametersList)
-                    } ?: throwUnresolved(path, prop, currentVal)
-                }
-
-                is ModelReference.Property -> {
-                    currentVal = currentVal.getModelReference(i, prop) ?: run {
-                        when (prop.name) {
-                            "this" -> {
-                                currentVal
-                            }
-
-                            "parent" -> {
-                                (currentVal as? KATEObject)?.parent ?: throwUnresolved(path, prop, currentVal)
-                            }
-
-                            else -> throwUnresolved(path, prop, currentVal)
-                        }
-                    }
-                }
-            }
+            current = findResolvedModelReference(
+                container = if(i == 0) ((current as KATEObject).findContainingObjectUpwards(path[0])) else current,
+                current = current,
+                path = path,
+                index = i
+            )
             i++
         }
-        return currentVal
+        return current
     }
 
-    fun traverse(block: (KATEValue) -> Unit) {
+    fun traverse(block: (ReferencedOrDirectValue) -> Unit) {
         block(this)
         for (each in contained) {
             when (each.value) {

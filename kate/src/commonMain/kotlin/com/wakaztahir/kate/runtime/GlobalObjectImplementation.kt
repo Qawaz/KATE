@@ -1,5 +1,6 @@
 package com.wakaztahir.kate.runtime
 
+import com.wakaztahir.kate.model.KATEType
 import com.wakaztahir.kate.model.ModelReference
 import com.wakaztahir.kate.model.StringValue
 import com.wakaztahir.kate.model.model.*
@@ -8,12 +9,13 @@ object GlobalObjectImplementation {
 
     private val consoleObject by lazy {
         MutableKATEObject {
-            setValue("log", object : KATEFunction() {
+            insertValue("log", object : KATEFunction(KATEType.Unit, KATEType.String) {
                 override fun invoke(
                     model: KATEObject,
                     path: List<ModelReference>,
                     pathIndex: Int,
-                    invokedOn: KATEValue,
+                    parent: ReferencedOrDirectValue?,
+                    invokedOn: ReferencedOrDirectValue,
                     parameters: List<KATEValue>
                 ): KATEValue {
                     for (param in parameters) {
@@ -28,12 +30,13 @@ object GlobalObjectImplementation {
     }
 
     private val throwMethod by lazy {
-        object : KATEFunction() {
+        object : KATEFunction(KATEType.Unit, KATEType.String) {
             override fun invoke(
                 model: KATEObject,
                 path: List<ModelReference>,
                 pathIndex: Int,
-                invokedOn: KATEValue,
+                parent: ReferencedOrDirectValue?,
+                invokedOn: ReferencedOrDirectValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 val first = parameters.firstOrNull()?.asNullablePrimitive(model)?.let { it as? StringValue }
@@ -48,8 +51,8 @@ object GlobalObjectImplementation {
     }
 
     fun putIntoObject(obj: MutableKATEObject) {
-        obj.setValue("console", consoleObject)
-        obj.setValue("throw", throwMethod)
+        obj.insertValue("console", consoleObject)
+        obj.insertValue("throw", throwMethod)
     }
 
 }

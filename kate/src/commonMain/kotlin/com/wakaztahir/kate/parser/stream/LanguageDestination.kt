@@ -1,10 +1,7 @@
 package com.wakaztahir.kate.parser.stream
 
 import com.wakaztahir.kate.model.*
-import com.wakaztahir.kate.model.model.KATEList
-import com.wakaztahir.kate.model.model.KATEMutableList
-import com.wakaztahir.kate.model.model.KATEObject
-import com.wakaztahir.kate.model.model.KATEValue
+import com.wakaztahir.kate.model.model.*
 
 interface LanguageDestination {
 

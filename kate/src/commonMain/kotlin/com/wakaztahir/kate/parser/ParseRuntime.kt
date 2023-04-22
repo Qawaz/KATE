@@ -4,9 +4,8 @@ import com.wakaztahir.kate.model.CharValue
 import com.wakaztahir.kate.model.CodeGen
 import com.wakaztahir.kate.model.LazyBlock
 import com.wakaztahir.kate.model.StringValue
-import com.wakaztahir.kate.model.model.KATEValue
+import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
 import com.wakaztahir.kate.parser.stream.DestinationStream
-import com.wakaztahir.kate.parser.stream.SourceStream
 import com.wakaztahir.kate.parser.stream.increment
 import kotlin.jvm.JvmInline
 
@@ -14,7 +13,7 @@ private const val CHAR_DIRECTIVE = "@runtime.print_char"
 private const val STRING_DIRECTIVE = "@runtime.print_string"
 
 @JvmInline
-private value class WriteChar(val char: KATEValue) : CodeGen {
+private value class WriteChar(val char: ReferencedOrDirectValue) : CodeGen {
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
         destination.stream.write(
             (char.asNullablePrimitive(block.model) as? CharValue)?.value
@@ -24,7 +23,7 @@ private value class WriteChar(val char: KATEValue) : CodeGen {
 }
 
 @JvmInline
-private value class WriteString(val string: KATEValue) : CodeGen {
+private value class WriteString(val string: ReferencedOrDirectValue) : CodeGen {
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
         destination.stream.write(
             (string.asNullablePrimitive(block.model) as? StringValue)?.value

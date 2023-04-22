@@ -12,12 +12,13 @@ object KATEObjectImplementation {
 
     private fun HashMap<String, KATEValue>.putObjectFunctions() {
         with(KATEValueImplementation){ putObjectFunctions() }
-        put("get", object : KATEFunction() {
+        put("get", object : KATEFunction(KATEType.Any,KATEType.String) {
             override fun invoke(
                 model: KATEObject,
                 path: List<ModelReference>,
                 pathIndex: Int,
-                invokedOn: KATEValue,
+                parent: ReferencedOrDirectValue?,
+                invokedOn: ReferencedOrDirectValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 val value = invokedOn as? KATEObject
@@ -29,12 +30,13 @@ object KATEObjectImplementation {
 
             override fun toString(): String = "get() : KATEValue"
         })
-        put("getName", object : KATEFunction() {
+        put("getName", object : KATEFunction(KATEType.String) {
             override fun invoke(
                 model: KATEObject,
                 path: List<ModelReference>,
                 pathIndex: Int,
-                invokedOn: KATEValue,
+                parent: ReferencedOrDirectValue?,
+                invokedOn: ReferencedOrDirectValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 val value = invokedOn as? KATEObject
@@ -44,12 +46,13 @@ object KATEObjectImplementation {
 
             override fun toString(): String = "getName() : string"
         })
-        put("getKeys", object : KATEFunction() {
+        put("getKeys", object : KATEFunction(KATEType.List(KATEType.String)) {
             override fun invoke(
                 model: KATEObject,
                 path: List<ModelReference>,
                 pathIndex: Int,
-                invokedOn: KATEValue,
+                parent: ReferencedOrDirectValue?,
+                invokedOn: ReferencedOrDirectValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 val value = invokedOn as? KATEObject
@@ -60,12 +63,13 @@ object KATEObjectImplementation {
             override fun toString(): String = "getKeys() : List<string>"
 
         })
-        put("getValues", object : KATEFunction() {
+        put("getValues", object : KATEFunction(KATEType.List(KATEType.Any)) {
             override fun invoke(
                 model: KATEObject,
                 path: List<ModelReference>,
                 pathIndex: Int,
-                invokedOn: KATEValue,
+                parent: ReferencedOrDirectValue?,
+                invokedOn: ReferencedOrDirectValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 val value = invokedOn as? KATEObject
@@ -76,12 +80,13 @@ object KATEObjectImplementation {
             override fun toString(): String = "getValues() : List<KTEValue>"
 
         })
-        put("contains", object : KATEFunction() {
+        put("contains", object : KATEFunction(KATEType.Boolean,KATEType.String) {
             override fun invoke(
                 model: KATEObject,
                 path: List<ModelReference>,
                 pathIndex: Int,
-                invokedOn: KATEValue,
+                parent: ReferencedOrDirectValue?,
+                invokedOn: ReferencedOrDirectValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 val value = invokedOn.asNullableObject(model)
@@ -94,12 +99,13 @@ object KATEObjectImplementation {
             override fun toString(): String = "contains(name : string) : boolean"
 
         })
-        put("containsInAncestors", object : KATEFunction() {
+        put("containsInAncestors", object : KATEFunction(KATEType.Boolean,KATEType.String) {
             override fun invoke(
                 model: KATEObject,
                 path: List<ModelReference>,
                 pathIndex: Int,
-                invokedOn: KATEValue,
+                parent: ReferencedOrDirectValue?,
+                invokedOn: ReferencedOrDirectValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 val value = invokedOn.asNullableObject(model)
@@ -112,12 +118,13 @@ object KATEObjectImplementation {
             override fun toString(): String = "containsInAncestors(name : string) : boolean"
 
         })
-        put("rename", object : KATEFunction() {
+        put("rename", object : KATEFunction(KATEType.Unit,KATEType.String,KATEType.String) {
             override fun invoke(
                 model: KATEObject,
                 path: List<ModelReference>,
                 pathIndex: Int,
-                invokedOn: KATEValue,
+                parent: ReferencedOrDirectValue?,
+                invokedOn: ReferencedOrDirectValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 val value = invokedOn as? MutableKATEObject
@@ -132,12 +139,13 @@ object KATEObjectImplementation {
 
             override fun toString(): String = "delete(name : string) : unit"
         })
-        put("delete", object : KATEFunction() {
+        put("delete", object : KATEFunction(KATEType.Unit,KATEType.String) {
             override fun invoke(
                 model: KATEObject,
                 path: List<ModelReference>,
                 pathIndex: Int,
-                invokedOn: KATEValue,
+                parent: ReferencedOrDirectValue?,
+                invokedOn: ReferencedOrDirectValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 val value = invokedOn as? MutableKATEObject

@@ -2,36 +2,29 @@ package com.wakaztahir.kate.model
 
 import com.wakaztahir.kate.model.model.KATEObject
 import com.wakaztahir.kate.model.model.KATEValue
+import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
 
-class LazyReferencedValue(private val creator: () -> KATEValue) : KATEValue {
+class LazyReferencedValue(private val creator: () -> ReferencedOrDirectValue) : ReferencedOrDirectValue {
 
-    private var _value: KATEValue? = null
+    private var _value: ReferencedOrDirectValue? = null
 
-    private val value: KATEValue
+    private val value: ReferencedOrDirectValue
         get() {
             if (_value == null) _value = creator()
             return _value!!
         }
 
-    override fun getKnownKATEType(): KATEType? {
-        return value.getKnownKATEType()
-    }
-
     override fun getKATEType(model: KATEObject): KATEType {
         return value.getKATEType(model)
     }
 
-    override fun getKATEValue(model: KATEObject): KATEValue = value
-
-    override fun getModelReference(reference: ModelReference): KATEValue? {
-        return value.getModelReference(reference)
-    }
+    override fun getKATEValue(model: KATEObject): KATEValue = value.getKATEValue(model)
 
     override fun toString(): String {
         return value.toString()
     }
 
-    override fun compareTo(model: KATEObject, other: KATEValue): Int {
+    override fun compareTo(model: KATEObject, other: ReferencedOrDirectValue): Int {
         return value.compareTo(model, other)
     }
 

@@ -1,22 +1,25 @@
 package com.wakaztahir.kate.runtime
 
+import com.wakaztahir.kate.model.KATEType
 import com.wakaztahir.kate.model.ModelReference
 import com.wakaztahir.kate.model.StringValue
 import com.wakaztahir.kate.model.model.KATEFunction
 import com.wakaztahir.kate.model.model.KATEObject
 import com.wakaztahir.kate.model.model.KATEValue
+import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
 
 object KATEValueImplementation {
 
     val propertyMap: HashMap<String, KATEValue> = hashMapOf<String, KATEValue>().apply { putObjectFunctions() }
 
     fun HashMap<String, KATEValue>.putObjectFunctions() {
-        put("getType", object : KATEFunction() {
+        put("getType", object : KATEFunction(KATEType.String) {
             override fun invoke(
                 model: KATEObject,
                 path: List<ModelReference>,
                 pathIndex: Int,
-                invokedOn: KATEValue,
+                parent: ReferencedOrDirectValue?,
+                invokedOn: ReferencedOrDirectValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 return StringValue(
@@ -27,12 +30,13 @@ object KATEValueImplementation {
 
             override fun toString(): String = "getType() : string"
         })
-        put("toString", object : KATEFunction() {
+        put("toString", object : KATEFunction(KATEType.String) {
             override fun invoke(
                 model: KATEObject,
                 path: List<ModelReference>,
                 pathIndex: Int,
-                invokedOn: KATEValue,
+                parent: ReferencedOrDirectValue?,
+                invokedOn: ReferencedOrDirectValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 return StringValue(invokedOn.toString())

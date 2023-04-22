@@ -8,13 +8,14 @@ object DoubleImplementation {
     val propertyMap by lazy { hashMapOf<String, KATEValue>().apply { putObjectFunctions() } }
 
     private fun HashMap<String, KATEValue>.putObjectFunctions() {
-        with(KATEValueImplementation){ putObjectFunctions() }
-        put("toInt", object : KATEFunction() {
+        with(KATEValueImplementation) { putObjectFunctions() }
+        put("toInt", object : KATEFunction(KATEType.Int, KATEType.Double) {
             override fun invoke(
                 model: KATEObject,
                 path: List<ModelReference>,
                 pathIndex: Int,
-                invokedOn: KATEValue,
+                parent: ReferencedOrDirectValue?,
+                invokedOn: ReferencedOrDirectValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 val intVal = invokedOn.let { it as? DoubleValue }?.value
@@ -24,12 +25,13 @@ object DoubleImplementation {
 
             override fun toString(): String = "toInt() : int"
         })
-        put("toLong", object : KATEFunction() {
+        put("toLong", object : KATEFunction(KATEType.Long, KATEType.Double) {
             override fun invoke(
                 model: KATEObject,
                 path: List<ModelReference>,
                 pathIndex: Int,
-                invokedOn: KATEValue,
+                parent: ReferencedOrDirectValue?,
+                invokedOn: ReferencedOrDirectValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 val intVal = invokedOn.let { it as? DoubleValue }?.value

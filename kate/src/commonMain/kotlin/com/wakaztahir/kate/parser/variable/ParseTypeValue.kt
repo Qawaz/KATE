@@ -1,12 +1,12 @@
 package com.wakaztahir.kate.parser.variable
 
 import com.wakaztahir.kate.model.*
-import com.wakaztahir.kate.model.model.KATEValue
+import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
 import com.wakaztahir.kate.parser.*
 import com.wakaztahir.kate.parser.stream.SourceStream
 
 private class CharacterValueExpressionParser(private val parseDirectRefs: Boolean) : ExpressionValueParser {
-    override fun SourceStream.parseExpressionValue(): KATEValue? {
+    override fun SourceStream.parseExpressionValue(): ReferencedOrDirectValue? {
         parseCharacterValue()?.let { return it }
         parseVariableReference(parseDirectRefs = parseDirectRefs)?.let { return it }
         return null
@@ -14,7 +14,7 @@ private class CharacterValueExpressionParser(private val parseDirectRefs: Boolea
 }
 
 private class StringValueExpressionParser(private val parseDirectRefs: Boolean) : ExpressionValueParser {
-    override fun SourceStream.parseExpressionValue(): KATEValue? {
+    override fun SourceStream.parseExpressionValue(): ReferencedOrDirectValue? {
         parseStringValue()?.let { return it }
         parseVariableReference(parseDirectRefs = parseDirectRefs)?.let { return it }
         return null
@@ -23,7 +23,7 @@ private class StringValueExpressionParser(private val parseDirectRefs: Boolean) 
 
 private class NumberValueExpressionParser(private val type: KATEType, private val parseDirectRefs: Boolean) :
     ExpressionValueParser {
-    override fun SourceStream.parseExpressionValue(): KATEValue? {
+    override fun SourceStream.parseExpressionValue(): ReferencedOrDirectValue? {
         parseNumberValue()?.let { value ->
             when (value) {
                 is IntValue -> {
@@ -56,10 +56,15 @@ fun LazyBlock.parseValueOfType(
     type: KATEType,
     allowAtLessExpressions: Boolean,
     parseDirectRefs: Boolean
-): KATEValue? {
+): ReferencedOrDirectValue? {
     return when (type) {
 
         is KATEType.Unit -> {
+            return null
+        }
+
+        is KATEType.Function -> {
+            // TODO function should be parsed
             return null
         }
 

@@ -14,7 +14,7 @@ sealed interface ModelReference {
 
     class FunctionCall(
         override val name: String,
-        val parametersList: List<KATEValue>
+        val parametersList: List<ReferencedOrDirectValue>
     ) : ModelReference {
         override fun toString(): String {
             return name + '(' + parametersList.joinToString(",") + ')'
@@ -23,7 +23,7 @@ sealed interface ModelReference {
 
 }
 
-open class ModelDirective(val propertyPath: List<ModelReference>) : ReferencedValue {
+open class ModelDirective(val propertyPath: List<ModelReference>) : ReferencedOrDirectValue {
 
     init {
         require(propertyPath.isNotEmpty()) {
@@ -31,21 +31,12 @@ open class ModelDirective(val propertyPath: List<ModelReference>) : ReferencedVa
         }
     }
 
-    override fun compareTo(model: KATEObject, other: KATEValue): Int {
+    override fun compareTo(model: KATEObject, other: ReferencedOrDirectValue): Int {
         return getKATEValue(model).compareTo(model, other)
     }
 
-    override fun getModelReference(reference: ModelReference): KATEValue? {
-        throw IllegalStateException("ReferencedValue cannot give a model reference")
-    }
-
-    override fun getKnownKATEType(): KATEType? {
-        return null
-    }
-
     override fun getKATEType(model: KATEObject): KATEType {
-        return propertyPath.getOrNull(propertyPath.size - 2)?.name?.let { model.getVariableType(it) }
-            ?: getKATEValue(model).getKATEType(model)
+        throw IllegalStateException("ReferencedValue cannot give getKATEType")
     }
 
     fun toEmptyPlaceholderInvocation(model: MutableKATEObject, endPointer: Int): PlaceholderInvocation {
@@ -59,7 +50,7 @@ open class ModelDirective(val propertyPath: List<ModelReference>) : ReferencedVa
     }
 
     override fun getKATEValue(model: KATEObject): KATEValue {
-        return model.getModelReferenceValue(path = propertyPath)
+        return model.getModelReferenceValue(path = propertyPath).getKATEValue(model)
     }
 
     override fun toString(): String = propertyPath.joinToString(".")

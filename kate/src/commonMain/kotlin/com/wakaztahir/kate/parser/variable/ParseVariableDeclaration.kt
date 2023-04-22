@@ -2,7 +2,7 @@ package com.wakaztahir.kate.parser.variable
 
 import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.model.*
-import com.wakaztahir.kate.model.model.KATEValue
+import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
 import com.wakaztahir.kate.parser.stream.*
 import com.wakaztahir.kate.parser.stream.increment
 
@@ -11,7 +11,7 @@ class VariableDeclarationException(message: String) : Exception(message)
 internal data class VariableDeclaration(
     val variableName: String,
     val type: KATEType?,
-    val variableValue: KATEValue
+    val variableValue: ReferencedOrDirectValue
 ) : AtDirective {
 
     override val isEmptyWriter: Boolean
@@ -19,16 +19,13 @@ internal data class VariableDeclaration(
 
     fun storeValue(model: MutableKATEObject) {
         val value = variableValue.getKATEValue(model)
+        val actualType = value.getKATEType(model)
         if (type != null) {
-            val actualType = value.getKATEType(model)
             if (!actualType.satisfies(type)) {
                 throw IllegalStateException("cannot satisfy type $type with $actualType")
             }
-            if (type != actualType) {
-                model.setVariableType(variableName, type)
-            }
         }
-        if (!model.setValue(variableName, value)) {
+        if (!model.setValue(variableName, value, type ?: actualType)) {
             throw VariableDeclarationException("couldn't declare variable $variableName which already exists")
         }
     }
@@ -71,6 +68,13 @@ internal fun SourceStream.parseKATEType(): KATEType? {
                 val itemType = parseKATEType() ?: KATEType.NullableKateType(KATEType.Any)
                 source.increment('>')
                 if (type == "list") KATEType.List(itemType) else KATEType.MutableList(itemType)
+            }
+
+            "object" -> {
+                source.increment('<')
+                val itemType = parseKATEType() ?: KATEType.NullableKateType(KATEType.Any)
+                source.increment('>')
+                KATEType.Object(itemType)
             }
 
             else -> {
