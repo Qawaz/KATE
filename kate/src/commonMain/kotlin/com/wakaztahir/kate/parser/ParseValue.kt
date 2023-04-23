@@ -4,17 +4,6 @@ import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.parser.stream.*
 import com.wakaztahir.kate.parser.stream.increment
 
-private class PrimitiveValueWithString<T>(
-    private val primitive: PrimitiveValue<T>,
-    private val content: String
-) : PrimitiveValue<T> by primitive {
-    override fun toString(): String = content
-}
-
-private fun <T> PrimitiveValue<T>.checkStr(content: String): PrimitiveValue<T> {
-    return if (this.toString() != content) PrimitiveValueWithString(this, content) else this
-}
-
 fun SourceStream.parseNumberValue(): PrimitiveValue<*>? {
 
     var textValue = ""
@@ -37,12 +26,12 @@ fun SourceStream.parseNumberValue(): PrimitiveValue<*>? {
         textValue.toDoubleOrNull()?.let { DoubleValue(it) }
     } else {
         if (increment('L')) {
-            textValue.toLongOrNull()?.let { LongValue(it).checkStr(textValue) } ?: run {
+            textValue.toLongOrNull()?.let { LongValue(it) } ?: run {
                 decrementPointer()
                 null
             }
         } else {
-            textValue.toIntOrNull()?.let { IntValue(it).checkStr(textValue) }
+            textValue.toIntOrNull()?.let { IntValue(it) }
         }
     } ?: run {
         if (textValue == "." || textValue == "-") decrementPointer()

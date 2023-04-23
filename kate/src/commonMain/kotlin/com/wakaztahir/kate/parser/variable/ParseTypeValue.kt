@@ -1,6 +1,7 @@
 package com.wakaztahir.kate.parser.variable
 
 import com.wakaztahir.kate.model.*
+import com.wakaztahir.kate.model.model.KATEValue
 import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
 import com.wakaztahir.kate.parser.*
 import com.wakaztahir.kate.parser.stream.SourceStream
@@ -23,30 +24,33 @@ private class StringValueExpressionParser(private val parseDirectRefs: Boolean) 
 
 private class NumberValueExpressionParser(private val type: KATEType, private val parseDirectRefs: Boolean) :
     ExpressionValueParser {
-    override fun SourceStream.parseExpressionValue(): ReferencedOrDirectValue? {
-        parseNumberValue()?.let { value ->
-            when (value) {
-                is IntValue -> {
-                    when (type) {
-                        is KATEType.Int -> value
 
-                        is KATEType.Long -> {
-                            LongValue(value.value.toLong())
-                        }
+    private fun PrimitiveValue<*>.verifyPrimitiveType() : KATEValue {
+        return when (this) {
+            is IntValue -> {
+                when (type) {
+                    is KATEType.Int -> this
 
-                        else -> {
-                            throw IllegalStateException("$value is not of type $type")
-                        }
+                    is KATEType.Long -> {
+                        LongValue(this.value.toLong())
+                    }
+
+                    else -> {
+                        throw IllegalStateException("$this is not of type $type")
                     }
                 }
-
-                is DoubleValue -> if (type is KATEType.Double) value else throw IllegalStateException()
-                is LongValue -> if (type is KATEType.Long) value else throw IllegalStateException()
-                else -> {
-                    throw IllegalStateException()
-                }
             }
-        }?.let { return it }
+
+            is DoubleValue -> if (type is KATEType.Double) this else throw IllegalStateException()
+            is LongValue -> if (type is KATEType.Long) this else throw IllegalStateException()
+            else -> {
+                throw IllegalStateException("Unknown type of primitive for type $type")
+            }
+        }
+    }
+
+    override fun SourceStream.parseExpressionValue(): ReferencedOrDirectValue? {
+        parseNumberValue()?.verifyPrimitiveType()?.let { return it }
         parseVariableReference(parseDirectRefs = parseDirectRefs)?.let { return it }
         return null
     }

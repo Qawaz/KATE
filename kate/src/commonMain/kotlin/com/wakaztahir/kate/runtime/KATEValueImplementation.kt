@@ -1,5 +1,6 @@
 package com.wakaztahir.kate.runtime
 
+import com.wakaztahir.kate.model.DoubleValue
 import com.wakaztahir.kate.model.KATEType
 import com.wakaztahir.kate.model.ModelReference
 import com.wakaztahir.kate.model.StringValue
