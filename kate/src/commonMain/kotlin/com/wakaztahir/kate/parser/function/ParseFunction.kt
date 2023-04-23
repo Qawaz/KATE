@@ -162,7 +162,7 @@ class FunctionDefinition(
 
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
         definition.destination = destination
-        block.model.insertValue(functionName, definition,definition.getKnownKATEType())
+        block.model.insertValue(functionName, definition)
     }
 }
 
@@ -191,6 +191,9 @@ private fun SourceStream.parseFunctionParameters(): Map<String, KATEType>? {
             } else KATEType.Any
             parameters[paramName] = paramType
         } while (increment(','))
+        if (!increment(')')) {
+            throw IllegalStateException("expected ')' got ${source.currentChar} in function parameter definition")
+        }
         if (parameters.isEmpty()) return null
         return parameters
     }
@@ -216,7 +219,9 @@ fun LazyBlock.parseFunctionDefinition(anonymousFunctionName: String?): FunctionD
 
         source.escapeSpaces()
         val returnedType = if (source.increment("->")) {
-            source.parseKATEType() ?: KATEType.Any
+            source.escapeSpaces()
+            source.parseKATEType()
+                ?: throw IllegalStateException("expected a type after \"->\" but got ${source.currentChar}")
         } else {
             source.setPointerAt(afterParametersPointer)
             KATEType.Any

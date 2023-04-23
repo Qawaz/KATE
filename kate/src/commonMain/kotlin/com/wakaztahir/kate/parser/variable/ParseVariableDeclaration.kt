@@ -2,6 +2,7 @@ package com.wakaztahir.kate.parser.variable
 
 import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.model.*
+import com.wakaztahir.kate.model.model.ExplicitTypedValue
 import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
 import com.wakaztahir.kate.parser.stream.*
 import com.wakaztahir.kate.parser.stream.increment
@@ -18,14 +19,14 @@ internal data class VariableDeclaration(
         get() = true
 
     fun storeValue(model: MutableKATEObject) {
-        val value = variableValue.getKATEValue(model)
+        var value = variableValue.getKATEValue(model)
         val actualType = value.getKnownKATEType()
         if (type != null) {
             if (!actualType.satisfies(type)) {
                 throw IllegalStateException("cannot satisfy type $type with $actualType")
             }
             if (type != actualType) {
-                model.setVariableExplicitType(variableName, type)
+                value = ExplicitTypedValue(value, type)
             }
         }
         if (!model.insertValue(variableName, value)) {

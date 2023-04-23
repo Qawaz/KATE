@@ -148,7 +148,7 @@ sealed class KATEType {
         override fun getPlaceholderName(): kotlin.String = "function"
 
         override fun getKATEType(): kotlin.String =
-            "(${(parameterTypes?.joinToString(",") { it.getKATEType() }) ?: ""}) -> $returnedType"
+            "(${(parameterTypes?.joinToString(",") { it.getKATEType() }) ?: ""}) -> ${returnedType.getKATEType()}"
 
         override fun satisfies(type: KATEType): kotlin.Boolean = type.actualType.let { it is Any || it is Object }
 

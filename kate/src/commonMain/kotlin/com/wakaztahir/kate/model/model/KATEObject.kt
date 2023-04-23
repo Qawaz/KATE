@@ -21,10 +21,6 @@ interface KATEObject : KATEValue {
 
     fun getModelReferenceInTreeUpwards(reference: ModelReference): KATEValue?
 
-    fun getVariableExplicitType(key: String): KATEType?
-
-    fun setVariableExplicitType(key : String,type : KATEType)
-
     fun contains(key: String): Boolean
 
     fun containsInAncestors(key: String): Boolean

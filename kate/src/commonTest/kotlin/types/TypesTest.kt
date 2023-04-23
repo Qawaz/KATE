@@ -2,6 +2,8 @@ package types
 
 import GenerateCode
 import com.wakaztahir.kate.model.KATEType
+import com.wakaztahir.kate.model.StringValue
+import com.wakaztahir.kate.model.model.ExplicitTypedValue
 import com.wakaztahir.kate.model.model.MutableKATEObject
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -14,8 +16,7 @@ class TypesTest {
         assertEquals(
             expected = "string?",
             actual = GenerateCode("@var(i.getType())", MutableKATEObject {
-                setValue("i", "hello")
-                setVariableType("i", KATEType.NullableKateType(KATEType.String))
+                insertValue("i", ExplicitTypedValue(StringValue("hello"),KATEType.NullableKateType(KATEType.String)))
             })
         )
     }

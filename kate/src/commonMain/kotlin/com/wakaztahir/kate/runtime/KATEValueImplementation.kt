@@ -23,8 +23,7 @@ object KATEValueImplementation {
                 parameters: List<KATEValue>
             ): KATEValue {
                 return StringValue(
-                    value = path.getOrNull(pathIndex - 1)?.name?.let { model.getVariableExplicitType(it) }?.getKATEType()
-                        ?: invokedOn.getKnownKATEType().getKATEType()
+                    value = invokedOn.getKnownKATEType().getKATEType()
                 )
             }
 

@@ -13,8 +13,6 @@ open class ModelObjectImpl(
 
     private val container: MutableMap<String, KATEValue> by lazy { hashMapOf() }
 
-    private val explicitTypes: MutableMap<String, KATEType> by lazy { hashMapOf() }
-
     override val contained: Map<String, KATEValue>
         get() = container
 
@@ -24,14 +22,6 @@ open class ModelObjectImpl(
 
     override fun get(key: String): KATEValue? {
         return container[key]
-    }
-
-    override fun getVariableExplicitType(key: String): KATEType? {
-        return explicitTypes[key]
-    }
-
-    override fun setVariableExplicitType(key: String, type: KATEType) {
-        explicitTypes[key] = type
     }
 
     override fun contains(key: String): Boolean {
@@ -54,10 +44,6 @@ open class ModelObjectImpl(
         return container[reference.name] ?: KATEObjectImplementation.propertyMap[reference.name]
     }
 
-    override fun getModelReferenceType(reference: ModelReference): KATEType? {
-        return explicitTypes[reference.name] ?: getModelReference(reference)?.getKnownKATEType()
-    }
-
     override fun findContainingObjectUpwards(reference: ModelReference): KATEObject? {
         return if (containsReference(reference)) this else parent?.findContainingObjectUpwards(reference)
     }
@@ -67,23 +53,6 @@ open class ModelObjectImpl(
     }
 
     override fun insertValue(key: String, value: KATEValue): Boolean {
-        return if (contains(key)) {
-            false
-        } else {
-            container[key] = value
-            true
-        }
-    }
-
-    override fun insertValue(key: String, value: KATEValue, type: KATEType): Boolean {
-        return if (insertValue(key, value)) {
-            this.explicitTypes[key] = type
-            true
-        } else false
-    }
-
-    @Deprecated("use insertValue with type", replaceWith = ReplaceWith("insertValue(key,value)"))
-    override fun setValue(key: String, value: KATEValue, type: KATEType): Boolean {
         return if (contains(key)) {
             false
         } else {
@@ -104,7 +73,7 @@ open class ModelObjectImpl(
 
     override fun setValueInTreeUpwardsTypeSafely(key: String, value: KATEValue): Boolean {
         return container[key]?.let { oldValue ->
-            (explicitTypes[key] ?: oldValue.getKnownKATEType()).let { explicitType ->
+            (oldValue.getKnownKATEType()).let { explicitType ->
                 if (!value.getKnownKATEType().satisfies(explicitType)) {
                     throw IllegalStateException("variable type ${value.getKnownKATEType()} does not satisfy type $explicitType")
                 }
@@ -115,10 +84,6 @@ open class ModelObjectImpl(
     }
 
     // ----- Putters
-
-    override fun setVariableType(key: String, type: KATEType) {
-        this.explicitTypes[key] = type
-    }
 
     override fun changeName(name: String) {
         this.objectName = name
