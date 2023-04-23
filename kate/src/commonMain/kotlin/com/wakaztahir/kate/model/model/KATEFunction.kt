@@ -16,7 +16,7 @@ abstract class KATEFunction(val returnedType: KATEType, val parameterTypes: List
         path: List<ModelReference>,
         pathIndex: Int,
         parent: ReferencedOrDirectValue?,
-        invokedOn: ReferencedOrDirectValue,
+        invokedOn: KATEValue,
         parameters: List<KATEValue>
     ): KATEValue
 

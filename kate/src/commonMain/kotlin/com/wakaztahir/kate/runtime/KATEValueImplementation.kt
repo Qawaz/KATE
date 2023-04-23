@@ -19,12 +19,12 @@ object KATEValueImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 parent: ReferencedOrDirectValue?,
-                invokedOn: ReferencedOrDirectValue,
+                invokedOn: KATEValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 return StringValue(
-                    value = path.getOrNull(pathIndex - 1)?.name?.let { model.getVariableType(it) }?.getKATEType()
-                        ?: invokedOn.getKATEType(model).getKATEType()
+                    value = path.getOrNull(pathIndex - 1)?.name?.let { model.getVariableExplicitType(it) }?.getKATEType()
+                        ?: invokedOn.getKnownKATEType().getKATEType()
                 )
             }
 
@@ -36,7 +36,7 @@ object KATEValueImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 parent: ReferencedOrDirectValue?,
-                invokedOn: ReferencedOrDirectValue,
+                invokedOn: KATEValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 return StringValue(invokedOn.toString())

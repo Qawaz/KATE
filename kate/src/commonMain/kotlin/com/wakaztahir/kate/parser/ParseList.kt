@@ -84,8 +84,6 @@ class ListOfReferencedOrDirectValues(
         return value!!
     }
 
-    override fun getKATEType(model: KATEObject): KATEType = getKATEValue(model).getKnownKATEType()
-
     override fun toString(): String {
         TODO("Not yet implemented")
     }

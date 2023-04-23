@@ -147,7 +147,7 @@ class FunctionDefinition(
             path: List<ModelReference>,
             pathIndex: Int,
             parent: ReferencedOrDirectValue?,
-            invokedOn: ReferencedOrDirectValue,
+            invokedOn: KATEValue,
             parameters: List<KATEValue>
         ): KATEValue {
             return generateNow(model = model, parameters)
@@ -261,7 +261,7 @@ fun KATEParsedFunction(
             path: List<ModelReference>,
             pathIndex: Int,
             parent: ReferencedOrDirectValue?,
-            invokedOn: ReferencedOrDirectValue,
+            invokedOn: KATEValue,
             parameters: List<KATEValue>
         ): KATEValue {
             return invoke.invoke(model, path, pathIndex, invokedOn, parameters)

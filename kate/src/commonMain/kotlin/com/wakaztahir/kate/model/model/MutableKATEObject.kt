@@ -6,6 +6,8 @@ import com.wakaztahir.kate.model.*
 
 interface MutableKATEObject : KATEObject {
 
+    fun insertValue(key : String,value : KATEValue): Boolean
+
     fun insertValue(key: String, value: KATEValue, type: KATEType = value.getKnownKATEType()): Boolean
 
     @Deprecated("use insertValue with type", replaceWith = ReplaceWith(expression = "insertValue(key,value)"))

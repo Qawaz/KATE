@@ -35,10 +35,6 @@ open class ModelDirective(val propertyPath: List<ModelReference>) : ReferencedOr
         return getKATEValue(model).compareTo(model, other)
     }
 
-    override fun getKATEType(model: KATEObject): KATEType {
-        throw IllegalStateException("ReferencedValue cannot give getKATEType")
-    }
-
     fun toEmptyPlaceholderInvocation(model: MutableKATEObject, endPointer: Int): PlaceholderInvocation {
         model.getModelReferenceValue(path = propertyPath)
         return PlaceholderInvocation(

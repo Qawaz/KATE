@@ -18,7 +18,7 @@ object LongImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 parent: ReferencedOrDirectValue?,
-                invokedOn: ReferencedOrDirectValue,
+                invokedOn: KATEValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 val intVal = invokedOn.let { it as? LongValue }?.value
@@ -34,7 +34,7 @@ object LongImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 parent: ReferencedOrDirectValue?,
-                invokedOn: ReferencedOrDirectValue,
+                invokedOn: KATEValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 val intVal = invokedOn.let { it as? LongValue }?.value

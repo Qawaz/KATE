@@ -18,7 +18,7 @@ object KATEObjectImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 parent: ReferencedOrDirectValue?,
-                invokedOn: ReferencedOrDirectValue,
+                invokedOn: KATEValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 val value = invokedOn as? KATEObject
@@ -36,7 +36,7 @@ object KATEObjectImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 parent: ReferencedOrDirectValue?,
-                invokedOn: ReferencedOrDirectValue,
+                invokedOn: KATEValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 val value = invokedOn as? KATEObject
@@ -52,7 +52,7 @@ object KATEObjectImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 parent: ReferencedOrDirectValue?,
-                invokedOn: ReferencedOrDirectValue,
+                invokedOn: KATEValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 val value = invokedOn as? KATEObject
@@ -69,7 +69,7 @@ object KATEObjectImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 parent: ReferencedOrDirectValue?,
-                invokedOn: ReferencedOrDirectValue,
+                invokedOn: KATEValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 val value = invokedOn as? KATEObject
@@ -86,7 +86,7 @@ object KATEObjectImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 parent: ReferencedOrDirectValue?,
-                invokedOn: ReferencedOrDirectValue,
+                invokedOn: KATEValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 val value = invokedOn.asNullableObject(model)
@@ -105,7 +105,7 @@ object KATEObjectImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 parent: ReferencedOrDirectValue?,
-                invokedOn: ReferencedOrDirectValue,
+                invokedOn: KATEValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 val value = invokedOn.asNullableObject(model)
@@ -124,7 +124,7 @@ object KATEObjectImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 parent: ReferencedOrDirectValue?,
-                invokedOn: ReferencedOrDirectValue,
+                invokedOn: KATEValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 val value = invokedOn as? MutableKATEObject
@@ -145,7 +145,7 @@ object KATEObjectImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 parent: ReferencedOrDirectValue?,
-                invokedOn: ReferencedOrDirectValue,
+                invokedOn: KATEValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 val value = invokedOn as? MutableKATEObject

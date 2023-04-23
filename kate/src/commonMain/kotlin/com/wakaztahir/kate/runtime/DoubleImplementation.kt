@@ -15,7 +15,7 @@ object DoubleImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 parent: ReferencedOrDirectValue?,
-                invokedOn: ReferencedOrDirectValue,
+                invokedOn: KATEValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 val intVal = invokedOn.let { it as? DoubleValue }?.value
@@ -31,7 +31,7 @@ object DoubleImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 parent: ReferencedOrDirectValue?,
-                invokedOn: ReferencedOrDirectValue,
+                invokedOn: KATEValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 val intVal = invokedOn.let { it as? DoubleValue }?.value

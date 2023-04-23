@@ -15,7 +15,7 @@ object KATEListImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 parent: ReferencedOrDirectValue?,
-                invokedOn: ReferencedOrDirectValue,
+                invokedOn: KATEValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 val index = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value as? Int
@@ -34,7 +34,7 @@ object KATEListImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 parent: ReferencedOrDirectValue?,
-                invokedOn: ReferencedOrDirectValue,
+                invokedOn: KATEValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 return IntValue(invokedOn.asNullableList(model)!!.collection.size)
@@ -48,7 +48,7 @@ object KATEListImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 parent: ReferencedOrDirectValue?,
-                invokedOn: ReferencedOrDirectValue,
+                invokedOn: KATEValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 return BooleanValue(invokedOn.asNullableList(model)!!.collection.containsAll(parameters))
@@ -63,7 +63,7 @@ object KATEListImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 parent: ReferencedOrDirectValue?,
-                invokedOn: ReferencedOrDirectValue,
+                invokedOn: KATEValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 require(parameters.size == 1) {
@@ -82,7 +82,7 @@ object KATEListImplementation {
                     path: List<ModelReference>,
                     pathIndex: Int,
                     parent: ReferencedOrDirectValue?,
-                    invokedOn: ReferencedOrDirectValue,
+                    invokedOn: KATEValue,
                     parameters: List<KATEValue>
                 ): KATEValue {
                     val list = invokedOn.asNullableList(model)

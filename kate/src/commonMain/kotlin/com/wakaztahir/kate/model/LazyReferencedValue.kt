@@ -14,10 +14,6 @@ class LazyReferencedValue(private val creator: () -> ReferencedOrDirectValue) : 
             return _value!!
         }
 
-    override fun getKATEType(model: KATEObject): KATEType {
-        return value.getKATEType(model)
-    }
-
     override fun getKATEValue(model: KATEObject): KATEValue = value.getKATEValue(model)
 
     override fun toString(): String {

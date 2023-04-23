@@ -44,10 +44,6 @@ internal data class ExpressionValue(
         }
     }
 
-    override fun getKATEType(model: KATEObject): KATEType {
-        return getKATEValue(model).getKATEType(model)
-    }
-
     override fun compareTo(model: KATEObject, other: ReferencedOrDirectValue): Int {
         return asNullablePrimitive(model).compareTo(model, other)
     }

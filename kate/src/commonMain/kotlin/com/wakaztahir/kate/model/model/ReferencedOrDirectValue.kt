@@ -1,7 +1,5 @@
 package com.wakaztahir.kate.model.model
 
-import com.wakaztahir.kate.model.KATEType
-import com.wakaztahir.kate.model.ModelReference
 import com.wakaztahir.kate.model.PlaceholderInvocation
 import com.wakaztahir.kate.model.PrimitiveValue
 
@@ -9,15 +7,12 @@ interface ReferencedOrDirectValue {
 
     fun getKATEValue(model: KATEObject): KATEValue
 
-    fun getKATEType(model: KATEObject): KATEType
-
     override fun toString(): String
 
     fun toPlaceholderInvocation(model: MutableKATEObject, endPointer: Int): PlaceholderInvocation? {
         val value = getKATEValue(model)
-        val type = value.getKATEType(model)
         return PlaceholderInvocation(
-            placeholderName = type.getPlaceholderName(),
+            placeholderName = value.getKnownKATEType().getPlaceholderName(),
             definitionName = null,
             paramValue = value,
             invocationEndPointer = endPointer

@@ -15,7 +15,7 @@ object GlobalObjectImplementation {
                     path: List<ModelReference>,
                     pathIndex: Int,
                     parent: ReferencedOrDirectValue?,
-                    invokedOn: ReferencedOrDirectValue,
+                    invokedOn: KATEValue,
                     parameters: List<KATEValue>
                 ): KATEValue {
                     for (param in parameters) {
@@ -36,7 +36,7 @@ object GlobalObjectImplementation {
                 path: List<ModelReference>,
                 pathIndex: Int,
                 parent: ReferencedOrDirectValue?,
-                invokedOn: ReferencedOrDirectValue,
+                invokedOn: KATEValue,
                 parameters: List<KATEValue>
             ): KATEValue {
                 val first = parameters.firstOrNull()?.asNullablePrimitive(model)?.let { it as? StringValue }

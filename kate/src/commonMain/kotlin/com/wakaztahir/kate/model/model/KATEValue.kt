@@ -7,10 +7,12 @@ interface KATEValue : ReferencedOrDirectValue {
 
     fun getModelReference(reference: ModelReference): KATEValue?
 
+    fun getModelReferenceType(reference: ModelReference): KATEType? {
+        return getModelReference(reference)?.getKnownKATEType()
+    }
+
     fun getKnownKATEType(): KATEType
 
     override fun getKATEValue(model: KATEObject): KATEValue = this
-
-    override fun getKATEType(model: KATEObject): KATEType = getKnownKATEType()
 
 }
