@@ -22,6 +22,14 @@ class TypesTest {
     }
 
     @Test
+    fun testTypeInsideAFunction(){
+        assertEquals(
+            expected = "string?",
+            actual = GenerateCode("@var i : string? = \"x\" @function type(e) @return e.getType() @end_function @var(type(i))")
+        )
+    }
+
+    @Test
     fun testAnyType() {
         assertEquals(expected = "any", actual = GenerateCode("@var i : any = \"hello\" @var(i.getType())"))
         assertEquals(expected = "any", actual = GenerateCode("@var i : any = 0 @var(i.getType())"))
