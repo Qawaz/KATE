@@ -17,7 +17,7 @@ object LongImplementation {
                 model: KATEObject,
                 invokedOn: KATEValue,
                 explicitType : KATEType?,
-                parameters: List<KATEValue>
+                parameters: List<ReferencedOrDirectValue>
             ): KATEValue {
                 val intVal = invokedOn.let { it as? LongValue }?.value
                 require(intVal != null) { "long value is null" }
@@ -31,7 +31,7 @@ object LongImplementation {
                 model: KATEObject,
                 invokedOn: KATEValue,
                 explicitType : KATEType?,
-                parameters: List<KATEValue>
+                parameters: List<ReferencedOrDirectValue>
             ): KATEValue {
                 val intVal = invokedOn.let { it as? LongValue }?.value
                 require(intVal != null) { "long value is null" }

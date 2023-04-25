@@ -14,7 +14,7 @@ object DoubleImplementation {
                 model: KATEObject,
                 invokedOn: KATEValue,
                 explicitType : KATEType?,
-                parameters: List<KATEValue>
+                parameters: List<ReferencedOrDirectValue>
             ): KATEValue {
                 val intVal = invokedOn.let { it as? DoubleValue }?.value
                 require(intVal != null) { "double value is null" }
@@ -28,7 +28,7 @@ object DoubleImplementation {
                 model: KATEObject,
                 invokedOn: KATEValue,
                 explicitType : KATEType?,
-                parameters: List<KATEValue>
+                parameters: List<ReferencedOrDirectValue>
             ): KATEValue {
                 val intVal = invokedOn.let { it as? DoubleValue }?.value
                 require(intVal != null) { "double value is null" }
