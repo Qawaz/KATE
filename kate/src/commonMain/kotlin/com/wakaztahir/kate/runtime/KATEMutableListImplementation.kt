@@ -2,7 +2,6 @@ package com.wakaztahir.kate.runtime
 
 import com.wakaztahir.kate.model.BooleanValue
 import com.wakaztahir.kate.model.KATEType
-import com.wakaztahir.kate.model.ModelReference
 import com.wakaztahir.kate.model.model.*
 
 object KATEMutableListImplementation {
@@ -15,16 +14,14 @@ object KATEMutableListImplementation {
         put("add", object : KATEFunction(KATEType.Boolean,KATEType.Any) {
             override fun invoke(
                 model: KATEObject,
-                path: List<ModelReference>,
-                pathIndex: Int,
-                parent: ReferencedOrDirectValue?,
                 invokedOn: KATEValue,
-                parameters: List<KATEValue>
-            ): KATEValue {
+                explicitType: KATEType?,
+                parameters: List<ReferencedOrDirectValue>
+            ): ReferencedOrDirectValue {
                 require(parameters.size == 1) {
                     "mutable_list.add(e : Element) expects a single parameter instead of ${parameters.size}"
                 }
-                return BooleanValue(invokedOn.asNullableMutableList(model)!!.collection.add(parameters[0]))
+                return BooleanValue(invokedOn.asNullableMutableList(model)!!.collection.add(parameters[0].getKATEValue(model)))
             }
 
             override fun toString(): String = "add(e : Element) : KTEValue"
@@ -32,17 +29,15 @@ object KATEMutableListImplementation {
         put("addAt", object : KATEFunction(KATEType.Unit,KATEType.Int,KATEType.Any) {
             override fun invoke(
                 model: KATEObject,
-                path: List<ModelReference>,
-                pathIndex: Int,
-                parent: ReferencedOrDirectValue?,
                 invokedOn: KATEValue,
-                parameters: List<KATEValue>
-            ): KATEValue {
+                explicitType: KATEType?,
+                parameters: List<ReferencedOrDirectValue>
+            ): ReferencedOrDirectValue {
                 val index = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value as? Int
                 require(parameters.size == 2 && index != null) {
                     "mutable_list.addAt(index : Int,e : Element) expects two parameters instead of ${parameters.size}"
                 }
-                invokedOn.asNullableMutableList(model)!!.collection.add(index, parameters[1])
+                invokedOn.asNullableMutableList(model)!!.collection.add(index, parameters[1].getKATEValue(model))
                 return KATEUnit
             }
 
@@ -51,12 +46,10 @@ object KATEMutableListImplementation {
         put("remove", object : KATEFunction(KATEType.Boolean,KATEType.Any) {
             override fun invoke(
                 model: KATEObject,
-                path: List<ModelReference>,
-                pathIndex: Int,
-                parent: ReferencedOrDirectValue?,
                 invokedOn: KATEValue,
-                parameters: List<KATEValue>
-            ): KATEValue {
+                explicitType: KATEType?,
+                parameters: List<ReferencedOrDirectValue>
+            ): ReferencedOrDirectValue {
                 require(parameters.size == 1) {
                     "mutable_list.remove(e : Element) expects a single parameter instead of ${parameters.size}"
                 }
@@ -68,12 +61,10 @@ object KATEMutableListImplementation {
         put("removeAt", object : KATEFunction(KATEType.Any,KATEType.Int) {
             override fun invoke(
                 model: KATEObject,
-                path: List<ModelReference>,
-                pathIndex: Int,
-                parent: ReferencedOrDirectValue?,
                 invokedOn: KATEValue,
-                parameters: List<KATEValue>
-            ): KATEValue {
+                explicitType: KATEType?,
+                parameters: List<ReferencedOrDirectValue>
+            ): ReferencedOrDirectValue {
                 val index = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value as? Int
                 require(index != null) {
                     "mutable_list.removeAt(index : Int) expects single parameter instead of ${parameters.size}"

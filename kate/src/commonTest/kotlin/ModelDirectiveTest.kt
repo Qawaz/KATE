@@ -27,18 +27,18 @@ class ModelDirectiveTest {
         val context = TemplateContext("@var(MyObject)")
         context.stream.model.apply {
             this.putObject("MyObject") {
-                this.setValue("myInt", 15)
-                this.setValue("myDouble", 16.000)
-                this.setValue("myStr", "something is here")
-                this.setValue(key = "myList", value = listOf(10, 20, 30, 40))
+                this.insertValue("myInt", 15)
+                this.insertValue("myDouble", 16.000)
+                this.insertValue("myStr", "something is here")
+                this.insertValue(key = "myList", value = listOf(10, 20, 30, 40))
                 this.putObject(key = "MyNestedObject") {
-                    this.setValue("myInt", 15)
-                    this.setValue("myDouble", 16.000)
-                    this.setValue("myStr", "something is here")
+                    this.insertValue("myInt", 15)
+                    this.insertValue("myDouble", 16.000)
+                    this.insertValue("myStr", "something is here")
                     this.putObject(key = "MoreNestedObject") {
-                        this.setValue("myInt", 15)
-                        this.setValue("myDouble", 16.000)
-                        this.setValue("myStr", "something is here")
+                        this.insertValue("myInt", 15)
+                        this.insertValue("myDouble", 16.000)
+                        this.insertValue("myStr", "something is here")
                     }
                 }
             }
@@ -93,11 +93,11 @@ class ModelDirectiveTest {
             MutableKATEObject {
                 insertValue(
                     "funName",
-                    KATEParsedFunction("funName ()->string") { model, path, pathIndex, invokedOn, parameters ->
+                    KATEParsedFunction("funName ()->string") { model, invokedOn, explicitType, parameters ->
                         invocations++
                         StringValue("funVal")
                     })
-                setValue("propName", "propVal")
+                insertValue("propName", "propVal")
             })
         assertEquals("funValpropVal()", context.getDestinationAsString())
         assertEquals(2, invocations)
@@ -112,7 +112,7 @@ class ModelDirectiveTest {
             }
             insertValue(
                 "callSum",
-                KATEParsedFunction("callSum ()->string") { model, path, pathIndex, invokedOn, parameters ->
+                KATEParsedFunction("callSum ()->string") { model, invokedOn,explicitType, parameters ->
                     IntValue(parameters.map { it.asPrimitive(model) }.sumOf { it.value as Int })
                 })
         }

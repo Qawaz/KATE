@@ -21,7 +21,7 @@ private fun List<ReferencedOrDirectValue>.inferItemType(): KATEType? {
     var type: KATEType? = null
     for (value in this) {
         // todo not checking unknown type
-        val valueType = (if(value is KATEValue) value.getKnownKATEType() else null) ?: continue
+        val valueType = (if (value is KATEValue) value.getKnownKATEType() else null) ?: continue
         type = if (type == null) {
             valueType
         } else {
@@ -71,25 +71,25 @@ class ListOfReferencedOrDirectValues(
     // todo not at all fast
     override fun getKATEValue(model: KATEObject): KATEValue {
         if (value == null) {
+            val params = parameters.map { it.getKATEValueAndType(model) }
             value = if (isMutable) KATEMutableListImpl(
-                collection = parameters.map { it.getKATEValue(model) }.toMutableList(),
+                collection = params.map { it.first }.toMutableList(),
                 itemType = itemType
             ) else {
                 KATEListImpl(
-                    collection = parameters.map { it.getKATEValue(model) },
+                    collection = params.map { it.first },
                     itemType = itemType
                 )
+            }
+            value!!.apply {
+                params.forEachIndexed { index, pair -> pair.second?.let { setExplicitType(index, it) } }
             }
         }
         return value!!
     }
 
-    override fun toString(): String {
-        TODO("Not yet implemented")
-    }
-
-    override fun compareTo(model: KATEObject, other: ReferencedOrDirectValue): Int {
-        TODO("Not yet implemented")
+    override fun getKATEValueAndType(model: KATEObject): Pair<KATEValue, KATEType?> {
+        return getKATEValue(model).let { Pair(it, it.getKnownKATEType()) }
     }
 
 }

@@ -12,10 +12,8 @@ object IntImplementation {
         put("toDouble", object : KATEFunction(KATEType.Double,KATEType.Int) {
             override fun invoke(
                 model: KATEObject,
-                path: List<ModelReference>,
-                pathIndex: Int,
-                parent: ReferencedOrDirectValue?,
                 invokedOn: KATEValue,
+                explicitType : KATEType?,
                 parameters: List<KATEValue>
             ): KATEValue {
                 val intVal = invokedOn.let { it as? IntValue }?.value
@@ -28,10 +26,8 @@ object IntImplementation {
         put("toLong", object : KATEFunction(KATEType.Long,KATEType.Int) {
             override fun invoke(
                 model: KATEObject,
-                path: List<ModelReference>,
-                pathIndex: Int,
-                parent: ReferencedOrDirectValue?,
                 invokedOn: KATEValue,
+                explicitType : KATEType?,
                 parameters: List<KATEValue>
             ): KATEValue {
                 val intVal = invokedOn.let { it as? IntValue }?.value

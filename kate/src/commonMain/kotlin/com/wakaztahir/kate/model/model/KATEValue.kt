@@ -13,6 +13,14 @@ interface KATEValue : ReferencedOrDirectValue {
 
     fun getKnownKATEType(): KATEType
 
+    override fun getKATEValueAndType(model: KATEObject): Pair<KATEValue, KATEType> {
+        return Pair(this, getKnownKATEType())
+    }
+
     override fun getKATEValue(model: KATEObject): KATEValue = this
+
+    override fun toString(): String
+
+    fun compareTo(model: KATEObject, other: KATEValue): Int
 
 }

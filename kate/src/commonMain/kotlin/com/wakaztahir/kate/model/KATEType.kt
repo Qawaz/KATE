@@ -20,6 +20,8 @@ sealed class KATEType {
 
     override fun hashCode(): kotlin.Int = this::class.hashCode()
 
+
+
     class NullableKateType(val actual: KATEType) : KATEType() {
 
         override fun getPlaceholderName(): kotlin.String = actual.getPlaceholderName()

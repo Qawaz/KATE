@@ -108,7 +108,10 @@ abstract class KATERecursiveFunction(
         slice.model = ScopedModelObject(slice.parentBlock.model)
         slice.model.forEachParam { paramName, paramType, index ->
             if (index < parameters.size) {
-                insertValue(paramName, parameters[index].getKATEValue(model))
+                parameters[index].getKATEValueAndType(model).let {
+                    insertValue(paramName, it.first)
+                    it.second?.let { type -> setExplicitType(paramName, type) }
+                }
             } else {
                 throw IllegalStateException("function expects ${parameterNames?.size} parameters and not ${parameters.size}")
             }
@@ -144,12 +147,10 @@ class FunctionDefinition(
     val definition = object : KATERecursiveFunction(slice, parameterNames, returnedType) {
         override fun invoke(
             model: KATEObject,
-            path: List<ModelReference>,
-            pathIndex: Int,
-            parent: ReferencedOrDirectValue?,
             invokedOn: KATEValue,
-            parameters: List<KATEValue>
-        ): KATEValue {
+            explicitType: KATEType?,
+            parameters: List<ReferencedOrDirectValue>
+        ): ReferencedOrDirectValue {
             return generateNow(model = model, parameters)
         }
 
@@ -246,9 +247,8 @@ fun LazyBlock.parseFunctionDefinition(anonymousFunctionName: String?): FunctionD
 fun interface KATEInvocation {
     fun invoke(
         model: KATEObject,
-        path: List<ModelReference>,
-        pathIndex: Int,
         invokedOn: ReferencedOrDirectValue,
+        explicitType: KATEType?,
         parameters: List<ReferencedOrDirectValue>
     ): KATEValue
 }
@@ -263,13 +263,11 @@ fun KATEParsedFunction(
     return object : KATEFunction(parsedDef.returnedType, parsedDef.parameterTypes) {
         override fun invoke(
             model: KATEObject,
-            path: List<ModelReference>,
-            pathIndex: Int,
-            parent: ReferencedOrDirectValue?,
             invokedOn: KATEValue,
-            parameters: List<KATEValue>
-        ): KATEValue {
-            return invoke.invoke(model, path, pathIndex, invokedOn, parameters)
+            explicitType: KATEType?,
+            parameters: List<ReferencedOrDirectValue>
+        ): ReferencedOrDirectValue {
+            return invoke.invoke(model, invokedOn, null, parameters)
         }
 
         override fun toString(): String = parsed.functionName + ' ' + super.toString()

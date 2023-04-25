@@ -23,16 +23,12 @@ sealed interface ModelReference {
 
 }
 
-open class ModelDirective(val propertyPath: List<ModelReference>) : ReferencedOrDirectValue {
+open class ModelDirective(val propertyPath: List<ModelReference>) : ReferencedValue {
 
     init {
         require(propertyPath.isNotEmpty()) {
             "model directive with empty path is not allowed"
         }
-    }
-
-    override fun compareTo(model: KATEObject, other: ReferencedOrDirectValue): Int {
-        return getKATEValue(model).compareTo(model, other)
     }
 
     fun toEmptyPlaceholderInvocation(model: MutableKATEObject, endPointer: Int): PlaceholderInvocation {
@@ -46,7 +42,11 @@ open class ModelDirective(val propertyPath: List<ModelReference>) : ReferencedOr
     }
 
     override fun getKATEValue(model: KATEObject): KATEValue {
-        return model.getModelReferenceValue(path = propertyPath).getKATEValue(model)
+        return model.getModelReferenceValue(path = propertyPath)
+    }
+
+    override fun getKATEValueAndType(model: KATEObject): Pair<KATEValue, KATEType?> {
+        return model.getModelReferenceValueAndType(path = propertyPath)
     }
 
     override fun toString(): String = propertyPath.joinToString(".")

@@ -1,8 +1,6 @@
 package com.wakaztahir.kate.runtime
 
-import com.wakaztahir.kate.model.DoubleValue
 import com.wakaztahir.kate.model.KATEType
-import com.wakaztahir.kate.model.ModelReference
 import com.wakaztahir.kate.model.StringValue
 import com.wakaztahir.kate.model.model.KATEFunction
 import com.wakaztahir.kate.model.model.KATEObject
@@ -17,14 +15,12 @@ object KATEValueImplementation {
         put("getType", object : KATEFunction(KATEType.String) {
             override fun invoke(
                 model: KATEObject,
-                path: List<ModelReference>,
-                pathIndex: Int,
-                parent: ReferencedOrDirectValue?,
                 invokedOn: KATEValue,
-                parameters: List<KATEValue>
-            ): KATEValue {
+                explicitType: KATEType?,
+                parameters: List<ReferencedOrDirectValue>
+            ): ReferencedOrDirectValue {
                 return StringValue(
-                    value = invokedOn.getKnownKATEType().getKATEType()
+                    value = (explicitType ?: invokedOn.getKnownKATEType()).getKATEType()
                 )
             }
 
@@ -33,12 +29,10 @@ object KATEValueImplementation {
         put("toString", object : KATEFunction(KATEType.String) {
             override fun invoke(
                 model: KATEObject,
-                path: List<ModelReference>,
-                pathIndex: Int,
-                parent: ReferencedOrDirectValue?,
                 invokedOn: KATEValue,
-                parameters: List<KATEValue>
-            ): KATEValue {
+                explicitType: KATEType?,
+                parameters: List<ReferencedOrDirectValue>
+            ): ReferencedOrDirectValue {
                 return StringValue(invokedOn.toString())
             }
 

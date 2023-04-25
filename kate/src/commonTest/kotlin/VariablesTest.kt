@@ -51,7 +51,7 @@ class VariablesTest {
             expected = "10",
             actual = GenerateCode("@var i = @var(myFunc()) @var(i)", MutableKATEObject {
                 insertValue("myFunc",
-                    KATEParsedFunction("myFunc ()-> int") { model, path, pathIndex, invokedOn, parameters ->
+                    KATEParsedFunction("myFunc ()-> int") { model, invokedOn, explicitType, parameters ->
                         IntValue(10)
                     }
                 )
@@ -63,7 +63,7 @@ class VariablesTest {
     fun testThisObjectReference() {
         assertEquals(
             expected = "test",
-            actual = GenerateCode("@var(this.var1)", MutableKATEObject { setValue("var1", "test") })
+            actual = GenerateCode("@var(this.var1)", MutableKATEObject { insertValue("var1", "test") })
         )
     }
 

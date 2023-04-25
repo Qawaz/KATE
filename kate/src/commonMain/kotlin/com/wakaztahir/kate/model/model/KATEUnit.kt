@@ -18,7 +18,7 @@ object KATEUnit : KATEValue, CodeGen {
         // Generates nothing
     }
 
-    override fun compareTo(model: KATEObject, other: ReferencedOrDirectValue): Int {
+    override fun compareTo(model: KATEObject, other: KATEValue): Int {
         throw IllegalStateException("$this cannot be compared to $other")
     }
 

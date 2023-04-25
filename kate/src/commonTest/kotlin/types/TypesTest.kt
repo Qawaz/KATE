@@ -3,7 +3,6 @@ package types
 import GenerateCode
 import com.wakaztahir.kate.model.KATEType
 import com.wakaztahir.kate.model.StringValue
-import com.wakaztahir.kate.model.model.ExplicitTypedValue
 import com.wakaztahir.kate.model.model.MutableKATEObject
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -16,16 +15,33 @@ class TypesTest {
         assertEquals(
             expected = "string?",
             actual = GenerateCode("@var(i.getType())", MutableKATEObject {
-                insertValue("i", ExplicitTypedValue(StringValue("hello"),KATEType.NullableKateType(KATEType.String)))
+                insertValue("i", StringValue("hello"))
+                setExplicitType("i", KATEType.NullableKateType(KATEType.String))
             })
         )
     }
 
     @Test
-    fun testTypeInsideAFunction(){
+    fun testTypeInsideAFunction() {
         assertEquals(
             expected = "string?",
             actual = GenerateCode("@var i : string? = \"x\" @function type(e) @return e.getType() @end_function @var(type(i))")
+        )
+    }
+
+    @Test
+    fun testTypesGetCopied() {
+        assertEquals(
+            expected = "string?",
+            actual = GenerateCode("@var x : string? = \"hello\" @var y = @var(x) @var(y.getType())")
+        )
+        assertEquals(
+            expected = "string?",
+            actual = GenerateCode("@define_object(MyObject) @var x : string? = \"hello\" @end_define_object @var(MyObject[\"x\"].getType())")
+        )
+        assertEquals(
+            expected = "string?",
+            actual = GenerateCode("@var x : string? = \"hello\" @var y = @list(1,2,@var(x)) @var(y[2].getType())")
         )
     }
 

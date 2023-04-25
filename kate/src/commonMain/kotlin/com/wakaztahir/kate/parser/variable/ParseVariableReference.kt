@@ -5,6 +5,7 @@ import com.wakaztahir.kate.model.ModelReference
 import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
 import com.wakaztahir.kate.parser.parseAnyExpressionOrValue
 import com.wakaztahir.kate.parser.parseNumberValue
+import com.wakaztahir.kate.parser.parseStringValue
 import com.wakaztahir.kate.parser.stream.*
 import com.wakaztahir.kate.parser.stream.increment
 import com.wakaztahir.kate.parser.stream.parseTextWhile
@@ -39,6 +40,7 @@ internal fun SourceStream.parseFunctionParameters(): List<ReferencedOrDirectValu
 
 private fun SourceStream.parseIndexingOperatorValue(parseDirectRefs: Boolean): ReferencedOrDirectValue? {
     parseNumberValue()?.let { return it }
+    parseStringValue()?.let { return it }
     parseVariableReference(parseDirectRefs = parseDirectRefs)?.let { return it }
     return null
 }

@@ -19,7 +19,7 @@ interface PrimitiveValue<T> : KATEValue {
 
     fun compareOther(other: PrimitiveValue<*>): Int
 
-    override fun compareTo(model: KATEObject, other: ReferencedOrDirectValue): Int {
+    override fun compareTo(model: KATEObject, other: KATEValue): Int {
         @Suppress("UNCHECKED_CAST")
         (other as? PrimitiveValue<T>)?.let { return compareTo(it) }
         other.asNullablePrimitive(model)?.let { return compareOther(it) }

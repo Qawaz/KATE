@@ -12,12 +12,10 @@ object StringImplementation {
         put("get", object : KATEFunction(KATEType.Char) {
             override fun invoke(
                 model: KATEObject,
-                path: List<ModelReference>,
-                pathIndex: Int,
-                parent: ReferencedOrDirectValue?,
                 invokedOn: KATEValue,
-                parameters: List<KATEValue>
-            ): KATEValue {
+                explicitType: KATEType?,
+                parameters: List<ReferencedOrDirectValue>
+            ): ReferencedOrDirectValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 val index = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as? Int }
                 require(string != null) { "string value is null" }
@@ -30,12 +28,10 @@ object StringImplementation {
         put("size", object : KATEFunction(KATEType.Int) {
             override fun invoke(
                 model: KATEObject,
-                path: List<ModelReference>,
-                pathIndex: Int,
-                parent: ReferencedOrDirectValue?,
                 invokedOn: KATEValue,
-                parameters: List<KATEValue>
-            ): KATEValue {
+                explicitType: KATEType?,
+                parameters: List<ReferencedOrDirectValue>
+            ): ReferencedOrDirectValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
                 return IntValue(string.length)
@@ -46,12 +42,10 @@ object StringImplementation {
         put("indexOf", object : KATEFunction(KATEType.Int,KATEType.String) {
             override fun invoke(
                 model: KATEObject,
-                path: List<ModelReference>,
-                pathIndex: Int,
-                parent: ReferencedOrDirectValue?,
                 invokedOn: KATEValue,
-                parameters: List<KATEValue>
-            ): KATEValue {
+                explicitType: KATEType?,
+                parameters: List<ReferencedOrDirectValue>
+            ): ReferencedOrDirectValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 val find = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
                 require(find != null) { "indexOf requires a single string parameter" }
@@ -64,12 +58,10 @@ object StringImplementation {
         put("split", object : KATEFunction(KATEType.List(KATEType.Any)) {
             override fun invoke(
                 model: KATEObject,
-                path: List<ModelReference>,
-                pathIndex: Int,
-                parent: ReferencedOrDirectValue?,
                 invokedOn: KATEValue,
-                parameters: List<KATEValue>
-            ): KATEValue {
+                explicitType: KATEType?,
+                parameters: List<ReferencedOrDirectValue>
+            ): ReferencedOrDirectValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 val find = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
                 require(find != null) { "split requires a single string parameter" }
@@ -82,12 +74,10 @@ object StringImplementation {
         put("toInt", object : KATEFunction(KATEType.Int) {
             override fun invoke(
                 model: KATEObject,
-                path: List<ModelReference>,
-                pathIndex: Int,
-                parent: ReferencedOrDirectValue?,
                 invokedOn: KATEValue,
-                parameters: List<KATEValue>
-            ): KATEValue {
+                explicitType: KATEType?,
+                parameters: List<ReferencedOrDirectValue>
+            ): ReferencedOrDirectValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
                 return string.toIntOrNull()?.let { IntValue(it) } ?: KATEUnit
@@ -98,12 +88,10 @@ object StringImplementation {
         put("toDouble", object : KATEFunction(KATEType.Double) {
             override fun invoke(
                 model: KATEObject,
-                path: List<ModelReference>,
-                pathIndex: Int,
-                parent: ReferencedOrDirectValue?,
                 invokedOn: KATEValue,
-                parameters: List<KATEValue>
-            ): KATEValue {
+                explicitType: KATEType?,
+                parameters: List<ReferencedOrDirectValue>
+            ): ReferencedOrDirectValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
                 return string.toDoubleOrNull()?.let { DoubleValue(it) } ?: KATEUnit
@@ -114,12 +102,10 @@ object StringImplementation {
         put("substring", object : KATEFunction(KATEType.String,KATEType.Int,KATEType.Int) {
             override fun invoke(
                 model: KATEObject,
-                path: List<ModelReference>,
-                pathIndex: Int,
-                parent: ReferencedOrDirectValue?,
                 invokedOn: KATEValue,
-                parameters: List<KATEValue>
-            ): KATEValue {
+                explicitType: KATEType?,
+                parameters: List<ReferencedOrDirectValue>
+            ): ReferencedOrDirectValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
                 val firstIndex = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as Int }
@@ -135,12 +121,10 @@ object StringImplementation {
         put("uppercase", object : KATEFunction(KATEType.String) {
             override fun invoke(
                 model: KATEObject,
-                path: List<ModelReference>,
-                pathIndex: Int,
-                parent: ReferencedOrDirectValue?,
                 invokedOn: KATEValue,
-                parameters: List<KATEValue>
-            ): KATEValue {
+                explicitType: KATEType?,
+                parameters: List<ReferencedOrDirectValue>
+            ): ReferencedOrDirectValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
                 return StringValue(string.uppercase())
@@ -151,12 +135,10 @@ object StringImplementation {
         put("lowercase", object : KATEFunction(KATEType.String) {
             override fun invoke(
                 model: KATEObject,
-                path: List<ModelReference>,
-                pathIndex: Int,
-                parent: ReferencedOrDirectValue?,
                 invokedOn: KATEValue,
-                parameters: List<KATEValue>
-            ): KATEValue {
+                explicitType: KATEType?,
+                parameters: List<ReferencedOrDirectValue>
+            ): ReferencedOrDirectValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
                 return StringValue(string.lowercase())
@@ -167,12 +149,10 @@ object StringImplementation {
         put("capitalize", object : KATEFunction(KATEType.String) {
             override fun invoke(
                 model: KATEObject,
-                path: List<ModelReference>,
-                pathIndex: Int,
-                parent: ReferencedOrDirectValue?,
                 invokedOn: KATEValue,
-                parameters: List<KATEValue>
-            ): KATEValue {
+                explicitType: KATEType?,
+                parameters: List<ReferencedOrDirectValue>
+            ): ReferencedOrDirectValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
                 return StringValue(string.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() })
@@ -183,12 +163,10 @@ object StringImplementation {
         put("decapitalize", object : KATEFunction(KATEType.String) {
             override fun invoke(
                 model: KATEObject,
-                path: List<ModelReference>,
-                pathIndex: Int,
-                parent: ReferencedOrDirectValue?,
                 invokedOn: KATEValue,
-                parameters: List<KATEValue>
-            ): KATEValue {
+                explicitType: KATEType?,
+                parameters: List<ReferencedOrDirectValue>
+            ): ReferencedOrDirectValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
                 return StringValue(string.replaceFirstChar { it.lowercase() })
@@ -199,12 +177,10 @@ object StringImplementation {
         put("replace", object : KATEFunction(KATEType.String,KATEType.String,KATEType.String) {
             override fun invoke(
                 model: KATEObject,
-                path: List<ModelReference>,
-                pathIndex: Int,
-                parent: ReferencedOrDirectValue?,
                 invokedOn: KATEValue,
-                parameters: List<KATEValue>
-            ): KATEValue {
+                explicitType: KATEType?,
+                parameters: List<ReferencedOrDirectValue>
+            ): ReferencedOrDirectValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
                 val find = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
@@ -220,12 +196,10 @@ object StringImplementation {
         put("contains", object : KATEFunction(KATEType.Boolean,KATEType.String) {
             override fun invoke(
                 model: KATEObject,
-                path: List<ModelReference>,
-                pathIndex: Int,
-                parent: ReferencedOrDirectValue?,
                 invokedOn: KATEValue,
-                parameters: List<KATEValue>
-            ): KATEValue {
+                explicitType: KATEType?,
+                parameters: List<ReferencedOrDirectValue>
+            ): ReferencedOrDirectValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
                 val firstStr = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
@@ -240,12 +214,10 @@ object StringImplementation {
         put("startsWith", object : KATEFunction(KATEType.Boolean,KATEType.String) {
             override fun invoke(
                 model: KATEObject,
-                path: List<ModelReference>,
-                pathIndex: Int,
-                parent: ReferencedOrDirectValue?,
                 invokedOn: KATEValue,
-                parameters: List<KATEValue>
-            ): KATEValue {
+                explicitType: KATEType?,
+                parameters: List<ReferencedOrDirectValue>
+            ): ReferencedOrDirectValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
                 val firstStr = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
@@ -260,12 +232,10 @@ object StringImplementation {
         put("endsWith", object : KATEFunction(KATEType.Boolean,KATEType.String) {
             override fun invoke(
                 model: KATEObject,
-                path: List<ModelReference>,
-                pathIndex: Int,
-                parent: ReferencedOrDirectValue?,
                 invokedOn: KATEValue,
-                parameters: List<KATEValue>
-            ): KATEValue {
+                explicitType: KATEType?,
+                parameters: List<ReferencedOrDirectValue>
+            ): ReferencedOrDirectValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
                 val firstStr = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
@@ -280,12 +250,10 @@ object StringImplementation {
         put("removePrefix", object : KATEFunction(KATEType.String) {
             override fun invoke(
                 model: KATEObject,
-                path: List<ModelReference>,
-                pathIndex: Int,
-                parent: ReferencedOrDirectValue?,
                 invokedOn: KATEValue,
-                parameters: List<KATEValue>
-            ): KATEValue {
+                explicitType: KATEType?,
+                parameters: List<ReferencedOrDirectValue>
+            ): ReferencedOrDirectValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
                 val firstStr = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
@@ -300,12 +268,10 @@ object StringImplementation {
         put("removeSuffix", object : KATEFunction(KATEType.String) {
             override fun invoke(
                 model: KATEObject,
-                path: List<ModelReference>,
-                pathIndex: Int,
-                parent: ReferencedOrDirectValue?,
                 invokedOn: KATEValue,
-                parameters: List<KATEValue>
-            ): KATEValue {
+                explicitType: KATEType?,
+                parameters: List<ReferencedOrDirectValue>
+            ): ReferencedOrDirectValue {
                 val string = invokedOn.let { it as? StringValue }?.value
                 require(string != null) { "string value is null" }
                 val firstStr = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }

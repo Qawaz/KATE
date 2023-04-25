@@ -12,17 +12,17 @@ object KATEListImplementation {
         put("get", object : KATEFunction(KATEType.Any, KATEType.Int) {
             override fun invoke(
                 model: KATEObject,
-                path: List<ModelReference>,
-                pathIndex: Int,
-                parent: ReferencedOrDirectValue?,
                 invokedOn: KATEValue,
-                parameters: List<KATEValue>
-            ): KATEValue {
+                explicitType: KATEType?,
+                parameters: List<ReferencedOrDirectValue>
+            ): ReferencedOrDirectValue {
                 val index = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value as? Int
                 require(index != null) {
                     "list.get(int) expects a single Int parameter instead of ${parameters.size}"
                 }
-                return (invokedOn.asNullableList(model)!!.collection)[index]
+                val list = invokedOn.asNullableList(model)!!
+                val value = (list.collection)[index]
+                return list.getExplicitType(index)?.let { ValueWithType(value, it) } ?: value
             }
 
             override fun toString(): String = "get(number) : KTEValue"
@@ -31,12 +31,10 @@ object KATEListImplementation {
         put("size", object : KATEFunction(KATEType.Int) {
             override fun invoke(
                 model: KATEObject,
-                path: List<ModelReference>,
-                pathIndex: Int,
-                parent: ReferencedOrDirectValue?,
                 invokedOn: KATEValue,
-                parameters: List<KATEValue>
-            ): KATEValue {
+                explicitType: KATEType?,
+                parameters: List<ReferencedOrDirectValue>
+            ): ReferencedOrDirectValue {
                 return IntValue(invokedOn.asNullableList(model)!!.collection.size)
             }
 
@@ -45,12 +43,10 @@ object KATEListImplementation {
         put("contains", object : KATEFunction(KATEType.Boolean, KATEType.Any) {
             override fun invoke(
                 model: KATEObject,
-                path: List<ModelReference>,
-                pathIndex: Int,
-                parent: ReferencedOrDirectValue?,
                 invokedOn: KATEValue,
-                parameters: List<KATEValue>
-            ): KATEValue {
+                explicitType: KATEType?,
+                parameters: List<ReferencedOrDirectValue>
+            ): ReferencedOrDirectValue {
                 return BooleanValue(invokedOn.asNullableList(model)!!.collection.containsAll(parameters))
             }
 
@@ -60,12 +56,10 @@ object KATEListImplementation {
         put("indexOf", object : KATEFunction(KATEType.Int, KATEType.Any) {
             override fun invoke(
                 model: KATEObject,
-                path: List<ModelReference>,
-                pathIndex: Int,
-                parent: ReferencedOrDirectValue?,
                 invokedOn: KATEValue,
-                parameters: List<KATEValue>
-            ): KATEValue {
+                explicitType: KATEType?,
+                parameters: List<ReferencedOrDirectValue>
+            ): ReferencedOrDirectValue {
                 require(parameters.size == 1) {
                     "indexOf requires a single parameter"
                 }
@@ -79,19 +73,17 @@ object KATEListImplementation {
             object : KATEFunction(KATEType.String, KATEType.String, KATEType.Function(KATEType.String, emptyList())) {
                 override fun invoke(
                     model: KATEObject,
-                    path: List<ModelReference>,
-                    pathIndex: Int,
-                    parent: ReferencedOrDirectValue?,
                     invokedOn: KATEValue,
-                    parameters: List<KATEValue>
-                ): KATEValue {
+                    explicitType: KATEType?,
+                    parameters: List<ReferencedOrDirectValue>
+                ): ReferencedOrDirectValue {
                     val list = invokedOn.asNullableList(model)
                     require(list != null) { "list is null" }
                     val separator =
                         parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as? String } ?: ","
                     val func = parameters.getOrNull(1)?.asNullableFunction(model)
                     return StringValue(list.collection.joinToString(separator) {
-                        func?.invoke(model, emptyList(), 0,null, it, listOf(it))?.toString()
+                        func?.invoke(model, invokedOn = it, explicitType = null, parameters = listOf(it))?.toString()
                             ?: it.toString()
                     })
                 }

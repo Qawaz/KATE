@@ -12,9 +12,7 @@ open class ModelObjectImpl(
 ) : MutableKATEObject {
 
     private val container: MutableMap<String, KATEValue> by lazy { hashMapOf() }
-
-    override val contained: Map<String, KATEValue>
-        get() = container
+    private val explicitTypes : MutableMap<String,KATEType> by lazy { hashMapOf() }
 
     override fun getKnownKATEType(): KATEType = KATEType.Object(itemType)
 
@@ -27,6 +25,14 @@ open class ModelObjectImpl(
     override fun contains(key: String): Boolean {
         return container.containsKey(key)
     }
+
+    override fun getExplicitType(key: String): KATEType? {
+        return explicitTypes[key]
+    }
+
+    override fun getKeys(): Collection<String> = container.keys
+
+    override fun getValues(): Collection<KATEValue> = container.values
 
     override fun containsInAncestors(key: String): Boolean {
         return if (contains(key)) {
@@ -59,6 +65,10 @@ open class ModelObjectImpl(
             container[key] = value
             true
         }
+    }
+
+    override fun setExplicitType(key: String, type: KATEType) {
+        explicitTypes[key] = type
     }
 
     @Deprecated("use setValue with type")
@@ -114,6 +124,8 @@ open class ModelObjectImpl(
             str += "\n\t"
             str += item.key
             str += " : "
+//            str += (explicitTypes[item.key] ?: item.value.getKnownKATEType()).getKATEType()
+//            str += " = "
             str += if (item.value is KATEObject) {
                 item.value.toString().replace("\n", "\n\t")
             } else {
@@ -124,7 +136,7 @@ open class ModelObjectImpl(
         return str
     }
 
-    override fun compareTo(model: KATEObject, other: ReferencedOrDirectValue): Int {
+    override fun compareTo(model: KATEObject, other: KATEValue): Int {
         if (other is ModelObjectImpl) {
             if (this.container.isEmpty() && other.container.isEmpty()) return -1
             if (this.container.size != other.container.size) return -1

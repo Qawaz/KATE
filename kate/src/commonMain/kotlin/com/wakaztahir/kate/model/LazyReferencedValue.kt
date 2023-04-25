@@ -4,11 +4,11 @@ import com.wakaztahir.kate.model.model.KATEObject
 import com.wakaztahir.kate.model.model.KATEValue
 import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
 
-class LazyReferencedValue(private val creator: () -> ReferencedOrDirectValue) : ReferencedOrDirectValue {
+class LazyReferencedValue(private val creator: () -> KATEValue) : ReferencedOrDirectValue {
 
-    private var _value: ReferencedOrDirectValue? = null
+    private var _value: KATEValue? = null
 
-    private val value: ReferencedOrDirectValue
+    private val value: KATEValue
         get() {
             if (_value == null) _value = creator()
             return _value!!
@@ -16,12 +16,6 @@ class LazyReferencedValue(private val creator: () -> ReferencedOrDirectValue) : 
 
     override fun getKATEValue(model: KATEObject): KATEValue = value.getKATEValue(model)
 
-    override fun toString(): String {
-        return value.toString()
-    }
-
-    override fun compareTo(model: KATEObject, other: ReferencedOrDirectValue): Int {
-        return value.compareTo(model, other)
-    }
+    override fun getKATEValueAndType(model: KATEObject): Pair<KATEValue, KATEType?> = value.getKATEValueAndType(model)
 
 }

@@ -13,12 +13,10 @@ abstract class KATEFunction(val returnedType: KATEType, val parameterTypes: List
 
     abstract fun invoke(
         model: KATEObject,
-        path: List<ModelReference>,
-        pathIndex: Int,
-        parent: ReferencedOrDirectValue?,
         invokedOn: KATEValue,
-        parameters: List<KATEValue>
-    ): KATEValue
+        explicitType: KATEType?,
+        parameters: List<ReferencedOrDirectValue>
+    ): ReferencedOrDirectValue
 
     override fun getModelReference(reference: ModelReference): KATEValue? {
         return KATEValueImplementation.propertyMap[reference.name]
@@ -28,7 +26,7 @@ abstract class KATEFunction(val returnedType: KATEType, val parameterTypes: List
 
     override fun toString(): String = getKnownKATEType().toString()
 
-    override fun compareTo(model: KATEObject, other: ReferencedOrDirectValue): Int {
+    override fun compareTo(model: KATEObject, other: KATEValue): Int {
         throw IllegalStateException("KATEFunction should be invoked first to get the value to compare with the other")
     }
 

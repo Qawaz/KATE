@@ -8,6 +8,8 @@ interface MutableKATEObject : KATEObject {
 
     fun insertValue(key : String,value : KATEValue): Boolean
 
+    fun setExplicitType(key : String, type : KATEType)
+
     @Deprecated("use insertValue with type", replaceWith = ReplaceWith(expression = "insertValue(key,value)"))
     fun setValue(key: String, value: KATEValue): Boolean
 
