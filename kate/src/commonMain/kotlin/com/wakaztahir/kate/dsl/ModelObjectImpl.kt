@@ -1,8 +1,10 @@
 package com.wakaztahir.kate.dsl
 
+import com.wakaztahir.kate.model.BooleanValue
 import com.wakaztahir.kate.model.KATEType
 import com.wakaztahir.kate.model.ModelReference
 import com.wakaztahir.kate.model.model.*
+import com.wakaztahir.kate.parser.ArithmeticOperatorType
 import com.wakaztahir.kate.runtime.KATEObjectImplementation
 
 open class ModelObjectImpl(
@@ -136,7 +138,11 @@ open class ModelObjectImpl(
         return str
     }
 
-    override fun compareTo(model: KATEObject, other: KATEValue): Int {
+    override fun operate(operator: ArithmeticOperatorType, other: KATEValue): KATEValue {
+        TODO("Not yet implemented")
+    }
+
+    override fun compareTo(other: KATEValue): Int {
         if (other is ModelObjectImpl) {
             if (this.container.isEmpty() && other.container.isEmpty()) return -1
             if (this.container.size != other.container.size) return -1

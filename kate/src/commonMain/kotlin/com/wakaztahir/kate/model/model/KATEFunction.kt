@@ -2,6 +2,7 @@ package com.wakaztahir.kate.model.model
 
 import com.wakaztahir.kate.model.KATEType
 import com.wakaztahir.kate.model.ModelReference
+import com.wakaztahir.kate.parser.ArithmeticOperatorType
 import com.wakaztahir.kate.runtime.KATEValueImplementation
 
 abstract class KATEFunction(val returnedType: KATEType, val parameterTypes: List<KATEType>?) : KATEValue {
@@ -26,8 +27,12 @@ abstract class KATEFunction(val returnedType: KATEType, val parameterTypes: List
 
     override fun toString(): String = getKnownKATEType().toString()
 
-    override fun compareTo(model: KATEObject, other: KATEValue): Int {
+    override fun compareTo(other: KATEValue): Int {
         throw IllegalStateException("KATEFunction should be invoked first to get the value to compare with the other")
+    }
+
+    override fun operate(operator: ArithmeticOperatorType, other: KATEValue): KATEValue {
+        throw IllegalStateException("KATEFunction should be invoked first to get the value to operate with the other")
     }
 
 }

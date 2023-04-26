@@ -1,6 +1,7 @@
 package com.wakaztahir.kate.model.model
 
 import com.wakaztahir.kate.model.*
+import com.wakaztahir.kate.parser.ArithmeticOperatorType
 import com.wakaztahir.kate.runtime.KATEListImplementation
 import com.wakaztahir.kate.runtime.KATEMutableListImplementation
 
@@ -16,7 +17,11 @@ interface KATEList<T : KATEValue> : KATEValue {
 
     override fun getKnownKATEType(): KATEType
 
-    override fun compareTo(model: KATEObject, other: KATEValue): Int {
+    override fun operate(operator: ArithmeticOperatorType, other: KATEValue): KATEValue {
+        TODO("Not yet implemented")
+    }
+
+    override fun compareTo(other: KATEValue): Int {
         if (other is KATEList<*>) {
             if (this.collection.isEmpty() && other.collection.isEmpty()) return 0
             if (this.collection.size != other.collection.size) return -1

@@ -2,7 +2,6 @@ package com.wakaztahir.kate.model
 
 import com.wakaztahir.kate.model.model.KATEObject
 import com.wakaztahir.kate.model.model.KATEValue
-import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
 import com.wakaztahir.kate.parser.ArithmeticOperatorType
 import com.wakaztahir.kate.runtime.*
 import kotlin.jvm.JvmInline
@@ -19,16 +18,20 @@ interface PrimitiveValue<T> : KATEValue {
 
     fun compareOther(other: PrimitiveValue<*>): Int
 
-    override fun compareTo(model: KATEObject, other: KATEValue): Int {
+    override fun compareTo(other: KATEValue): Int {
         @Suppress("UNCHECKED_CAST")
         (other as? PrimitiveValue<T>)?.let { return compareTo(it) }
-        other.asNullablePrimitive(model)?.let { return compareOther(it) }
+        (other as? PrimitiveValue<*>)?.let { return compareOther(it) }
         throw IllegalStateException("couldn't compare between $this and $other")
     }
 
     fun operate(type: ArithmeticOperatorType, value2: PrimitiveValue<T>): PrimitiveValue<*>
 
     fun operateOther(type: ArithmeticOperatorType, value2: PrimitiveValue<*>): PrimitiveValue<*>
+
+    override fun operate(operator: ArithmeticOperatorType, other: KATEValue): KATEValue {
+        return operateAny(operator,other as PrimitiveValue<*>)
+    }
 
     fun operateAny(type: ArithmeticOperatorType, other: PrimitiveValue<*>): PrimitiveValue<*> {
         @Suppress("UNCHECKED_CAST")
@@ -263,7 +266,7 @@ value class BooleanValue(override val value: Boolean) : PrimitiveValue<Boolean> 
     }
 
     override fun operate(type: ArithmeticOperatorType, value2: PrimitiveValue<Boolean>): PrimitiveValue<Boolean> {
-        throw IllegalStateException("operator '${type.char}' cannot be applied with a boolean value")
+        return BooleanValue(type.operate(value,value2.value))
     }
 
     override fun operateOther(type: ArithmeticOperatorType, value2: PrimitiveValue<*>): PrimitiveValue<*> {

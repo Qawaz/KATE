@@ -1,6 +1,10 @@
 package com.wakaztahir.kate.parser
 
+import com.wakaztahir.kate.model.BooleanValue
+import com.wakaztahir.kate.model.ConditionType
 import com.wakaztahir.kate.model.LazyBlock
+import com.wakaztahir.kate.model.PrimitiveValue
+import com.wakaztahir.kate.model.model.KATEValue
 import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
 import com.wakaztahir.kate.parser.stream.SourceStream
 import com.wakaztahir.kate.parser.stream.increment
@@ -10,9 +14,9 @@ enum class OperatorAssociativity {
     RightToLeft
 }
 
-enum class ArithmeticOperatorType(val char: Char, val associativity: OperatorAssociativity, val precedence: Int) {
+enum class ArithmeticOperatorType(val char: String, val associativity: OperatorAssociativity, val precedence: Int) {
 
-    Plus('+', associativity = OperatorAssociativity.LeftToRight, precedence = 6) {
+    Plus("+", associativity = OperatorAssociativity.LeftToRight, precedence = 6) {
         override fun operate(value1: Int, value2: Int): Int = value1 + value2
         override fun operate(value1: Double, value2: Double): Double = value1 + value2
         override fun operate(value1: Int, value2: Double): Double = value1 + value2
@@ -26,11 +30,11 @@ enum class ArithmeticOperatorType(val char: Char, val associativity: OperatorAss
         override fun operate(value1: String, value2: Int): String = value1 + value2
         override fun operate(value1: String, value2: Double): String = value1 + value2
         override fun operate(value1: String, value2: Char): String = value1 + value2
-        override fun operate(value1: Char, value2: Char): Int = notPossible("Char", "Char")
         override fun operate(value1: Char, value2: Int): Char = value1 + value2
         override fun operate(value1: Char, value2: String): String = value1 + value2
+
     },
-    Minus('-', associativity = OperatorAssociativity.LeftToRight, precedence = 6) {
+    Minus("-", associativity = OperatorAssociativity.LeftToRight, precedence = 6) {
         override fun operate(value1: Int, value2: Int): Int = value1 - value2
         override fun operate(value1: Double, value2: Double): Double = value1 - value2
         override fun operate(value1: Int, value2: Double): Double = value1 - value2
@@ -40,15 +44,9 @@ enum class ArithmeticOperatorType(val char: Char, val associativity: OperatorAss
         override fun operate(value1: Long, value2: Long): Long = value1 - value2
         override fun operate(value1: Long, value2: Int): Long = value1 - value2
         override fun operate(value1: Long, value2: Double): Double = value1 - value2
-        override fun operate(value1: String, value2: String): String = notPossible("String", "String")
-        override fun operate(value1: String, value2: Int): String = notPossible("String", "Int")
-        override fun operate(value1: String, value2: Double): String = notPossible("String", "Double")
-        override fun operate(value1: String, value2: Char): String = notPossible("String", "Char")
         override fun operate(value1: Char, value2: Char): Int = value1 - value2
-        override fun operate(value1: Char, value2: Int): Char = notPossible("Char", "Int")
-        override fun operate(value1: Char, value2: String): String = notPossible("Char", "String")
     },
-    Divide('/', associativity = OperatorAssociativity.LeftToRight, precedence = 4) {
+    Divide("/", associativity = OperatorAssociativity.LeftToRight, precedence = 4) {
         override fun operate(value1: Int, value2: Int): Int = value1 / value2
         override fun operate(value1: Double, value2: Double): Double = value1 / value2
         override fun operate(value1: Int, value2: Double): Double = value1 / value2
@@ -58,15 +56,8 @@ enum class ArithmeticOperatorType(val char: Char, val associativity: OperatorAss
         override fun operate(value1: Long, value2: Long): Long = value1 / value2
         override fun operate(value1: Long, value2: Int): Long = value1 / value2
         override fun operate(value1: Long, value2: Double): Double = value1 / value2
-        override fun operate(value1: String, value2: String): String = notPossible("String", "String")
-        override fun operate(value1: String, value2: Int): String = notPossible("String", "Int")
-        override fun operate(value1: String, value2: Double): String = notPossible("String", "Double")
-        override fun operate(value1: String, value2: Char): String = notPossible("String", "Char")
-        override fun operate(value1: Char, value2: Char): Int = notPossible("Char", "Char")
-        override fun operate(value1: Char, value2: Int): Char = notPossible("Char", "Int")
-        override fun operate(value1: Char, value2: String): String = notPossible("Char", "String")
     },
-    Multiply('*', associativity = OperatorAssociativity.LeftToRight, precedence = 4) {
+    Multiply("*", associativity = OperatorAssociativity.LeftToRight, precedence = 4) {
         override fun operate(value1: Int, value2: Int): Int = value1 * value2
         override fun operate(value1: Double, value2: Double): Double = value1 * value2
         override fun operate(value1: Int, value2: Double): Double = value1 * value2
@@ -76,15 +67,8 @@ enum class ArithmeticOperatorType(val char: Char, val associativity: OperatorAss
         override fun operate(value1: Long, value2: Long): Long = value1 * value2
         override fun operate(value1: Long, value2: Int): Long = value1 * value2
         override fun operate(value1: Long, value2: Double): Double = value1 * value2
-        override fun operate(value1: String, value2: String): String = notPossible("String", "String")
-        override fun operate(value1: String, value2: Int): String = notPossible("String", "Int")
-        override fun operate(value1: String, value2: Double): String = notPossible("String", "Double")
-        override fun operate(value1: String, value2: Char): String = notPossible("String", "Char")
-        override fun operate(value1: Char, value2: Char): Int = notPossible("Char", "Char")
-        override fun operate(value1: Char, value2: Int): Char = notPossible("Char", "Int")
-        override fun operate(value1: Char, value2: String): String = notPossible("Char", "String")
     },
-    Mod('%', associativity = OperatorAssociativity.LeftToRight, precedence = 4) {
+    Mod("%", associativity = OperatorAssociativity.LeftToRight, precedence = 4) {
         override fun operate(value1: Int, value2: Int): Int = value1 % value2
         override fun operate(value1: Double, value2: Double): Double = value1 % value2
         override fun operate(value1: Int, value2: Double): Double = value1 % value2
@@ -94,48 +78,142 @@ enum class ArithmeticOperatorType(val char: Char, val associativity: OperatorAss
         override fun operate(value1: Long, value2: Long): Long = value1 % value2
         override fun operate(value1: Long, value2: Int): Long = value1 % value2
         override fun operate(value1: Long, value2: Double): Double = value1 % value2
-        override fun operate(value1: String, value2: String): String = notPossible("String", "String")
-        override fun operate(value1: String, value2: Int): String = notPossible("String", "Int")
-        override fun operate(value1: String, value2: Double): String = notPossible("String", "Double")
-        override fun operate(value1: String, value2: Char): String = notPossible("String", "Char")
-        override fun operate(value1: Char, value2: Char): Int = notPossible("Char", "Char")
-        override fun operate(value1: Char, value2: Int): Char = notPossible("Char", "Int")
-        override fun operate(value1: Char, value2: String): String = notPossible("Char", "String")
+    },
+    And("&&", associativity = OperatorAssociativity.LeftToRight, precedence = 2) {
+        override fun operate(value1: Boolean, value2: Boolean): Boolean = value1 && value2
+    },
+    Or("||", associativity = OperatorAssociativity.LeftToRight, precedence = 1) {
+        override fun operate(value1: Boolean, value2: Boolean): Boolean = value1 || value2
+    },
+    Equal("==", associativity = OperatorAssociativity.LeftToRight, precedence = 3) {
+        override fun operate(value1: KATEValue, value2: KATEValue): KATEValue =
+            BooleanValue(ConditionType.Equals.verifyCompare(value1.compareTo(value2)))
+    },
+    NotEqual("!=", associativity = OperatorAssociativity.LeftToRight, precedence = 3) {
+        override fun operate(value1: KATEValue, value2: KATEValue): KATEValue =
+            BooleanValue(ConditionType.NotEquals.verifyCompare(value1.compareTo(value2)))
+    },
+    LessThanOrEqual("<=", associativity = OperatorAssociativity.LeftToRight, precedence = 5) {
+        override fun operate(value1: KATEValue, value2: KATEValue): KATEValue =
+            BooleanValue(ConditionType.LessThanEqualTo.verifyCompare(value1.compareTo(value2)))
+    },
+    LessThan("<", associativity = OperatorAssociativity.LeftToRight, precedence = 5) {
+        override fun operate(value1: KATEValue, value2: KATEValue): KATEValue =
+            BooleanValue(ConditionType.LessThan.verifyCompare(value1.compareTo(value2)))
+    },
+    GreaterThan(">", associativity = OperatorAssociativity.LeftToRight, precedence = 5) {
+        override fun operate(value1: KATEValue, value2: KATEValue): KATEValue =
+            BooleanValue(ConditionType.GreaterThan.verifyCompare(value1.compareTo(value2)))
+    },
+    GreaterThanOrEqual(">=", associativity = OperatorAssociativity.LeftToRight, precedence = 5) {
+        override fun operate(value1: KATEValue, value2: KATEValue): KATEValue =
+            BooleanValue(ConditionType.GreaterThanEqualTo.verifyCompare(value1.compareTo(value2)))
+    },
+    ReferentialEquality("===", associativity = OperatorAssociativity.LeftToRight, precedence = 3) {
+        override fun operate(value1: KATEValue, value2: KATEValue): KATEValue =
+            BooleanValue(ConditionType.ReferentiallyEquals.verifyCompare(value1.compareTo(value2)))
     };
 
-    fun <T> notPossible(value1: String, value2: String): T {
+    private fun notPossible(value1: Any, value2: Any): Nothing {
         throw IllegalStateException("operation : $char is not possible between $value1 and $value2")
     }
 
-    abstract fun operate(value1: Int, value2: Int): Int
-    abstract fun operate(value1: Int, value2: Double): Double
-    abstract fun operate(value1: Int, value2: Long): Long
-    abstract fun operate(value1: Double, value2: Double): Double
-    abstract fun operate(value1: Double, value2: Int): Double
-    abstract fun operate(value1: Double, value2: Long): Double
-    abstract fun operate(value1: Long, value2: Long): Long
-    abstract fun operate(value1: Long, value2: Int): Long
-    abstract fun operate(value1: Long, value2: Double): Double
-    abstract fun operate(value1: String, value2: String): String
-    abstract fun operate(value1: String, value2: Int): String
-    abstract fun operate(value1: String, value2: Double): String
-    abstract fun operate(value1: String, value2: Char): String
-    abstract fun operate(value1: Char, value2: Char): Int
-    abstract fun operate(value1: Char, value2: Int): Char
-    abstract fun operate(value1: Char, value2: String): String
+    open fun operate(value1: Boolean, value2: Boolean): Boolean = notPossible(value1, value2)
+    open fun operate(value1: Int, value2: Int): Int = notPossible(value1, value2)
+    open fun operate(value1: Int, value2: Double): Double = notPossible(value1, value2)
+    open fun operate(value1: Int, value2: Long): Long = notPossible(value1, value2)
+    open fun operate(value1: Double, value2: Double): Double = notPossible(value1, value2)
+    open fun operate(value1: Double, value2: Int): Double = notPossible(value1, value2)
+    open fun operate(value1: Double, value2: Long): Double = notPossible(value1, value2)
+    open fun operate(value1: Long, value2: Long): Long = notPossible(value1, value2)
+    open fun operate(value1: Long, value2: Int): Long = notPossible(value1, value2)
+    open fun operate(value1: Long, value2: Double): Double = notPossible(value1, value2)
+    open fun operate(value1: String, value2: String): String = notPossible(value1, value2)
+    open fun operate(value1: String, value2: Int): String = notPossible(value1, value2)
+    open fun operate(value1: String, value2: Double): String = notPossible(value1, value2)
+    open fun operate(value1: String, value2: Char): String = notPossible(value1, value2)
+    open fun operate(value1: Char, value2: Char): Int = notPossible(value1, value2)
+    open fun operate(value1: Char, value2: Int): Char = notPossible(value1, value2)
+    open fun operate(value1: Char, value2: String): String = notPossible(value1, value2)
+    open fun operate(value1: KATEValue, value2: KATEValue): KATEValue = notPossible(value1, value2)
 
+}
+
+private fun SourceStream.incrementTwoChars(char1: Char, char2: Char): Boolean {
+    return if (increment(char1)) {
+        if (increment(char2)) {
+            true
+        } else {
+            decrementPointer()
+            false
+        }
+    } else {
+        false
+    }
 }
 
 internal fun SourceStream.parseArithmeticOperator(): ArithmeticOperatorType? {
     val result = when (currentChar) {
-        '+' -> ArithmeticOperatorType.Plus
-        '-' -> ArithmeticOperatorType.Minus
-        '/' -> ArithmeticOperatorType.Divide
-        '*' -> ArithmeticOperatorType.Multiply
-        '%' -> ArithmeticOperatorType.Mod
+        // Arithmetic Operators
+        '+' -> {
+            incrementPointer()
+            ArithmeticOperatorType.Plus
+        }
+
+        '-' -> {
+            incrementPointer()
+            ArithmeticOperatorType.Minus
+        }
+
+        '/' -> {
+            incrementPointer()
+            ArithmeticOperatorType.Divide
+        }
+
+        '*' -> {
+            incrementPointer()
+            ArithmeticOperatorType.Multiply
+        }
+
+        '%' -> {
+            incrementPointer()
+            ArithmeticOperatorType.Mod
+        }
+        // Logical Operators
+        '&' -> {
+            if (incrementTwoChars('&', '&')) ArithmeticOperatorType.And else null
+        }
+
+        '|' -> {
+            if (incrementTwoChars('|', '|')) ArithmeticOperatorType.Or else null
+        }
+        // Conditional Operators
+        '!' -> {
+            return null
+            if (incrementTwoChars('!', '=')) ArithmeticOperatorType.NotEqual else null
+        }
+
+        '=' -> {
+            return null
+            if (incrementTwoChars('=', '=')) {
+                if (increment('=')) ArithmeticOperatorType.ReferentialEquality else ArithmeticOperatorType.Equal
+            } else null
+        }
+
+        '>' -> {
+            return null
+            if (incrementTwoChars('>', '=')) {
+                ArithmeticOperatorType.GreaterThanOrEqual
+            } else ArithmeticOperatorType.GreaterThan
+        }
+
+        '<' -> {
+            return null
+            if (incrementTwoChars('<', '=')) ArithmeticOperatorType.LessThanOrEqual else ArithmeticOperatorType.LessThan
+        }
+
         else -> null
     }
-    if (result != null) incrementPointer()
     return result
 }
 
@@ -335,6 +413,25 @@ internal fun LazyBlock.parseExpression(
     allowAtLessExpressions = allowAtLessExpressions,
 )
 
+internal fun LazyBlock.parseExpressionAfter(
+    value: ReferencedOrDirectValue,
+    operator: ArithmeticOperatorType,
+    valueParser: ExpressionValueParser,
+    allowAtLessExpressions: Boolean
+): ExpressionValue? {
+    val stack = ValueAndOperatorStack()
+    stack.putOperator(operator)
+    val final = ValueAndOperatorStack()
+    final.putValue(value)
+    source.parseExpressionWith(
+        valueParser = valueParser,
+        allowAtLessExpressions = allowAtLessExpressions,
+        stack = stack,
+        final = final
+    )
+    return final.toExpression()
+}
+
 internal fun LazyBlock.parseExpression(
     firstValueParser: ExpressionValueParser,
     notFirstValueParser: () -> ExpressionValueParser,
@@ -346,19 +443,12 @@ internal fun LazyBlock.parseExpression(
     )
     if (valueAndOp != null) {
         return if (valueAndOp.second != null) {
-
-            val stack = ValueAndOperatorStack()
-            stack.putOperator(valueAndOp.second!!)
-            val final = ValueAndOperatorStack()
-            final.putValue(valueAndOp.first)
-            source.parseExpressionWith(
+            return parseExpressionAfter(
+                value = valueAndOp.first,
+                operator = valueAndOp.second!!,
                 valueParser = notFirstValueParser(),
-                allowAtLessExpressions = allowAtLessExpressions,
-                stack = stack,
-                final = final
+                allowAtLessExpressions = allowAtLessExpressions
             )
-            final.toExpression()
-
         } else {
             valueAndOp.first
         }
@@ -374,7 +464,6 @@ internal fun SourceStream.parseAnyExpressionOrValue(
 ): ReferencedOrDirectValue? {
     parseListDefinition()?.let { return it }
     parseMutableListDefinition()?.let { return it }
-    parseBooleanValue()?.let { return it }
     parseExpression(
         parseFirstStringOrChar = parseFirstStringOrChar,
         parseNotFirstStringOrChar = parseNotFirstStringOrChar,

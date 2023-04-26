@@ -9,49 +9,49 @@ import com.wakaztahir.kate.parser.stream.DestinationStream
 
 internal enum class ConditionType {
     ReferentiallyEquals {
-        override fun compare(model: KATEObject, first: KATEValue, second: KATEValue): Boolean =
+        override fun compare(first: KATEValue, second: KATEValue): Boolean =
             first === second
 
         override fun verifyCompare(result: Int) = result == 0
     },
     Equals {
-        override fun compare(model: KATEObject, first: KATEValue, second: KATEValue) =
-            first.compareTo(model, second) == 0
+        override fun compare(first: KATEValue, second: KATEValue) =
+            first.compareTo(second) == 0
 
         override fun verifyCompare(result: Int) = result == 0
     },
     NotEquals {
-        override fun compare(model: KATEObject, first: KATEValue, second: KATEValue) =
-            first.compareTo(model, second) != 0
+        override fun compare(first: KATEValue, second: KATEValue) =
+            first.compareTo(second) != 0
 
         override fun verifyCompare(result: Int) = result != 0
     },
     GreaterThan {
-        override fun compare(model: KATEObject, first: KATEValue, second: KATEValue) =
-            first.compareTo(model, second) > 0
+        override fun compare(first: KATEValue, second: KATEValue) =
+            first.compareTo(second) > 0
 
         override fun verifyCompare(result: Int) = result == 1
     },
     LessThan {
-        override fun compare(model: KATEObject, first: KATEValue, second: KATEValue) =
-            first.compareTo(model, second) < 0
+        override fun compare(first: KATEValue, second: KATEValue) =
+            first.compareTo(second) < 0
 
         override fun verifyCompare(result: Int) = result == -1
     },
     GreaterThanEqualTo {
-        override fun compare(model: KATEObject, first: KATEValue, second: KATEValue) =
-            first.compareTo(model, second).let { it > 0 || it == 0 }
+        override fun compare(first: KATEValue, second: KATEValue) =
+            first.compareTo(second).let { it > 0 || it == 0 }
 
         override fun verifyCompare(result: Int) = result == 1 || result == 0
     },
     LessThanEqualTo {
-        override fun compare(model: KATEObject, first: KATEValue, second: KATEValue) =
-            first.compareTo(model, second).let { it < 0 || it == 0 }
+        override fun compare(first: KATEValue, second: KATEValue) =
+            first.compareTo(second).let { it < 0 || it == 0 }
 
         override fun verifyCompare(result: Int) = result == -1 || result == 0
     };
 
-    abstract fun compare(model: KATEObject, first: KATEValue, second: KATEValue): Boolean
+    abstract fun compare(first: KATEValue, second: KATEValue): Boolean
     abstract fun verifyCompare(result: Int): Boolean
 
 }
@@ -61,11 +61,14 @@ internal enum class ConditionOperation {
     Or
 }
 
-interface Condition {
+interface Condition : ReferencedOrDirectValue {
+
     fun evaluate(context: KATEObject): Boolean
-    fun evaluate(context: TemplateContext): Boolean {
-        return evaluate(context.stream.model)
+
+    override fun getKATEValue(model: KATEObject): KATEValue {
+        return BooleanValue(evaluate(model))
     }
+
 }
 
 internal class LogicalCondition(
@@ -74,24 +77,7 @@ internal class LogicalCondition(
     val propertySecond: ReferencedOrDirectValue
 ) : Condition {
     override fun evaluate(context: KATEObject): Boolean {
-        return type.compare(context, propertyFirst.getKATEValue(context), propertySecond.getKATEValue(context))
-    }
-}
-
-internal class ReferencedBoolean(val value: ReferencedOrDirectValue) : Condition {
-    override fun evaluate(context: KATEObject): Boolean {
-        val value = value.asNullablePrimitive(context)
-        if (value != null && value is BooleanValue) {
-            return value.value
-        } else {
-            throw IllegalStateException("referenced value is not a boolean value inside the conditions")
-        }
-    }
-}
-
-internal class EvaluatedCondition(val value: Boolean) : Condition {
-    override fun evaluate(context: KATEObject): Boolean {
-        return value
+        return type.compare(propertyFirst.getKATEValue(context), propertySecond.getKATEValue(context))
     }
 }
 
@@ -102,7 +88,7 @@ enum class IfType(val order: Int) {
 }
 
 internal class SingleIf(
-    val condition: Condition,
+    val condition: ReferencedOrDirectValue,
     val type: IfType,
     val blockValue: LazyBlockSlice,
 ) : CodeGen {
@@ -134,7 +120,7 @@ internal class IfStatement(private val ifs: MutableList<SingleIf>) : BlockContai
 
     fun evaluate(context: KATEObject): SingleIf? {
         for (iffy in ifs) {
-            if (iffy.condition.evaluate(context)) {
+            if ((iffy.condition.asNullablePrimitive(context)!! as BooleanValue).value) {
                 return iffy
             }
         }

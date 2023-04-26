@@ -1,4 +1,5 @@
 import com.wakaztahir.kate.TemplateContext
+import com.wakaztahir.kate.model.BooleanValue
 import com.wakaztahir.kate.model.LogicalCondition
 import com.wakaztahir.kate.model.asPrimitive
 import com.wakaztahir.kate.parser.parseCondition
@@ -14,23 +15,38 @@ class IfStatementTest {
         updateStream("@var var2 = $var2")
         stream.parseVariableDeclaration()!!.storeValue(stream.model)
         updateStream("@var(var1) $condition @var(var2)")
-        val result1 = stream.parseCondition(parseDirectRefs = false)!!.evaluate(stream.model)
+        val result1 = (stream.parseCondition(parseDirectRefs = false)!!.asNullablePrimitive(stream.model) as BooleanValue).value
         updateStream("var1 $condition var2")
-        val result2 = stream.parseCondition(parseDirectRefs = true)!!.evaluate(stream.model)
+        val result2 = (stream.parseCondition(parseDirectRefs = true)!!.asNullablePrimitive(stream.model) as BooleanValue).value
         return result1 && result2
     }
 
     private fun evaluate(var1: String, condition: String, var2: String, constants: Boolean = true): Boolean {
         val context = TemplateContext(("$var1 $condition $var2"))
-        val result = context.stream.parseCondition(parseDirectRefs = false)!!.evaluate(context)
+        val result = context.stream.parseCondition(parseDirectRefs = false)!!.asPrimitive(context.stream.model).value as Boolean
         val result2 = if (constants) context.evaluateConstants(var1, condition, var2) else true
+        //TODO
+//        assertEquals("true", GenerateCode("@var cxc : boolean = $var1 $condition $var2 @var(cxc)"))
+//        assertEquals("true", GenerateCode("@var cxc = $var1 $condition $var2 @var(cxc)"))
         return result && result2
+    }
+
+    @Test
+    fun testLogicalOperators() {
+        assertEquals("true",GenerateCode("@var x = true && true @var(x)"))
+        assertEquals("false",GenerateCode("@var x = true && false @var(x)"))
+        assertEquals("false",GenerateCode("@var x = false && false @var(x)"))
+        assertEquals("false",GenerateCode("@var x = false && true @var(x)"))
+        assertEquals("true",GenerateCode("@var x = true || true @var(x)"))
+        assertEquals("true",GenerateCode("@var x = true || false @var(x)"))
+        assertEquals("false",GenerateCode("@var x = false || false @var(x)"))
+        assertEquals("true",GenerateCode("@var x = false || true @var(x)"))
     }
 
     @Test
     fun testBlockValue() {
         val context = TemplateContext("@if(@var(var1)) blockValue @endif")
-        context.stream.model.setValue("var1", true)
+        context.stream.model.insertValue("var1", true)
         assertEquals("blockValue", context.getDestinationAsString())
         assertEquals(
             expected = "x",
@@ -66,7 +82,7 @@ class IfStatementTest {
     fun testConstRefParsing() {
         val text = "@if(@var(var1)) blockValue @endif"
         val context = TemplateContext(text)
-        context.stream.model.setValue("var1", true)
+        context.stream.model.insertValue("var1", true)
         val statement = context.stream.parseIfStatement()!!
         assertEquals("blockValue", statement.singleIfs[0].blockValue.getValueAsString())
         assertNotEquals(null, statement.evaluate(context))

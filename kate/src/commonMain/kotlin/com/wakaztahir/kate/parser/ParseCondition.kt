@@ -2,10 +2,12 @@ package com.wakaztahir.kate.parser
 
 import com.wakaztahir.kate.dsl.ScopedModelObject
 import com.wakaztahir.kate.model.*
+import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
 import com.wakaztahir.kate.parser.stream.*
 import com.wakaztahir.kate.parser.stream.escapeSpaces
 import com.wakaztahir.kate.parser.stream.increment
 import com.wakaztahir.kate.parser.stream.incrementUntilDirectiveWithSkip
+import com.wakaztahir.kate.parser.variable.parseValueOfType
 
 internal fun SourceStream.parseConditionType(): ConditionType? {
     if (increment("==")) {
@@ -33,48 +35,60 @@ internal fun SourceStream.parseConditionType(): ConditionType? {
     }
 }
 
-internal fun SourceStream.parseCondition(parseDirectRefs: Boolean): Condition? {
-
-    val propertyFirst = this.parseAnyExpressionOrValue(
-        parseFirstStringOrChar = true,
-        parseNotFirstStringOrChar = true,
-        parseDirectRefs = parseDirectRefs,
-        allowAtLessExpressions = true
-    ) ?: run {
-        return null
+internal fun SourceStream.parseConditionAfter(
+    propertyFirst: ReferencedOrDirectValue,
+    type: ConditionType,
+    valueType: KATEType,
+    allowAtLessExpressions: Boolean,
+    parseDirectRefs: Boolean
+): Condition? {
+    val propertySecond = parseValueOfType(
+        type = valueType,
+        allowAtLessExpressions = allowAtLessExpressions,
+        parseDirectRefs = parseDirectRefs
+    )
+    return if (propertySecond != null) {
+        LogicalCondition(
+            propertyFirst = propertyFirst,
+            type = type,
+            propertySecond = propertySecond
+        )
+    } else {
+        null
     }
+}
+
+internal fun SourceStream.parseCondition(parseDirectRefs: Boolean) = parseCondition(
+    valueType = KATEType.Any,
+    allowAtLessExpressions = true,
+    parseDirectRefs = parseDirectRefs
+)
+
+internal fun SourceStream.parseCondition(
+    valueType: KATEType,
+    allowAtLessExpressions: Boolean,
+    parseDirectRefs: Boolean
+): ReferencedOrDirectValue? {
+
+    val propertyFirst = parseValueOfType(
+        type = valueType,
+        allowAtLessExpressions = allowAtLessExpressions,
+        parseDirectRefs = parseDirectRefs
+    ) ?: return null
 
     escapeSpaces()
-    val type = parseConditionType()
-
-    if (type == null) {
-        val storedValue = propertyFirst as? PrimitiveValue<*>
-        return if (storedValue != null) {
-            if (storedValue is BooleanValue) {
-                EvaluatedCondition(storedValue.value)
-            } else {
-                throw IllegalStateException("condition cannot contain value of type other than boolean")
-            }
-        } else {
-            ReferencedBoolean(propertyFirst)
-        }
-    }
+    val type = parseConditionType() ?: return propertyFirst
 
     escapeSpaces()
-    val propertySecond = this.parseAnyExpressionOrValue(
-        parseFirstStringOrChar = true,
-        parseNotFirstStringOrChar = true,
-        parseDirectRefs = parseDirectRefs,
-        allowAtLessExpressions = true
-    ) ?: run {
-        throw IllegalStateException("condition's right hand side cannot be found")
-    }
 
-    return LogicalCondition(
+    return parseConditionAfter(
         propertyFirst = propertyFirst,
         type = type,
-        propertySecond = propertySecond
+        valueType = valueType,
+        allowAtLessExpressions = allowAtLessExpressions,
+        parseDirectRefs = parseDirectRefs
     )
+
 }
 
 private fun LazyBlock.parseIfBlockValue(ifType: IfType): LazyBlockSlice {
@@ -149,7 +163,7 @@ internal fun LazyBlock.parseSingleIf(start: String, ifType: IfType): SingleIf? {
             source.increment(' ')
             val value = parseIfBlockValue(ifType = ifType)
             return SingleIf(
-                condition = EvaluatedCondition(true),
+                condition = BooleanValue(true),
                 type = IfType.Else,
                 blockValue = value
             )

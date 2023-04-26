@@ -25,7 +25,7 @@ private class StringValueExpressionParser(private val parseDirectRefs: Boolean) 
 private class NumberValueExpressionParser(private val type: KATEType, private val parseDirectRefs: Boolean) :
     ExpressionValueParser {
 
-    private fun PrimitiveValue<*>.verifyPrimitiveType() : KATEValue {
+    private fun PrimitiveValue<*>.verifyPrimitiveType(): KATEValue {
         return when (this) {
             is IntValue -> {
                 when (type) {
@@ -51,6 +51,14 @@ private class NumberValueExpressionParser(private val type: KATEType, private va
 
     override fun SourceStream.parseExpressionValue(): ReferencedOrDirectValue? {
         parseNumberValue()?.verifyPrimitiveType()?.let { return it }
+        parseVariableReference(parseDirectRefs = parseDirectRefs)?.let { return it }
+        return null
+    }
+}
+
+private class BooleanValueExpressionParser(val parseDirectRefs: Boolean) : ExpressionValueParser {
+    override fun SourceStream.parseExpressionValue(): ReferencedOrDirectValue? {
+        parseBooleanValue()?.let { return it }
         parseVariableReference(parseDirectRefs = parseDirectRefs)?.let { return it }
         return null
     }

@@ -20,6 +20,7 @@ class DefaultExpressionValueParser(
             parseStringValue()?.let { return it }
             parseCharacterValue()?.let { return it }
         }
+        parseBooleanValue()?.let { return it }
         parseNumberValue()?.let { return it }
         parseVariableReference(parseDirectRefs = parseDirectRefs)?.let { return it }
         return null
@@ -32,24 +33,8 @@ internal data class ExpressionValue(
     val second: ReferencedOrDirectValue
 ) : ReferencedOrDirectValue {
 
-    override fun asNullablePrimitive(model: KATEObject): PrimitiveValue<*> {
-        return first.asNullablePrimitive(model)?.let { first ->
-            second.asNullablePrimitive(model)?.let { second ->
-                first.operateAny(operatorType, second)
-            } ?: run {
-                throw IllegalStateException("second value in expression $this is not a primitive")
-            }
-        } ?: run {
-            throw IllegalStateException("first value in expression $this is not a primitive")
-        }
-    }
-
     override fun getKATEValue(model: KATEObject): KATEValue {
-        return asNullablePrimitive(model)
-    }
-
-    override fun getKATEValueAndType(model: KATEObject): Pair<KATEValue, KATEType?> {
-        return Pair(getKATEValue(model),null)
+        return first.getKATEValue(model).operate(operatorType,second.getKATEValue(model))
     }
 
     override fun toString(): String {

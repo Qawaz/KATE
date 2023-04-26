@@ -8,7 +8,9 @@ interface ReferencedOrDirectValue {
 
     fun getKATEValue(model: KATEObject): KATEValue
 
-    fun getKATEValueAndType(model : KATEObject) : Pair<KATEValue, KATEType?>
+    fun getKATEValueAndType(model : KATEObject) : Pair<KATEValue, KATEType?> {
+        return Pair(getKATEValue(model),null)
+    }
 
     fun toPlaceholderInvocation(model: MutableKATEObject, endPointer: Int): PlaceholderInvocation? {
         val value = getKATEValue(model)

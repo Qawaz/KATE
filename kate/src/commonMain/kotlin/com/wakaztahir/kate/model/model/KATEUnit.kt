@@ -1,6 +1,7 @@
 package com.wakaztahir.kate.model.model
 
 import com.wakaztahir.kate.model.*
+import com.wakaztahir.kate.parser.ArithmeticOperatorType
 import com.wakaztahir.kate.parser.stream.DestinationStream
 import com.wakaztahir.kate.runtime.KATEValueImplementation
 
@@ -18,7 +19,11 @@ object KATEUnit : KATEValue, CodeGen {
         // Generates nothing
     }
 
-    override fun compareTo(model: KATEObject, other: KATEValue): Int {
+    override fun operate(operator: ArithmeticOperatorType, other: KATEValue): KATEValue {
+        throw IllegalStateException("$this cannot be ${operator.char} to $other")
+    }
+
+    override fun compareTo(other: KATEValue): Int {
         throw IllegalStateException("$this cannot be compared to $other")
     }
 

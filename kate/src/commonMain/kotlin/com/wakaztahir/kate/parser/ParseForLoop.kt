@@ -31,12 +31,12 @@ internal sealed interface ForLoop : BlockContainer {
     }
 
     class ConditionalFor(
-        val condition: Condition,
+        val condition: ReferencedOrDirectValue,
         override val blockValue: LazyBlockSlice
     ) : ForLoop {
         override fun iterate(block: (iteration: Int) -> Unit) {
             var i = 0
-            while (condition.evaluate(model)) {
+            while ((condition.asNullablePrimitive(model) as BooleanValue).value) {
                 blockValue.model.removeAll()
                 block(i)
                 i++
@@ -247,9 +247,9 @@ private fun SourceStream.parseNumberedForLoopIncrementer(variableName: String): 
     if (incrementalConst == variableName) {
         val operator = parseArithmeticOperator()
         if (operator != null) {
-            val singleIncrement =
-                if (operator == ArithmeticOperatorType.Plus || operator == ArithmeticOperatorType.Minus) operator else null
-            val incrementer = if (singleIncrement != null && increment(singleIncrement.char)) {
+            val singleIncrement = if (operator == ArithmeticOperatorType.Plus || operator == ArithmeticOperatorType.Minus) operator else null
+            val singleIncrementerChar = if(singleIncrement == ArithmeticOperatorType.Plus) '+' else if(singleIncrement == ArithmeticOperatorType.Minus) '-' else null
+            val incrementer = if (singleIncrement != null && increment(singleIncrementerChar!!)) {
                 IntValue(1)
             } else {
                 parseNumberOrReference(parseDirectRefs = true)
