@@ -227,6 +227,18 @@ class IfStatementTest {
     }
 
     @Test
+    fun testChainedIfStatements() {
+        assertEquals("blockValue",GenerateCode("@if(true && true) blockValue @else blockValue2 @endif"))
+        assertEquals("blockValue2",GenerateCode("@if(true && false) blockValue @else blockValue2 @endif"))
+        assertEquals("blockValue2",GenerateCode("@if(false && false) blockValue @else blockValue2 @endif"))
+        assertEquals("blockValue2",GenerateCode("@if(false && true) blockValue @else blockValue2 @endif"))
+        assertEquals("blockValue",GenerateCode("@if(true || true) blockValue @else blockValue2 @endif"))
+        assertEquals("blockValue",GenerateCode("@if(true || false) blockValue @else blockValue2 @endif"))
+        assertEquals("blockValue2",GenerateCode("@if(false || false) blockValue @else blockValue2 @endif"))
+        assertEquals("blockValue",GenerateCode("@if(false || true) blockValue @else blockValue2 @endif"))
+    }
+
+    @Test
     fun parseMultilineIfBlock() {
         assertEquals(
             "Line Number 1\nLine Number 2", GenerateCode(
