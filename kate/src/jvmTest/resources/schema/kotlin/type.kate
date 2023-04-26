@@ -3,9 +3,7 @@
 @function getKotlinType(param)
     @if(@var(param.getType().startsWith("object")))
         @return param.getName().capitalize()
-    @elseif(@var(param.getType().startsWith("list")))
-        @return "List<" + getKotlinType(param[0]) + ">"
-    @elseif(@var(param.getType().startsWith("mutable_list")))
+    @elseif(param.getType().startsWith("list") || param.getType().startsWith("mutable_list"))
         @return "List<" + getKotlinType(param[0]) + ">"
     @else
         @return param.getType().capitalize()

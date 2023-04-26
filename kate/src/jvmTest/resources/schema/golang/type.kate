@@ -3,9 +3,7 @@
 @function getGolangType(param)
     @if(param.getType().startsWith("object"))
         @return param.getName().capitalize()
-    @elseif(param.getType().startsWith("list"))
-        @return "[]" + getGolangType(param[0])
-    @elseif(param.getType().startsWith("mutable_list"))
+    @elseif(param.getType().startsWith("list") || param.getType().startsWith("mutable_list"))
         @return "[]" + getGolangType(param[0])
     @elseif(param.getType() == "boolean")
         @return "bool"
