@@ -66,7 +66,7 @@ class TestTemplates {
             model = getObject()
         )
         assertFalse(sourceStream.hasEnded)
-        val other = sourceStream.getValueAsString(0)
+        val other = sourceStream.block.getValueAsString(0)
         assertEquals(text, other)
     }
 

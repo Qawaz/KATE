@@ -35,7 +35,7 @@ internal fun SourceStream.parseConditionType(): ConditionType? {
     }
 }
 
-internal fun SourceStream.parseConditionAfter(
+internal fun LazyBlock.parseConditionAfter(
     propertyFirst: ReferencedOrDirectValue,
     type: ConditionType,
     valueType: KATEType,
@@ -58,13 +58,13 @@ internal fun SourceStream.parseConditionAfter(
     }
 }
 
-internal fun SourceStream.parseCondition(parseDirectRefs: Boolean) = parseCondition(
+internal fun LazyBlock.parseCondition(parseDirectRefs: Boolean) = parseCondition(
     valueType = KATEType.Any,
     allowAtLessExpressions = true,
     parseDirectRefs = parseDirectRefs
 )
 
-internal fun SourceStream.parseCondition(
+internal fun LazyBlock.parseCondition(
     valueType: KATEType,
     allowAtLessExpressions: Boolean,
     parseDirectRefs: Boolean
@@ -76,10 +76,10 @@ internal fun SourceStream.parseCondition(
         parseDirectRefs = parseDirectRefs
     ) ?: return null
 
-    escapeSpaces()
-    val type = parseConditionType() ?: return propertyFirst
+    source.escapeSpaces()
+    val type = source.parseConditionType() ?: return propertyFirst
 
-    escapeSpaces()
+    source.escapeSpaces()
 
     return parseConditionAfter(
         propertyFirst = propertyFirst,
@@ -145,7 +145,7 @@ private fun LazyBlock.parseIfBlockValue(ifType: IfType): LazyBlockSlice {
 internal fun LazyBlock.parseSingleIf(start: String, ifType: IfType): SingleIf? {
     if (source.currentChar == '@' && source.increment(start)) {
         if (ifType != IfType.Else) {
-            val condition = source.parseCondition(parseDirectRefs = true)
+            val condition = parseCondition(parseDirectRefs = true)
             if (condition != null) {
                 if (source.increment(')')) {
                     source.increment(' ')

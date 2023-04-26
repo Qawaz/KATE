@@ -143,7 +143,7 @@ internal inline fun SourceStream.incrementUntilDirectiveWithSkip(
 inline fun SourceStream.readStream(startPointer: Int, limit: Int, block: () -> Unit) {
     val previous = pointer
     setPointerAt(startPointer)
-    while (canIterate() && pointer < limit) {
+    while (!hasEnded && pointer < limit) {
         block()
         incrementPointer()
     }
@@ -154,7 +154,7 @@ fun SourceStream.getErrorInfoAtCurrentPointer(): Pair<Int, Int> {
     val pointerAt = pointer
     var lineNumber = 1
     var charIndex = 0
-    source.readStream(0, pointerAt) {
+    readStream(0, pointerAt) {
         charIndex++
         if (currentChar == '\n') {
             lineNumber++

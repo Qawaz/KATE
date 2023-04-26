@@ -12,7 +12,7 @@ class ModelDirectiveTest {
 
     private inline fun TemplateContext.testDirective(block: (ModelDirective) -> Unit) {
         val previous = stream.pointer
-        block(stream.parseVariableReference(true)!!)
+        block(stream.block.parseVariableReference(true)!!)
         stream.setPointerAt(previous)
     }
 
@@ -81,7 +81,7 @@ class ModelDirectiveTest {
     @Test
     fun testModelFunctionCallWithParameters() {
         val context = TemplateContext(text = "@var(callSum(1,2))")
-        val directive = context.stream.parseVariableReference(true)!!
+        val directive = context.stream.block.parseVariableReference(true)!!
         assertTrue(directive.propertyPath[0] is ModelReference.FunctionCall)
     }
 

@@ -76,9 +76,7 @@ fun LazyBlock.parseRawBlock(): RawBlock? {
 }
 
 fun LazyBlock.parsePartialRawImplicitDirective() : CodeGen? {
-    source.parseVariableReference(
-        parseDirectRefs = true
-    )?.let {
+    parseVariableReference(parseDirectRefs = true)?.let {
         it.propertyPath.lastOrNull()?.let { c -> c as? ModelReference.FunctionCall }?.let { call ->
             return it.toEmptyPlaceholderInvocation(model, source.pointer)
         } ?: run {

@@ -68,7 +68,7 @@ internal fun SourceStream.parseAssignmentLHS(isExplicitAssignment: Boolean): Ass
     val variableName = parseTextWhile { currentChar.isVariableName() }
     escapeSpaces()
     val arithmeticOperator = parseArithmeticOperator()
-    if (source.increment('=')) {
+    if (increment('=')) {
         val valid = isValidVariableName(variableName)
         if (valid.isSuccess) {
             return AssignmentLHS(variableName, arithmeticOperator)
@@ -88,7 +88,7 @@ internal fun SourceStream.parseAssignmentLHS(isExplicitAssignment: Boolean): Ass
 internal fun LazyBlock.parseVariableAssignment(): VariableAssignment? {
     val lhs = source.parseAssignmentLHS(isExplicitAssignment = isWriteUnprocessedTextEnabled) ?: return null
     source.escapeSpaces()
-    val property = source.parseAnyExpressionOrValue(
+    val property = parseAnyExpressionOrValue(
         parseFirstStringOrChar = true,
         parseNotFirstStringOrChar = true,
         parseDirectRefs = true,

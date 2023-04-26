@@ -169,7 +169,7 @@ class FunctionDefinition(
 
 private fun LazyBlock.parseFunctionReturn(): ReferencedOrDirectValue? {
     if (source.currentChar == '@' && source.increment("@return ")) {
-        return source.parseAnyExpressionOrValue(
+        return parseAnyExpressionOrValue(
             parseFirstStringOrChar = true,
             parseNotFirstStringOrChar = true,
             parseDirectRefs = true,
@@ -193,13 +193,13 @@ private fun SourceStream.parseFunctionParameters(): Map<String, KATEType>? {
             parameters[paramName] = paramType
         } while (increment(','))
         if (!increment(')')) {
-            throw IllegalStateException("expected ')' got ${source.currentChar} in function parameter definition")
+            throw IllegalStateException("expected ')' got $currentChar in function parameter definition")
         }
         if (parameters.isEmpty()) return null
         return parameters
     }
     if (!increment(')')) {
-        throw IllegalStateException("expected ')' got ${source.currentChar} in function parameter definition")
+        throw IllegalStateException("expected ')' got $currentChar in function parameter definition")
     }
     return null
 }
@@ -258,7 +258,7 @@ fun KATEParsedFunction(
     invoke: KATEInvocation
 ): KATEFunction {
     val source = TextSourceStream("@function $typeDefinition @end_function")
-    val parsed = source.parseFunctionDefinition(anonymousFunctionName = null)!!
+    val parsed = source.block.parseFunctionDefinition(anonymousFunctionName = null)!!
     val parsedDef = parsed.definition
     return object : KATEFunction(parsedDef.returnedType, parsedDef.parameterTypes) {
         override fun invoke(

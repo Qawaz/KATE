@@ -10,11 +10,11 @@ class RawTest {
     @Test
     fun testRawBlock() {
         val context = TemplateContext("@raw there's something raw here @endraw")
-        val block = context.stream.parseRawBlock()
+        val block = context.stream.block.parseRawBlock()
         assertNotEquals(null, block)
         assertEquals("there's something raw here", block!!.value.getValueAsString())
         context.updateStream("@rawvalue@endraw")
-        context.stream.parseRawBlock()
+        context.stream.block.parseRawBlock()
         assertEquals(16, context.stream.pointer)
     }
 

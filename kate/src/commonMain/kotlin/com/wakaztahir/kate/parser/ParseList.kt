@@ -37,7 +37,7 @@ private fun LazyBlock.parseListParameters(
     allowEmpty: Boolean
 ): MutableList<ReferencedOrDirectValue> {
     do {
-        val value = source.parseValueOfType(
+        val value = parseValueOfType(
             type = itemType,
             allowAtLessExpressions = true,
             parseDirectRefs = true

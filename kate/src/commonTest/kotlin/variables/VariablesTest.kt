@@ -16,7 +16,7 @@ class VariablesTest {
     @Test
     fun testParseVariableReference() {
         val context = TemplateContext(("@var(myVar)"))
-        val ref = context.stream.parseVariableReference(true)
+        val ref = context.stream.block.parseVariableReference(true)
         assertNotEquals(null, ref)
         assertEquals(ref!!.propertyPath[0].name, "myVar")
         context.stream.model.insertValue("myVar", StringValue("someValue"))
@@ -217,7 +217,7 @@ class VariablesTest {
     fun testParseDynamicProperty() {
         val context = TemplateContext(("@var(myVar)"))
         context.stream.model.insertValue("myVar", StringValue("someValue"))
-        val property = context.stream.parseExpression(
+        val property = context.stream.block.parseExpression(
             parseFirstStringOrChar = true,
             parseNotFirstStringOrChar = true,
             parseDirectRefs = true,
@@ -229,11 +229,11 @@ class VariablesTest {
     @Test
     fun testDeclarationAndReference() {
         val decContext = TemplateContext(("@var myVar = \"someValue\""))
-        val dec = decContext.stream.parseVariableDeclaration()
+        val dec = decContext.stream.block.parseVariableDeclaration()
         assertEquals("someValue", dec!!.variableValue.asPrimitive(decContext.stream.model).value)
         decContext.updateStream("@var myVar2 = @var(myVar)")
         dec.storeValue(decContext.stream.model)
-        val refDec = decContext.stream.parseVariableDeclaration()
+        val refDec = decContext.stream.block.parseVariableDeclaration()
         assertEquals(
             dec.variableValue.asPrimitive(decContext.stream.model).value,
             refDec!!.variableValue.asPrimitive(decContext.stream.model).value

@@ -69,16 +69,16 @@ internal fun SourceStream.parseKATEType(): KATEType? {
             "long" -> KATEType.Long
             "boolean" -> KATEType.Boolean
             "list", "mutable_list" -> {
-                source.increment('<')
+                increment('<')
                 val itemType = parseKATEType() ?: KATEType.NullableKateType(KATEType.Any)
-                source.increment('>')
+                increment('>')
                 if (type == "list") KATEType.List(itemType) else KATEType.MutableList(itemType)
             }
 
             "object" -> {
-                source.increment('<')
+                increment('<')
                 val itemType = parseKATEType() ?: KATEType.NullableKateType(KATEType.Any)
-                source.increment('>')
+                increment('>')
                 KATEType.Object(itemType)
             }
 

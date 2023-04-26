@@ -3,7 +3,6 @@ package com.wakaztahir.kate.parser
 import com.wakaztahir.kate.model.BooleanValue
 import com.wakaztahir.kate.model.ConditionType
 import com.wakaztahir.kate.model.LazyBlock
-import com.wakaztahir.kate.model.PrimitiveValue
 import com.wakaztahir.kate.model.model.KATEValue
 import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
 import com.wakaztahir.kate.parser.stream.SourceStream
@@ -303,7 +302,7 @@ private fun LazyBlock.parseValueAndOperator(
     valueParser: ExpressionValueParser,
     allowAtLessExpressions: Boolean
 ): Pair<ReferencedOrDirectValue, ArithmeticOperatorType?>? {
-    val firstValue = with(source) { with(valueParser) { parseExpressionValue() } }
+    val firstValue = with(valueParser) { parseExpressionValue() }
     if (firstValue != null) {
         val pointerAfterFirstValue = source.pointer
         source.increment(' ')
@@ -324,13 +323,13 @@ private fun LazyBlock.parseValueAndOperator(
     return null
 }
 
-private fun SourceStream.parseExpressionWith(
+private fun LazyBlock.parseExpressionWith(
     valueParser: ExpressionValueParser,
     allowAtLessExpressions: Boolean,
     stack: ValueAndOperatorStack,
     final: ValueAndOperatorStack
 ) {
-    while (!hasEnded) {
+    while (!source.hasEnded) {
         val valueAndOp = parseValueAndOperator(
             valueParser = valueParser,
             allowAtLessExpressions = allowAtLessExpressions
@@ -372,10 +371,10 @@ private fun SourceStream.parseExpressionWith(
                 break
             }
         } else {
-            if (currentChar == '(') {
-                stack.putCharacter(currentChar)
-                incrementPointer()
-            } else if (currentChar == ')') {
+            if (source.currentChar == '(') {
+                stack.putCharacter(source.currentChar)
+                source.incrementPointer()
+            } else if (source.currentChar == ')') {
                 var found = false
                 while (!found) {
                     if (stack.peakOperator() != null) {
@@ -385,7 +384,7 @@ private fun SourceStream.parseExpressionWith(
                         final.putCharacter(stack.popChar())
                     }
                 }
-                incrementPointer()
+                source.incrementPointer()
             } else {
                 break
             }
@@ -423,7 +422,7 @@ internal fun LazyBlock.parseExpressionAfter(
     stack.putOperator(operator)
     val final = ValueAndOperatorStack()
     final.putValue(value)
-    source.parseExpressionWith(
+    parseExpressionWith(
         valueParser = valueParser,
         allowAtLessExpressions = allowAtLessExpressions,
         stack = stack,
@@ -456,7 +455,7 @@ internal fun LazyBlock.parseExpression(
     return null
 }
 
-internal fun SourceStream.parseAnyExpressionOrValue(
+internal fun LazyBlock.parseAnyExpressionOrValue(
     parseFirstStringOrChar: Boolean = true,
     parseNotFirstStringOrChar: Boolean = true,
     parseDirectRefs: Boolean = false,

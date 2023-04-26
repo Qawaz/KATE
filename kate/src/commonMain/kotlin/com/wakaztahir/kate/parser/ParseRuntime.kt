@@ -36,7 +36,7 @@ fun LazyBlock.parseRuntimeGen(): CodeGen? {
     if (source.currentChar == '@') {
         if (source.increment(CHAR_DIRECTIVE)) {
             if (!source.increment('(')) throw IllegalStateException("expected '(' got ${source.currentChar}")
-            val value = source.parseExpression(
+            val value = parseExpression(
                 parseDirectRefs = false,
                 parseFirstStringOrChar = true,
                 parseNotFirstStringOrChar = true,
@@ -46,7 +46,7 @@ fun LazyBlock.parseRuntimeGen(): CodeGen? {
             return WriteChar(value)
         } else if (source.increment(STRING_DIRECTIVE)) {
             if (!source.increment('(')) throw IllegalStateException("expected '(' got ${source.currentChar}")
-            val value = source.parseExpression(
+            val value = parseExpression(
                 parseDirectRefs = true,
                 parseFirstStringOrChar = true,
                 parseNotFirstStringOrChar = true,

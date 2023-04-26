@@ -184,7 +184,7 @@ private fun LazyBlock.parseForBlockValue(): ForLoopLazyBlockSlice {
 }
 
 private fun LazyBlock.parseConditionalFor(): ForLoop.ConditionalFor? {
-    val condition = source.parseCondition(parseDirectRefs = false)
+    val condition = parseCondition(parseDirectRefs = false)
     if (condition != null) {
         source.increment(')')
         source.increment(' ')
@@ -197,7 +197,7 @@ private fun LazyBlock.parseConditionalFor(): ForLoop.ConditionalFor? {
     return null
 }
 
-private fun SourceStream.parseListReferencedValue(parseDirectRefs : Boolean): ReferencedOrDirectValue? {
+private fun LazyBlock.parseListReferencedValue(parseDirectRefs : Boolean): ReferencedOrDirectValue? {
     parseListDefinition()?.let { return it }
     parseMutableListDefinition()?.let { return it }
     parseVariableReference(parseDirectRefs = parseDirectRefs)?.let { return it }
@@ -212,7 +212,7 @@ private fun LazyBlock.parseIterableForLoopAfterVariable(variableName: String): F
     source.escapeSpaces()
     if (source.increment(':')) {
         source.escapeSpaces()
-        val referencedValue = source.parseListReferencedValue(parseDirectRefs = true)
+        val referencedValue = parseListReferencedValue(parseDirectRefs = true)
         source.escapeSpaces()
         if (!source.increment(')')) {
             throw IllegalStateException("expected ) , got ${source.currentChar}")
@@ -236,31 +236,30 @@ private class NumberedForLoopIncrementer(
     val incrementerValue: ReferencedOrDirectValue
 )
 
-private fun SourceStream.parseNumberOrReference(parseDirectRefs: Boolean): ReferencedOrDirectValue? {
-    parseNumberValue()?.let { return it }
+private fun LazyBlock.parseNumberOrReference(parseDirectRefs: Boolean): ReferencedOrDirectValue? {
+    source.parseNumberValue()?.let { return it }
     parseVariableReference(parseDirectRefs = parseDirectRefs)?.let { return it }
     return null
 }
 
-private fun SourceStream.parseNumberedForLoopIncrementer(variableName: String): NumberedForLoopIncrementer {
-    val incrementalConst = parseTextWhile { currentChar.isVariableName() }
+private fun LazyBlock.parseNumberedForLoopIncrementer(variableName: String): NumberedForLoopIncrementer {
+    val incrementalConst = source.parseTextWhile { currentChar.isVariableName() }
     if (incrementalConst == variableName) {
-        val operator = parseArithmeticOperator()
+        val operator = source.parseArithmeticOperator()
         if (operator != null) {
             val singleIncrement = if (operator == ArithmeticOperatorType.Plus || operator == ArithmeticOperatorType.Minus) operator else null
             val singleIncrementerChar = if(singleIncrement == ArithmeticOperatorType.Plus) '+' else if(singleIncrement == ArithmeticOperatorType.Minus) '-' else null
-            val incrementer = if (singleIncrement != null && increment(singleIncrementerChar!!)) {
+            val incrementer = if (singleIncrement != null && source.increment(singleIncrementerChar!!)) {
                 IntValue(1)
             } else {
                 parseNumberOrReference(parseDirectRefs = true)
-            }
-                ?: throw IllegalStateException("expected number property or value or '+' or '-' , got $currentChar in for loop incrementer")
+            } ?: throw IllegalStateException("expected number property or value or '+' or '-' , got ${source.currentChar} in for loop incrementer")
             return NumberedForLoopIncrementer(
                 operatorType = operator,
                 incrementerValue = incrementer
             )
         } else {
-            throw IllegalStateException("expected '+','-','/','*','%' , got $currentChar in for loop condition")
+            throw IllegalStateException("expected '+','-','/','*','%' , got ${source.currentChar} in for loop condition")
         }
     } else {
         throw IllegalStateException("incremental variable is different : $incrementalConst != $variableName")
@@ -270,21 +269,21 @@ private fun SourceStream.parseNumberedForLoopIncrementer(variableName: String): 
 private fun LazyBlock.parseNumberedForLoopAfterVariable(variableName: String): ForLoop.NumberedFor? {
     if (source.increment('=')) {
         source.escapeSpaces()
-        val initializer = source.parseAnyExpressionOrValue()
+        val initializer = parseAnyExpressionOrValue()
             ?: throw IllegalStateException("unexpected ${source.currentChar} , expected a number or property")
         if (source.increment(';')) {
             val conditionalConst = source.parseTextWhile { currentChar.isVariableName() }
             if (conditionalConst == variableName) {
                 val conditionType = source.parseConditionType()
                     ?: throw IllegalStateException("expected conditional operator , got ${source.currentChar}")
-                val conditional = source.parseAnyExpressionOrValue(
+                val conditional = parseAnyExpressionOrValue(
                     parseFirstStringOrChar = true,
                     parseNotFirstStringOrChar = true,
                     parseDirectRefs = true,
                     allowAtLessExpressions = true
                 )?: throw IllegalStateException("expected number property of value got ${source.currentChar}")
                 if (source.increment(';')) {
-                    val incrementer = source.parseNumberedForLoopIncrementer(variableName)
+                    val incrementer = parseNumberedForLoopIncrementer(variableName)
                     if (!source.increment(')')) {
                         throw IllegalStateException("expected ) , got ${source.currentChar}")
                     }

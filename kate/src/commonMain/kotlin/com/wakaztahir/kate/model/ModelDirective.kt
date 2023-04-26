@@ -23,7 +23,7 @@ sealed interface ModelReference {
 
 }
 
-open class ModelDirective(val propertyPath: List<ModelReference>) : ReferencedValue {
+class ModelDirective(override val propertyPath: List<ModelReference>,override val referenceModel : KATEObject) : ReferencedValue {
 
     init {
         require(propertyPath.isNotEmpty()) {

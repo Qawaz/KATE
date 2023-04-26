@@ -1,5 +1,6 @@
 package com.wakaztahir.kate.parser.variable
 
+import com.wakaztahir.kate.model.LazyBlock
 import com.wakaztahir.kate.model.ModelDirective
 import com.wakaztahir.kate.model.ModelReference
 import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
@@ -10,14 +11,14 @@ import com.wakaztahir.kate.parser.stream.*
 import com.wakaztahir.kate.parser.stream.increment
 import com.wakaztahir.kate.parser.stream.parseTextWhile
 
-internal fun SourceStream.parseFunctionParameters(): List<ReferencedOrDirectValue>? {
-    if (increment('(')) {
-        if (increment(')')) {
+internal fun LazyBlock.parseFunctionParameters(): List<ReferencedOrDirectValue>? {
+    if (source.increment('(')) {
+        if (source.increment(')')) {
             return emptyList()
         }
         val parameters = mutableListOf<ReferencedOrDirectValue>()
         do {
-            val parameter = this.parseAnyExpressionOrValue(
+            val parameter = parseAnyExpressionOrValue(
                 parseFirstStringOrChar = true,
                 parseNotFirstStringOrChar = true,
                 parseDirectRefs = true,
@@ -28,30 +29,30 @@ internal fun SourceStream.parseFunctionParameters(): List<ReferencedOrDirectValu
             } else {
                 break
             }
-        } while (increment(','))
-        if (!increment(')')) {
-            printErrorLineNumberAndCharacterIndex()
-            throw IllegalStateException("a function call must end with ')' but instead found $currentChar")
+        } while (source.increment(','))
+        if (!source.increment(')')) {
+            source.printErrorLineNumberAndCharacterIndex()
+            throw IllegalStateException("a function call must end with ')' but instead found ${source.currentChar}")
         }
         return parameters
     }
     return null
 }
 
-private fun SourceStream.parseIndexingOperatorValue(parseDirectRefs: Boolean): ReferencedOrDirectValue? {
-    parseNumberValue()?.let { return it }
-    parseStringValue()?.let { return it }
+private fun LazyBlock.parseIndexingOperatorValue(parseDirectRefs: Boolean): ReferencedOrDirectValue? {
+    source.parseNumberValue()?.let { return it }
+    source.parseStringValue()?.let { return it }
     parseVariableReference(parseDirectRefs = parseDirectRefs)?.let { return it }
     return null
 }
 
-internal fun SourceStream.parseIndexingOperatorCall(
+internal fun LazyBlock.parseIndexingOperatorCall(
     parseDirectRefs: Boolean,
 ): ModelReference.FunctionCall? {
-    if (increment('[')) {
+    if (source.increment('[')) {
         val indexingValue = parseIndexingOperatorValue(parseDirectRefs)
             ?: throw IllegalStateException("couldn't get indexing value inside indexing operator")
-        if (increment(']')) {
+        if (source.increment(']')) {
             return ModelReference.FunctionCall(
                 name = "get",
                 parametersList = listOf(indexingValue)
@@ -63,22 +64,22 @@ internal fun SourceStream.parseIndexingOperatorCall(
     return null
 }
 
-internal fun SourceStream.parseDotReferencesInto(
+internal fun LazyBlock.parseDotReferencesInto(
     parseDirectRefs: Boolean,
     throwOnEmptyVariableName: Boolean,
 ): MutableList<ModelReference>? {
     var propertyPath: MutableList<ModelReference>? = null
-    val previous = pointer
+    val previous = source.pointer
     do {
-        if (currentChar.isDigit()) {
+        if (source.currentChar.isDigit()) {
             throw VariableReferenceParseException("variable name cannot begin with a digit")
         }
-        val propertyName = parseTextWhile { currentChar.isVariableName() }
+        val propertyName = source.parseTextWhile { currentChar.isVariableName() }
         if (propertyName.isEmpty()) {
             if (throwOnEmptyVariableName || propertyPath != null) {
                 throw IllegalStateException("variable name cannot be empty")
             } else {
-                setPointerAt(previous)
+                source.setPointerAt(previous)
                 return null
             }
         }
@@ -90,29 +91,29 @@ internal fun SourceStream.parseDotReferencesInto(
             propertyPath.add(ModelReference.Property(propertyName))
         }
         parseIndexingOperatorCall(parseDirectRefs = parseDirectRefs)?.let { propertyPath.add(it) }
-    } while (increment('.'))
+    } while (source.increment('.'))
     return propertyPath
 }
 
 class VariableReferenceParseException(message: String) : Exception(message)
 
-internal fun SourceStream.parseModelDirective(
+internal fun LazyBlock.parseModelDirective(
     parseDirectRefs: Boolean,
     throwOnEmptyVariableName: Boolean
 ): ModelDirective? {
     parseDotReferencesInto(
         parseDirectRefs = parseDirectRefs,
         throwOnEmptyVariableName = throwOnEmptyVariableName,
-    )?.let { return ModelDirective(it) }
+    )?.let { return ModelDirective(it, model) }
     return null
 }
 
-internal fun SourceStream.parseVariableReference(parseDirectRefs: Boolean): ModelDirective? {
-    if (currentChar == '@' && increment("@var(")) {
+internal fun LazyBlock.parseVariableReference(parseDirectRefs: Boolean): ModelDirective? {
+    if (source.currentChar == '@' && source.increment("@var(")) {
         val directive = parseModelDirective(parseDirectRefs = true, throwOnEmptyVariableName = true)
-        if (!increment(')')) {
-            printErrorLineNumberAndCharacterIndex()
-            throw VariableReferenceParseException("expected ')' got $currentChar at $pointer")
+        if (!source.increment(')')) {
+            source.printErrorLineNumberAndCharacterIndex()
+            throw VariableReferenceParseException("expected ')' got ${source.currentChar} at ${source.pointer}")
         }
         return directive
     }

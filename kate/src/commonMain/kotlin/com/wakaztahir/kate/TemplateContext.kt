@@ -39,11 +39,11 @@ class TemplateContext(stream: SourceStream) {
 
     @OptIn(KATEDelicateFunction::class)
     fun getDestinationAsString(): String {
-        return stream.getDestinationString()
+        return stream.block.getDestinationString()
     }
 
     fun generateTo(destination: DestinationStream) {
-        stream.generateTo(destination)
+        stream.block.generateTo(destination)
     }
 
 }

@@ -4,24 +4,23 @@ import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.model.model.KATEObject
 import com.wakaztahir.kate.model.model.KATEValue
 import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
-import com.wakaztahir.kate.parser.stream.SourceStream
 import com.wakaztahir.kate.parser.variable.parseVariableReference
 
 internal interface ExpressionValueParser {
-    fun SourceStream.parseExpressionValue(): ReferencedOrDirectValue?
+    fun LazyBlock.parseExpressionValue(): ReferencedOrDirectValue?
 }
 
 class DefaultExpressionValueParser(
     private val parseStringAndChar: Boolean,
     private val parseDirectRefs: Boolean
 ) : ExpressionValueParser {
-    override fun SourceStream.parseExpressionValue(): ReferencedOrDirectValue? {
+    override fun LazyBlock.parseExpressionValue(): ReferencedOrDirectValue? {
         if (parseStringAndChar) {
-            parseStringValue()?.let { return it }
-            parseCharacterValue()?.let { return it }
+            source.parseStringValue()?.let { return it }
+            source.parseCharacterValue()?.let { return it }
         }
-        parseBooleanValue()?.let { return it }
-        parseNumberValue()?.let { return it }
+        source.parseBooleanValue()?.let { return it }
+        source.parseNumberValue()?.let { return it }
         parseVariableReference(parseDirectRefs = parseDirectRefs)?.let { return it }
         return null
     }

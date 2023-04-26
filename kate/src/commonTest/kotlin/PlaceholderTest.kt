@@ -13,11 +13,11 @@ class PlaceholderTest {
         val definitionText = "@define_placeholder(Name) ElonMusk @end_define_placeholder"
         val code = "$definitionText@placeholder(Name)"
         val context = TemplateContext(code)
-        val definition = context.stream.parsePlaceholderDefinition()!!
+        val definition = context.stream.block.parsePlaceholderDefinition()!!
 
         assertEquals(definitionText.length, context.stream.pointer)
 
-        val invocation = context.stream.parsePlaceholderInvocation()!!
+        val invocation = context.stream.block.parsePlaceholderInvocation()!!
 
         assertEquals(code.length, context.stream.pointer)
 
@@ -27,9 +27,9 @@ class PlaceholderTest {
         assertEquals("Name", invocation.placeholderName)
 
         val destination = TextDestinationStream()
-        definition.generateTo(context.stream, destination)
+        definition.generateTo(context.stream.block, destination)
         assertEquals(definition.blockValue, context.stream.placeholderManager.getPlaceholder("Name"))
-        invocation.generateTo(context.stream, destination)
+        invocation.generateTo(context.stream.block, destination)
         assertEquals("ElonMusk", (destination.stream as TextDestinationStream).getValue())
 
         assertEquals(expected = "ElonMusk", actual = GenerateCode(code = code))

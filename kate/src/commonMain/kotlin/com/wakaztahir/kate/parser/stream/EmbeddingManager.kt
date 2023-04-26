@@ -17,7 +17,7 @@ interface EmbeddingManager {
         if (stream != null) {
             embeddedStreams[path] = true
             try {
-                stream.generateTo(destination)
+                stream.block.generateTo(destination)
             } catch (e: Throwable) {
                 handleException(path,stream, e)
             }

@@ -98,7 +98,7 @@ class TextPlaceholderBlock(
             model = model,
             placeholderManager = source.placeholderManager,
             embeddingManager = source.embeddingManager
-        ).generateTo(destination)
+        ).block.generateTo(destination)
     }
 }
 

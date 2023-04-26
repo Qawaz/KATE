@@ -14,7 +14,7 @@ class VariablesTest {
     @Test
     fun testParseVariableDeclaration() {
         val context = TemplateContext(("@var myVar = \"someValue\""))
-        val ref = context.stream.parseVariableDeclaration()
+        val ref = context.stream.block.parseVariableDeclaration()
         assertNotEquals(null, ref)
         assertEquals("myVar", ref!!.variableName)
         assertEquals("someValue", ref.variableValue.asPrimitive(context.stream.model).value)
