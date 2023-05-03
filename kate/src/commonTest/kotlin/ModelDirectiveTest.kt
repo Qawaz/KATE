@@ -10,7 +10,7 @@ import kotlin.test.assertTrue
 
 class ModelDirectiveTest {
 
-    private inline fun TemplateContext.testDirective(block: (ModelDirective) -> Unit) {
+    private inline fun TemplateContext.testDirective(block: (ReferencedValue) -> Unit) {
         val previous = stream.pointer
         block(stream.block.parseVariableReference(true)!!)
         stream.setPointerAt(previous)

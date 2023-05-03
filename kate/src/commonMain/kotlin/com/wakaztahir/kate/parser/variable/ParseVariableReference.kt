@@ -7,6 +7,7 @@ import com.wakaztahir.kate.model.ModelReference
 import com.wakaztahir.kate.model.model.KATEObject
 import com.wakaztahir.kate.model.model.KATEValue
 import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
+import com.wakaztahir.kate.model.model.ReferencedValue
 import com.wakaztahir.kate.parser.*
 import com.wakaztahir.kate.parser.parseAnyExpressionOrValue
 import com.wakaztahir.kate.parser.parseStringValue
@@ -108,12 +109,6 @@ internal fun LazyBlock.parseModelDirective(
     return null
 }
 
-class NegatedModelDirective(val modelDirective: ModelDirective) : ReferencedOrDirectValue by modelDirective {
-    override fun getKATEValue(model: KATEObject): KATEValue {
-        return BooleanValue(!(modelDirective.asNullablePrimitive(model)!!.value as Boolean))
-    }
-}
-
 internal fun LazyBlock.parseVariableReferenceAsExpression(parseDirectRefs: Boolean): ReferencedOrDirectValue? {
     if (source.currentChar == '@' && source.increment("@var(")) {
         val expression = parseAnyExpressionOrValue(parseDirectRefs = true)
@@ -130,7 +125,7 @@ internal fun LazyBlock.parseVariableReferenceAsExpression(parseDirectRefs: Boole
     return null
 }
 
-internal fun LazyBlock.parseVariableReference(parseDirectRefs: Boolean): ModelDirective? {
+internal fun LazyBlock.parseVariableReference(parseDirectRefs: Boolean): ReferencedValue? {
     if (source.currentChar == '@' && source.increment("@var(")) {
         val directive = parseModelDirective(parseDirectRefs = true, throwOnEmptyVariableName = true)
         if (!source.increment(')')) {

@@ -31,16 +31,6 @@ class ModelDirective(override val propertyPath: List<ModelReference>,override va
         }
     }
 
-    fun toEmptyPlaceholderInvocation(model: MutableKATEObject, endPointer: Int): PlaceholderInvocation {
-        model.getModelReferenceValue(path = propertyPath)
-        return PlaceholderInvocation(
-            placeholderName = KATEType.Unit.getKATEType(),
-            definitionName = null,
-            paramValue = KATEUnit,
-            invocationEndPointer = endPointer
-        )
-    }
-
     override fun getKATEValue(model: KATEObject): KATEValue {
         return model.getModelReferenceValue(path = propertyPath)
     }

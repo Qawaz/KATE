@@ -94,7 +94,7 @@ fun LazyBlock.parseValueOfType(
         }
 
         is KATEType.Boolean -> {
-            source.parseNegatableBooleanValue()?.let { return it }
+            source.parseBooleanValue()?.let { return it }
             parseVariableReference(parseDirectRefs = parseDirectRefs)?.let { return it }
         }
 

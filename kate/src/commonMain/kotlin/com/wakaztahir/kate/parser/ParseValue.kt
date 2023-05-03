@@ -46,19 +46,6 @@ internal fun SourceStream.parseBooleanValue(): PrimitiveValue<*>? {
     return null
 }
 
-internal fun SourceStream.parseNegatableBooleanValue(): PrimitiveValue<*>? {
-    val isNegated = increment('!')
-    parseBooleanValue()?.let {
-        if (isNegated) {
-            return BooleanValue(!(it.value as Boolean))
-        } else {
-            return it
-        }
-    }
-    if (isNegated) decrementPointer()
-    return null
-}
-
 private fun Char.transformAfterBackslashChar(): Char? {
     return when (this) {
         'b' -> '\b'

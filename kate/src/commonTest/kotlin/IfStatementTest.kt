@@ -47,6 +47,8 @@ class IfStatementTest {
     fun testNegatedConditions() {
         assertEquals("false",GenerateCode("@var x = !true && true @var(x)"))
         assertEquals("false",GenerateCode("@var x = !true @var(x)"))
+        assertEquals("false",GenerateCode("@var x = true @var(!x)"))
+        assertEquals("true",GenerateCode("@var x = false @var(!x)"))
         assertEquals("true",GenerateCode("@var x = false && false @var(!x)"))
         assertEquals("true",GenerateCode("@var x = false && true @var(!x)"))
         assertEquals("true",GenerateCode("@var x = true || !true @var(x)"))
