@@ -16,7 +16,7 @@ private const val STRING_DIRECTIVE = "@runtime.print_string"
 private value class WriteChar(val char: ReferencedOrDirectValue) : CodeGen {
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
         destination.stream.write(
-            (char.asNullablePrimitive(block.model) as? CharValue)?.value
+            (char.asNullablePrimitive(block.model)?.value as? Char)
                 ?: throw IllegalStateException("passed value to $CHAR_DIRECTIVE is not a character")
         )
     }
@@ -26,7 +26,7 @@ private value class WriteChar(val char: ReferencedOrDirectValue) : CodeGen {
 private value class WriteString(val string: ReferencedOrDirectValue) : CodeGen {
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
         destination.stream.write(
-            (string.asNullablePrimitive(block.model) as? StringValue)?.value
+            (string.asNullablePrimitive(block.model)?.value as? String)
                 ?: throw IllegalStateException("passed value to $STRING_DIRECTIVE is not a string")
         )
     }

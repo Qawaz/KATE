@@ -11,6 +11,8 @@ interface KATEList<T : KATEValue> : KATEValue {
 
     val collection: List<T>
 
+    override fun getKotlinValue(): Any = collection
+
     fun getExplicitType(index: Int): KATEType?
 
     fun setExplicitType(index: Int, type: KATEType)

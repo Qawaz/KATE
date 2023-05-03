@@ -16,7 +16,7 @@ object StringImplementation {
                 explicitType: KATEType?,
                 parameters: List<ReferencedOrDirectValue>
             ): ReferencedOrDirectValue {
-                val string = invokedOn.let { it as? StringValue }?.value
+                val string = invokedOn.let { it.getKotlinValue() as? String }
                 val index = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as? Int }
                 require(string != null) { "string value is null" }
                 require(index != null) { "String.get(Int) expects a single parameter to get the value of string" }
@@ -32,7 +32,7 @@ object StringImplementation {
                 explicitType: KATEType?,
                 parameters: List<ReferencedOrDirectValue>
             ): ReferencedOrDirectValue {
-                val string = invokedOn.let { it as? StringValue }?.value
+                val string = invokedOn.getKotlinValue() as? String
                 require(string != null) { "string value is null" }
                 return IntValue(string.length)
             }
@@ -46,7 +46,7 @@ object StringImplementation {
                 explicitType: KATEType?,
                 parameters: List<ReferencedOrDirectValue>
             ): ReferencedOrDirectValue {
-                val string = invokedOn.let { it as? StringValue }?.value
+                val string = invokedOn.getKotlinValue() as? String
                 val find = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
                 require(find != null) { "indexOf requires a single string parameter" }
                 require(string != null) { "string value is null" }
@@ -62,7 +62,7 @@ object StringImplementation {
                 explicitType: KATEType?,
                 parameters: List<ReferencedOrDirectValue>
             ): ReferencedOrDirectValue {
-                val string = invokedOn.let { it as? StringValue }?.value
+                val string = invokedOn.getKotlinValue() as? String
                 val find = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
                 require(find != null) { "split requires a single string parameter" }
                 require(string != null) { "string value is null" }
@@ -78,7 +78,7 @@ object StringImplementation {
                 explicitType: KATEType?,
                 parameters: List<ReferencedOrDirectValue>
             ): ReferencedOrDirectValue {
-                val string = invokedOn.let { it as? StringValue }?.value
+                val string = invokedOn.getKotlinValue() as? String
                 require(string != null) { "string value is null" }
                 return string.toIntOrNull()?.let { IntValue(it) } ?: KATEUnit
             }
@@ -92,7 +92,7 @@ object StringImplementation {
                 explicitType: KATEType?,
                 parameters: List<ReferencedOrDirectValue>
             ): ReferencedOrDirectValue {
-                val string = invokedOn.let { it as? StringValue }?.value
+                val string = invokedOn.getKotlinValue() as? String
                 require(string != null) { "string value is null" }
                 return string.toDoubleOrNull()?.let { DoubleValue(it) } ?: KATEUnit
             }
@@ -106,7 +106,7 @@ object StringImplementation {
                 explicitType: KATEType?,
                 parameters: List<ReferencedOrDirectValue>
             ): ReferencedOrDirectValue {
-                val string = invokedOn.let { it as? StringValue }?.value
+                val string = invokedOn.getKotlinValue() as? String
                 require(string != null) { "string value is null" }
                 val firstIndex = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as Int }
                 val secondIndex = parameters.getOrNull(1)?.asNullablePrimitive(model)?.value?.let { it as Int }
@@ -125,7 +125,7 @@ object StringImplementation {
                 explicitType: KATEType?,
                 parameters: List<ReferencedOrDirectValue>
             ): ReferencedOrDirectValue {
-                val string = invokedOn.let { it as? StringValue }?.value
+                val string = invokedOn.getKotlinValue() as? String
                 require(string != null) { "string value is null" }
                 return StringValue(string.uppercase())
             }
@@ -139,7 +139,7 @@ object StringImplementation {
                 explicitType: KATEType?,
                 parameters: List<ReferencedOrDirectValue>
             ): ReferencedOrDirectValue {
-                val string = invokedOn.let { it as? StringValue }?.value
+                val string = invokedOn.getKotlinValue() as? String
                 require(string != null) { "string value is null" }
                 return StringValue(string.lowercase())
             }
@@ -153,7 +153,7 @@ object StringImplementation {
                 explicitType: KATEType?,
                 parameters: List<ReferencedOrDirectValue>
             ): ReferencedOrDirectValue {
-                val string = invokedOn.let { it as? StringValue }?.value
+                val string = invokedOn.getKotlinValue() as? String
                 require(string != null) { "string value is null" }
                 return StringValue(string.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() })
             }
@@ -167,7 +167,7 @@ object StringImplementation {
                 explicitType: KATEType?,
                 parameters: List<ReferencedOrDirectValue>
             ): ReferencedOrDirectValue {
-                val string = invokedOn.let { it as? StringValue }?.value
+                val string = invokedOn.getKotlinValue() as? String
                 require(string != null) { "string value is null" }
                 return StringValue(string.replaceFirstChar { it.lowercase() })
             }
@@ -181,7 +181,7 @@ object StringImplementation {
                 explicitType: KATEType?,
                 parameters: List<ReferencedOrDirectValue>
             ): ReferencedOrDirectValue {
-                val string = invokedOn.let { it as? StringValue }?.value
+                val string = invokedOn.getKotlinValue() as? String
                 require(string != null) { "string value is null" }
                 val find = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
                 val replace = parameters.getOrNull(1)?.asNullablePrimitive(model)?.value?.let { it as String }
@@ -200,7 +200,7 @@ object StringImplementation {
                 explicitType: KATEType?,
                 parameters: List<ReferencedOrDirectValue>
             ): ReferencedOrDirectValue {
-                val string = invokedOn.let { it as? StringValue }?.value
+                val string = invokedOn.getKotlinValue() as? String
                 require(string != null) { "string value is null" }
                 val firstStr = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
                 require(firstStr != null) {
@@ -218,7 +218,7 @@ object StringImplementation {
                 explicitType: KATEType?,
                 parameters: List<ReferencedOrDirectValue>
             ): ReferencedOrDirectValue {
-                val string = invokedOn.let { it as? StringValue }?.value
+                val string = invokedOn.getKotlinValue() as? String
                 require(string != null) { "string value is null" }
                 val firstStr = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
                 require(firstStr != null) {
@@ -236,7 +236,7 @@ object StringImplementation {
                 explicitType: KATEType?,
                 parameters: List<ReferencedOrDirectValue>
             ): ReferencedOrDirectValue {
-                val string = invokedOn.let { it as? StringValue }?.value
+                val string = invokedOn.getKotlinValue() as? String
                 require(string != null) { "string value is null" }
                 val firstStr = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
                 require(firstStr != null) {
@@ -254,7 +254,7 @@ object StringImplementation {
                 explicitType: KATEType?,
                 parameters: List<ReferencedOrDirectValue>
             ): ReferencedOrDirectValue {
-                val string = invokedOn.let { it as? StringValue }?.value
+                val string = invokedOn.getKotlinValue() as? String
                 require(string != null) { "string value is null" }
                 val firstStr = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
                 require(firstStr != null) {
@@ -272,7 +272,7 @@ object StringImplementation {
                 explicitType: KATEType?,
                 parameters: List<ReferencedOrDirectValue>
             ): ReferencedOrDirectValue {
-                val string = invokedOn.let { it as? StringValue }?.value
+                val string = invokedOn.getKotlinValue() as? String
                 require(string != null) { "string value is null" }
                 val firstStr = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
                 require(firstStr != null) {

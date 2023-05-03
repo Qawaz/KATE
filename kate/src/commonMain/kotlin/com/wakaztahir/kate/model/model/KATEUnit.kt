@@ -7,6 +7,8 @@ import com.wakaztahir.kate.runtime.KATEValueImplementation
 
 object KATEUnit : KATEValue, CodeGen {
 
+    override fun getKotlinValue(): Any = Unit
+
     override fun toString(): String = "KATEUnit"
 
     override fun getModelReference(reference: ModelReference): KATEValue? {

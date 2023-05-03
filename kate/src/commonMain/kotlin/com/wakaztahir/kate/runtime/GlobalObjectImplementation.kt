@@ -16,7 +16,7 @@ object GlobalObjectImplementation {
                     parameters: List<ReferencedOrDirectValue>
                 ): ReferencedOrDirectValue {
                     for (param in parameters) {
-                        (param.asNullablePrimitive(model) as? StringValue)?.let { println(it) }
+                        (param.asNullablePrimitive(model)?.value as? String)?.let { println(it) }
                     }
                     return KATEUnit
                 }
@@ -34,11 +34,11 @@ object GlobalObjectImplementation {
                 explicitType: KATEType?,
                 parameters: List<ReferencedOrDirectValue>
             ): ReferencedOrDirectValue {
-                val first = parameters.firstOrNull()?.asNullablePrimitive(model)?.let { it as? StringValue }
+                val first = parameters.firstOrNull()?.asNullablePrimitive(model)?.let { it.value as? String }
                 require(parameters.size == 1 && first != null) {
                     "${toString()} expects a single parameter of type string"
                 }
-                throw RuntimeException(first.value)
+                throw RuntimeException(first)
             }
 
             override fun toString(): String = "throw(message : string)"

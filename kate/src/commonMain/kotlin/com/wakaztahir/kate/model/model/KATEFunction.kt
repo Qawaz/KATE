@@ -25,6 +25,8 @@ abstract class KATEFunction(val returnedType: KATEType, val parameterTypes: List
 
     override fun getKnownKATEType() = KATEType.Function(returnedType, parameterTypes)
 
+    override fun getKotlinValue(): Any = this
+
     override fun toString(): String = getKnownKATEType().toString()
 
     override fun compareTo(other: KATEValue): Int {

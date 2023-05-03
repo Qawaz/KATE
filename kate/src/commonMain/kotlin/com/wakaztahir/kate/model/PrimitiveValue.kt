@@ -6,9 +6,11 @@ import com.wakaztahir.kate.parser.ArithmeticOperatorType
 import com.wakaztahir.kate.runtime.*
 import kotlin.jvm.JvmInline
 
-interface PrimitiveValue<T> : KATEValue {
+interface PrimitiveValue<T : Any> : KATEValue {
 
     val value: T
+
+    override fun getKotlinValue() = value
 
     override fun getKnownKATEType(): KATEType
 

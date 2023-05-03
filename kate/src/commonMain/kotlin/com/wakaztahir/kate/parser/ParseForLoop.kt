@@ -97,7 +97,7 @@ internal sealed interface ForLoop : BlockContainer {
     ) : ForLoop {
 
         private fun ReferencedOrDirectValue.intVal(context: MutableKATEObject): Int {
-            (asNullablePrimitive(context) as? IntValue)?.value?.let { return it }
+            (asNullablePrimitive(context)?.value as? Int)?.let { return it }
                 ?: throw IllegalStateException("for loop variable must be an integer")
         }
 

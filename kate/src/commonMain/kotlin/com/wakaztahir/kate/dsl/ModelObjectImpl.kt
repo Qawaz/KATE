@@ -17,6 +17,7 @@ open class ModelObjectImpl(
     private val explicitTypes : MutableMap<String,KATEType> by lazy { hashMapOf() }
 
     override fun getKnownKATEType(): KATEType = KATEType.Object(itemType)
+    override fun getKotlinValue(): Any = this
 
     // ----- Getters
 

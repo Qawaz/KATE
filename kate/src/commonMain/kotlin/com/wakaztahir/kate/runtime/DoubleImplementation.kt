@@ -16,7 +16,7 @@ object DoubleImplementation {
                 explicitType : KATEType?,
                 parameters: List<ReferencedOrDirectValue>
             ): KATEValue {
-                val intVal = invokedOn.let { it as? DoubleValue }?.value
+                val intVal = invokedOn.getKotlinValue() as? Double
                 require(intVal != null) { "double value is null" }
                 return IntValue(intVal.toInt())
             }
@@ -30,7 +30,7 @@ object DoubleImplementation {
                 explicitType : KATEType?,
                 parameters: List<ReferencedOrDirectValue>
             ): KATEValue {
-                val intVal = invokedOn.let { it as? DoubleValue }?.value
+                val intVal = invokedOn.getKotlinValue() as? Double
                 require(intVal != null) { "double value is null" }
                 return LongValue(intVal.toLong())
             }
