@@ -135,7 +135,7 @@ sealed class KATEType {
 
     }
 
-    class Object(val itemType: KATEType) : KATEType() {
+    open class Object(val itemType: KATEType) : KATEType() {
 
         override fun getPlaceholderName(): kotlin.String = "object"
 
