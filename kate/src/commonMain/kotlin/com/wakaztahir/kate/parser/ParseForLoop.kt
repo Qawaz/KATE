@@ -277,10 +277,7 @@ private fun LazyBlock.parseNumberedForLoopAfterVariable(variableName: String): F
                 val conditionType = source.parseConditionType()
                     ?: throw IllegalStateException("expected conditional operator , got ${source.currentChar}")
                 val conditional = parseAnyExpressionOrValue(
-                    parseFirstStringOrChar = true,
-                    parseNotFirstStringOrChar = true,
-                    parseDirectRefs = true,
-                    allowAtLessExpressions = true
+                    parseDirectRefs = true
                 )?: throw IllegalStateException("expected number property of value got ${source.currentChar}")
                 if (source.increment(';')) {
                     val incrementer = parseNumberedForLoopIncrementer(variableName)

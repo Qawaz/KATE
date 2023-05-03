@@ -11,27 +11,27 @@ class StringsTest {
     fun testStringConcatenation() {
         assertEquals(
             expected = "hello",
-            actual = GenerateCode("@runtime.print_string(\"hel\" @+ \"lo\")")
+            actual = GenerateCode("@runtime.print_string(\"hel\" + \"lo\")")
         )
         assertEquals(
             expected = "hello",
-            actual = GenerateCode("@var hel = \"hel\"@runtime.print_string(@var(hel) @+ \"lo\")")
+            actual = GenerateCode("@var hel = \"hel\"@runtime.print_string(@var(hel) + \"lo\")")
         )
         assertEquals(
             expected = "hello",
-            actual = GenerateCode("@var lo = \"lo\"@runtime.print_string(\"hel\" @+ @var(lo))")
+            actual = GenerateCode("@var lo = \"lo\"@runtime.print_string(\"hel\" + @var(lo))")
         )
         assertEquals(
             expected = "hello",
-            actual = GenerateCode("@var l = \"l\" @var t = \"h\" @set_var t = @var(t) @+ \"e\" @set_var t = @var(t) @+ \"l\" @set_var t = @var(t) @+ @var(l) @set_var t = @var(t) @+ \"o\" @var(t)")
+            actual = GenerateCode("@var l = \"l\" @var t = \"h\" @set_var t = @var(t) + \"e\" @set_var t = @var(t) + \"l\" @set_var t = @var(t) + @var(l) @set_var t = @var(t) + \"o\" @var(t)")
         )
         assertEquals(
             expected = "21hello",
-            actual = GenerateCode("@var i = \"1\" @var l = \"l\" @var t = @var(i) @+ \"h\" @set_var t = \"2\" @+ @var(t) @+ \"e\" @set_var t = @var(t) @+ \"l\" @set_var t = @var(t) @+ @var(l) @set_var t = @var(t) @+ \"o\" @var(t)")
+            actual = GenerateCode("@var i = \"1\" @var l = \"l\" @var t = @var(i) + \"h\" @set_var t = \"2\" + @var(t) + \"e\" @set_var t = @var(t) + \"l\" @set_var t = @var(t) + @var(l) @set_var t = @var(t) + \"o\" @var(t)")
         )
         assertEquals(
             expected = "21hello",
-            actual = GenerateCode("@var i = \"1\" @var l = \"l\" @var t = @var(i) @+ \"h\" @set_var t = \"2\" @+ @var(t) @+ \"e\" @set_var t += \"l\" @set_var t += @var(l) @set_var t += \"o\" @var(t)")
+            actual = GenerateCode("@var i = \"1\" @var l = \"l\" @var t = @var(i) + \"h\" @set_var t = \"2\" + @var(t) + \"e\" @set_var t += \"l\" @set_var t += @var(l) @set_var t += \"o\" @var(t)")
         )
     }
 

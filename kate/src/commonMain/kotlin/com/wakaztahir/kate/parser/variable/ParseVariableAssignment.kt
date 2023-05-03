@@ -89,10 +89,7 @@ internal fun LazyBlock.parseVariableAssignment(): VariableAssignment? {
     val lhs = source.parseAssignmentLHS(isExplicitAssignment = isWriteUnprocessedTextEnabled) ?: return null
     source.escapeSpaces()
     val property = parseAnyExpressionOrValue(
-        parseFirstStringOrChar = true,
-        parseNotFirstStringOrChar = true,
-        parseDirectRefs = true,
-        allowAtLessExpressions = true
+        parseDirectRefs = true
     )
     return if (property != null) {
         VariableAssignment(

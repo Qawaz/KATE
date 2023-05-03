@@ -170,10 +170,7 @@ class FunctionDefinition(
 private fun LazyBlock.parseFunctionReturn(): ReferencedOrDirectValue? {
     if (source.currentChar == '@' && source.increment("@return ")) {
         return parseAnyExpressionOrValue(
-            parseFirstStringOrChar = true,
-            parseNotFirstStringOrChar = true,
-            parseDirectRefs = true,
-            allowAtLessExpressions = true
+            parseDirectRefs = true
         ) ?: KATEUnit
     }
     return null

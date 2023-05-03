@@ -89,39 +89,30 @@ fun LazyBlock.parseValueOfType(
 
         is KATEType.Any -> {
             parseAnyExpressionOrValue(
-                parseFirstStringOrChar = true,
-                parseNotFirstStringOrChar = true,
-                parseDirectRefs = parseDirectRefs,
-                allowAtLessExpressions = allowAtLessExpressions
+                parseDirectRefs = parseDirectRefs
             )
         }
 
         is KATEType.Boolean -> {
-            source.parseBooleanValue()?.let { return it }
+            source.parseNegatableBooleanValue()?.let { return it }
             parseVariableReference(parseDirectRefs = parseDirectRefs)?.let { return it }
         }
 
         is KATEType.Char -> {
             parseExpression(
-                firstValueParser = CharacterValueExpressionParser(parseDirectRefs = parseDirectRefs),
-                notFirstValueParser = { CharacterValueExpressionParser(parseDirectRefs = parseDirectRefs) },
-                allowAtLessExpressions = allowAtLessExpressions
+                valueParser = CharacterValueExpressionParser(parseDirectRefs = parseDirectRefs)
             )
         }
 
         is KATEType.Double -> {
             parseExpression(
-                firstValueParser = NumberValueExpressionParser(parseDirectRefs = parseDirectRefs, type = type),
-                notFirstValueParser = { NumberValueExpressionParser(parseDirectRefs = parseDirectRefs, type = type) },
-                allowAtLessExpressions = allowAtLessExpressions
+                valueParser = NumberValueExpressionParser(parseDirectRefs = parseDirectRefs, type = type)
             )
         }
 
         is KATEType.Int -> {
             parseExpression(
-                firstValueParser = NumberValueExpressionParser(parseDirectRefs = parseDirectRefs, type = type),
-                notFirstValueParser = { NumberValueExpressionParser(parseDirectRefs = parseDirectRefs, type = type) },
-                allowAtLessExpressions = allowAtLessExpressions
+                valueParser = NumberValueExpressionParser(parseDirectRefs = parseDirectRefs, type = type)
             )
         }
 
@@ -138,9 +129,7 @@ fun LazyBlock.parseValueOfType(
 
         is KATEType.Long -> {
             parseExpression(
-                firstValueParser = NumberValueExpressionParser(parseDirectRefs = parseDirectRefs, type = type),
-                notFirstValueParser = { NumberValueExpressionParser(parseDirectRefs = parseDirectRefs, type = type) },
-                allowAtLessExpressions = allowAtLessExpressions
+                valueParser = NumberValueExpressionParser(parseDirectRefs = parseDirectRefs, type = type)
             )
         }
 
@@ -150,9 +139,7 @@ fun LazyBlock.parseValueOfType(
 
         is KATEType.String -> {
             parseExpression(
-                firstValueParser = StringValueExpressionParser(parseDirectRefs = parseDirectRefs),
-                notFirstValueParser = { StringValueExpressionParser(parseDirectRefs = parseDirectRefs) },
-                allowAtLessExpressions = allowAtLessExpressions
+                valueParser = StringValueExpressionParser(parseDirectRefs = parseDirectRefs)
             )
         }
 

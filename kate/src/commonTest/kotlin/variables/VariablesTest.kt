@@ -1,6 +1,7 @@
 package variables
 
 import GenerateCode
+import GenerateExpression
 import com.wakaztahir.kate.TemplateContext
 import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.model.model.*
@@ -45,7 +46,8 @@ class VariablesTest {
 
     @Test
     fun testStringConcatenation() {
-        assertEquals("helloworld", GenerateCode("@var i = \"hel\" @+ \"lo\" @var(i) @+ \"world\""))
+        assertEquals("helloworld", GenerateCode("@var i = \"hel\" + \"lo\" @var(i + \"world\")"))
+        assertEquals("helloworld", GenerateCode("@var i = \"hel\" + \"lo\" + \"world\" @var(i)"))
     }
 
     @Test
@@ -103,10 +105,9 @@ class VariablesTest {
     }
 
     private fun evaluate(i: String, j: String, char: Char, expect: String) {
-        assertEquals(expect, GenerateCode("@var i = $i@var j = @var(i) @$char $j@var(j)"))
-        assertEquals(expect, GenerateCode("$i @$char $j"))
-        assertEquals(expect, GenerateCode("@var j = $j $i @$char @var(j)"))
-        assertEquals(expect, GenerateCode("@var i = $i @var(i) @$char $j"))
+        assertEquals(expect, GenerateCode("@var i = $i $char $j @var(i)"))
+        assertEquals(expect, GenerateCode("@var i = $i @var j = @var(i) $char $j @var(j)"))
+        assertEquals(expect, GenerateCode("@var j = $j @var i = $i $char @var(j) @var(i)"))
     }
 
     @Test
@@ -123,34 +124,34 @@ class VariablesTest {
 
     @Test
     fun testBodmasRule() {
-        assertEquals("3", GenerateCode("1 @+ 2"))
+        assertEquals("3", GenerateExpression("1 + 2"))
         assertEquals("1 + 2", GenerateCode("1 + 2"))
-        assertEquals("6", GenerateCode("1 @+ 2 @+ 3"))
-        assertEquals("4", GenerateCode("2 @+ 4 @/ 2"))
-        assertEquals("4", GenerateCode("4 @/ 2 @+ 2"))
+        assertEquals("6", GenerateExpression("1 + 2 + 3"))
+        assertEquals("4", GenerateExpression("2 + 4 / 2"))
+        assertEquals("4", GenerateExpression("4 / 2 + 2"))
         // Addition and Subtraction tests
-        assertEquals("3", GenerateCode("1 @+ 2"))
-        assertEquals("-1", GenerateCode("1 @- 2"))
-        assertEquals("0", GenerateCode("1 @+ 2 @- 3"))
-        assertEquals("5", GenerateCode("1 @- 2 @+ 6"))
+        assertEquals("3", GenerateExpression("1 + 2"))
+        assertEquals("-1", GenerateExpression("1 - 2"))
+        assertEquals("0", GenerateExpression("1 + 2 - 3"))
+        assertEquals("5", GenerateExpression("1 - 2 + 6"))
         // Multiplication and Division tests
-        assertEquals("4", GenerateCode("2 @* 2"))
-        assertEquals("3", GenerateCode("6 @/ 2"))
-        assertEquals("6", GenerateCode("2 @* 3 @/ 1"))
-        assertEquals("8", GenerateCode("8 @/ 2 @* 2"))
+        assertEquals("4", GenerateExpression("2 * 2"))
+        assertEquals("3", GenerateExpression("6 / 2"))
+        assertEquals("6", GenerateExpression("2 * 3 / 1"))
+        assertEquals("8", GenerateExpression("8 / 2 * 2"))
         // BODMAS rule tests
-        assertEquals("6", GenerateCode("2 @+ 2 @* 2"))
-        assertEquals("8", GenerateCode("2 @* 2 @+ 4"))
-        assertEquals("10", GenerateCode("2 @+ 2 @* 5 @- 2"))
-        assertEquals("-10", GenerateCode("2 @- 2 @* 5 @- 2"))
-        assertEquals("-5", GenerateCode("2 @- 2 @/ 2 @- 3 @* 2"))
+        assertEquals("6", GenerateExpression("2 + 2 * 2"))
+        assertEquals("8", GenerateExpression("2 * 2 + 4"))
+        assertEquals("10", GenerateExpression("2 + 2 * 5 - 2"))
+        assertEquals("-10", GenerateExpression("2 - 2 * 5 - 2"))
+        assertEquals("-5", GenerateExpression("2 - 2 / 2 - 3 * 2"))
     }
 
     @Test
     fun testReassignment() {
         val context = TemplateContext("@var i = 0 @set_var i = 2 @var(i)")
         assertEquals("2", context.getDestinationAsString())
-        val context2 = TemplateContext("@var i = 10 @set_var i = @var(i) @+ 1 @var(i)")
+        val context2 = TemplateContext("@var i = 10 @set_var i = @var(i) + 1 @var(i)")
         assertEquals("11", context2.getDestinationAsString())
     }
 
@@ -218,10 +219,7 @@ class VariablesTest {
         val context = TemplateContext(("@var(myVar)"))
         context.stream.model.insertValue("myVar", StringValue("someValue"))
         val property = context.stream.block.parseExpression(
-            parseFirstStringOrChar = true,
-            parseNotFirstStringOrChar = true,
-            parseDirectRefs = true,
-            allowAtLessExpressions = false
+            parseDirectRefs = true
         )
         assertEquals(property!!.asPrimitive(context.stream.model).value, "someValue")
     }

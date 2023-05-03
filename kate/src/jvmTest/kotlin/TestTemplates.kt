@@ -5,6 +5,7 @@ import com.wakaztahir.kate.TemplateContext
 import com.wakaztahir.kate.dsl.ModelObjectImpl
 import com.wakaztahir.kate.model.model.KATEObject
 import com.wakaztahir.kate.model.model.MutableKATEObject
+import com.wakaztahir.kate.parser.stream.getErrorInfoAtCurrentPointer
 import org.junit.Test
 import java.io.File
 import kotlin.test.assertEquals
@@ -96,7 +97,12 @@ class TestTemplates {
     private fun testSchemaTemplate(basePath: String, inputPath: String, outputPath: String) {
         val context = getContextFor(basePath = "schema/$basePath", inputPath = inputPath)
         val output = output("output/$basePath/$outputPath")
-        context.generateTo(output)
+        try {
+            context.generateTo(output)
+        }catch (e : Exception){
+            val indo = context.stream.getErrorInfoAtCurrentPointer()
+            throw Throwable("${indo.first}:${indo.second}", cause = e)
+        }
         output.outputStream.close()
     }
 

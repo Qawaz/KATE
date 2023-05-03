@@ -1,9 +1,7 @@
 package com.wakaztahir.kate.parser
 
-import com.wakaztahir.kate.model.CharValue
 import com.wakaztahir.kate.model.CodeGen
 import com.wakaztahir.kate.model.LazyBlock
-import com.wakaztahir.kate.model.StringValue
 import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
 import com.wakaztahir.kate.parser.stream.DestinationStream
 import com.wakaztahir.kate.parser.stream.increment
@@ -37,20 +35,14 @@ fun LazyBlock.parseRuntimeGen(): CodeGen? {
         if (source.increment(CHAR_DIRECTIVE)) {
             if (!source.increment('(')) throw IllegalStateException("expected '(' got ${source.currentChar}")
             val value = parseExpression(
-                parseDirectRefs = false,
-                parseFirstStringOrChar = true,
-                parseNotFirstStringOrChar = true,
-                allowAtLessExpressions = true
+                parseDirectRefs = false
             ) ?: throw IllegalStateException("value for runtime directive not found")
             if (!source.increment(')')) throw IllegalStateException("expected ')' got ${source.currentChar}")
             return WriteChar(value)
         } else if (source.increment(STRING_DIRECTIVE)) {
             if (!source.increment('(')) throw IllegalStateException("expected '(' got ${source.currentChar}")
             val value = parseExpression(
-                parseDirectRefs = true,
-                parseFirstStringOrChar = true,
-                parseNotFirstStringOrChar = true,
-                allowAtLessExpressions = true
+                parseDirectRefs = true
             ) ?: throw IllegalStateException("value for runtime directive not found")
             if (!source.increment(')')) throw IllegalStateException("expected ')' got ${source.currentChar}")
             return WriteString(value)

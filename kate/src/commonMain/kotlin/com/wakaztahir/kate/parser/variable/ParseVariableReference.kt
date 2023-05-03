@@ -1,11 +1,14 @@
 package com.wakaztahir.kate.parser.variable
 
+import com.wakaztahir.kate.model.BooleanValue
 import com.wakaztahir.kate.model.LazyBlock
 import com.wakaztahir.kate.model.ModelDirective
 import com.wakaztahir.kate.model.ModelReference
+import com.wakaztahir.kate.model.model.KATEObject
+import com.wakaztahir.kate.model.model.KATEValue
 import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
+import com.wakaztahir.kate.parser.*
 import com.wakaztahir.kate.parser.parseAnyExpressionOrValue
-import com.wakaztahir.kate.parser.parseNumberValue
 import com.wakaztahir.kate.parser.parseStringValue
 import com.wakaztahir.kate.parser.stream.*
 import com.wakaztahir.kate.parser.stream.increment
@@ -19,10 +22,7 @@ internal fun LazyBlock.parseFunctionParameters(): List<ReferencedOrDirectValue>?
         val parameters = mutableListOf<ReferencedOrDirectValue>()
         do {
             val parameter = parseAnyExpressionOrValue(
-                parseFirstStringOrChar = true,
-                parseNotFirstStringOrChar = true,
-                parseDirectRefs = true,
-                allowAtLessExpressions = true
+                parseDirectRefs = true
             )
             if (parameter != null) {
                 parameters.add(parameter)
@@ -105,6 +105,28 @@ internal fun LazyBlock.parseModelDirective(
         parseDirectRefs = parseDirectRefs,
         throwOnEmptyVariableName = throwOnEmptyVariableName,
     )?.let { return ModelDirective(it, model) }
+    return null
+}
+
+class NegatedModelDirective(val modelDirective: ModelDirective) : ReferencedOrDirectValue by modelDirective {
+    override fun getKATEValue(model: KATEObject): KATEValue {
+        return BooleanValue(!(modelDirective.asNullablePrimitive(model)!!.value as Boolean))
+    }
+}
+
+internal fun LazyBlock.parseVariableReferenceAsExpression(parseDirectRefs: Boolean): ReferencedOrDirectValue? {
+    if (source.currentChar == '@' && source.increment("@var(")) {
+        val expression = parseAnyExpressionOrValue(parseDirectRefs = true)
+        if (!source.increment(')')) {
+            source.printErrorLineNumberAndCharacterIndex()
+            throw VariableReferenceParseException("expected ')' got ${source.currentChar} at ${source.pointer}")
+        }
+        return expression
+    }
+    if (parseDirectRefs) return parseModelDirective(
+        parseDirectRefs = true,
+        throwOnEmptyVariableName = false
+    )?.let { return it }
     return null
 }
 

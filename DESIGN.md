@@ -92,19 +92,13 @@ Every variable also has a `toString` function to convert to a string
 
 ## Expressions
 
-`2 @+ 2` is an expression
+To output an expression , The whole expression can be written inside `@var`
 
-`@+` means resolve it
+for example
 
-`2 + 2` outputs `2 + 2`
+`@var(1 + 2)` outputs `3`
 
-`2 @+ 2` outputs `4`
-
-Expressions inside `partial_raw` or inside other `@` directives are `at_less` meaning they don't require `@`
-
-For example in variable declaration
-
-`@var name = 2 + 2` name's value is 4
+`@var i = 15 @var(i + 5)` outputs `20`
 
 > Brackets not supported at the moment
 

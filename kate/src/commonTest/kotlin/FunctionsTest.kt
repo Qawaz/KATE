@@ -146,7 +146,7 @@ class FunctionsTest {
                 """
                 |@function MyFunc(param1)
                 |@if(@var(param1) > 5)
-                |   @return @var(MyFunc(@var(param1) @- 1)) 
+                |   @return @var(MyFunc(@var(param1) - 1)) 
                 |@else
                 |   @return @var(param1) @endif
                 |@end_function
@@ -156,7 +156,7 @@ class FunctionsTest {
         )
         assertEquals(
             expected = "5040",
-            actual = GenerateCode("7 @* 6 @* 5 @* 4 @* 3 @* 2 @*1")
+            actual = GenerateExpression("7 * 6 * 5 * 4 * 3 * 2 * 1")
         )
         assertEquals(
             expected = "120245040362880",
@@ -166,7 +166,7 @@ class FunctionsTest {
                 |@if(@var(n) <= 1)
                 |   @return 1
                 |@else
-                |   @return @var(n) @* @var(fact(@var(n) @- 1)) @endif
+                |   @return n * @var(fact(n - 1)) @endif
                 |@end_function
                 |@default_no_raw @var(fact(5)) @end_default_no_raw
                 |@default_no_raw @var(fact(4)) @end_default_no_raw

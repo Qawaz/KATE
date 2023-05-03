@@ -44,6 +44,18 @@ class IfStatementTest {
     }
 
     @Test
+    fun testNegatedConditions() {
+        assertEquals("false",GenerateCode("@var x = !true && true @var(x)"))
+        assertEquals("false",GenerateCode("@var x = !true @var(x)"))
+        assertEquals("true",GenerateCode("@var x = false && false @var(!x)"))
+        assertEquals("true",GenerateCode("@var x = false && true @var(!x)"))
+        assertEquals("true",GenerateCode("@var x = true || !true @var(x)"))
+        assertEquals("false",GenerateCode("@var x = !true || false @var(x)"))
+        assertEquals("true",GenerateCode("@var x = !false || !false @var(x)"))
+        assertEquals("true",GenerateCode("@var x = !false || true @var(x)"))
+    }
+
+    @Test
     fun testBlockValue() {
         val context = TemplateContext("@if(@var(var1)) blockValue @endif")
         context.stream.model.insertValue("var1", true)

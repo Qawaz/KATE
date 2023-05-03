@@ -9,6 +9,8 @@ import com.wakaztahir.kate.parser.stream.*
 import com.wakaztahir.kate.parser.stream.increment
 import com.wakaztahir.kate.parser.variable.parseVariableAssignment
 import com.wakaztahir.kate.parser.variable.parseVariableDeclaration
+import com.wakaztahir.kate.parser.variable.parseVariableReference
+import com.wakaztahir.kate.parser.variable.parseVariableReferenceAsExpression
 
 interface LazyBlock {
 
@@ -82,12 +84,9 @@ interface LazyBlock {
     }
 
     fun parseImplicitDirectives(): CodeGen? {
-        parseExpression(
-            parseFirstStringOrChar = false,
-            parseNotFirstStringOrChar = true,
-            parseDirectRefs = !isWriteUnprocessedTextEnabled,
-            allowAtLessExpressions = false
-        )?.let { return it.toPlaceholderInvocation(model, source.pointer) ?: KATEUnit }
+        parseVariableReferenceAsExpression(parseDirectRefs = !isWriteUnprocessedTextEnabled)?.let {
+            return it.toPlaceholderInvocation(model, source.pointer) ?: KATEUnit
+        }
         return null
     }
 

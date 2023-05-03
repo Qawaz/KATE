@@ -8,6 +8,10 @@ internal fun GenerateCode(code: String): String = TemplateContext(code).getDesti
 
 @Suppress("TestFunctionName")
 @Ignore
+internal fun GenerateExpression(code: String): String = TemplateContext("@var($code)").getDestinationAsString()
+
+@Suppress("TestFunctionName")
+@Ignore
 internal fun GeneratePartialRaw(code: String) = GenerateCode("@partial_raw $code @end_partial_raw")
 
 @Suppress("TestFunctionName")

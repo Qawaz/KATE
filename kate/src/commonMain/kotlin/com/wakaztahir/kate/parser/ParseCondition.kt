@@ -156,7 +156,8 @@ internal fun LazyBlock.parseSingleIf(start: String, ifType: IfType): SingleIf? {
                         blockValue = value
                     )
                 } else {
-                    throw IllegalStateException("missing ')' in @if statement")
+                    source.printErrorLineNumberAndCharacterIndex()
+                    throw IllegalStateException("missing ')' in $start statement of $ifType")
                 }
             }
         } else {

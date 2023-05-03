@@ -19,7 +19,7 @@
             @for(@var j = 0;j<param.size();j++)
                 @var(jsonValue(param[j]))
                 @default_no_raw
-                    @if(j != param.size() @- 1) , @endif
+                    @if(j != param.size() - 1) , @endif
                 @end_default_no_raw
             @endfor
             @runtime.print_char(']')
@@ -46,7 +46,7 @@
 		@for(@var i=0;i<keys.size();i++)
 
 		    @function separator()
-		        @if(i != keys.size() @- 1) @return "," @else @return "" @endif
+		        @if(i != keys.size() - 1) @return "," @else @return "" @endif
 		    @end_function
 
             @var(indent())

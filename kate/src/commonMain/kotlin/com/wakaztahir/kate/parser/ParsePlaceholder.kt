@@ -116,10 +116,7 @@ fun LazyBlock.parsePlaceholderInvocation(): PlaceholderInvocation? {
     if (source.currentChar == '@' && source.increment("@placeholder")) {
         val triple = source.parsePlaceHolderNameAndDefinitionAndParameter {
             parseAnyExpressionOrValue(
-                parseFirstStringOrChar = true,
-                parseNotFirstStringOrChar = true,
-                parseDirectRefs = true,
-                allowAtLessExpressions = true
+                parseDirectRefs = true
             )
         }
         if (triple != null) {

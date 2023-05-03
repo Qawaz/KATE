@@ -10,16 +10,11 @@ internal interface ExpressionValueParser {
     fun LazyBlock.parseExpressionValue(): ReferencedOrDirectValue?
 }
 
-class DefaultExpressionValueParser(
-    private val parseStringAndChar: Boolean,
-    private val parseDirectRefs: Boolean
-) : ExpressionValueParser {
+class DefaultExpressionValueParser(private val parseDirectRefs: Boolean) : ExpressionValueParser {
     override fun LazyBlock.parseExpressionValue(): ReferencedOrDirectValue? {
-        if (parseStringAndChar) {
-            source.parseStringValue()?.let { return it }
-            source.parseCharacterValue()?.let { return it }
-        }
-        source.parseBooleanValue()?.let { return it }
+        source.parseStringValue()?.let { return it }
+        source.parseCharacterValue()?.let { return it }
+        source.parseNegatableBooleanValue()?.let { return it }
         source.parseNumberValue()?.let { return it }
         parseVariableReference(parseDirectRefs = parseDirectRefs)?.let { return it }
         return null
