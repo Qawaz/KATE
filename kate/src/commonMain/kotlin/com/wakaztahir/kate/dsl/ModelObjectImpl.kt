@@ -127,8 +127,8 @@ open class ModelObjectImpl(
             str += "\n\t"
             str += item.key
             str += " : "
-//            str += (explicitTypes[item.key] ?: item.value.getKnownKATEType()).getKATEType()
-//            str += " = "
+            str += (explicitTypes[item.key] ?: item.value.getKnownKATEType()).getKATEType()
+            str += " = "
             str += if (item.value is KATEObject) {
                 item.value.toString().replace("\n", "\n\t")
             } else {

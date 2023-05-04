@@ -9,6 +9,18 @@ object KATEObjectImplementation {
 
     val propertyMap by lazy { hashMapOf<String, KATEValue>().apply { putObjectFunctions() } }
 
+    private val KATEValue.kateObject: KATEObject
+        get() {
+            return this as? KATEObject
+                ?: throw IllegalStateException("value of type ${getKnownKATEType()} is not an object")
+        }
+
+    private val KATEValue.mutableKateObject: MutableKATEObject
+        get() {
+            return this as? MutableKATEObject
+                ?: throw IllegalStateException("value of type ${getKnownKATEType()} is not a mutable object")
+        }
+
     private fun HashMap<String, KATEValue>.putObjectFunctions() {
         with(KATEValueImplementation) { putObjectFunctions() }
         put("get", object : KATEFunction(KATEType.Any, KATEType.String) {
@@ -18,8 +30,7 @@ object KATEObjectImplementation {
                 explicitType: KATEType?,
                 parameters: List<ReferencedOrDirectValue>
             ): ReferencedOrDirectValue {
-                val value = invokedOn.asNullableObject(model)
-                require(value != null) { "invoked on object cannot be null" }
+                val value = invokedOn.kateObject
                 val required = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
                 require(required != null) { "get requires a single parameter" }
                 val ret = value.get(required) ?: KATEUnit
@@ -35,9 +46,7 @@ object KATEObjectImplementation {
                 explicitType: KATEType?,
                 parameters: List<ReferencedOrDirectValue>
             ): ReferencedOrDirectValue {
-                val value = invokedOn.asNullableObject(model)
-                require(value != null) { "invoked on object cannot be null" }
-                return StringValue(value.objectName)
+                return StringValue(invokedOn.kateObject.objectName)
             }
 
             override fun toString(): String = "getName() : string"
@@ -49,9 +58,7 @@ object KATEObjectImplementation {
                 explicitType: KATEType?,
                 parameters: List<ReferencedOrDirectValue>
             ): ReferencedOrDirectValue {
-                val value = invokedOn.asNullableObject(model)
-                require(value != null) { "invoked on object cannot be null" }
-                return KATEListImpl(value.getKeys().map { StringValue(it) }, itemType = KATEType.String)
+                return KATEListImpl(invokedOn.kateObject.getKeys().map { StringValue(it) }, itemType = KATEType.String)
             }
 
             override fun toString(): String = "getKeys() : List<string>"
@@ -64,8 +71,7 @@ object KATEObjectImplementation {
                 explicitType: KATEType?,
                 parameters: List<ReferencedOrDirectValue>
             ): ReferencedOrDirectValue {
-                val value = invokedOn.asNullableObject(model)
-                require(value != null) { "invoked on object cannot be null" }
+                val value = invokedOn.kateObject
                 return KATEListImpl(value.getValues().toList(), itemType = value.itemType)
             }
 
@@ -79,9 +85,8 @@ object KATEObjectImplementation {
                 explicitType: KATEType?,
                 parameters: List<ReferencedOrDirectValue>
             ): ReferencedOrDirectValue {
-                val value = invokedOn.asNullableObject(model)
+                val value = invokedOn.kateObject
                 val required = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
-                require(value != null) { "invoked on object cannot be null" }
                 require(required != null) { "contains require a single parameter by the name of object" }
                 return BooleanValue(value.contains(required))
             }
@@ -96,9 +101,8 @@ object KATEObjectImplementation {
                 explicitType: KATEType?,
                 parameters: List<ReferencedOrDirectValue>
             ): ReferencedOrDirectValue {
-                val value = invokedOn.asNullableObject(model)
+                val value = invokedOn.kateObject
                 val required = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
-                require(value != null) { "invoked on object cannot be null" }
                 require(required != null) { "containsInAncestors require a single parameter by the name of object" }
                 return BooleanValue(value.containsInAncestors(required))
             }
@@ -113,10 +117,9 @@ object KATEObjectImplementation {
                 explicitType: KATEType?,
                 parameters: List<ReferencedOrDirectValue>
             ): ReferencedOrDirectValue {
-                val value = invokedOn as? MutableKATEObject
+                val value = invokedOn.mutableKateObject
                 val key = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
                 val other = parameters.getOrNull(1)?.asNullablePrimitive(model)?.value?.let { it as String }
-                require(value != null) { "invoked on object cannot be null" }
                 require(key != null) { "rename requires the 1st key parameter" }
                 require(other != null) { "rename requires the 2nd replace parameter" }
                 value.rename(key, other)
@@ -132,9 +135,8 @@ object KATEObjectImplementation {
                 explicitType: KATEType?,
                 parameters: List<ReferencedOrDirectValue>
             ): ReferencedOrDirectValue {
-                val value = invokedOn as? MutableKATEObject
+                val value = invokedOn.mutableKateObject
                 val required = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
-                require(value != null) { "invoked on object cannot be null" }
                 require(required != null) { "exists require a single parameter by the name of object" }
                 value.removeKey(required)
                 return KATEUnit

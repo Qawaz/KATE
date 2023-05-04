@@ -7,6 +7,12 @@ object KATEListImplementation {
 
     val propertyMap by lazy { hashMapOf<String, KATEValue>().apply { putObjectFunctions() } }
 
+    private val KATEValue.kateList: KATEList<*>
+        get() {
+            return this as? KATEList<*>
+                ?: throw IllegalStateException("value of type ${getKnownKATEType()} is not a list")
+        }
+
     fun HashMap<String, KATEValue>.putObjectFunctions() {
         with(KATEValueImplementation) { putObjectFunctions() }
         put("get", object : KATEFunction(KATEType.Any, KATEType.Int) {
@@ -20,7 +26,7 @@ object KATEListImplementation {
                 require(index != null) {
                     "list.get(int) expects a single Int parameter instead of ${parameters.size}"
                 }
-                val list = invokedOn.asNullableList(model)!!
+                val list = invokedOn.kateList
                 val value = (list.collection)[index]
                 return list.getExplicitType(index)?.let { ValueWithType(value, it) } ?: value
             }
@@ -35,7 +41,7 @@ object KATEListImplementation {
                 explicitType: KATEType?,
                 parameters: List<ReferencedOrDirectValue>
             ): ReferencedOrDirectValue {
-                return IntValue(invokedOn.asNullableList(model)!!.collection.size)
+                return IntValue(invokedOn.kateList.collection.size)
             }
 
             override fun toString(): String = "size() : Int"
@@ -47,7 +53,7 @@ object KATEListImplementation {
                 explicitType: KATEType?,
                 parameters: List<ReferencedOrDirectValue>
             ): ReferencedOrDirectValue {
-                return BooleanValue(invokedOn.asNullableList(model)!!.collection.containsAll(parameters))
+                return BooleanValue(invokedOn.kateList.collection.containsAll(parameters))
             }
 
             override fun toString(): String = "contains(parameter) : Boolean"
@@ -63,7 +69,7 @@ object KATEListImplementation {
                 require(parameters.size == 1) {
                     "indexOf requires a single parameter"
                 }
-                return IntValue(invokedOn.asNullableList(model)!!.collection.indexOf(parameters[0]))
+                return IntValue(invokedOn.kateList.collection.indexOf(parameters[0]))
             }
 
             override fun toString(): String = "indexOf(parameter) : Int"
@@ -77,8 +83,7 @@ object KATEListImplementation {
                     explicitType: KATEType?,
                     parameters: List<ReferencedOrDirectValue>
                 ): ReferencedOrDirectValue {
-                    val list = invokedOn.asNullableList(model)
-                    require(list != null) { "list is null" }
+                    val list = invokedOn.kateList
                     val separator =
                         parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as? String } ?: ","
                     val func = parameters.getOrNull(1)?.asNullableFunction(model)

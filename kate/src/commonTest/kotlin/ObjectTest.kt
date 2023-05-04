@@ -8,7 +8,7 @@ class ObjectTest {
     fun testObjectDeclaration() {
         assertEquals(
             expected = """{
-                    |	myVar : 5
+                    |	myVar : int = 5
                     |}""".trimMargin(),
             actual = GenerateCode("@define_object(MyObject) @var myVar = 5 @end_define_object @var(MyObject)")
         )

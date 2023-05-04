@@ -45,20 +45,20 @@ class ModelDirectiveTest {
         }
         assertEquals(
             """{
-                |	myDouble : 16.0
-                |	myList : 10,20,30,40
-                |	MyNestedObject : {
-                |		myDouble : 16.0
-                |		MoreNestedObject : {
-                |			myDouble : 16.0
-                |			myInt : 15
-                |			myStr : something is here
+                |	myDouble : double = 16.0
+                |	myList : list<int> = 10,20,30,40
+                |	MyNestedObject : object<any> = {
+                |		myDouble : double = 16.0
+                |		MoreNestedObject : object<any> = {
+                |			myDouble : double = 16.0
+                |			myInt : int = 15
+                |			myStr : string = something is here
                 |		}
-                |		myInt : 15
-                |		myStr : something is here
+                |		myInt : int = 15
+                |		myStr : string = something is here
                 |	}
-                |	myInt : 15
-                |	myStr : something is here
+                |	myInt : int = 15
+                |	myStr : string = something is here
             |}""".trimMargin("|"), context.getDestinationAsString()
         )
     }

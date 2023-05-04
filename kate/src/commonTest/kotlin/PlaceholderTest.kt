@@ -105,7 +105,7 @@ class PlaceholderTest {
         )
         assertEquals("1,2,3", GenerateCode("@var i = @mutable_list(1,2,3) @var(i)"))
         assertEquals(
-            expected = "{\n\ti : 5\n\tl : 1,2,3\n}",
+            expected = "{\n\ti : int = 5\n\tl : list<int> = 1,2,3\n}",
             GenerateCode("@define_object(MyObj) @var i = 5 @var l = @list(1,2,3) @end_define_object @var(MyObj)")
         )
     }

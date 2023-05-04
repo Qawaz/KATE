@@ -74,6 +74,11 @@ fun LazyBlock.parseValueOfType(
             return null
         }
 
+        is KATEType.Class -> {
+            // TODO class should be parsed
+            return null
+        }
+
         is KATEType.Function -> {
             // TODO function should be parsed
             return null

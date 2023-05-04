@@ -135,6 +135,16 @@ sealed class KATEType {
 
     }
 
+    open class Class(val members : Map<String,KATEType>) : KATEType(){
+
+        override fun getPlaceholderName(): kotlin.String = "class"
+
+        override fun getKATEType(): kotlin.String = members.entries.joinToString(separator = ";",prefix = "class{",postfix = "}"){ "${it.key}:${it.value.getKATEType()}" }
+
+        override fun satisfies(type: KATEType): kotlin.Boolean = type.actualType.let { it is Any || (it is Class && it.members.keys == members.keys && it.members.values == members.values) }
+
+    }
+
     open class Object(val itemType: KATEType) : KATEType() {
 
         override fun getPlaceholderName(): kotlin.String = "object"
