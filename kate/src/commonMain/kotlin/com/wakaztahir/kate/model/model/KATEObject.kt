@@ -9,7 +9,7 @@ interface KATEObject : KATEValue {
 
     val parent: KATEObject?
 
-    val itemType: KATEType
+    fun getItemsType() : KATEType
 
     override fun getKnownKATEType(): KATEType
 

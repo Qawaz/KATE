@@ -8,14 +8,20 @@ import com.wakaztahir.kate.runtime.KATEObjectImplementation
 
 open class ModelObjectImpl(
     override var objectName: String,
-    override val itemType: KATEType,
     override val parent: MutableKATEObject? = null,
 ) : MutableKATEObject {
 
     private val container: MutableMap<String, KATEValue> by lazy { hashMapOf() }
-    private val explicitTypes : MutableMap<String,KATEType> by lazy { hashMapOf() }
+    private val explicitTypes: MutableMap<String, KATEType> by lazy { hashMapOf() }
 
-    override fun getKnownKATEType(): KATEType = KATEType.Object(itemType)
+    override fun getItemsType(): KATEType {
+        return KATEType.Class(container.mapValues {
+            KATEType.Class.Property(it.value.getKnownKATEType(), null)
+        })
+    }
+
+    override fun getKnownKATEType(): KATEType = KATEType.Object(getItemsType())
+
     override fun getKotlinValue(): Any = this
 
     // ----- Getters
@@ -116,7 +122,7 @@ open class ModelObjectImpl(
             str += "\n\t"
             str += item.key
             str += " : "
-            str += (explicitTypes[item.key] ?: item.value.getKnownKATEType()).getKATEType()
+            str += explicitTypes[item.key]?.getKATEType() ?: (if(item.value is KATEObject) "object" else item.value.getKnownKATEType())
             str += " = "
             str += if (item.value is KATEObject) {
                 item.value.toString().replace("\n", "\n\t")

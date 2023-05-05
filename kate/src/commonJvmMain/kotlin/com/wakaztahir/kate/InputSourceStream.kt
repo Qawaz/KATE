@@ -1,7 +1,6 @@
 package com.wakaztahir.kate
 
 import com.wakaztahir.kate.dsl.ModelObjectImpl
-import com.wakaztahir.kate.model.KATEType
 import com.wakaztahir.kate.model.LazyBlock
 import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.parser.stream.*
@@ -11,7 +10,7 @@ import java.io.InputStream
 
 class InputSourceStream(
     private val inputStream: InputStream,
-    override val model: MutableKATEObject = ModelObjectImpl(GlobalModelObjectName, itemType = KATEType.Any),
+    override val model: MutableKATEObject = ModelObjectImpl(GlobalModelObjectName),
     override val embeddingManager: EmbeddingManager = NoEmbeddings,
     override val placeholderManager: PlaceholderManager = EmptyPlaceholderManager()
 ) : SourceStream() {

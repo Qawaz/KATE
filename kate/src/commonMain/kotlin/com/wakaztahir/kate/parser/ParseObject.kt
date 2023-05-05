@@ -21,7 +21,7 @@ private fun SourceStream.parseObjectName(): String {
     }
 }
 
-private fun LazyBlock.parseObjectDeclarationSlice(objectName: String, itemType: KATEType): ObjectDeclarationBlockSlice {
+private fun LazyBlock.parseObjectDeclarationSlice(objectName: String, itemType: KATEType?): ObjectDeclarationBlockSlice {
     val slice = parseBlockSlice(
         startsWith = "@define_object",
         endsWith = "@end_define_object",
@@ -33,7 +33,7 @@ private fun LazyBlock.parseObjectDeclarationSlice(objectName: String, itemType: 
         startPointer = slice.startPointer,
         length = slice.length,
         blockEndPointer = slice.blockEndPointer,
-        model = ObjectDeclarationModel(objectName = objectName, parent = model, itemType = itemType),
+        model = ObjectDeclarationModel(objectName = objectName, parent = model),
         indentationLevel = indentationLevel + 1
     )
 }
@@ -52,7 +52,8 @@ fun LazyBlock.parseObjectDeclaration(): ObjectDeclaration? {
         val objectName = source.parseObjectName()
         return ObjectDeclaration(
             objectName = objectName,
-            declarationBlock = parseObjectDeclarationSlice(objectName = objectName, itemType = itemType ?: KATEType.Any)
+            itemsType = itemType,
+            declarationBlock = parseObjectDeclarationSlice(objectName = objectName, itemType = itemType)
         )
     }
     return null

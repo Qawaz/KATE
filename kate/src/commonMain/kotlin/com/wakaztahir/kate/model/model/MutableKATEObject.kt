@@ -46,14 +46,14 @@ interface MutableKATEObject : KATEObject {
         val objects = mutableListOf<KATEObject>()
         block(object : PutObjectsScope {
             override fun putObject(block: MutableKATEObject.() -> Unit) {
-                objects.add(ModelObjectImpl("$key${objects.size}", itemType = KATEType.Any).apply(block))
+                objects.add(ModelObjectImpl("$key${objects.size}").apply(block))
             }
         })
         insertValue(key, KATEMutableListImpl(objects, itemType = KATEType.Object(itemsType = KATEType.Any)))
     }
 
     fun putObject(key: String, block: MutableKATEObject.() -> Unit) {
-        insertValue(key, ModelObjectImpl(key, itemType = KATEType.Any).apply(block))
+        insertValue(key, ModelObjectImpl(key).apply(block))
     }
 
     fun changeName(name: String)
@@ -68,7 +68,7 @@ interface MutableKATEObject : KATEObject {
 }
 
 fun MutableKATEObject(name: String = GlobalModelObjectName, block: MutableKATEObject.() -> Unit): MutableKATEObject {
-    val modelObj = ModelObjectImpl(objectName = name, itemType = KATEType.Any)
+    val modelObj = ModelObjectImpl(objectName = name)
     block(modelObj)
     return modelObj
 }

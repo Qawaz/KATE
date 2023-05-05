@@ -11,11 +11,9 @@ import com.wakaztahir.kate.parser.variable.parseVariableDeclaration
 class ObjectDeclarationModel(
     objectName: String,
     override val parent: MutableKATEObject,
-    itemType: KATEType,
 ) : ModelObjectImpl(
     objectName = objectName,
-    parent = parent,
-    itemType = itemType
+    parent = parent
 )
 
 class ObjectDeclarationBlockSlice(
@@ -43,7 +41,11 @@ class ObjectDeclarationBlockSlice(
     }
 }
 
-class ObjectDeclaration(val objectName: String, val declarationBlock: ObjectDeclarationBlockSlice) : BlockContainer {
+class ObjectDeclaration(
+    val objectName: String,
+    val itemsType: KATEType?,
+    val declarationBlock: ObjectDeclarationBlockSlice
+) : BlockContainer {
 
     override val isEmptyWriter: Boolean
         get() = true
@@ -52,5 +54,6 @@ class ObjectDeclaration(val objectName: String, val declarationBlock: ObjectDecl
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
         declarationBlock.generateTo(destination)
         block.model.insertValue(objectName, declarationBlock.model)
+        itemsType?.let { block.model.setExplicitType(objectName, KATEType.Object(it)) }
     }
 }

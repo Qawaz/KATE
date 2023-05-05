@@ -72,7 +72,7 @@ object KATEObjectImplementation {
                 parameters: List<ReferencedOrDirectValue>
             ): ReferencedOrDirectValue {
                 val value = invokedOn.kateObject
-                return KATEListImpl(value.getValues().toList(), itemType = value.itemType)
+                return KATEListImpl(value.getValues().toList(), itemType = value.getItemsType())
             }
 
             override fun toString(): String = "getValues() : List<KTEValue>"

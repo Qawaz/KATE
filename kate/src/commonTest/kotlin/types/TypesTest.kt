@@ -358,7 +358,7 @@ class TypesTest {
 
     @Test
     fun testObjectType() {
-        assertEquals("object<any>", GenerateCode("@define_object(MyObj) @end_define_object @var(MyObj.getType())"))
+        assertEquals("object<{}>", GenerateCode("@define_object(MyObj) @end_define_object @var(MyObj.getType())"))
         assertEquals("object<int>", GenerateCode("@define_object<int>(MyObj) @end_define_object @var(MyObj.getType())"))
         assertEquals(
             "object<int>",

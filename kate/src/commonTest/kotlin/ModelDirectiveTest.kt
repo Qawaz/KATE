@@ -47,9 +47,9 @@ class ModelDirectiveTest {
             """{
                 |	myDouble : double = 16.0
                 |	myList : list<int> = 10,20,30,40
-                |	MyNestedObject : object<any> = {
+                |	MyNestedObject : object = {
                 |		myDouble : double = 16.0
-                |		MoreNestedObject : object<any> = {
+                |		MoreNestedObject : object = {
                 |			myDouble : double = 16.0
                 |			myInt : int = 15
                 |			myStr : string = something is here

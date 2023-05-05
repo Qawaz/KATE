@@ -1,5 +1,5 @@
 {
-	NestedObject : object<any> = {
+	NestedObject : object = {
 		testList : list<int> = 1,2,3,4
 		testMList : mutable_list<double> = 1.2,3.4,5.6,3.4
 		testBoolean : boolean = false
