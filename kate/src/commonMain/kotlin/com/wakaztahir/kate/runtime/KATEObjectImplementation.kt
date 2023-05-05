@@ -51,6 +51,22 @@ object KATEObjectImplementation {
 
             override fun toString(): String = "getName() : string"
         })
+        put("getMetaProperty", object : KATEFunction(KATEType.String, KATEType.Any) {
+            override fun invoke(
+                model: KATEObject,
+                invokedOn: KATEValue,
+                explicitType: KATEType?,
+                parameters: List<ReferencedOrDirectValue>
+            ): ReferencedOrDirectValue {
+                if(explicitType == null) return StringValue("")
+                val param = parameters.getOrNull(0)?.getKATEValue(model)?.getKotlinValue()?.let { it as? String }
+                val metaName = parameters.getOrNull(1)?.getKATEValue(model)?.getKotlinValue()?.let { it as? String }
+                require(param != null) { "meta property requires two string parameters , the name property and name of meta property" }
+                require(metaName != null){ "meta name cannot be null" }
+                val type = ((explicitType as? KATEType.Object)?.itemsType as? KATEType.Class)
+                return type?.members?.get(param)?.meta?.get(metaName) ?: StringValue("")
+            }
+        })
         put("getKeys", object : KATEFunction(KATEType.List(KATEType.String)) {
             override fun invoke(
                 model: KATEObject,

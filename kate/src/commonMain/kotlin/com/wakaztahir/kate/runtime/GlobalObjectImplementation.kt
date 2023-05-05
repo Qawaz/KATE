@@ -1,7 +1,6 @@
 package com.wakaztahir.kate.runtime
 
 import com.wakaztahir.kate.model.KATEType
-import com.wakaztahir.kate.model.StringValue
 import com.wakaztahir.kate.model.model.*
 
 object GlobalObjectImplementation {
