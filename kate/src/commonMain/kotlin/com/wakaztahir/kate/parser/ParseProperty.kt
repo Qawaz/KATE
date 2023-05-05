@@ -4,18 +4,24 @@ import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.model.model.KATEObject
 import com.wakaztahir.kate.model.model.KATEValue
 import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
+import com.wakaztahir.kate.parser.stream.SourceStream
 import com.wakaztahir.kate.parser.variable.parseVariableReference
 
 internal interface ExpressionValueParser {
     fun LazyBlock.parseExpressionValue(): ReferencedOrDirectValue?
 }
 
+internal fun SourceStream.parsePrimitiveValue(): PrimitiveValue<*>? {
+    parseStringValue()?.let { return it }
+    parseCharacterValue()?.let { return it }
+    parseBooleanValue()?.let { return it }
+    parseNumberValue()?.let { return it }
+    return null
+}
+
 class DefaultExpressionValueParser(private val parseDirectRefs: Boolean) : ExpressionValueParser {
     override fun LazyBlock.parseExpressionValue(): ReferencedOrDirectValue? {
-        source.parseStringValue()?.let { return it }
-        source.parseCharacterValue()?.let { return it }
-        source.parseBooleanValue()?.let { return it }
-        source.parseNumberValue()?.let { return it }
+        source.parsePrimitiveValue()?.let { return it }
         parseVariableReference(parseDirectRefs = parseDirectRefs)?.let { return it }
         return null
     }
@@ -28,7 +34,7 @@ internal data class ExpressionValue(
 ) : ReferencedOrDirectValue {
 
     override fun getKATEValue(model: KATEObject): KATEValue {
-        return first.getKATEValue(model).operate(operatorType,second.getKATEValue(model))
+        return first.getKATEValue(model).operate(operatorType, second.getKATEValue(model))
     }
 
     override fun toString(): String {

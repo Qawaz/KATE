@@ -106,9 +106,9 @@ class ModelDirectiveTest {
     @Test
     fun testParseModelDirectiveCodeGen() {
         val model = MutableKATEObject {
-            setValue("property1", true)
+            insertValue("property1", true)
             putObject("property2") {
-                setValue("property3", "123")
+                insertValue("property3", "123")
             }
             insertValue(
                 "callSum",

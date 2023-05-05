@@ -371,6 +371,14 @@ class TypesTest {
     }
 
     @Test
+    fun testClassType() {
+        assertEquals(
+            expected = "object<{name`json=person_name,bson=pn`:string;age`json=person_age,bson=pa`:int}>",
+            actual = GenerateCode("@define_object<{ name `json=person_name,bson=pn` : string; age `json=person_age,bson=pa` : int; }>(Test) @end_define_object @var(Test.getType())")
+        )
+    }
+
+    @Test
     fun testObjectListType() {
         assertEquals(
             expected = "list<int>",

@@ -2,7 +2,9 @@ package com.wakaztahir.kate.parser.variable
 
 import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.model.*
+import com.wakaztahir.kate.model.model.KATEValue
 import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
+import com.wakaztahir.kate.parser.parsePrimitiveValue
 import com.wakaztahir.kate.parser.stream.*
 import com.wakaztahir.kate.parser.stream.increment
 
@@ -56,8 +58,61 @@ internal fun SourceStream.parseVariableName(): String? {
 
 private fun Char.isTypeName(): Boolean = this.isLetter() || this == '_'
 
+private fun SourceStream.parseClassProperty(): KATEType.Class.Property {
+    val meta: MutableMap<String, KATEValue>?
+    if (increment('`')) {
+        meta = mutableMapOf()
+        do {
+            val metaName = parseTextWhile { currentChar.isVariableName() }
+            escapeSpaces()
+            if (increment('=')) {
+                escapeSpaces()
+                val metaValue = parsePrimitiveValue()
+                    ?: parseTextWhile { currentChar.isVariableName() }.ifEmpty { null }?.let { StringValue(it) }
+                    ?: throw IllegalStateException("expected a value for meta property $metaName got $currentChar")
+                meta[metaName] = metaValue
+            } else {
+                throw IllegalStateException("expected '=' when declaring a class property got $currentChar")
+            }
+        } while (increment(','))
+        if (!increment('`')) {
+            throw IllegalStateException("meta properties beginning with '`' must end with '`'")
+        } else {
+            escapeSpaces()
+        }
+    } else {
+        meta = null
+    }
+    if (increment(':')) {
+        escapeSpaces()
+        val variableType =
+            parseKATEType() ?: throw IllegalStateException("expected a type after ':' got $currentChar")
+        return KATEType.Class.Property(type = variableType, meta = meta)
+    } else {
+        throw IllegalStateException("expected ':' after variable name in class type got $currentChar")
+    }
+}
+
+private fun SourceStream.parseClassType(): KATEType.Class? {
+    val previous = pointer
+    if (increment('{')) {
+        val members = mutableMapOf<String, KATEType.Class.Property>()
+        do {
+            escapeSpaces()
+            if (increment('}')) break
+            val variableName = parseTextWhile { currentChar.isVariableName() }
+            escapeSpaces()
+            members[variableName] = parseClassProperty()
+        } while (increment(';'))
+        return KATEType.Class(members)
+    }
+    setPointerAt(previous)
+    return null
+}
+
 internal fun SourceStream.parseKATEType(): KATEType? {
     val previous = pointer
+    parseClassType()?.let { return it }
     val type = parseTextWhile { currentChar.isTypeName() }
     if (type.isNotEmpty()) {
         val typeName = when (type) {

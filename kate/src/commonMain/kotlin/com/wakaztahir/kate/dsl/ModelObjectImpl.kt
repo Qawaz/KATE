@@ -1,6 +1,5 @@
 package com.wakaztahir.kate.dsl
 
-import com.wakaztahir.kate.model.BooleanValue
 import com.wakaztahir.kate.model.KATEType
 import com.wakaztahir.kate.model.ModelReference
 import com.wakaztahir.kate.model.model.*
@@ -72,16 +71,6 @@ open class ModelObjectImpl(
 
     override fun setExplicitType(key: String, type: KATEType) {
         explicitTypes[key] = type
-    }
-
-    @Deprecated("use setValue with type")
-    override fun setValue(key: String, value: KATEValue): Boolean {
-        return if (contains(key)) {
-            false
-        } else {
-            container[key] = value
-            true
-        }
     }
 
     override fun setValueInTreeUpwardsTypeSafely(key: String, value: KATEValue): Boolean {

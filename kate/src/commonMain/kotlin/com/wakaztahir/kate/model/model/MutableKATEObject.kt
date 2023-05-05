@@ -10,9 +10,6 @@ interface MutableKATEObject : KATEObject {
 
     fun setExplicitType(key : String, type : KATEType)
 
-    @Deprecated("use insertValue with type", replaceWith = ReplaceWith(expression = "insertValue(key,value)"))
-    fun setValue(key: String, value: KATEValue): Boolean
-
     fun setValueInTreeUpwardsTypeSafely(key: String, value: KATEValue): Boolean
 
     // Extensions
@@ -41,66 +38,6 @@ interface MutableKATEObject : KATEObject {
         insertValue(key, KATEListImpl(value.map { IntValue(it) }, itemType = KATEType.Int))
     }
 
-    @Deprecated("use insertValue", replaceWith = ReplaceWith("setValue(key,value)"))
-    fun putValue(key: String, value: KATEValue) {
-        insertValue(key, value)
-    }
-
-    @Deprecated("use insertValue", replaceWith = ReplaceWith("insertValue(key,value)"))
-    fun putValue(key: String, value: String) {
-        insertValue(key, StringValue(value))
-    }
-
-    @Deprecated("use insertValue", replaceWith = ReplaceWith("insertValue(key,value)"))
-    fun putValue(key: String, value: Int) {
-        insertValue(key, IntValue(value))
-    }
-
-    @Deprecated("use insertValue", replaceWith = ReplaceWith("insertValue(key,value)"))
-    fun putValue(key: String, value: Float) {
-        insertValue(key, DoubleValue(value.toDouble()))
-    }
-
-    @Deprecated("use insertValue", replaceWith = ReplaceWith("insertValue(key,value)"))
-    fun putValue(key: String, value: Double) {
-        insertValue(key, DoubleValue(value))
-    }
-
-    @Deprecated("use insertValue", replaceWith = ReplaceWith("insertValue(key,value)"))
-    fun putValue(key: String, value: Boolean) {
-        insertValue(key, BooleanValue(value))
-    }
-
-    @Deprecated("use insertValue", replaceWith = ReplaceWith("insertValue(key,value)"))
-    fun setValue(key: String, value: String) {
-        insertValue(key, StringValue(value))
-    }
-
-    @Deprecated("use insertValue", replaceWith = ReplaceWith("insertValue(key,value)"))
-    fun setValue(key: String, value: Int) {
-        insertValue(key, IntValue(value))
-    }
-
-    @Deprecated("use insertValue", replaceWith = ReplaceWith("insertValue(key,value)"))
-    fun setValue(key: String, value: Float) {
-        insertValue(key, DoubleValue(value.toDouble()))
-    }
-
-    @Deprecated("use insertValue", replaceWith = ReplaceWith("insertValue(key,value)"))
-    fun setValue(key: String, value: Double) {
-        insertValue(key, DoubleValue(value))
-    }
-
-    @Deprecated("use insertValue", replaceWith = ReplaceWith("insertValue(key,value)"))
-    fun setValue(key: String, value: Boolean) {
-        insertValue(key, BooleanValue(value))
-    }
-
-    @Deprecated("use insertValue", replaceWith = ReplaceWith("insertValue(key,value)"))
-    fun setValue(key: String, value: List<Int>) {
-        insertValue(key, KATEListImpl(value.map { IntValue(it) }, itemType = KATEType.Int))
-    }
-
     interface PutObjectsScope {
         fun putObject(block: MutableKATEObject.() -> Unit)
     }
@@ -112,7 +49,7 @@ interface MutableKATEObject : KATEObject {
                 objects.add(ModelObjectImpl("$key${objects.size}", itemType = KATEType.Any).apply(block))
             }
         })
-        insertValue(key, KATEMutableListImpl(objects, itemType = KATEType.Object(itemType = KATEType.Any)))
+        insertValue(key, KATEMutableListImpl(objects, itemType = KATEType.Object(itemsType = KATEType.Any)))
     }
 
     fun putObject(key: String, block: MutableKATEObject.() -> Unit) {

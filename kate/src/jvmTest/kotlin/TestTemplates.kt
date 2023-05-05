@@ -15,35 +15,35 @@ class TestTemplates {
 
     private fun getObject(): MutableKATEObject {
         return MutableKATEObject {
-            setValue("mathTestClassName", "MathsClass")
+            insertValue("mathTestClassName", "MathsClass")
             putObjects("arithmetic") {
                 putObject {
-                    setValue("funName", "sumsTwoVars")
-                    setValue("first", 4)
-                    setValue("second", 6)
-                    setValue("symbolName", "+")
-                    setValue("returnType", "Int")
+                    insertValue("funName", "sumsTwoVars")
+                    insertValue("first", 4)
+                    insertValue("second", 6)
+                    insertValue("symbolName", "+")
+                    insertValue("returnType", "Int")
                 }
                 putObject {
-                    setValue("funName", "subtractTwoVars")
-                    setValue("first", 6)
-                    setValue("second", 4)
-                    setValue("symbolName", "-")
-                    setValue("returnType", "Int")
+                    insertValue("funName", "subtractTwoVars")
+                    insertValue("first", 6)
+                    insertValue("second", 4)
+                    insertValue("symbolName", "-")
+                    insertValue("returnType", "Int")
                 }
                 putObject {
-                    setValue("funName", "multiplyTwoVars")
-                    setValue("first", 4)
-                    setValue("second", 6)
-                    setValue("symbolName", "*")
-                    setValue("returnType", "Int")
+                    insertValue("funName", "multiplyTwoVars")
+                    insertValue("first", 4)
+                    insertValue("second", 6)
+                    insertValue("symbolName", "*")
+                    insertValue("returnType", "Int")
                 }
                 putObject {
-                    setValue("funName", "divideTwoVars")
-                    setValue("first", 4)
-                    setValue("second", 2)
-                    setValue("symbolName", "/")
-                    setValue("returnType", "Int")
+                    insertValue("funName", "divideTwoVars")
+                    insertValue("first", 4)
+                    insertValue("second", 2)
+                    insertValue("symbolName", "/")
+                    insertValue("returnType", "Int")
                 }
             }
         }

@@ -1,5 +1,7 @@
 package com.wakaztahir.kate.model
 
+import com.wakaztahir.kate.model.model.KATEValue
+
 sealed class KATEType {
 
     protected val actualType get() = if (this is NullableKateType) this.actual else this
@@ -19,7 +21,6 @@ sealed class KATEType {
     }
 
     override fun hashCode(): kotlin.Int = this::class.hashCode()
-
 
 
     class NullableKateType(val actual: KATEType) : KATEType() {
@@ -135,21 +136,31 @@ sealed class KATEType {
 
     }
 
-    open class Class(val members : Map<String,KATEType>) : KATEType(){
+    open class Class(val members: Map<kotlin.String, Property>) : KATEType() {
+
+        class Property(val type: KATEType, val meta: Map<kotlin.String, KATEValue>?)
 
         override fun getPlaceholderName(): kotlin.String = "class"
 
-        override fun getKATEType(): kotlin.String = members.entries.joinToString(separator = ";",prefix = "class{",postfix = "}"){ "${it.key}:${it.value.getKATEType()}" }
+        private fun Map<kotlin.String, KATEValue>.string() =
+            entries.joinToString(separator = ",") { it.key + "=" + it.value }
 
-        override fun satisfies(type: KATEType): kotlin.Boolean = type.actualType.let { it is Any || (it is Class && it.members.keys == members.keys && it.members.values == members.values) }
+        override fun getKATEType(): kotlin.String = members.entries.joinToString(
+            separator = ";",
+            prefix = "{",
+            postfix = "}"
+        ) { "${it.key}${it.value.meta?.string()?.let { "`$it`" } ?: ""}:${it.value.type.getKATEType()}" }
+
+        override fun satisfies(type: KATEType): kotlin.Boolean =
+            type.actualType.let { it is Any || (it is Class && it.members == members) }
 
     }
 
-    open class Object(val itemType: KATEType) : KATEType() {
+    open class Object(val itemsType: KATEType) : KATEType() {
 
         override fun getPlaceholderName(): kotlin.String = "object"
 
-        override fun getKATEType(): kotlin.String = "object<${itemType.getKATEType()}>"
+        override fun getKATEType(): kotlin.String = "object<${itemsType.getKATEType()}>"
 
         override fun satisfies(type: KATEType): kotlin.Boolean = type.actualType.let { it is Any || it is Object }
 
@@ -159,10 +170,13 @@ sealed class KATEType {
 
         override fun getPlaceholderName(): kotlin.String = "function"
 
-        override fun getKATEType(): kotlin.String =
-            "(${(parameterTypes?.joinToString(",") { it.getKATEType() }) ?: ""}) -> ${returnedType.getKATEType()}"
+        private fun parametersTypes() = (parameterTypes?.joinToString(",") { it.getKATEType() }) ?: ""
 
-        override fun satisfies(type: KATEType): kotlin.Boolean = type.actualType.let { it is Any || it is Object }
+        override fun getKATEType(): kotlin.String = "(${parametersTypes()}) -> ${returnedType.getKATEType()}"
+
+        override fun satisfies(type: KATEType): kotlin.Boolean = type.actualType.let {
+            it is Any || (it is Function && returnedType == it.returnedType && parameterTypes == it.parameterTypes)
+        }
 
     }
 
