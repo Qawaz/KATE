@@ -20,7 +20,7 @@ open class RelativeResourceEmbeddingManager(
     }
 
     protected open fun throwStreamNotFound(path: String): Nothing {
-        throw IllegalStateException("embedding with path ${relativePath(path)} not found , base : $basePath , path : $path")
+        throw IllegalStateException("embedding with path ${relativePath(path)} not found , base : $basePath , path : $path, url : ${getUrl(path)}")
     }
 
     open fun relativeParentPath(other: String): String {
