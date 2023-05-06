@@ -35,9 +35,9 @@ interface KATEObject : KATEValue {
 
     private fun throwUnresolved(path: List<ModelReference>, index: Int, current: ReferencedOrDirectValue): Nothing {
         if (path[index] is ModelReference.FunctionCall) {
-            throw UnresolvedValueException("function ${path.pathUntil(index)} does not exist on value : $current")
+            throw UnresolvedValueException("function ${path.pathUntil(index + 1)} does not exist on value : $current")
         } else {
-            throw UnresolvedValueException("property ${path.pathUntil(index)} does not exist on value : $current")
+            throw UnresolvedValueException("property ${path.pathUntil(index + 1)} does not exist on value : $current")
         }
     }
 

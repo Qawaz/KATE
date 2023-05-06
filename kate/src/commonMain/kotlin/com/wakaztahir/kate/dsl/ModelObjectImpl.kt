@@ -15,9 +15,7 @@ open class ModelObjectImpl(
     private val explicitTypes: MutableMap<String, KATEType> by lazy { hashMapOf() }
 
     override fun getItemsType(): KATEType {
-        return KATEType.Class(container.mapValues {
-            KATEType.Class.Property(it.value.getKnownKATEType(), null)
-        })
+        return KATEType.Class(container.mapValues { it.value.getKnownKATEType() })
     }
 
     override fun getKnownKATEType(): KATEType = KATEType.Object(getItemsType())
@@ -82,7 +80,7 @@ open class ModelObjectImpl(
     override fun setValueInTreeUpwardsTypeSafely(key: String, value: KATEValue): Boolean {
         return container[key]?.let { oldValue ->
             (oldValue.getKnownKATEType()).let { explicitType ->
-                if (!value.getKnownKATEType().satisfies(explicitType)) {
+                if (!explicitType.satisfiedBy(value.getKnownKATEType())) {
                     throw IllegalStateException("variable type ${value.getKnownKATEType()} does not satisfy type $explicitType")
                 }
             }
@@ -122,7 +120,8 @@ open class ModelObjectImpl(
             str += "\n\t"
             str += item.key
             str += " : "
-            str += explicitTypes[item.key]?.getKATEType() ?: (if(item.value is KATEObject) "object" else item.value.getKnownKATEType())
+            str += explicitTypes[item.key]?.getKATEType()
+                ?: (if (item.value is KATEObject) "object" else item.value.getKnownKATEType())
             str += " = "
             str += if (item.value is KATEObject) {
                 item.value.toString().replace("\n", "\n\t")

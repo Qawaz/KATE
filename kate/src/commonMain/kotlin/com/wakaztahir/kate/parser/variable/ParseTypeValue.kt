@@ -84,6 +84,14 @@ fun LazyBlock.parseValueOfType(
             return null
         }
 
+        is KATEType.TypeWithMetadata -> {
+            parseValueOfType(
+                type = type.actual,
+                allowAtLessExpressions = allowAtLessExpressions,
+                parseDirectRefs = parseDirectRefs,
+            )
+        }
+
         is KATEType.NullableKateType -> {
             parseValueOfType(
                 type = type.actual,

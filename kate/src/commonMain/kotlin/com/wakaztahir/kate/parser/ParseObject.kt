@@ -41,7 +41,7 @@ private fun LazyBlock.parseObjectDeclarationSlice(objectName: String, itemType: 
 fun LazyBlock.parseObjectDeclaration(): ObjectDeclaration? {
     if (source.currentChar == '@' && source.increment("@define_object")) {
         val itemType: KATEType? = if (source.increment('<')) {
-            val type = source.parseKATEType()
+            val type = source.parseKATEType(parseMetadata = false)
             if (!source.increment('>')) {
                 throw IllegalStateException("expected '>' after type declaration got '${source.currentChar}'")
             }

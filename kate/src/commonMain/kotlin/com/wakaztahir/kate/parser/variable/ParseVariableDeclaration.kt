@@ -23,7 +23,7 @@ internal data class VariableDeclaration(
         val value = variableValue.getKATEValueAndType(model)
         val actualType = value.second ?: value.first.getKnownKATEType()
         if (type != null) {
-            if (!actualType.satisfies(type)) {
+            if (!type.satisfiedBy(actualType)) {
                 throw IllegalStateException("cannot satisfy type $type with $actualType")
             }
             if (type != actualType) {
@@ -58,10 +58,9 @@ internal fun SourceStream.parseVariableName(): String? {
 
 private fun Char.isTypeName(): Boolean = this.isLetter() || this == '_'
 
-private fun SourceStream.parseClassProperty(): KATEType.Class.Property {
-    val meta: MutableMap<String, KATEValue>?
+private fun SourceStream.parseMetaValues(): MutableMap<String, KATEValue>? {
     if (increment('`')) {
-        meta = mutableMapOf()
+        val meta = mutableMapOf<String, KATEValue>()
         do {
             val metaName = parseTextWhile { currentChar.isVariableName() }
             escapeSpaces()
@@ -80,14 +79,16 @@ private fun SourceStream.parseClassProperty(): KATEType.Class.Property {
         } else {
             escapeSpaces()
         }
-    } else {
-        meta = null
+        return meta
     }
+    return null
+}
+
+private fun SourceStream.parseClassProperty(): KATEType {
     if (increment(':')) {
         escapeSpaces()
-        val variableType =
-            parseKATEType() ?: throw IllegalStateException("expected a type after ':' got $currentChar")
-        return KATEType.Class.Property(type = variableType, meta = meta)
+        return parseKATEType(parseMetadata = true)
+            ?: throw IllegalStateException("expected a type after ':' got $currentChar")
     } else {
         throw IllegalStateException("expected ':' after variable name in class type got $currentChar")
     }
@@ -96,7 +97,7 @@ private fun SourceStream.parseClassProperty(): KATEType.Class.Property {
 private fun SourceStream.parseClassType(): KATEType.Class? {
     val previous = pointer
     if (increment('{')) {
-        val members = mutableMapOf<String, KATEType.Class.Property>()
+        val members = mutableMapOf<String, KATEType>()
         do {
             escapeSpaces()
             if (increment('}')) break
@@ -110,12 +111,12 @@ private fun SourceStream.parseClassType(): KATEType.Class? {
     return null
 }
 
-internal fun SourceStream.parseKATEType(): KATEType? {
+internal fun SourceStream.parseKATEType(parseMetadata: Boolean): KATEType? {
     val previous = pointer
     parseClassType()?.let { return it }
     val type = parseTextWhile { currentChar.isTypeName() }
     if (type.isNotEmpty()) {
-        val typeName = when (type) {
+        var typeName = when (type) {
             "any" -> KATEType.Any
             "char" -> KATEType.Char
             "string" -> KATEType.String
@@ -125,14 +126,14 @@ internal fun SourceStream.parseKATEType(): KATEType? {
             "boolean" -> KATEType.Boolean
             "list", "mutable_list" -> {
                 increment('<')
-                val itemType = parseKATEType() ?: KATEType.NullableKateType(KATEType.Any)
+                val itemType = parseKATEType(parseMetadata = false) ?: KATEType.NullableKateType(KATEType.Any)
                 increment('>')
                 if (type == "list") KATEType.List(itemType) else KATEType.MutableList(itemType)
             }
 
             "object" -> {
                 increment('<')
-                val itemType = parseKATEType() ?: KATEType.NullableKateType(KATEType.Any)
+                val itemType = parseKATEType(parseMetadata = false) ?: KATEType.NullableKateType(KATEType.Any)
                 increment('>')
                 KATEType.Object(itemType)
             }
@@ -141,8 +142,15 @@ internal fun SourceStream.parseKATEType(): KATEType? {
                 throw IllegalStateException("unknown type name $type")
             }
         }
-        val isNullable = increment('?')
-        typeName.let { return if (isNullable) KATEType.NullableKateType(it) else it }
+        if (increment('?')) typeName = KATEType.NullableKateType(actual = typeName)
+
+        if (parseMetadata) {
+            escapeSpaces()
+            val meta = parseMetaValues()
+            if (meta != null) typeName = KATEType.TypeWithMetadata(actual = typeName,meta = meta)
+        }
+
+        return typeName
     }
     setPointerAt(previous)
     return null
@@ -157,7 +165,7 @@ internal fun LazyBlock.parseVariableDeclaration(): VariableDeclaration? {
             source.escapeSpaces()
             val type: KATEType? = if (source.increment(':')) {
                 source.escapeSpaces()
-                source.parseKATEType()
+                source.parseKATEType(parseMetadata = false)
             } else {
                 null
             }

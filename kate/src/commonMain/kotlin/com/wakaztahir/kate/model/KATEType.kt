@@ -10,7 +10,7 @@ sealed class KATEType {
 
     abstract fun getKATEType(): kotlin.String
 
-    abstract fun satisfies(type: KATEType): kotlin.Boolean
+    abstract fun satisfiedBy(valueOfType: KATEType): kotlin.Boolean
 
     override fun toString(): kotlin.String = getKATEType()
 
@@ -29,10 +29,20 @@ sealed class KATEType {
 
         override fun getKATEType(): kotlin.String = actual.getKATEType() + '?'
 
-        override fun satisfies(type: KATEType): kotlin.Boolean {
-            if (type !is NullableKateType) return false
-            return this.actual.satisfies(type.actual)
-        }
+        override fun satisfiedBy(valueOfType: KATEType): kotlin.Boolean = actual.satisfiedBy(valueOfType)
+
+    }
+
+    class TypeWithMetadata(val actual: KATEType, val meta: Map<kotlin.String, KATEValue>) : KATEType() {
+
+        override fun getPlaceholderName(): kotlin.String = actual.getPlaceholderName()
+
+        private fun metaProps() =
+            meta.entries.joinToString(separator = ",", prefix = "`", postfix = "`") { it.key + "=" + it.value }
+
+        override fun getKATEType(): kotlin.String = actual.getKATEType() + metaProps()
+
+        override fun satisfiedBy(valueOfType: KATEType): kotlin.Boolean = actual.satisfiedBy(valueOfType)
 
     }
 
@@ -42,7 +52,8 @@ sealed class KATEType {
 
         override fun getKATEType(): kotlin.String = "any"
 
-        override fun satisfies(type: KATEType): kotlin.Boolean = type.actualType is Any
+        override fun satisfiedBy(valueOfType: KATEType): kotlin.Boolean =
+            valueOfType !is NullableKateType && valueOfType !is Unit
 
     }
 
@@ -52,7 +63,7 @@ sealed class KATEType {
 
         override fun getKATEType(): kotlin.String = "unit"
 
-        override fun satisfies(type: KATEType): kotlin.Boolean = type.actualType is Unit
+        override fun satisfiedBy(valueOfType: KATEType): kotlin.Boolean = valueOfType is Unit
 
     }
 
@@ -62,7 +73,7 @@ sealed class KATEType {
 
         override fun getKATEType(): kotlin.String = "char"
 
-        override fun satisfies(type: KATEType): kotlin.Boolean = type.actualType.let { it is Any || it is Char }
+        override fun satisfiedBy(valueOfType: KATEType): kotlin.Boolean = valueOfType is Char
 
     }
 
@@ -72,7 +83,7 @@ sealed class KATEType {
 
         override fun getKATEType(): kotlin.String = "string"
 
-        override fun satisfies(type: KATEType): kotlin.Boolean = type.actualType.let { it is Any || it is String }
+        override fun satisfiedBy(valueOfType: KATEType): kotlin.Boolean = valueOfType is String
 
     }
 
@@ -82,7 +93,7 @@ sealed class KATEType {
 
         override fun getKATEType(): kotlin.String = "int"
 
-        override fun satisfies(type: KATEType): kotlin.Boolean = type.actualType.let { it is Any || it is Int }
+        override fun satisfiedBy(valueOfType: KATEType): kotlin.Boolean = valueOfType is Int
 
     }
 
@@ -92,7 +103,7 @@ sealed class KATEType {
 
         override fun getKATEType(): kotlin.String = "double"
 
-        override fun satisfies(type: KATEType): kotlin.Boolean = type.actualType.let { it is Any || it is Double }
+        override fun satisfiedBy(valueOfType: KATEType): kotlin.Boolean = valueOfType is Double
 
     }
 
@@ -102,7 +113,7 @@ sealed class KATEType {
 
         override fun getKATEType(): kotlin.String = "long"
 
-        override fun satisfies(type: KATEType): kotlin.Boolean = type.actualType.let { it is Any || it is Long }
+        override fun satisfiedBy(valueOfType: KATEType): kotlin.Boolean = valueOfType is Long
 
     }
 
@@ -112,7 +123,7 @@ sealed class KATEType {
 
         override fun getKATEType(): kotlin.String = "boolean"
 
-        override fun satisfies(type: KATEType): kotlin.Boolean = type.actualType.let { it is Any || it is Boolean }
+        override fun satisfiedBy(valueOfType: KATEType): kotlin.Boolean = valueOfType is Boolean
 
     }
 
@@ -122,7 +133,7 @@ sealed class KATEType {
 
         override fun getKATEType(): kotlin.String = "list<${itemType.getKATEType()}>"
 
-        override fun satisfies(type: KATEType): kotlin.Boolean = type.actualType.let { it is Any || it is List }
+        override fun satisfiedBy(valueOfType: KATEType): kotlin.Boolean = valueOfType is List
 
     }
 
@@ -132,13 +143,11 @@ sealed class KATEType {
 
         override fun getKATEType(): kotlin.String = "mutable_list<${itemType.getKATEType()}>"
 
-        override fun satisfies(type: KATEType): kotlin.Boolean = type.actualType.let { it is Any || it is List }
+        override fun satisfiedBy(valueOfType: KATEType): kotlin.Boolean = valueOfType is MutableList
 
     }
 
-    open class Class(val members: Map<kotlin.String, Property>) : KATEType() {
-
-        class Property(val type: KATEType, val meta: Map<kotlin.String, KATEValue>?)
+    open class Class(val members: Map<kotlin.String, KATEType>) : KATEType() {
 
         override fun getPlaceholderName(): kotlin.String = "class"
 
@@ -149,10 +158,10 @@ sealed class KATEType {
             separator = ";",
             prefix = "{",
             postfix = "}"
-        ) { "${it.key}${it.value.meta?.string()?.let { "`$it`" } ?: ""}:${it.value.type.getKATEType()}" }
+        ) { "${it.key}:${it.value.getKATEType()}" }
 
-        override fun satisfies(type: KATEType): kotlin.Boolean =
-            type.actualType.let { it is Any || (it is Class && it.members == members) }
+        override fun satisfiedBy(valueOfType: KATEType): kotlin.Boolean =
+            valueOfType is Class && valueOfType.members == members
 
     }
 
@@ -162,7 +171,8 @@ sealed class KATEType {
 
         override fun getKATEType(): kotlin.String = "object<${itemsType.getKATEType()}>"
 
-        override fun satisfies(type: KATEType): kotlin.Boolean = type.actualType.let { it is Any || it is Object }
+        override fun satisfiedBy(valueOfType: KATEType): kotlin.Boolean =
+            valueOfType is Object && itemsType.satisfiedBy(valueOfType.itemsType)
 
     }
 
@@ -174,9 +184,8 @@ sealed class KATEType {
 
         override fun getKATEType(): kotlin.String = "(${parametersTypes()}) -> ${returnedType.getKATEType()}"
 
-        override fun satisfies(type: KATEType): kotlin.Boolean = type.actualType.let {
-            it is Any || (it is Function && returnedType == it.returnedType && parameterTypes == it.parameterTypes)
-        }
+        override fun satisfiedBy(valueOfType: KATEType): kotlin.Boolean =
+            valueOfType is Function && valueOfType.returnedType == returnedType && valueOfType.parameterTypes == parameterTypes
 
     }
 

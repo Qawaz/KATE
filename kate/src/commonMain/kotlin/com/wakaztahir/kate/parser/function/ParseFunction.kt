@@ -185,7 +185,7 @@ private fun SourceStream.parseFunctionParameters(): Map<String, KATEType>? {
             escapeSpaces()
             val paramType = if (increment(':')) {
                 escapeSpaces()
-                parseKATEType() ?: KATEType.Any
+                parseKATEType(parseMetadata = false) ?: KATEType.Any
             } else KATEType.Any
             parameters[paramName] = paramType
         } while (increment(','))
@@ -218,7 +218,7 @@ fun LazyBlock.parseFunctionDefinition(anonymousFunctionName: String?): FunctionD
         source.escapeSpaces()
         val returnedType = if (source.increment("->")) {
             source.escapeSpaces()
-            source.parseKATEType()
+            source.parseKATEType(parseMetadata = false)
                 ?: throw IllegalStateException("expected a type after \"->\" but got ${source.currentChar}")
         } else {
             source.setPointerAt(afterParametersPointer)

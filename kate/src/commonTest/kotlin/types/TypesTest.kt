@@ -372,9 +372,10 @@ class TypesTest {
 
     @Test
     fun testClassType() {
-        val objectDef = "@define_object<{ name `json=person_name,bson=pn` : string; age `json=person_age,bson=pa` : int; }>(Test) @end_define_object"
+        val objectStart = "@define_object<{ name : string `json=person_name,bson=pn`; age : int `json=person_age,bson=pa`; }>(Test)"
+        val objectDef = "$objectStart @end_define_object"
         assertEquals(
-            expected = "object<{name`json=person_name,bson=pn`:string;age`json=person_age,bson=pa`:int}>",
+            expected = "object<{name:string`json=person_name,bson=pn`;age:int`json=person_age,bson=pa`}>",
             actual = GenerateCode("$objectDef @var(Test.getType())")
         )
         assertEquals(

@@ -64,7 +64,8 @@ object KATEObjectImplementation {
                 require(param != null) { "meta property requires two string parameters , the name property and name of meta property" }
                 require(metaName != null){ "meta name cannot be null" }
                 val type = ((explicitType as? KATEType.Object)?.itemsType as? KATEType.Class)
-                return type?.members?.get(param)?.meta?.get(metaName) ?: StringValue("")
+                fun KATEType.meta() = if(this is KATEType.TypeWithMetadata) meta else null
+                return type?.members?.get(param)?.meta()?.get(metaName) ?: StringValue("")
             }
         })
         put("getKeys", object : KATEFunction(KATEType.List(KATEType.String)) {
