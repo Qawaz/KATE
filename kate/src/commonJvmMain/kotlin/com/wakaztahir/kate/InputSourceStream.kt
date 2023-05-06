@@ -15,19 +15,6 @@ class InputSourceStream(
     override val placeholderManager: PlaceholderManager = EmptyPlaceholderManager()
 ) : SourceStream() {
 
-    class RelativeFileEmbeddingManager(private val file: File) : EmbeddingManager {
-        override val embeddedStreams: MutableMap<String, Boolean> = mutableMapOf()
-        override fun provideStream(block: LazyBlock, path: String): SourceStream {
-            val resolved = file.resolve(path.removePrefix("./"))
-            if (!resolved.exists()) throw IllegalStateException("file path doesn't exist ${resolved.absolutePath}")
-            return InputSourceStream(
-                inputStream = resolved.inputStream(),
-                model = block.source.model,
-                embeddingManager = RelativeFileEmbeddingManager(file.parentFile),
-                placeholderManager = block.source.placeholderManager
-            )
-        }
-    }
 
     init {
         DefaultPlaceholderManagerInitializer.initializerDefaultPlaceholders(this)
