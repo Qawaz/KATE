@@ -33,7 +33,6 @@ object KATEValueImplementation {
                 explicitType: KATEType?,
                 parameters: List<ReferencedOrDirectValue>
             ): ReferencedOrDirectValue {
-                println("${explicitType?.getKATEType()}")
                 if (explicitType == null || explicitType !is KATEType.TypeWithMetadata) return StringValue("")
                 val prop = parameters.getOrNull(0)?.getKATEValue(model)?.getKotlinValue() as? String
                 require(prop != null) { "getMetaProperty requires a single string parameter , the name of property" }
