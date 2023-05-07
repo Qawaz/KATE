@@ -4,8 +4,11 @@ import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.parser.ArithmeticOperatorType
 import com.wakaztahir.kate.parser.stream.DestinationStream
 import com.wakaztahir.kate.runtime.KATEValueImplementation
+import com.wakaztahir.kate.tokenizer.NodeTokenizer
 
 object KATEUnit : KATEValue, CodeGen {
+
+    override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.kateUnit
 
     override fun getKotlinValue(): Any = Unit
 

@@ -10,8 +10,9 @@ import com.wakaztahir.kate.parser.stream.parseTextWhile
 import com.wakaztahir.kate.parser.variable.isVariableName
 import com.wakaztahir.kate.parser.variable.parseVariableName
 import com.wakaztahir.kate.parser.variable.parseVariableReference
+import com.wakaztahir.kate.tokenizer.NodeTokenizer
 
-internal sealed interface ForLoop : BlockContainer {
+sealed interface ForLoop : BlockContainer {
 
     val blockValue: LazyBlockSlice
 
@@ -34,6 +35,7 @@ internal sealed interface ForLoop : BlockContainer {
         val condition: ReferencedOrDirectValue,
         override val blockValue: LazyBlockSlice
     ) : ForLoop {
+        override fun <T> selectNode(tokenizer: NodeTokenizer<T>) = tokenizer.conditionalFor
         override fun iterate(block: (iteration: Int) -> Unit) {
             var i = 0
             while ((condition.asNullablePrimitive(model) as BooleanValue).value) {
@@ -50,6 +52,8 @@ internal sealed interface ForLoop : BlockContainer {
         val listProperty: ReferencedOrDirectValue,
         override val blockValue: LazyBlockSlice
     ) : ForLoop {
+
+        override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.iterableFor
 
         private fun store(value: Int) {
             if (indexConstName != null) {
@@ -95,6 +99,8 @@ internal sealed interface ForLoop : BlockContainer {
         val incrementer: ReferencedOrDirectValue,
         override val blockValue: LazyBlockSlice
     ) : ForLoop {
+
+        override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.numberedFor
 
         private fun ReferencedOrDirectValue.intVal(context: MutableKATEObject): Int {
             (asNullablePrimitive(context)?.value as? Int)?.let { return it }

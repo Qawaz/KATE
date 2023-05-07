@@ -5,9 +5,10 @@ import com.wakaztahir.kate.model.model.KATEObject
 import com.wakaztahir.kate.model.model.KATEValue
 import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
 import com.wakaztahir.kate.parser.stream.DestinationStream
+import com.wakaztahir.kate.tokenizer.NodeTokenizer
 
 
-internal enum class ConditionType {
+enum class ConditionType {
     ReferentiallyEquals {
         override fun compare(first: KATEValue, second: KATEValue): Boolean =
             first === second
@@ -82,20 +83,23 @@ enum class IfType(val order: Int) {
     Else(2)
 }
 
-internal class SingleIf(
+class SingleIf(
     val condition: ReferencedOrDirectValue,
     val type: IfType,
     val blockValue: LazyBlockSlice,
 ) : CodeGen {
+    override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.singleIf
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
         blockValue.generateTo(destination = destination)
     }
 }
 
 
-internal class IfStatement(private val ifs: MutableList<SingleIf>) : BlockContainer {
+class IfStatement(private val ifs: MutableList<SingleIf>) : BlockContainer {
 
     val singleIfs: List<SingleIf> get() = ifs
+
+    override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.ifStatement
 
     private fun sortByOrder() {
         ifs.sortBy { it.type.order }

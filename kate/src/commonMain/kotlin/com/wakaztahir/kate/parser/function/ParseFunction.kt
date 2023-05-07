@@ -10,6 +10,7 @@ import com.wakaztahir.kate.parser.stream.increment
 import com.wakaztahir.kate.parser.stream.parseTextWhile
 import com.wakaztahir.kate.parser.variable.isVariableName
 import com.wakaztahir.kate.parser.variable.parseKATEType
+import com.wakaztahir.kate.tokenizer.NodeTokenizer
 
 class FunctionSlice(
     parentBlock: LazyBlock,
@@ -143,6 +144,8 @@ class FunctionDefinition(
     parameterNames: Map<String, KATEType>?,
     returnedType: KATEType
 ) : CodeGen, BlockContainer {
+
+    override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.functionDefinition
 
     val definition = object : KATERecursiveFunction(slice, parameterNames, returnedType) {
         override fun invoke(

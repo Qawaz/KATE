@@ -10,12 +10,15 @@ import com.wakaztahir.kate.parser.parseAnyExpressionOrValue
 import com.wakaztahir.kate.parser.parseArithmeticOperator
 import com.wakaztahir.kate.parser.stream.*
 import com.wakaztahir.kate.parser.stream.increment
+import com.wakaztahir.kate.tokenizer.NodeTokenizer
 
 internal data class VariableAssignment(
     val variableName: String,
     val arithmeticOperatorType: ArithmeticOperatorType?,
     val variableValue: ReferencedOrDirectValue
 ) : AtDirective {
+
+    override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.variableAssignment
 
     override val isEmptyWriter: Boolean
         get() = true

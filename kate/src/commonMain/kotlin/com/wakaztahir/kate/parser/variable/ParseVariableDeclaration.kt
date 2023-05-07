@@ -7,6 +7,7 @@ import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
 import com.wakaztahir.kate.parser.parsePrimitiveValue
 import com.wakaztahir.kate.parser.stream.*
 import com.wakaztahir.kate.parser.stream.increment
+import com.wakaztahir.kate.tokenizer.NodeTokenizer
 
 class VariableDeclarationException(message: String) : Exception(message)
 
@@ -15,6 +16,8 @@ internal data class VariableDeclaration(
     val type: KATEType?,
     val variableValue: ReferencedOrDirectValue
 ) : AtDirective {
+
+    override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.variableDeclaration
 
     override val isEmptyWriter: Boolean
         get() = true

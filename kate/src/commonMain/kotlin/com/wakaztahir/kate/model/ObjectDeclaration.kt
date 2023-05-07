@@ -7,6 +7,7 @@ import com.wakaztahir.kate.parser.function.parseFunctionDefinition
 import com.wakaztahir.kate.parser.parseObjectDeclaration
 import com.wakaztahir.kate.parser.stream.DestinationStream
 import com.wakaztahir.kate.parser.variable.parseVariableDeclaration
+import com.wakaztahir.kate.tokenizer.NodeTokenizer
 
 class ObjectDeclarationModel(
     objectName: String,
@@ -50,6 +51,7 @@ class ObjectDeclaration(
     override val isEmptyWriter: Boolean
         get() = true
 
+    override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.objectDeclaration
     override fun getBlockValue(model: KATEObject): LazyBlock = declarationBlock
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
         declarationBlock.generateTo(destination)

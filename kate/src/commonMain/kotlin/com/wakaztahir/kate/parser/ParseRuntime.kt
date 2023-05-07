@@ -5,6 +5,7 @@ import com.wakaztahir.kate.model.LazyBlock
 import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
 import com.wakaztahir.kate.parser.stream.DestinationStream
 import com.wakaztahir.kate.parser.stream.increment
+import com.wakaztahir.kate.tokenizer.NodeTokenizer
 import kotlin.jvm.JvmInline
 
 private const val CHAR_DIRECTIVE = "@runtime.print_char"
@@ -12,6 +13,7 @@ private const val STRING_DIRECTIVE = "@runtime.print_string"
 
 @JvmInline
 private value class WriteChar(val char: ReferencedOrDirectValue) : CodeGen {
+    override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.runtimeWriteChar
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
         destination.stream.write(
             (char.asNullablePrimitive(block.model)?.value as? Char)
@@ -22,6 +24,7 @@ private value class WriteChar(val char: ReferencedOrDirectValue) : CodeGen {
 
 @JvmInline
 private value class WriteString(val string: ReferencedOrDirectValue) : CodeGen {
+    override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.runtimeWriteString
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
         destination.stream.write(
             (string.asNullablePrimitive(block.model)?.value as? String)

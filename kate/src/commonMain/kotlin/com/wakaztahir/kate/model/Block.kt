@@ -35,6 +35,15 @@ interface LazyBlock {
             val directive = parseAtDirective()
             if (directive != null) {
                 writeDirective(directive = directive, destination = destination)
+                if (!source.hasEnded && directive is BlockContainer) {
+                    if (!source.increment('\n')) {
+                        source.increment(' ')
+                    } else {
+                        consumeLineIndentation()
+                    }
+                } else if (directive.isEmptyWriter) {
+                    source.increment(' ')
+                }
                 continue
             }
             if (isWriteUnprocessedTextEnabled) {
@@ -43,7 +52,7 @@ interface LazyBlock {
                     hasConsumedFirstLineIndentation = true
                     continue
                 } else {
-                    destination.stream.write(source.currentChar)
+                    writeCurrentChar(destination)
                 }
             }
             val isNewLine = source.currentChar == '\n'
@@ -66,17 +75,12 @@ interface LazyBlock {
         return consumed
     }
 
+    fun writeCurrentChar(destination: DestinationStream){
+        destination.stream.write(source.currentChar)
+    }
+
     fun writeDirective(directive: CodeGen, destination: DestinationStream) {
         directive.generateTo(this, destination)
-        if (!source.hasEnded && directive is BlockContainer) {
-            if (!source.increment('\n')) {
-                source.increment(' ')
-            } else {
-                consumeLineIndentation()
-            }
-        } else if (directive.isEmptyWriter) {
-            source.increment(' ')
-        }
     }
 
     fun parseNestedAtDirective(block: LazyBlock): CodeGen? {

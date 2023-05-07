@@ -6,6 +6,7 @@ import com.wakaztahir.kate.parser.stream.SourceStream
 import java.io.BufferedInputStream
 import java.io.File
 
+@Suppress("unused")
 class RelativeFileEmbeddingManager(
     private val file: File,
     override val embeddedStreams: MutableMap<String, Boolean> = mutableMapOf()

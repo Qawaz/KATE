@@ -8,6 +8,7 @@ import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.parser.parsePartialRawImplicitDirective
 import com.wakaztahir.kate.parser.stream.DestinationStream
 import com.wakaztahir.kate.parser.stream.TextSourceStream
+import com.wakaztahir.kate.tokenizer.NodeTokenizer
 
 open class PlaceholderBlock(
     parentBlock: LazyBlock,
@@ -103,6 +104,7 @@ class TextPlaceholderBlock(
 }
 
 class PlaceholderDefinition(val blockValue: PlaceholderBlock) : BlockContainer {
+    override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.placeholderDefinition
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
         block.source.placeholderManager.definePlaceholder(blockValue)
     }
@@ -116,6 +118,7 @@ class PlaceholderInvocation(
     var paramValue: ReferencedOrDirectValue?,
     val invocationEndPointer: Int
 ) : CodeGen {
+    override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.placeholderInvocation
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
         val placeholder = (if (definitionName == null)
             block.source.placeholderManager.getPlaceholder(placeholderName = placeholderName)
@@ -134,6 +137,7 @@ class PlaceholderUse(
     private val placeholderName: String,
     private val definitionName: String
 ) : CodeGen {
+    override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.placeholderUse
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
         if (!block.source.placeholderManager.usePlaceholder(placeholderName, definitionName)) {
             throw IllegalStateException("placeholder with name $placeholderName and definition name $definitionName not found")
