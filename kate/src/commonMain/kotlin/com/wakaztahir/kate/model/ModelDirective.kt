@@ -1,5 +1,6 @@
 package com.wakaztahir.kate.model
 
+import com.wakaztahir.kate.dsl.UnresolvedValueException
 import com.wakaztahir.kate.model.model.*
 
 sealed interface ModelReference {
@@ -45,12 +46,31 @@ class ModelDirective(override val propertyPath: List<ModelReference>, override v
         }
     }
 
+    val container: KATEObject = referenceModel.findContainingObjectUpwards(propertyPath[0])
+        ?: referenceModel.findInternalReferenceProperty(propertyPath[0]) as? KATEObject
+        ?: throw UnresolvedValueException("property ${propertyPath[0]} couldn't be found up in tree from path $propertyPath")
+
+    private fun getModelReferenceValueAndType(model: KATEObject): Pair<KATEValue, KATEType?> {
+        var i = 0
+        var current: Pair<KATEValue, KATEType?> = Pair(container, null)
+        while (i < propertyPath.size) {
+            current = model.findResolvedModelReference(
+                current = current.first,
+                explicitType = current.second,
+                path = propertyPath,
+                index = i
+            )
+            i++
+        }
+        return current
+    }
+
     override fun getKATEValue(model: KATEObject): KATEValue {
-        return model.getModelReferenceValue(path = propertyPath)
+        return getModelReferenceValueAndType(model).first
     }
 
     override fun getKATEValueAndType(model: KATEObject): Pair<KATEValue, KATEType?> {
-        return model.getModelReferenceValueAndType(path = propertyPath)
+        return getModelReferenceValueAndType(model)
     }
 
     override fun toString(): String = propertyPath.joinToString(".")

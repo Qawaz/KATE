@@ -17,10 +17,11 @@ class VariablesTest {
     @Test
     fun testParseVariableReference() {
         val context = TemplateContext(("@var(myVar)"))
+        context.stream.model.insertValue("myVar", StringValue("someValue"))
         val ref = context.stream.block.parseVariableReference(true)
         assertNotEquals(null, ref)
         assertEquals(ref!!.propertyPath[0].name, "myVar")
-        context.stream.model.insertValue("myVar", StringValue("someValue"))
+
         assertEquals("someValue", ref.asPrimitive(context.stream.model).value)
     }
 

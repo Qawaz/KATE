@@ -44,6 +44,21 @@ object GlobalObjectImplementation {
         }
     }
 
+//    private val interpreter by lazy {
+//        return MutableKATEObject {
+//            insertValue("hasPlaceholder",object : KATEFunction(KATEType.Boolean,KATEType.String) {
+//                override fun invoke(
+//                    model: KATEObject,
+//                    invokedOn: KATEValue,
+//                    explicitType: KATEType?,
+//                    parameters: List<ReferencedOrDirectValue>
+//                ): ReferencedOrDirectValue {
+//
+//                }
+//            })
+//        }
+//    }
+
     fun putIntoObject(obj: MutableKATEObject) {
         obj.insertValue("console", consoleObject)
         obj.insertValue("throw", throwMethod)

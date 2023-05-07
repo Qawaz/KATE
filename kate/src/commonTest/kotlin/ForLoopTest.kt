@@ -1,10 +1,7 @@
 import com.wakaztahir.kate.TemplateContext
 import com.wakaztahir.kate.dsl.UnresolvedValueException
-import com.wakaztahir.kate.model.KATEType
+import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.model.model.KATEListImpl
-import com.wakaztahir.kate.model.ModelDirective
-import com.wakaztahir.kate.model.StringValue
-import com.wakaztahir.kate.model.asPrimitive
 import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.parser.ArithmeticOperatorType
 import com.wakaztahir.kate.parser.ForLoop
@@ -24,12 +21,16 @@ class ForLoopTest {
     @Test
     fun parseForLoopIterable() {
         val context = TemplateContext("@for(@var listName : @var(mList)) blockValue @endfor")
+        context.stream.model.insertValue(
+            "mList",
+            KATEListImpl(listOf(1, 2, 3).map { IntValue(it) }, itemType = KATEType.Int)
+        )
         var loop = context.stream.block.parseForLoop()!! as ForLoop.IterableFor
         assertEquals("listName", loop.elementConstName)
         assertEquals(null, loop.indexConstName)
         assertEquals("blockValue", loop.blockValue.getValueAsString())
         assertEquals("mList", (loop.listProperty as ModelDirective).propertyPath[0].name)
-        context.updateStream("@for(@var listName,indexName : @var(list)) blockValue @endfor")
+        context.updateStream("@for(@var listName,indexName : @var(mList)) blockValue @endfor")
         loop = context.stream.block.parseForLoop()!! as ForLoop.IterableFor
         assertEquals("indexName", loop.indexConstName)
     }

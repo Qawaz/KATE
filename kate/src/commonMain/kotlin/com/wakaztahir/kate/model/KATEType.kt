@@ -4,8 +4,6 @@ import com.wakaztahir.kate.model.model.KATEValue
 
 sealed class KATEType {
 
-    protected val actualType get() = if (this is NullableKateType) this.actual else this
-
     abstract fun getPlaceholderName(): kotlin.String
 
     abstract fun getKATEType(): kotlin.String
@@ -151,9 +149,6 @@ sealed class KATEType {
 
         override fun getPlaceholderName(): kotlin.String = "class"
 
-        private fun Map<kotlin.String, KATEValue>.string() =
-            entries.joinToString(separator = ",") { it.key + "=" + it.value }
-
         override fun getKATEType(): kotlin.String = members.entries.joinToString(
             separator = ";",
             prefix = "{",
@@ -161,8 +156,9 @@ sealed class KATEType {
         ) { "${it.key}:${it.value.getKATEType()}" }
 
         override fun satisfiedBy(valueOfType: KATEType): kotlin.Boolean =
-            valueOfType is Class && valueOfType.members == members
-
+            valueOfType is Class && members.all {
+                it.value.satisfiedBy(valueOfType.members[it.key] ?: return@all false)
+            }
     }
 
     open class Object(val itemsType: KATEType) : KATEType() {

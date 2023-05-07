@@ -9,7 +9,7 @@ interface KATEObject : KATEValue {
 
     val parent: KATEObject?
 
-    fun getItemsType() : KATEType
+    fun getItemsType(): KATEType
 
     override fun getKnownKATEType(): KATEType
 
@@ -41,7 +41,20 @@ interface KATEObject : KATEValue {
         }
     }
 
-    private fun findResolvedModelReference(
+    fun findInternalReferenceProperty(ref: ModelReference): KATEValue? {
+        return when (ref) {
+            is ModelReference.FunctionCall -> null
+            is ModelReference.Property -> {
+                when (ref.name) {
+                    "this" -> this
+                    "parent" -> (this.asNullableObject(this))?.parent
+                    else -> null
+                }
+            }
+        }
+    }
+
+    fun findResolvedModelReference(
         current: KATEValue,
         explicitType: KATEType?,
         path: List<ModelReference>,
@@ -62,33 +75,11 @@ interface KATEObject : KATEValue {
             }
 
             is ModelReference.Property -> {
-                (value?.let { Pair(it, valueType) }) ?: ((when (prop.name) {
-                    "this" -> Pair(current, null)
-                    "parent" -> (current.asNullableObject(this))?.parent?.let { Pair(it, null) }
-                    else -> null
-                }) ?: throwUnresolved(path, index, current))
+                (value?.let { Pair(it, valueType) })
+                    ?: (((current as? KATEObject)?.findInternalReferenceProperty(ref = prop)?.let { Pair(it, null) })
+                        ?: throwUnresolved(path, index, current))
             }
         }
-    }
-
-    fun getModelReferenceValueAndType(path: List<ModelReference>): Pair<KATEValue, KATEType?> {
-        var i = 0
-        val container = findContainingObjectUpwards(path[0])
-        var current: Pair<KATEValue, KATEType?> = Pair(container ?: this, null)
-        while (i < path.size) {
-            current = findResolvedModelReference(
-                current = current.first,
-                explicitType = current.second,
-                path = path,
-                index = i
-            )
-            i++
-        }
-        return current
-    }
-
-    fun getModelReferenceValue(path: List<ModelReference>): KATEValue {
-        return getModelReferenceValueAndType(path).first
     }
 
 }

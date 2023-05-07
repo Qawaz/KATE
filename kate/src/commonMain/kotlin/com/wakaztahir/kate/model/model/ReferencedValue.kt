@@ -11,7 +11,7 @@ interface ReferencedValue : ReferencedOrDirectValue {
     val referenceModel : KATEObject
 
     fun toEmptyPlaceholderInvocation(model: MutableKATEObject, endPointer: Int): PlaceholderInvocation {
-        model.getModelReferenceValue(path = propertyPath)
+        getKATEValue(model)
         return PlaceholderInvocation(
             placeholderName = KATEType.Unit.getKATEType(),
             definitionName = null,

@@ -65,7 +65,8 @@ class ModelDirectiveTest {
 
     @Test
     fun testParseModelDirective() {
-        val context = TemplateContext("@var(firstProp.secondProp.thirdCall().fourthProp.fifthProp(true,false))")
+        val context = TemplateContext("@var(firstProp.secondProp.thirdCall().fourthProp.fifthProp(true,false))",
+            MutableKATEObject { insertValue("firstProp",KATEUnit) })
         context.testDirective { directive ->
             assertEquals("firstProp", directive.propertyPath[0].name)
             assertEquals("secondProp", directive.propertyPath[1].name)
@@ -80,7 +81,8 @@ class ModelDirectiveTest {
 
     @Test
     fun testModelFunctionCallWithParameters() {
-        val context = TemplateContext(text = "@var(callSum(1,2))")
+        val context =
+            TemplateContext(text = "@var(callSum(1,2))", MutableKATEObject { insertValue("callSum", KATEUnit) })
         val directive = context.stream.block.parseVariableReference(true)!!
         assertTrue(directive.propertyPath[0] is ModelReference.FunctionCall)
     }
@@ -112,7 +114,7 @@ class ModelDirectiveTest {
             }
             insertValue(
                 "callSum",
-                KATEParsedFunction("callSum ()->string") { model, invokedOn,explicitType, parameters ->
+                KATEParsedFunction("callSum ()->string") { model, invokedOn, explicitType, parameters ->
                     IntValue(parameters.map { it.asPrimitive(model) }.sumOf { it.value as Int })
                 })
         }
