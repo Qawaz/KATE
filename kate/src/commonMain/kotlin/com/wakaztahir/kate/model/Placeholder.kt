@@ -103,10 +103,10 @@ class TextPlaceholderBlock(
     }
 }
 
-class PlaceholderDefinition(val blockValue: PlaceholderBlock) : BlockContainer {
+class PlaceholderDefinition(val blockValue: PlaceholderBlock, val isOnce: Boolean) : BlockContainer {
     override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.placeholderDefinition
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
-        block.source.placeholderManager.definePlaceholder(blockValue)
+        block.source.placeholderManager.definePlaceholder(placeholder = blockValue, throwIfExists = !isOnce)
     }
 
     override fun getBlockValue(model: KATEObject): LazyBlock = blockValue

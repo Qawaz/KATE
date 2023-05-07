@@ -95,6 +95,7 @@ private fun LazyBlock.parsePlaceholderBlock(nameAndDef: Triple<String, String?, 
 
 fun LazyBlock.parsePlaceholderDefinition(): PlaceholderDefinition? {
     if (source.currentChar == '@' && source.increment("@define_placeholder")) {
+        val isOnce = source.increment("_once")
         val nameAndDef = source.parsePlaceHolderNameAndDefinitionAndParameter(
             parseParameter = {
                 parseTextWhile { currentChar.isVariableName() }.ifEmpty { null }
@@ -103,7 +104,8 @@ fun LazyBlock.parsePlaceholderDefinition(): PlaceholderDefinition? {
         if (nameAndDef != null) {
             val blockValue = parsePlaceholderBlock(nameAndDef = nameAndDef)
             return PlaceholderDefinition(
-                blockValue = blockValue
+                blockValue = blockValue,
+                isOnce = isOnce
             )
         } else {
             throw IllegalStateException("placeholder name is required when defining a placeholder using @define_placeholder")

@@ -283,6 +283,8 @@ To define a placeholder , You use `@define_placeholder`
 
 `@define_placeholder(PlaceholderName,DefinitionName)`
 
+You can also do `@define_placeholder_once` to not cause an error if it already exists
+
 ```
 @define_placeholder(WelcomeText,GreetingText,PersonName)
     Hello World ! How are you @var(PersonName)?

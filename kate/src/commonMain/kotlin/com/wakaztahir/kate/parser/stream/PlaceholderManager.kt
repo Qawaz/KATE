@@ -17,13 +17,17 @@ interface PlaceholderManager {
         placeholderListeners[placeholderName] = listener
     }
 
-    fun definePlaceholder(placeholder: PlaceholderBlock) {
+    fun definePlaceholder(placeholder: PlaceholderBlock, throwIfExists: Boolean) {
         val iterator = placeholders.iterator()
         while (iterator.hasNext()) {
             val next = iterator.next()
             if (next.placeholderName == placeholder.placeholderName) {
                 if (next.definitionName == placeholder.definitionName) {
-                    throw IllegalStateException("placeholder with name ${placeholder.placeholderName} and definition name ${placeholder.definitionName} already exists , please use a different definition name")
+                    if (throwIfExists) {
+                        throw IllegalStateException("placeholder with name ${placeholder.placeholderName} and definition name ${placeholder.definitionName} already exists , please use a different definition name")
+                    } else {
+                        return
+                    }
                 }
                 undefinedPlaceholders.add(next)
                 iterator.remove()
@@ -55,7 +59,7 @@ interface PlaceholderManager {
             it.placeholderName == placeholderName && it.definitionName == definitionName
         }
         return if (index > -1) {
-            definePlaceholder(undefinedPlaceholders.removeAt(index))
+            definePlaceholder(undefinedPlaceholders.removeAt(index), throwIfExists = true)
             true
         } else {
             return checkIsBeingUsed(placeholderName, definitionName)
