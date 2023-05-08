@@ -27,7 +27,7 @@ open class PlaceholderBlock(
     length = length,
     blockEndPointer = blockEndPointer,
     model = model,
-    isWriteUnprocessedTextEnabled = allowTextOut,
+    isDefaultNoRaw = allowTextOut,
     indentationLevel = indentationLevel
 ) {
 
@@ -48,7 +48,7 @@ open class PlaceholderBlock(
     }
 
     override fun parseImplicitDirectives(): CodeGen? {
-        if (isWriteUnprocessedTextEnabled) {
+        if (isDefaultNoRaw) {
             super.parseImplicitDirectives()?.let { return it }
         } else {
             parsePartialRawImplicitDirective()?.let { return it }

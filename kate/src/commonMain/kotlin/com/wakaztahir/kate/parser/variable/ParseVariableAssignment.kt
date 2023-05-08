@@ -89,7 +89,7 @@ internal fun SourceStream.parseAssignmentLHS(isExplicitAssignment: Boolean): Ass
 }
 
 internal fun LazyBlock.parseVariableAssignment(): VariableAssignment? {
-    val lhs = source.parseAssignmentLHS(isExplicitAssignment = isWriteUnprocessedTextEnabled) ?: return null
+    val lhs = source.parseAssignmentLHS(isExplicitAssignment = isDefaultNoRaw) ?: return null
     source.escapeSpaces()
     val property = parseAnyExpressionOrValue(
         parseDirectRefs = true

@@ -36,7 +36,7 @@ open class PartialRawLazyBlockSlice(
     length = length,
     blockEndPointer = blockEndPointer,
     model = model,
-    isWriteUnprocessedTextEnabled = false,
+    isDefaultNoRaw = false,
     indentationLevel = indentationLevel
 ) {
 

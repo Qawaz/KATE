@@ -2,7 +2,6 @@ package com.wakaztahir.kate.parser
 
 import com.wakaztahir.kate.dsl.ScopedModelObject
 import com.wakaztahir.kate.model.*
-import com.wakaztahir.kate.model.model.KATEUnit
 import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.parser.stream.*
 import com.wakaztahir.kate.parser.stream.increment
@@ -11,7 +10,7 @@ import com.wakaztahir.kate.parser.variable.parseVariableReference
 fun LazyBlock.parseBlockSlice(
     startsWith: String,
     endsWith: String,
-    allowTextOut: Boolean,
+    isDefaultNoRaw: Boolean,
     model: MutableKATEObject,
     indentationLevel: Int = this.indentationLevel + 1
 ): LazyBlockSlice {
@@ -41,7 +40,7 @@ fun LazyBlock.parseBlockSlice(
         length = length,
         model = model,
         blockEndPointer = source.pointer,
-        isWriteUnprocessedTextEnabled = allowTextOut,
+        isDefaultNoRaw = isDefaultNoRaw,
         indentationLevel = indentationLevel
     )
 
@@ -50,13 +49,13 @@ fun LazyBlock.parseBlockSlice(
 fun LazyBlock.parseBlockSlice(
     startsWith: String,
     endsWith: String,
-    allowTextOut: Boolean,
+    isDefaultNoRaw: Boolean,
     inheritModel: Boolean,
     indentationLevel: Int = this.indentationLevel + 1
 ): LazyBlockSlice = parseBlockSlice(
     startsWith = startsWith,
     endsWith = endsWith,
-    allowTextOut = allowTextOut,
+    isDefaultNoRaw = isDefaultNoRaw,
     model = if (inheritModel) model else ScopedModelObject(model),
     indentationLevel = indentationLevel
 )
@@ -119,7 +118,7 @@ fun LazyBlock.parsePartialRaw(): PartialRawBlock? {
         val slice = parseBlockSlice(
             startsWith = "@partial_raw",
             endsWith = "@end_partial_raw",
-            allowTextOut = false,
+            isDefaultNoRaw = false,
             inheritModel = true
         )
         return PartialRawBlock(
@@ -142,7 +141,7 @@ fun LazyBlock.parseDefaultNoRaw(): DefaultNoRawBlock? {
             parseBlockSlice(
                 startsWith = "@default_no_raw",
                 endsWith = "@end_default_no_raw",
-                allowTextOut = true,
+                isDefaultNoRaw = true,
                 inheritModel = true
             )
         )

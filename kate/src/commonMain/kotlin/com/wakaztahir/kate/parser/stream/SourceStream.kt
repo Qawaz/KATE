@@ -33,7 +33,7 @@ abstract class SourceStream {
         override val model: MutableKATEObject
             get() = source.model
 
-        override val isWriteUnprocessedTextEnabled: Boolean
+        override val isDefaultNoRaw: Boolean
             get() = true
 
         override val indentationLevel: Int = 0

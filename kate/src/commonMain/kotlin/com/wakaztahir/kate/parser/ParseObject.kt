@@ -25,7 +25,7 @@ private fun LazyBlock.parseObjectDeclarationSlice(objectName: String, itemType: 
     val slice = parseBlockSlice(
         startsWith = "@define_object",
         endsWith = "@end_define_object",
-        allowTextOut = false,
+        isDefaultNoRaw = false,
         inheritModel = true
     )
     return ObjectDeclarationBlockSlice(

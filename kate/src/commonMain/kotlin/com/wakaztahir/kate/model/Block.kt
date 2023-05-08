@@ -10,7 +10,6 @@ import com.wakaztahir.kate.parser.stream.*
 import com.wakaztahir.kate.parser.stream.increment
 import com.wakaztahir.kate.parser.variable.parseVariableAssignment
 import com.wakaztahir.kate.parser.variable.parseVariableDeclaration
-import com.wakaztahir.kate.parser.variable.parseVariableReference
 import com.wakaztahir.kate.parser.variable.parseVariableReferenceAsExpression
 
 interface LazyBlock {
@@ -18,10 +17,10 @@ interface LazyBlock {
     val source: SourceStream
     val model: MutableKATEObject
 
-    // Text that couldn't be processed by the compiler is written to stream as it is
-    val isWriteUnprocessedTextEnabled: Boolean
+    // Text that couldn't be processed by the parser is written to destination stream as it is
+    val isDefaultNoRaw: Boolean
 
-    // Indentation level should increase , which will be consumed as code is parsed
+    // Indentation level should increase when nesting blocks
     val indentationLevel: Int
 
     fun canIterate(): Boolean
@@ -49,7 +48,7 @@ interface LazyBlock {
                 }
                 continue
             }
-            if (isWriteUnprocessedTextEnabled) {
+            if (isDefaultNoRaw) {
                 if (blockLineNumber == 1 && (source.currentChar == '\t' || source.currentChar == ' ') && indentationLevel > 0 && !hasConsumedFirstLineIndentation) {
                     consumeLineIndentation()
                     hasConsumedFirstLineIndentation = true
@@ -91,7 +90,7 @@ interface LazyBlock {
     }
 
     fun parseImplicitDirectives(): CodeGen? {
-        parseVariableReferenceAsExpression(parseDirectRefs = !isWriteUnprocessedTextEnabled)?.let {
+        parseVariableReferenceAsExpression(parseDirectRefs = !isDefaultNoRaw)?.let {
             return it.toPlaceholderInvocation(model, source.pointer) ?: KATEUnit
         }
         return null
@@ -146,7 +145,7 @@ open class LazyBlockSlice(
     val length: Int,
     val blockEndPointer: Int,
     override val model: MutableKATEObject,
-    override val isWriteUnprocessedTextEnabled: Boolean,
+    override val isDefaultNoRaw: Boolean,
     override val indentationLevel: Int
 ) : LazyBlock {
 
@@ -168,29 +167,6 @@ open class LazyBlockSlice(
 
     fun getValueAsString(): String {
         return getValueAsString(startPointer)
-    }
-
-    fun writeValueTo(destination: DestinationStream) {
-        val previous = source.pointer
-        var blockLineNumber = 1
-        var hasConsumedFirstLineIndentation = false
-        source.setPointerAt(startPointer)
-        while (canIterate()) {
-            if (blockLineNumber == 1 && (source.currentChar == '\t' || source.currentChar == ' ') && indentationLevel > 0 && !hasConsumedFirstLineIndentation) {
-                consumeLineIndentation()
-                hasConsumedFirstLineIndentation = true
-                continue
-            } else {
-                destination.stream.write(source.currentChar)
-            }
-            val isNewLine = source.currentChar == '\n'
-            source.incrementPointer()
-            if (isNewLine) {
-                consumeLineIndentation()
-                blockLineNumber++
-            }
-        }
-        source.setPointerAt(previous)
     }
 
 }

@@ -73,7 +73,7 @@ private fun LazyBlock.parsePlaceholderBlock(nameAndDef: Triple<String, String?, 
     val blockValue = parseBlockSlice(
         startsWith = "@define_placeholder",
         endsWith = "@end_define_placeholder",
-        allowTextOut = isWriteUnprocessedTextEnabled,
+        isDefaultNoRaw = isDefaultNoRaw,
         inheritModel = false
     )
 
@@ -86,7 +86,7 @@ private fun LazyBlock.parsePlaceholderBlock(nameAndDef: Triple<String, String?, 
         length = blockValue.length,
         model = blockValue.model,
         blockEndPointer = blockValue.blockEndPointer,
-        allowTextOut = isWriteUnprocessedTextEnabled,
+        allowTextOut = isDefaultNoRaw,
         indentationLevel = blockValue.indentationLevel
     )
 

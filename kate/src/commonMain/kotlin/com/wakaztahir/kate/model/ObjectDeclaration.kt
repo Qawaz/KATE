@@ -30,7 +30,7 @@ class ObjectDeclarationBlockSlice(
     length = length,
     blockEndPointer = blockEndPointer,
     model = model,
-    isWriteUnprocessedTextEnabled = false,
+    isDefaultNoRaw = false,
     indentationLevel = indentationLevel
 ) {
 

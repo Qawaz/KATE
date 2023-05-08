@@ -231,7 +231,7 @@ fun LazyBlock.parseFunctionDefinition(anonymousFunctionName: String?): FunctionD
         val slice = parseBlockSlice(
             startsWith = "@function",
             endsWith = "@end_function",
-            allowTextOut = false,
+            isDefaultNoRaw = false,
             inheritModel = true
         )
         return FunctionDefinition(
