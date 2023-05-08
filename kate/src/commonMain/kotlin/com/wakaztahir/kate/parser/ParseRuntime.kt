@@ -12,7 +12,7 @@ private const val CHAR_DIRECTIVE = "@runtime.print_char"
 private const val STRING_DIRECTIVE = "@runtime.print_string"
 
 @JvmInline
-private value class WriteChar(val char: ReferencedOrDirectValue) : CodeGen {
+value class WriteChar(val char: ReferencedOrDirectValue) : CodeGen {
     override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.runtimeWriteChar
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
         destination.stream.write(
@@ -23,7 +23,7 @@ private value class WriteChar(val char: ReferencedOrDirectValue) : CodeGen {
 }
 
 @JvmInline
-private value class WriteString(val string: ReferencedOrDirectValue) : CodeGen {
+value class WriteString(val string: ReferencedOrDirectValue) : CodeGen {
     override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.runtimeWriteString
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
         destination.stream.write(

@@ -11,7 +11,7 @@ import com.wakaztahir.kate.tokenizer.NodeTokenizer
 
 class VariableDeclarationException(message: String) : Exception(message)
 
-internal data class VariableDeclaration(
+data class VariableDeclaration(
     val variableName: String,
     val type: KATEType?,
     val variableValue: ReferencedOrDirectValue

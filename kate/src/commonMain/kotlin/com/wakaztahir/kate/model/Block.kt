@@ -29,9 +29,6 @@ interface LazyBlock {
         var blockLineNumber = 1
         var hasConsumedFirstLineIndentation = false
         while (canIterate()) {
-            if (source.skipMultilineComments()) {
-                continue
-            }
             val directive = parseAtDirective()
             if (directive != null) {
                 writeDirective(directive = directive, destination = destination)
@@ -95,6 +92,7 @@ interface LazyBlock {
     }
 
     fun parseAtDirective(): CodeGen? {
+        parseMultilineComment()?.let { return it }
         parseRuntimeGen()?.let { return it }
         parseNestedAtDirective(this)?.let { return it }
         parseRawBlock()?.let { return it }

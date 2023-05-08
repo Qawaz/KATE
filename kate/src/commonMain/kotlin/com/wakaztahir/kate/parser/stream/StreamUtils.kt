@@ -43,6 +43,20 @@ internal fun SourceStream.increment(str: String, throwOnUnexpectedEOS: Boolean =
     }
 }
 
+internal fun SourceStream.parseTextUntilConsumedNew(str: String): String? {
+    var text = ""
+    val previous = pointer
+    while (!hasEnded) {
+        text += currentChar
+        if (currentChar == str[0] && increment(str)) {
+            return text
+        }
+        incrementPointer()
+    }
+    decrementPointer(pointer - previous)
+    return null
+}
+
 internal fun SourceStream.incrementUntilConsumed(str: String): Boolean {
     val previous = pointer
     while (!hasEnded) {
@@ -115,7 +129,7 @@ internal fun SourceStream.parseTextUntilConsumed(str: String): String {
 
 internal inline fun SourceStream.incrementUntilDirectiveWithSkip(
     skip: String,
-    canIncrementDirective: (skips : Int) -> String?,
+    canIncrementDirective: (skips: Int) -> String?,
 ): String? {
     var skips = 0
     while (!hasEnded) {
