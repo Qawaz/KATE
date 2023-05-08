@@ -2,6 +2,8 @@ package com.wakaztahir.kate.tokenizer
 
 interface NodeTokenizer<T> {
 
+    val kateParsingError : T
+
     val multilineComment : T
 
     val conditionalFor : T

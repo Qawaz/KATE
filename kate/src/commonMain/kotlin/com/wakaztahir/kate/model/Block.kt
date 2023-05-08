@@ -1,6 +1,7 @@
 package com.wakaztahir.kate.model
 
 import com.wakaztahir.kate.KATEDelicateFunction
+import com.wakaztahir.kate.model.model.KATEParsingError
 import com.wakaztahir.kate.model.model.KATEUnit
 import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.parser.*
@@ -30,7 +31,11 @@ interface LazyBlock {
         var hasConsumedFirstLineIndentation = false
         while (canIterate()) {
             val previous = source.pointer
-            val directive = parseAtDirective()
+            val directive = try {
+                parseAtDirective()
+            } catch (e: Exception) {
+                KATEParsingError(e)
+            }
             if (directive != null) {
                 writeDirective(previous = previous, directive = directive, destination = destination)
                 if (!source.hasEnded && directive is BlockContainer) {
