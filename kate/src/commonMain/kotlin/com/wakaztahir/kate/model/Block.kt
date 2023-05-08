@@ -29,9 +29,10 @@ interface LazyBlock {
         var blockLineNumber = 1
         var hasConsumedFirstLineIndentation = false
         while (canIterate()) {
+            val previous = source.pointer
             val directive = parseAtDirective()
             if (directive != null) {
-                writeDirective(directive = directive, destination = destination)
+                writeDirective(previous = previous, directive = directive, destination = destination)
                 if (!source.hasEnded && directive is BlockContainer) {
                     if (!source.increment('\n')) {
                         source.increment(' ')
@@ -72,11 +73,11 @@ interface LazyBlock {
         return consumed
     }
 
-    fun writeCurrentChar(destination: DestinationStream){
+    fun writeCurrentChar(destination: DestinationStream) {
         destination.stream.write(source.currentChar)
     }
 
-    fun writeDirective(directive: CodeGen, destination: DestinationStream) {
+    fun writeDirective(previous: Int, directive: CodeGen, destination: DestinationStream) {
         directive.generateTo(this, destination)
     }
 
