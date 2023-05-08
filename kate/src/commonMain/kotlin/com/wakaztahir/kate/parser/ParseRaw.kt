@@ -61,21 +61,48 @@ fun LazyBlock.parseBlockSlice(
     indentationLevel = indentationLevel
 )
 
+fun String.deIndented(indentationLevel: Int): String {
+    var i = 0
+    var text = ""
+    while (i < length) {
+        if ((i == 0 || this[i - 1] == '\n') &&
+            (this[i] == '\t' || (i + 4 < this.length && this.substring(i, i + 5) == "    "))
+            && indentationLevel > 0
+        ) {
+            var x = 0
+            while (x < indentationLevel && i < length) {
+                if (this[i] == '\t') {
+                    i++
+                } else if (i + 5 < this.length && this.substring(i, i + 5) == "    ") {
+                    i += 4
+                }
+                x++
+            }
+            continue
+        } else {
+            text += this[i]
+        }
+        i++
+    }
+    return text
+}
+
+fun LazyBlock.parseRawBlockText(): String {
+    escapeBlockSpacesForward()
+    var text = source.parseTextUntilConsumedNew("@endraw")
+        ?: throw IllegalStateException("@raw must end with @endraw")
+    text = text.deIndented(indentationLevel + 1)
+    return text.escapeBlockSpacesBackward(indentationLevel)
+}
+
 fun LazyBlock.parseRawBlock(): RawBlock? {
     if (source.currentChar == '@' && source.increment("@raw")) {
-        return RawBlock(
-            parseBlockSlice(
-                startsWith = "@raw",
-                endsWith = "@endraw",
-                allowTextOut = false,
-                inheritModel = true
-            )
-        )
+        return RawBlock(parseRawBlockText())
     }
     return null
 }
 
-fun LazyBlock.parsePartialRawImplicitDirective() : CodeGen? {
+fun LazyBlock.parsePartialRawImplicitDirective(): CodeGen? {
     parseVariableReference(parseDirectRefs = true)?.let {
         it.propertyPath.lastOrNull()?.let { c -> c as? ModelReference.FunctionCall }?.let { call ->
             return it.toEmptyPlaceholderInvocation(model, source.pointer)

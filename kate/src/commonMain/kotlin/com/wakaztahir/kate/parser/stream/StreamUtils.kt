@@ -47,9 +47,10 @@ internal fun SourceStream.parseTextUntilConsumedNew(str: String): String? {
     var text = ""
     val previous = pointer
     while (!hasEnded) {
-        text += currentChar
         if (currentChar == str[0] && increment(str)) {
             return text
+        } else {
+            text += currentChar
         }
         incrementPointer()
     }
@@ -264,5 +265,48 @@ internal fun LazyBlock.escapeBlockSpacesBackward() {
         source.incrementPointer()
         return
     }
+
+}
+
+internal fun String.escapeBlockSpacesBackward(indentationLevel: Int): String {
+    var currentIndentationLevel = indentationLevel
+    var i = length
+    while (i > 0) {
+        i--
+        when (this[i]) {
+
+            '\r' -> {
+                return substring(0, i)
+            }
+
+            '\n' -> {
+                if (this[i - 1] == '\r') i--
+                return substring(0, i)
+            }
+
+            ' ' -> {
+                continue
+            }
+
+            '\t' -> {
+                if (currentIndentationLevel > 0) {
+                    currentIndentationLevel--
+                } else {
+                    return substring(0, i)
+                }
+            }
+
+            else -> {
+                break
+            }
+        }
+    }
+
+    i = length - 1
+    if (this[i] == ' ') {
+        return substring(0, i)
+    }
+
+    return this
 
 }

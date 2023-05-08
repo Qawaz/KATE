@@ -16,11 +16,10 @@ class DefaultNoRawBlock(val value: LazyBlockSlice) : BlockContainer {
     }
 }
 
-class RawBlock(val value: LazyBlockSlice) : BlockContainer {
+class RawBlock(val value: String) : CodeGen {
     override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.rawBlock
-    override fun getBlockValue(model: KATEObject): LazyBlock = value
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
-        value.writeValueTo(destination)
+        destination.stream.write(value)
     }
 }
 

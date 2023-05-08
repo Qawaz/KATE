@@ -4,6 +4,8 @@ interface NodeTokenizer<T> {
 
     val kateParsingError : T
 
+    val block : T
+
     val multilineComment : T
 
     val conditionalFor : T

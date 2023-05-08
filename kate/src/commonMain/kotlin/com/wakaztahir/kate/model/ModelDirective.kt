@@ -46,7 +46,7 @@ class ModelDirective(override val propertyPath: List<ModelReference>, override v
         }
     }
 
-    val container: KATEObject = referenceModel.findContainingObjectUpwards(propertyPath[0])
+    private val container: KATEObject get()= referenceModel.findContainingObjectUpwards(propertyPath[0])
         ?: referenceModel.findInternalReferenceProperty(propertyPath[0]) as? KATEObject
         ?: throw UnresolvedValueException("property ${propertyPath[0]} couldn't be found up in tree from path $propertyPath")
 

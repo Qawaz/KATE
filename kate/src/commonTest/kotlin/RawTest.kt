@@ -12,7 +12,7 @@ class RawTest {
         val context = TemplateContext("@raw there's something raw here @endraw")
         val block = context.stream.block.parseRawBlock()
         assertNotEquals(null, block)
-        assertEquals("there's something raw here", block!!.value.getValueAsString())
+        assertEquals("there's something raw here", block!!.value)
         context.updateStream("@rawvalue@endraw")
         context.stream.block.parseRawBlock()
         assertEquals(16, context.stream.pointer)
@@ -76,6 +76,27 @@ class RawTest {
                 """@partial_raw
                 |${'\t'}@raw
                 |${'\t'}${'\t'}package output
+                |${'\t'}@endraw
+                |@end_partial_raw
+                """.trimMargin()
+            )
+        )
+        assertEquals(
+            expected = """	package output1
+	package output2
+	package output3
+	package output4
+	package output5
+	package output6""",
+            actual = GenerateCode(
+                """@partial_raw
+                |${'\t'}@raw
+                |${'\t'}${'\t'}${'\t'}package output1
+                |${'\t'}${'\t'}${'\t'}package output2
+                |${'\t'}${'\t'}${'\t'}package output3
+                |${'\t'}${'\t'}${'\t'}package output4
+                |${'\t'}${'\t'}${'\t'}package output5
+                |${'\t'}${'\t'}${'\t'}package output6
                 |${'\t'}@endraw
                 |@end_partial_raw
                 """.trimMargin()
