@@ -33,7 +33,7 @@ interface LazyBlock {
             val previous = source.pointer
             val directive = try {
                 parseAtDirective()
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 KATEParsingError(e)
             }
             if (directive != null) {
