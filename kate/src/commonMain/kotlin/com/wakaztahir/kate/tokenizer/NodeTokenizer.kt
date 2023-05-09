@@ -20,6 +20,8 @@ interface NodeTokenizer<T> {
 
     val numberedFor : T
 
+    val functionReturn : T
+
     val defaultNoRawString : T
 
     val singleIf : T

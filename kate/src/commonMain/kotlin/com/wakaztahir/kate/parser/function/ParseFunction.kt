@@ -12,6 +12,16 @@ import com.wakaztahir.kate.parser.variable.isVariableName
 import com.wakaztahir.kate.parser.variable.parseKATEType
 import com.wakaztahir.kate.tokenizer.NodeTokenizer
 
+class FunctionReturn(val slice: FunctionSlice, val value: ReferencedOrDirectValue) : CodeGen {
+
+    override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.functionReturn
+
+    override fun generateTo(block: LazyBlock, destination: DestinationStream) {
+        slice.onReturnValueFound(value)
+    }
+
+}
+
 class FunctionSlice(
     parentBlock: LazyBlock,
     startPointer: Int,
@@ -44,10 +54,7 @@ class FunctionSlice(
     )
 
     override fun parseNestedAtDirective(block: LazyBlock): CodeGen? {
-        block.parseFunctionReturn()?.let {
-            onReturnValueFound(it)
-            return KATEUnit
-        }
+        block.parseFunctionReturn()?.let { return FunctionReturn(this, it) }
         return super.parseNestedAtDirective(block)
     }
 
