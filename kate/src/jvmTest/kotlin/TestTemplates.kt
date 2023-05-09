@@ -94,16 +94,25 @@ class TestTemplates {
         return getContextFor(basePath = basePath, inputPath, model = model).getDestinationAsString()
     }
 
-    private fun testSchemaTemplate(basePath: String, inputPath: String, outputPath: String) {
-        val context = getContextFor(basePath = "schema/$basePath", inputPath = inputPath)
-        val output = output("output/$basePath/$outputPath")
+    private fun testTemplate(
+        basePath: String,
+        inputPath: String,
+        outputPath: String,
+        model: MutableKATEObject = MutableKATEObject { }
+    ) {
+        val context = getContextFor(basePath = basePath, inputPath = inputPath, model = model)
+        val output = output("output/$outputPath")
         try {
             context.generateTo(output)
-        }catch (e : Exception){
+        } catch (e: Exception) {
             val indo = context.stream.getErrorInfoAtCurrentPointer()
             throw Throwable("${indo.first}:${indo.second}", cause = e)
         }
         output.outputStream.close()
+    }
+
+    private fun testSchemaTemplate(basePath: String, inputPath: String, outputPath: String) {
+        testTemplate(basePath = "schema/$basePath", inputPath = inputPath, outputPath = "$basePath/$outputPath")
     }
 
     @Test
@@ -142,7 +151,7 @@ class TestTemplates {
 
     @Test
     fun testGenerateTemplates() {
-        testTemplateAsText("tests","main.kate",model = getObject())
+        testTemplate("tests", "main.kate", "main.kt", model = getObject())
     }
 
 }
