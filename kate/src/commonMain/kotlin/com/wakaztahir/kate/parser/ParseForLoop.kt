@@ -198,7 +198,7 @@ private fun LazyBlock.parseForBlockValue(): ForLoopLazyBlockSlice {
         parent = slice.model as ScopedModelObject,
         isDefaultNoRaw = slice.isDefaultNoRaw,
         indentationLevel = indentationLevel + 1
-    )
+    ).also { it.prepare() }
 }
 
 private fun LazyBlock.parseConditionalFor(): ForLoop.ConditionalFor? {

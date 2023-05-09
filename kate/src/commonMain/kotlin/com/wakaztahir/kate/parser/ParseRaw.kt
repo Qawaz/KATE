@@ -139,7 +139,7 @@ fun LazyBlock.parsePartialRaw(): PartialRawBlock? {
                 blockEndPointer = slice.blockEndPointer,
                 model = slice.model,
                 indentationLevel = slice.indentationLevel
-            )
+            ).also { it.prepare() }
         )
     }
     return null

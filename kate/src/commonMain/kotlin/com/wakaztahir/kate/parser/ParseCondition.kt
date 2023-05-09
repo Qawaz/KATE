@@ -129,9 +129,7 @@ private fun LazyBlock.parseIfBlockValue(ifType: IfType): LazyBlockSlice {
 
     val length = source.pointer - previous
 
-    source.setPointerAt(pointerBeforeEnder)
-
-    return LazyBlockSlice(
+    val block = LazyBlockSlice(
         parentBlock = this,
         startPointer = previous,
         length = length,
@@ -139,7 +137,11 @@ private fun LazyBlock.parseIfBlockValue(ifType: IfType): LazyBlockSlice {
         blockEndPointer = source.pointer + blockEnder.length,
         isDefaultNoRaw = isDefaultNoRaw,
         indentationLevel = indentationLevel + 1
-    )
+    ).also { it.prepare() }
+
+    source.setPointerAt(pointerBeforeEnder)
+
+    return block
 }
 
 internal fun LazyBlock.parseSingleIf(start: String, ifType: IfType): SingleIf? {

@@ -38,15 +38,13 @@ interface LazyBlock {
                 )
             )
         } else {
-            DefaultNoRawString("${source.currentChar}").also {
-                add(
-                    ParsedBlock.CodeGenRange(
-                        gen = it,
-                        start = source.pointer,
-                        end = source.pointer + 1
-                    )
+            add(
+                ParsedBlock.CodeGenRange(
+                    gen = DefaultNoRawString("${source.currentChar}"),
+                    start = source.pointer,
+                    end = source.pointer + 1
                 )
-            }
+            )
         }
     }
 
@@ -72,22 +70,22 @@ interface LazyBlock {
                 } else if (directive.isEmptyWriter) {
                     source.increment(' ')
                 }
-                continue
-            }
-            if (isDefaultNoRaw) {
-                if (blockLineNumber == 1 && (source.currentChar == '\t' || source.currentChar == ' ') && indentationLevel > 0 && !hasConsumedFirstLineIndentation) {
-                    consumeLineIndentation()
-                    hasConsumedFirstLineIndentation = true
-                    continue
-                } else {
-                    gens.appendCurrentChar()
+            } else {
+                if (isDefaultNoRaw) {
+                    if (blockLineNumber == 1 && (source.currentChar == '\t' || source.currentChar == ' ') && indentationLevel > 0 && !hasConsumedFirstLineIndentation) {
+                        consumeLineIndentation()
+                        hasConsumedFirstLineIndentation = true
+                        continue
+                    } else {
+                        gens.appendCurrentChar()
+                    }
                 }
-            }
-            val isNewLine = source.currentChar == '\n'
-            source.incrementPointer()
-            if (isNewLine) {
-                consumeLineIndentation()
-                blockLineNumber++
+                val isNewLine = source.currentChar == '\n'
+                source.incrementPointer()
+                if (isNewLine) {
+                    consumeLineIndentation()
+                    blockLineNumber++
+                }
             }
         }
         return ParsedBlock(codeGens = gens)
@@ -180,7 +178,9 @@ open class LazyBlockSlice(
     override val indentationLevel: Int
 ) : LazyBlock {
 
-    protected val parsedBlock : ParsedBlock by lazy { parse() }
+    protected val parsedBlock: ParsedBlock by lazy { parse() }
+
+    fun prepare() = parsedBlock
 
     override val source: SourceStream = parentBlock.source
 
@@ -188,10 +188,11 @@ open class LazyBlockSlice(
         return source.pointer < startPointer + length
     }
 
-    override fun generateTo(destination: DestinationStream) {
+    override fun parse(): ParsedBlock {
         source.setPointerAt(startPointer)
-        parsedBlock.generateTo(this,destination)
+        val parsed = super.parse()
         source.setPointerAt(blockEndPointer)
+        return parsed
     }
 
     override fun parseNestedAtDirective(block: LazyBlock): CodeGen? {

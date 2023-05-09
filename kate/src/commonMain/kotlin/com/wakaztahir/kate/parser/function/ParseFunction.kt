@@ -255,7 +255,7 @@ fun LazyBlock.parseFunctionDefinition(anonymousFunctionName: String?): FunctionD
             inheritModel = true
         )
         return FunctionDefinition(
-            slice = FunctionSlice(slice = slice),
+            slice = FunctionSlice(slice = slice).also { it.prepare() },
             functionName = functionName,
             parameterNames = parameters,
             returnedType = returnedType

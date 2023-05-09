@@ -5,6 +5,7 @@ import com.wakaztahir.kate.parser.stream.TextDestinationStream
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
+import kotlin.test.assertNotEquals
 
 class PlaceholderTest {
 
@@ -20,6 +21,9 @@ class PlaceholderTest {
         val invocation = context.stream.block.parsePlaceholderInvocation()!!
 
         assertEquals(code.length, context.stream.pointer)
+
+        val parsedBlock = definition.blockValue.parse()
+        assertNotEquals(0,parsedBlock.codeGens.size)
 
         assertEquals("Name", definition.blockValue.placeholderName)
         assertEquals("Name", definition.blockValue.definitionName)

@@ -35,7 +35,7 @@ private fun LazyBlock.parseObjectDeclarationSlice(objectName: String, itemType: 
         blockEndPointer = slice.blockEndPointer,
         model = ObjectDeclarationModel(objectName = objectName, parent = model),
         indentationLevel = indentationLevel + 1
-    )
+    ).also { it.prepare() }
 }
 
 fun LazyBlock.parseObjectDeclaration(): ObjectDeclaration? {
