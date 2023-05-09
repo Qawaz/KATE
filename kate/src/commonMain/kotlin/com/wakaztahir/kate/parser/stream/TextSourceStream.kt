@@ -9,12 +9,15 @@ class TextSourceStream(
     private val sourceCode: String,
     override val model: MutableKATEObject = ModelObjectImpl(objectName = GlobalModelObjectName),
     override val placeholderManager: PlaceholderManager = EmptyPlaceholderManager(),
-    override val embeddingManager: EmbeddingManager = NoEmbeddings
+    override val embeddingManager: EmbeddingManager = NoEmbeddings,
+    initialize: Boolean = true
 ) : SourceStream() {
 
     init {
-        DefaultPlaceholderManagerInitializer.initializerDefaultPlaceholders(this)
-        GlobalObjectImplementation.putIntoObject(model)
+        if (initialize) {
+            DefaultPlaceholderManagerInitializer.initializerDefaultPlaceholders(this)
+            GlobalObjectImplementation.putIntoObject(model)
+        }
     }
 
     override var pointer: Int = 0

@@ -19,7 +19,7 @@ open class PlaceholderBlock(
     length: Int,
     blockEndPointer: Int,
     override var model: MutableKATEObject,
-    allowTextOut: Boolean,
+    isDefaultNoRaw: Boolean,
     indentationLevel: Int
 ) : LazyBlockSlice(
     parentBlock = parentBlock,
@@ -27,7 +27,7 @@ open class PlaceholderBlock(
     length = length,
     blockEndPointer = blockEndPointer,
     model = model,
-    isDefaultNoRaw = allowTextOut,
+    isDefaultNoRaw = isDefaultNoRaw,
     indentationLevel = indentationLevel
 ) {
 
@@ -89,7 +89,7 @@ class TextPlaceholderBlock(
     blockEndPointer = 0,
     length = text.length,
     model = parent.model,
-    allowTextOut = false,
+    isDefaultNoRaw = false,
     indentationLevel = 0,
     parameterName = parameterName
 ) {
@@ -98,7 +98,8 @@ class TextPlaceholderBlock(
             sourceCode = text,
             model = model,
             placeholderManager = source.placeholderManager,
-            embeddingManager = source.embeddingManager
+            embeddingManager = source.embeddingManager,
+            initialize = false
         ).block.generateTo(destination)
     }
 }
