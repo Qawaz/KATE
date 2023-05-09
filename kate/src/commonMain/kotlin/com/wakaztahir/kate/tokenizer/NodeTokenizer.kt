@@ -2,6 +2,8 @@ package com.wakaztahir.kate.tokenizer
 
 interface NodeTokenizer<T> {
 
+    val forLoopBreak : T
+
     val partialRawFunctionCall : T
 
     val defaultNoRawExpression : T

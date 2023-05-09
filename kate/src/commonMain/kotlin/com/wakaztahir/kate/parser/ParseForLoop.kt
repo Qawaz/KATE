@@ -14,7 +14,7 @@ import com.wakaztahir.kate.tokenizer.NodeTokenizer
 
 sealed interface ForLoop : BlockContainer {
 
-    val blockValue: LazyBlockSlice
+    val blockValue: ForLoopLazyBlockSlice
 
     val model: MutableKATEObject
         get() = blockValue.model
@@ -26,6 +26,7 @@ sealed interface ForLoop : BlockContainer {
     fun iterate(block: (iteration: Int) -> Unit)
 
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
+        blockValue.hasBroken = false
         iterate {
             blockValue.generateTo(destination = destination)
         }
@@ -33,13 +34,13 @@ sealed interface ForLoop : BlockContainer {
 
     class ConditionalFor(
         val condition: ReferencedOrDirectValue,
-        override val blockValue: LazyBlockSlice
+        override val blockValue: ForLoopLazyBlockSlice
     ) : ForLoop {
         override fun <T> selectNode(tokenizer: NodeTokenizer<T>) = tokenizer.conditionalFor
         override fun iterate(block: (iteration: Int) -> Unit) {
             var i = 0
             while ((condition.asNullablePrimitive(model) as BooleanValue).value) {
-                blockValue.model.removeAll()
+                model.removeAll()
                 block(i)
                 i++
             }
@@ -50,7 +51,7 @@ sealed interface ForLoop : BlockContainer {
         val indexConstName: String?,
         val elementConstName: String,
         val listProperty: ReferencedOrDirectValue,
-        override val blockValue: LazyBlockSlice
+        override val blockValue: ForLoopLazyBlockSlice
     ) : ForLoop {
 
         override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.iterableFor
@@ -78,7 +79,7 @@ sealed interface ForLoop : BlockContainer {
                 ?: throw IllegalStateException("list property is not iterable in for loop")
             val total = iterable.collection.size
             while (index < total) {
-                blockValue.model.removeAll()
+                model.removeAll()
                 store(index)
                 store(iterable.collection.getOrElse(index) {
                     throw IllegalStateException("element at $index in for loop not found")
@@ -97,7 +98,7 @@ sealed interface ForLoop : BlockContainer {
         val conditional: ReferencedOrDirectValue,
         val arithmeticOperatorType: ArithmeticOperatorType,
         val incrementer: ReferencedOrDirectValue,
-        override val blockValue: LazyBlockSlice
+        override val blockValue: ForLoopLazyBlockSlice
     ) : ForLoop {
 
         override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.numberedFor
@@ -120,7 +121,7 @@ sealed interface ForLoop : BlockContainer {
             val conditionValue = conditional.intVal(model)
             val incrementerValue = incrementer.intVal(model)
             while (conditionType.verifyCompare(i.compareTo(conditionValue))) {
-                blockValue.model.removeAll()
+                model.removeAll()
                 model.storeIndex(i)
                 block(i)
                 i = arithmeticOperatorType.operate(i, incrementerValue)
@@ -131,13 +132,20 @@ sealed interface ForLoop : BlockContainer {
 
 }
 
-private class ForLoopLazyBlockSlice(
+class ForLoopBreak(val slice : ForLoopLazyBlockSlice) : CodeGen{
+    override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.forLoopBreak
+    override fun generateTo(block: LazyBlock, destination: DestinationStream) {
+        slice.hasBroken = true
+    }
+}
+
+class ForLoopLazyBlockSlice(
     parentBlock: LazyBlock,
     startPointer: Int,
     length: Int,
     blockEndPointer: Int,
     parent: ScopedModelObject,
-    allowTextOut: Boolean,
+    isDefaultNoRaw: Boolean,
     indentationLevel: Int
 ) : LazyBlockSlice(
     parentBlock = parentBlock,
@@ -145,27 +153,31 @@ private class ForLoopLazyBlockSlice(
     length = length,
     model = parent,
     blockEndPointer = blockEndPointer,
-    isDefaultNoRaw = allowTextOut,
+    isDefaultNoRaw = isDefaultNoRaw,
     indentationLevel = indentationLevel
 ) {
 
-    var hasBroken: Boolean = false
+    var hasBroken = false
 
-    override fun canIterate(): Boolean {
-        return super.canIterate() && !hasBroken
-    }
-
-    fun SourceStream.parseBreakForAtDirective(): Boolean {
+    fun SourceStream.parseBreakForAtDirective(): ForLoopBreak? {
         return if (currentChar == '@' && increment("@breakfor")) {
-            hasBroken = true
-            true
+            ForLoopBreak(this@ForLoopLazyBlockSlice)
         } else {
-            false
+            null
         }
     }
 
+    override fun generateTo(destination: DestinationStream) {
+        source.setPointerAt(startPointer)
+        for(gen in parsedBlock.codeGens){
+            if(hasBroken) break
+            gen.gen.generateTo(this,destination)
+        }
+        source.setPointerAt(blockEndPointer)
+    }
+
     override fun parseNestedAtDirective(block: LazyBlock): CodeGen? {
-        if (source.parseBreakForAtDirective()) return KATEUnit
+        source.parseBreakForAtDirective()?.let { return it }
         return super.parseNestedAtDirective(block)
     }
 
@@ -184,7 +196,7 @@ private fun LazyBlock.parseForBlockValue(): ForLoopLazyBlockSlice {
         length = slice.length,
         blockEndPointer = slice.blockEndPointer,
         parent = slice.model as ScopedModelObject,
-        allowTextOut = slice.isDefaultNoRaw,
+        isDefaultNoRaw = slice.isDefaultNoRaw,
         indentationLevel = indentationLevel + 1
     )
 }
@@ -203,7 +215,7 @@ private fun LazyBlock.parseConditionalFor(): ForLoop.ConditionalFor? {
     return null
 }
 
-private fun LazyBlock.parseListReferencedValue(parseDirectRefs : Boolean): ReferencedOrDirectValue? {
+private fun LazyBlock.parseListReferencedValue(parseDirectRefs: Boolean): ReferencedOrDirectValue? {
     parseListDefinition()?.let { return it }
     parseMutableListDefinition()?.let { return it }
     parseVariableReference(parseDirectRefs = parseDirectRefs)?.let { return it }
@@ -253,13 +265,16 @@ private fun LazyBlock.parseNumberedForLoopIncrementer(variableName: String): Num
     if (incrementalConst == variableName) {
         val operator = source.parseArithmeticOperator()
         if (operator != null) {
-            val singleIncrement = if (operator == ArithmeticOperatorType.Plus || operator == ArithmeticOperatorType.Minus) operator else null
-            val singleIncrementerChar = if(singleIncrement == ArithmeticOperatorType.Plus) '+' else if(singleIncrement == ArithmeticOperatorType.Minus) '-' else null
+            val singleIncrement =
+                if (operator == ArithmeticOperatorType.Plus || operator == ArithmeticOperatorType.Minus) operator else null
+            val singleIncrementerChar =
+                if (singleIncrement == ArithmeticOperatorType.Plus) '+' else if (singleIncrement == ArithmeticOperatorType.Minus) '-' else null
             val incrementer = if (singleIncrement != null && source.increment(singleIncrementerChar!!)) {
                 IntValue(1)
             } else {
                 parseNumberOrReference(parseDirectRefs = true)
-            } ?: throw IllegalStateException("expected number property or value or '+' or '-' , got ${source.currentChar} in for loop incrementer")
+            }
+                ?: throw IllegalStateException("expected number property or value or '+' or '-' , got ${source.currentChar} in for loop incrementer")
             return NumberedForLoopIncrementer(
                 operatorType = operator,
                 incrementerValue = incrementer
@@ -284,7 +299,7 @@ private fun LazyBlock.parseNumberedForLoopAfterVariable(variableName: String): F
                     ?: throw IllegalStateException("expected conditional operator , got ${source.currentChar}")
                 val conditional = parseAnyExpressionOrValue(
                     parseDirectRefs = true
-                )?: throw IllegalStateException("expected number property of value got ${source.currentChar}")
+                ) ?: throw IllegalStateException("expected number property of value got ${source.currentChar}")
                 if (source.increment(';')) {
                     val incrementer = parseNumberedForLoopIncrementer(variableName)
                     if (!source.increment(')')) {
