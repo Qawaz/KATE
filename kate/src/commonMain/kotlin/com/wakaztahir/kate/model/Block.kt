@@ -190,7 +190,7 @@ open class LazyBlockSlice(
 
     override fun generateTo(destination: DestinationStream) {
         source.setPointerAt(startPointer)
-        super.generateTo(destination)
+        parsedBlock.generateTo(this,destination)
         source.setPointerAt(blockEndPointer)
     }
 
