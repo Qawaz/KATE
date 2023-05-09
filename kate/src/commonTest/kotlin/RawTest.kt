@@ -1,4 +1,5 @@
 import com.wakaztahir.kate.TemplateContext
+import com.wakaztahir.kate.parser.containsAt
 import com.wakaztahir.kate.parser.parseRawBlock
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -24,6 +25,30 @@ class RawTest {
         assertEquals(text, GenerateCode("@raw $text @endraw"))
         assertEquals(text, GenerateCode("@raw${'\n'}$text${'\n'}@endraw"))
         assertEquals(" $text ", GenerateCode("@raw  $text  @endraw"))
+    }
+
+    @Test
+    fun testRawIndentationInsidePartialRaw() {
+        assertEquals(
+            expected = "package output1",
+            GenerateCode(
+                "@partial_raw\n" +
+                        "\t@raw\n" +
+                        "\t\tpackage output1\n" +
+                        "\t@endraw\n" +
+                        "@end_partial_raw"
+            )
+        )
+        assertEquals(
+            expected = "package output2",
+            GenerateCode(
+                "@partial_raw\n" +
+                        "    @raw\n" +
+                        "        package output2\n" +
+                        "    @endraw\n" +
+                        "@end_partial_raw"
+            )
+        )
     }
 
     @Test

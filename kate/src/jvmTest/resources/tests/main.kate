@@ -26,6 +26,7 @@
                      val variableTwo = @var(arithmetic2.second)
                      return variableOne @var(arithmetic2.symbolName) variableTwo
                 }
+
             @endfor
 
         }

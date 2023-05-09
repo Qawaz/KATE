@@ -60,19 +60,29 @@ fun LazyBlock.parseBlockSlice(
     indentationLevel = indentationLevel
 )
 
-fun String.deIndented(indentationLevel: Int): String {
+private fun String.containsAt(index: Int, str: String): Boolean {
+    if (index + str.length > length) return false
+    var i = index
+    for (char in str) {
+        if (this[i] != char) return false
+        i++
+    }
+    return true
+}
+
+private fun String.deIndented(indentationLevel: Int): String {
     var i = 0
     var text = ""
     while (i < length) {
         if ((i == 0 || this[i - 1] == '\n') &&
-            (this[i] == '\t' || (i + 4 < this.length && this.substring(i, i + 5) == "    "))
+            (this[i] == '\t' || (this.containsAt(i,"    ")))
             && indentationLevel > 0
         ) {
             var x = 0
             while (x < indentationLevel && i < length) {
                 if (this[i] == '\t') {
                     i++
-                } else if (i + 5 < this.length && this.substring(i, i + 5) == "    ") {
+                } else if (containsAt(index = i, str = "    ")) {
                     i += 4
                 }
                 x++
