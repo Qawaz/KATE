@@ -1,5 +1,4 @@
 import com.wakaztahir.kate.TemplateContext
-import com.wakaztahir.kate.parser.containsAt
 import com.wakaztahir.kate.parser.parseRawBlock
 import kotlin.test.Test
 import kotlin.test.assertEquals
