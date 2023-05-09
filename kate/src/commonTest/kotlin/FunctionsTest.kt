@@ -154,6 +154,24 @@ class FunctionsTest {
     }
 
     @Test
+    fun testFunctionReturnWorks(){
+        assertEquals(
+            expected = "9",
+            actual = GeneratePartialRaw(
+                """
+                |@function MyFunc(param1)
+                |@if(param1 > 5)
+                |   @return param1
+                |@endif
+                |@return 343434
+                |@end_function
+                |@default_no_raw @var(MyFunc(9)) @end_default_no_raw
+                """.trimMargin()
+            )
+        )
+    }
+
+    @Test
     fun testFunctionRecursion() {
         assertEquals(
             expected = "5",

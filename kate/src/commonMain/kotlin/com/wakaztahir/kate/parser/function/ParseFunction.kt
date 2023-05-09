@@ -18,6 +18,7 @@ class FunctionReturn(val slice: FunctionSlice, val value: ReferencedOrDirectValu
 
     override fun generateTo(block: LazyBlock, destination: DestinationStream) {
         slice.onReturnValueFound(value)
+        slice.hasReturned = true
     }
 
 }
@@ -40,6 +41,7 @@ class FunctionSlice(
 
     override var model: MutableKATEObject = parentBlock.model
     var keepIterating: () -> Boolean = { true }
+    var hasReturned = false
     var onReturnValueFound: (ReferencedOrDirectValue) -> Unit = {}
 
     override fun canIterate(): Boolean = super.canIterate() && keepIterating()
@@ -52,6 +54,17 @@ class FunctionSlice(
         model = slice.model,
         indentationLevel = slice.indentationLevel
     )
+
+    override fun generateTo(destination: DestinationStream) {
+        source.setPointerAt(startPointer)
+        hasReturned = false
+        val gens = parse().codeGens
+        for (gen in gens) {
+            if (hasReturned) break
+            gen.gen.generateTo(this, destination)
+        }
+        source.setPointerAt(blockEndPointer)
+    }
 
     override fun parseNestedAtDirective(block: LazyBlock): CodeGen? {
         block.parseFunctionReturn()?.let { return FunctionReturn(this, it) }
