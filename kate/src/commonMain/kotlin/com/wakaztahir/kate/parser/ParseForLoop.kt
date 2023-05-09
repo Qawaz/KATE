@@ -39,7 +39,7 @@ sealed interface ForLoop : BlockContainer {
         override fun <T> selectNode(tokenizer: NodeTokenizer<T>) = tokenizer.conditionalFor
         override fun iterate(block: (iteration: Int) -> Unit) {
             var i = 0
-            while ((condition.asNullablePrimitive(model) as BooleanValue).value) {
+            while (!blockValue.hasBroken && (condition.asNullablePrimitive(model) as BooleanValue).value) {
                 model.removeAll()
                 block(i)
                 i++
@@ -78,7 +78,7 @@ sealed interface ForLoop : BlockContainer {
             val iterable = listProperty.asNullableList(model)
                 ?: throw IllegalStateException("list property is not iterable in for loop")
             val total = iterable.collection.size
-            while (index < total) {
+            while (!blockValue.hasBroken && index < total) {
                 model.removeAll()
                 store(index)
                 store(iterable.collection.getOrElse(index) {
@@ -120,7 +120,7 @@ sealed interface ForLoop : BlockContainer {
             var i = initializer.intVal(model)
             val conditionValue = conditional.intVal(model)
             val incrementerValue = incrementer.intVal(model)
-            while (conditionType.verifyCompare(i.compareTo(conditionValue))) {
+            while (!blockValue.hasBroken && conditionType.verifyCompare(i.compareTo(conditionValue))) {
                 model.removeAll()
                 model.storeIndex(i)
                 block(i)
