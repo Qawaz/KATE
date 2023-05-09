@@ -1,6 +1,11 @@
 buildscript {
+    val kotlinVersion = property("kotlin_version")
     dependencies {
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
         // No Dependencies Yet
+    }
+    repositories {
+        mavenCentral()
     }
 }
 

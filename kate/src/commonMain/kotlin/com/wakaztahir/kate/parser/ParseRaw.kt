@@ -104,7 +104,7 @@ fun LazyBlock.parseRawBlock(): RawBlock? {
 fun LazyBlock.parsePartialRawImplicitDirective(): CodeGen? {
     parseVariableReference(parseDirectRefs = true)?.let {
         it.propertyPath.lastOrNull()?.let { c -> c as? ModelReference.FunctionCall }?.let { call ->
-            return it.toEmptyPlaceholderInvocation(model, source.pointer)
+            return PartialRawFunctionCall(it)
         } ?: run {
             throw IllegalStateException("variable reference $it cannot be used inside @partial_raw")
         }

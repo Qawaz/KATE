@@ -8,6 +8,7 @@ import com.wakaztahir.kate.model.model.*
 import com.wakaztahir.kate.parser.*
 import com.wakaztahir.kate.parser.function.KATEParsedFunction
 import com.wakaztahir.kate.parser.parseExpression
+import com.wakaztahir.kate.parser.stream.TextDestinationStream
 import com.wakaztahir.kate.parser.variable.parseVariableDeclaration
 import com.wakaztahir.kate.parser.variable.parseVariableReference
 import kotlin.test.*
@@ -23,6 +24,21 @@ class VariablesTest {
         assertEquals(ref!!.propertyPath[0].name, "myVar")
 
         assertEquals("someValue", ref.asPrimitive(context.stream.model).value)
+    }
+
+    @Test
+    fun testDeclaration(){
+        val context = TemplateContext("@var x = 5")
+        context.generateTo(TextDestinationStream())
+        assertEquals(IntValue(5),context.stream.model.get("x"))
+        context.updateStream("@var(x)")
+        val destination = TextDestinationStream()
+        context.generateTo(destination)
+        assertEquals("5",destination.getValue())
+        context.updateStream("@set_var x = 6 @var(x)")
+        context.generateTo(destination)
+        assertEquals(IntValue(6),context.stream.model.get("x"))
+        assertEquals("56",destination.getValue())
     }
 
     @Test

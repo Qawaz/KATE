@@ -46,13 +46,16 @@ class ModelDirective(override val propertyPath: List<ModelReference>, override v
         }
     }
 
-    private val container: KATEObject get()= referenceModel.findContainingObjectUpwards(propertyPath[0])
-        ?: referenceModel.findInternalReferenceProperty(propertyPath[0]) as? KATEObject
-        ?: throw UnresolvedValueException("property ${propertyPath[0]} couldn't be found up in tree from path $propertyPath")
+    private fun KATEObject.root(): KATEObject = if (this.parent == null) this else this.parent!!.root()
+
+    private val KATEObject.container
+        get() = this.findContainingObjectUpwards(propertyPath[0])
+            ?: this.findInternalReferenceProperty(propertyPath[0]) as? KATEObject
+            ?: throw UnresolvedValueException("property ${propertyPath[0]} from path $propertyPath couldn't be found in root tree ${this.root()}")
 
     private fun getModelReferenceValueAndType(model: KATEObject): Pair<KATEValue, KATEType?> {
         var i = 0
-        var current: Pair<KATEValue, KATEType?> = Pair(container, null)
+        var current: Pair<KATEValue, KATEType?> = Pair(model.container, null)
         while (i < propertyPath.size) {
             current = model.findResolvedModelReference(
                 current = current.first,

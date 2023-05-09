@@ -1,6 +1,7 @@
 package com.wakaztahir.kate.model
 
 import com.wakaztahir.kate.KATEDelicateFunction
+import com.wakaztahir.kate.model.block.DefaultNoRawString
 import com.wakaztahir.kate.model.model.KATEParsingError
 import com.wakaztahir.kate.model.model.KATEUnit
 import com.wakaztahir.kate.model.model.MutableKATEObject
@@ -15,6 +16,7 @@ import com.wakaztahir.kate.parser.variable.parseVariableReferenceAsExpression
 interface LazyBlock {
 
     val source: SourceStream
+
     val model: MutableKATEObject
 
     // Text that couldn't be processed by the parser is written to destination stream as it is
@@ -25,7 +27,31 @@ interface LazyBlock {
 
     fun canIterate(): Boolean
 
-    fun generateTo(destination: DestinationStream) {
+    private fun MutableList<ParsedBlock.CodeGenRange>.appendCurrentChar() {
+        if (isNotEmpty() && last().gen is DefaultNoRawString) {
+            val defaultNoRawString = removeLast()
+            add(
+                ParsedBlock.CodeGenRange(
+                    gen = defaultNoRawString.gen.also { (it as DefaultNoRawString).stringValue += source.currentChar },
+                    start = defaultNoRawString.start,
+                    end = source.pointer + 1
+                )
+            )
+        } else {
+            DefaultNoRawString("${source.currentChar}").also {
+                add(
+                    ParsedBlock.CodeGenRange(
+                        gen = it,
+                        start = source.pointer,
+                        end = source.pointer + 1
+                    )
+                )
+            }
+        }
+    }
+
+    fun parse(): ParsedBlock {
+        val gens = mutableListOf<ParsedBlock.CodeGenRange>()
         var blockLineNumber = 1
         var hasConsumedFirstLineIndentation = false
         while (canIterate()) {
@@ -36,7 +62,7 @@ interface LazyBlock {
                 KATEParsingError(e)
             }
             if (directive != null) {
-                writeDirective(previous = previous, directive = directive, destination = destination)
+                gens.add(ParsedBlock.CodeGenRange(gen = directive, start = previous, end = source.pointer))
                 if (!source.hasEnded && directive is BlockContainer) {
                     if (!source.increment('\n')) {
                         source.increment(' ')
@@ -54,7 +80,7 @@ interface LazyBlock {
                     hasConsumedFirstLineIndentation = true
                     continue
                 } else {
-                    writeCurrentChar(destination)
+                    gens.appendCurrentChar()
                 }
             }
             val isNewLine = source.currentChar == '\n'
@@ -64,6 +90,11 @@ interface LazyBlock {
                 blockLineNumber++
             }
         }
+        return ParsedBlock(codeGens = gens)
+    }
+
+    fun generateTo(destination: DestinationStream) {
+        parse().generateTo(this, destination)
     }
 
     fun consumeLineIndentation(): Int {
@@ -91,7 +122,7 @@ interface LazyBlock {
 
     fun parseImplicitDirectives(): CodeGen? {
         parseVariableReferenceAsExpression(parseDirectRefs = !isDefaultNoRaw)?.let {
-            return it.toPlaceholderInvocation(model, source.pointer) ?: KATEUnit
+            return DefaultNoRawExpression(it)
         }
         return null
     }

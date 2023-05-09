@@ -1,11 +1,26 @@
+import com.wakaztahir.kate.TemplateContext
+import com.wakaztahir.kate.parser.stream.TextDestinationStream
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
+import kotlin.test.assertNotNull
 
 class FunctionsTest {
 
     @Test
-    fun testCallFunctionByVar(){
+    fun testFunctionExistence() {
+        val context = TemplateContext("@function myFunc() @return 6 @end_function")
+        context.generateTo(TextDestinationStream())
+        val value = context.stream.model.get("myFunc")
+        if (value == null) {
+            println("FUNCTION NOT PRESENT IN ${context.stream.model}")
+        }
+        assertNotNull(value)
+
+    }
+
+    @Test
+    fun testCallFunctionByVar() {
         assertEquals(
             expected = "hello",
             actual = GeneratePartialRaw(
@@ -111,7 +126,7 @@ class FunctionsTest {
     }
 
     @Test
-    fun testDirectRefsInFunctions(){
+    fun testDirectRefsInFunctions() {
         assertEquals(
             expected = "world",
             actual = GeneratePartialRaw(
@@ -139,7 +154,7 @@ class FunctionsTest {
     }
 
     @Test
-    fun testFunctionRecursion(){
+    fun testFunctionRecursion() {
         assertEquals(
             expected = "5",
             actual = GeneratePartialRaw(

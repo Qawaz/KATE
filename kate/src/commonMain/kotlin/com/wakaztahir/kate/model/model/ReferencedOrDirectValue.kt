@@ -12,16 +12,6 @@ interface ReferencedOrDirectValue {
         return Pair(getKATEValue(model),null)
     }
 
-    fun toPlaceholderInvocation(model: MutableKATEObject, endPointer: Int): PlaceholderInvocation? {
-        val value = getKATEValue(model)
-        return PlaceholderInvocation(
-            placeholderName = value.getKnownKATEType().getPlaceholderName(),
-            definitionName = null,
-            paramValue = value,
-            invocationEndPointer = endPointer
-        )
-    }
-
     fun asNullablePrimitive(model: KATEObject): PrimitiveValue<*>? {
         return getKATEValue(model) as? PrimitiveValue<*>
     }
