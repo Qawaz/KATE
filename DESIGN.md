@@ -56,21 +56,17 @@ The value of the variable can only be one of these
 
 `@var(variableName)` to get value of the variable defined earlier
 
-To assign to another variable
+To assign to another variable use `@var i = j`
 
-`@var i = j`
+To access the object of current scope , You can use `@var(this)`
 
-To access the object of current scope , You can do
-
-`@var(this)`
-
-To invoke a function
-
-`@var(funcName())`
+To invoke a function use `@var(funcName())`
 
 Invoking a function without outputting returned value
 
 `@partial_raw funcName() @end_partial_raw`
+
+Any reference encapsulated within `@var()` will always output its value
 
 ### getType()
 
@@ -85,7 +81,7 @@ Every variable has a `getType` function available which returns type in string f
 | int.getType()          | "int"          |
 | list.getType()         | "list"         |
 | mutable_list.getType() | "mutable_list" |
-| object.getType()       | "object"       |
+| object.getType()       | "object<{}>"   |
 | unit.getType()         | "unit"         |
 
 Every variable also has a `toString` function to convert to a string

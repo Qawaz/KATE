@@ -3,7 +3,6 @@ package com.wakaztahir.kate.model
 import com.wakaztahir.kate.model.model.KATEObject
 import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.parser.parseDefaultNoRaw
-import com.wakaztahir.kate.parser.parsePartialRawImplicitDirective
 import com.wakaztahir.kate.parser.stream.DestinationStream
 import com.wakaztahir.kate.tokenizer.NodeTokenizer
 import kotlin.jvm.JvmInline
@@ -39,11 +38,6 @@ open class PartialRawLazyBlockSlice(
     isDefaultNoRaw = false,
     indentationLevel = indentationLevel
 ) {
-
-    override fun parseImplicitDirectives(): CodeGen? {
-        parsePartialRawImplicitDirective()?.let { return it }
-        return null
-    }
 
     override fun parseNestedAtDirective(block: LazyBlock): CodeGen? {
         block.parseDefaultNoRaw()?.let { return it }

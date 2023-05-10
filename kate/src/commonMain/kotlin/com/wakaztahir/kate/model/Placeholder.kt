@@ -6,7 +6,6 @@ import com.wakaztahir.kate.model.model.KATEValue
 import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
 import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.parser.ParsedBlock
-import com.wakaztahir.kate.parser.parsePartialRawImplicitDirective
 import com.wakaztahir.kate.parser.stream.DestinationStream
 import com.wakaztahir.kate.parser.stream.PlaceholderManager
 import com.wakaztahir.kate.parser.stream.SourceStream
@@ -48,15 +47,6 @@ open class PlaceholderBlock(
 
     protected open fun generateActual(destination: DestinationStream) {
         super.generateTo(destination)
-    }
-
-    override fun parseImplicitDirectives(): CodeGen? {
-        if (isDefaultNoRaw) {
-            super.parseImplicitDirectives()?.let { return it }
-        } else {
-            parsePartialRawImplicitDirective()?.let { return it }
-        }
-        return null
     }
 
     override fun generateTo(destination: DestinationStream) {

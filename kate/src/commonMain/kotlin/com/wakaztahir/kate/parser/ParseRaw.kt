@@ -111,18 +111,6 @@ fun LazyBlock.parseRawBlock(): RawBlock? {
     return null
 }
 
-fun LazyBlock.parsePartialRawImplicitDirective(): CodeGen? {
-    parseVariableReference(parseDirectRefs = true)?.let {
-        it.propertyPath.lastOrNull()?.let { c -> c as? ModelReference.FunctionCall }?.let { call ->
-            return PartialRawFunctionCall(it)
-        } ?: run {
-            throw IllegalStateException("variable reference $it cannot be used inside @partial_raw")
-        }
-
-    }
-    return null
-}
-
 fun LazyBlock.parsePartialRaw(): PartialRawBlock? {
     if (source.currentChar == '@' && source.increment("@partial_raw")) {
         val slice = parseBlockSlice(

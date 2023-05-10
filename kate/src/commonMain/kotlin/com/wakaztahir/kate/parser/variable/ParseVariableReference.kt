@@ -109,19 +109,20 @@ internal fun LazyBlock.parseModelDirective(
     return null
 }
 
-internal fun LazyBlock.parseVariableReferenceAsExpression(parseDirectRefs: Boolean): ReferencedOrDirectValue? {
+// returns a pair , where first value tells whether the expression is inside @var() or direct
+internal fun LazyBlock.parseVariableReferenceAsExpression(parseDirectRefs: Boolean): Pair<Boolean,ReferencedOrDirectValue>? {
     if (source.currentChar == '@' && source.increment("@var(")) {
         val expression = parseAnyExpressionOrValue(parseDirectRefs = true)
         if (!source.increment(')')) {
             source.printErrorLineNumberAndCharacterIndex()
             throw VariableReferenceParseException("expected ')' got ${source.currentChar} at ${source.pointer}")
         }
-        return expression
+        return expression?.let { Pair(true,it) }
     }
     if (parseDirectRefs) return parseModelDirective(
         parseDirectRefs = true,
         throwOnEmptyVariableName = false
-    )?.let { return it }
+    )?.let { return Pair(false,it) }
     return null
 }
 

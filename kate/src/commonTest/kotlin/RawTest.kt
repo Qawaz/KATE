@@ -66,8 +66,10 @@ class RawTest {
             GenerateCode("@partial_raw BlockValue @end_partial_raw")
         }
         assertFails {
-            GenerateCode("@partial_raw @var i=5 @var(i) @end_partial_raw")
+            GenerateCode("@partial_raw @var i=5 i @end_partial_raw")
         }
+        assertEquals("5",GeneratePartialRaw("@var i=5 @var(i)"))
+        assertEquals("6",GeneratePartialRaw("@var i=5 @var(i + 1)"))
         assertEquals(
             "Here",
             GenerateCode("@partial_raw @if(true) @default_no_raw Here @end_default_no_raw @endif @end_partial_raw")
