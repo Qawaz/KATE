@@ -5,7 +5,7 @@ import com.wakaztahir.kate.model.LazyBlock
 import com.wakaztahir.kate.parser.stream.DestinationStream
 import com.wakaztahir.kate.tokenizer.NodeTokenizer
 
-class ParsedBlock(val codeGens: List<CodeGenRange>) : CodeGen {
+open class ParsedBlock(val codeGens: List<CodeGenRange>) : CodeGen {
 
     class CodeGenRange(val gen: CodeGen, val start: Int, val end: Int)
 

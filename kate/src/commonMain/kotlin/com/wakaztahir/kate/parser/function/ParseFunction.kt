@@ -58,6 +58,7 @@ class FunctionSlice(
     override fun generateTo(destination: DestinationStream) {
         source.setPointerAt(startPointer)
         hasReturned = false
+        // TODO don't parse here
         val gens = parse().codeGens
         for (gen in gens) {
             if (hasReturned) break
@@ -255,7 +256,7 @@ fun LazyBlock.parseFunctionDefinition(anonymousFunctionName: String?): FunctionD
             inheritModel = true
         )
         return FunctionDefinition(
-            slice = FunctionSlice(slice = slice).also { it.prepare() },
+            slice = FunctionSlice(slice = slice),
             functionName = functionName,
             parameterNames = parameters,
             returnedType = returnedType
