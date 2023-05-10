@@ -97,7 +97,7 @@ class SingleIf(
 }
 
 
-class IfStatement(private val ifs: MutableList<SingleIf>,val source: SourceStream) : BlockContainer {
+class IfStatement(private val ifs: MutableList<SingleIf>) : BlockContainer {
 
     val singleIfs: List<SingleIf> get() = ifs
 
@@ -130,8 +130,5 @@ class IfStatement(private val ifs: MutableList<SingleIf>,val source: SourceStrea
 
     override fun generateTo(model: MutableKATEObject, destination: DestinationStream) {
         evaluate(model)?.generateTo(model, destination)
-        ifs.lastOrNull()?.blockValue?.blockEndPointer?.let { end ->
-            source.setPointerAt(end)
-        }
     }
 }
