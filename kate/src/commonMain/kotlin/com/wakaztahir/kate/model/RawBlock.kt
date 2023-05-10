@@ -11,14 +11,14 @@ import kotlin.jvm.JvmInline
 class DefaultNoRawBlock(val value: LazyBlockSlice) : BlockContainer {
     override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.defaultNoRawBlock
     override fun getBlockValue(model: KATEObject): LazyBlock = value
-    override fun generateTo(block: LazyBlock, destination: DestinationStream) {
+    override fun generateTo(model: MutableKATEObject, destination: DestinationStream) {
         value.generateTo(destination)
     }
 }
 
 class RawBlock(val value: String) : CodeGen {
     override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.rawBlock
-    override fun generateTo(block: LazyBlock, destination: DestinationStream) {
+    override fun generateTo(model: MutableKATEObject, destination: DestinationStream) {
         destination.stream.write(value)
     }
 }
@@ -56,7 +56,7 @@ open class PartialRawLazyBlockSlice(
 value class PartialRawBlock(val value: PartialRawLazyBlockSlice) : BlockContainer {
     override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.partialRawBlock
     override fun getBlockValue(model: KATEObject): LazyBlock = value
-    override fun generateTo(block: LazyBlock, destination: DestinationStream) {
+    override fun generateTo(model: MutableKATEObject, destination: DestinationStream) {
         value.generateTo(destination)
     }
 }

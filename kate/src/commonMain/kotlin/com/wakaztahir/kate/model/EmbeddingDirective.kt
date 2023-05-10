@@ -1,15 +1,17 @@
 package com.wakaztahir.kate.model
 
+import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.parser.stream.DestinationStream
+import com.wakaztahir.kate.parser.stream.EmbeddingManager
 import com.wakaztahir.kate.tokenizer.NodeTokenizer
 
-class EmbeddingDirective(val path: String,val embedOnce : Boolean) : AtDirective {
+class EmbeddingDirective(val path: String,val embedOnce : Boolean,val block: LazyBlock) : AtDirective {
     override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.embeddingDirective
-    override fun generateTo(block: LazyBlock, destination: DestinationStream) {
+    override fun generateTo(model: MutableKATEObject, destination: DestinationStream) {
         if(embedOnce) {
-            block.source.embeddingManager.embedOnceGenerateStream(block, path, destination)
+            this.block.source.embeddingManager.embedOnceGenerateStream(this.block, path, destination)
         }else {
-            block.source.embeddingManager.embedGenerateStream(block, path, destination)
+            this.block.source.embeddingManager.embedGenerateStream(this.block, path, destination)
         }
     }
 

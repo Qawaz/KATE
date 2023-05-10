@@ -20,7 +20,7 @@ object KATEUnit : KATEValue, CodeGen {
 
     override fun getKnownKATEType(): KATEType = KATEType.Unit
 
-    override fun generateTo(block: LazyBlock, destination: DestinationStream) {
+    override fun generateTo(model: MutableKATEObject, destination: DestinationStream) {
         // Generates nothing
     }
 

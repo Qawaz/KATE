@@ -16,7 +16,7 @@ class FunctionReturn(val slice: FunctionSlice, val value: ReferencedOrDirectValu
 
     override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.functionReturn
 
-    override fun generateTo(block: LazyBlock, destination: DestinationStream) {
+    override fun generateTo(model: MutableKATEObject, destination: DestinationStream) {
         slice.onReturnValueFound(value)
         slice.hasReturned = true
     }
@@ -62,7 +62,7 @@ class FunctionSlice(
         val gens = parse().codeGens
         for (gen in gens) {
             if (hasReturned) break
-            gen.gen.generateTo(this, destination)
+            gen.gen.generateTo(model, destination)
         }
         source.setPointerAt(blockEndPointer)
     }
@@ -185,9 +185,9 @@ class FunctionDefinition(
         return slice
     }
 
-    override fun generateTo(block: LazyBlock, destination: DestinationStream) {
+    override fun generateTo(model: MutableKATEObject, destination: DestinationStream) {
         definition.destination = destination
-        block.model.insertValue(functionName, definition)
+        model.insertValue(functionName, definition)
     }
 }
 

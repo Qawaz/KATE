@@ -193,7 +193,7 @@ internal fun LazyBlock.parseIfStatement(): IfStatement? {
     }
     parseElse()?.let { ifs.add(it) }
     if (source.increment("@endif")) {
-        return IfStatement(ifs)
+        return IfStatement(ifs,source = source)
     } else {
         throw IllegalStateException("@if must end with @endif")
     }

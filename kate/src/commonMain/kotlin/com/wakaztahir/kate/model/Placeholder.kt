@@ -7,6 +7,8 @@ import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
 import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.parser.parsePartialRawImplicitDirective
 import com.wakaztahir.kate.parser.stream.DestinationStream
+import com.wakaztahir.kate.parser.stream.PlaceholderManager
+import com.wakaztahir.kate.parser.stream.SourceStream
 import com.wakaztahir.kate.parser.stream.TextSourceStream
 import com.wakaztahir.kate.tokenizer.NodeTokenizer
 
@@ -104,10 +106,10 @@ class TextPlaceholderBlock(
     }
 }
 
-class PlaceholderDefinition(val blockValue: PlaceholderBlock, val isOnce: Boolean) : BlockContainer {
+class PlaceholderDefinition(val blockValue: PlaceholderBlock, val isOnce: Boolean,val placeholderManager: PlaceholderManager) : BlockContainer {
     override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.placeholderDefinition
-    override fun generateTo(block: LazyBlock, destination: DestinationStream) {
-        block.source.placeholderManager.definePlaceholder(placeholder = blockValue, throwIfExists = !isOnce)
+    override fun generateTo(model: MutableKATEObject, destination: DestinationStream) {
+        placeholderManager.definePlaceholder(placeholder = blockValue, throwIfExists = !isOnce)
     }
 
     override fun getBlockValue(model: KATEObject): LazyBlock = blockValue
@@ -117,30 +119,33 @@ class PlaceholderInvocation(
     val placeholderName: String,
     val definitionName: String?,
     var paramValue: ReferencedOrDirectValue?,
-    val invocationEndPointer: Int
+    val invocationEndPointer: Int,
+    val placeholderManager: PlaceholderManager,
+    val source : SourceStream
 ) : CodeGen {
     override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.placeholderInvocation
-    override fun generateTo(block: LazyBlock, destination: DestinationStream) {
+    override fun generateTo(model: MutableKATEObject, destination: DestinationStream) {
         val placeholder = (if (definitionName == null)
-            block.source.placeholderManager.getPlaceholder(placeholderName = placeholderName)
-        else block.source.placeholderManager.getPlaceholder(
+            placeholderManager.getPlaceholder(placeholderName = placeholderName)
+        else placeholderManager.getPlaceholder(
             placeholderName = placeholderName,
             definitionName = definitionName
         )) ?: throw IllegalStateException("placeholder with name $placeholderName not found")
-        placeholder.setParamValue(paramValue?.getKATEValue(block.model))
-        placeholder.setInvocationModel(block.model)
+        placeholder.setParamValue(paramValue?.getKATEValue(model))
+        placeholder.setInvocationModel(model)
         placeholder.generateTo(destination)
-        block.source.setPointerAt(invocationEndPointer)
+        source.setPointerAt(invocationEndPointer)
     }
 }
 
 class PlaceholderUse(
     private val placeholderName: String,
-    private val definitionName: String
+    private val definitionName: String,
+    private val placeholderManager: PlaceholderManager
 ) : CodeGen {
     override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.placeholderUse
-    override fun generateTo(block: LazyBlock, destination: DestinationStream) {
-        if (!block.source.placeholderManager.usePlaceholder(placeholderName, definitionName)) {
+    override fun generateTo(model: MutableKATEObject, destination: DestinationStream) {
+        if (!placeholderManager.usePlaceholder(placeholderName, definitionName)) {
             throw IllegalStateException("placeholder with name $placeholderName and definition name $definitionName not found")
         }
     }

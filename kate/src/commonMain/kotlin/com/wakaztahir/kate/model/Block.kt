@@ -3,7 +3,6 @@ package com.wakaztahir.kate.model
 import com.wakaztahir.kate.KATEDelicateFunction
 import com.wakaztahir.kate.model.block.DefaultNoRawString
 import com.wakaztahir.kate.model.model.KATEParsingError
-import com.wakaztahir.kate.model.model.KATEUnit
 import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.parser.*
 import com.wakaztahir.kate.parser.function.parseFunctionDefinition
@@ -92,7 +91,7 @@ interface LazyBlock {
     }
 
     fun generateTo(destination: DestinationStream) {
-        parse().generateTo(this, destination)
+        parse().generateTo(model, destination)
     }
 
     fun consumeLineIndentation(): Int {
@@ -111,7 +110,7 @@ interface LazyBlock {
     }
 
     fun writeDirective(previous: Int, directive: CodeGen, destination: DestinationStream) {
-        directive.generateTo(this, destination)
+        directive.generateTo(model, destination)
     }
 
     fun parseNestedAtDirective(block: LazyBlock): CodeGen? {
@@ -120,7 +119,7 @@ interface LazyBlock {
 
     fun parseImplicitDirectives(): CodeGen? {
         parseVariableReferenceAsExpression(parseDirectRefs = !isDefaultNoRaw)?.let {
-            return DefaultNoRawExpression(it)
+            return DefaultNoRawExpression(source = source,value = it)
         }
         return null
     }

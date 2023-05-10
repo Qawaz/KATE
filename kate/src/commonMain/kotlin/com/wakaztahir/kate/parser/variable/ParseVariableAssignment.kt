@@ -45,8 +45,8 @@ data class VariableAssignment(
         }
     }
 
-    override fun generateTo(block: LazyBlock, destination: DestinationStream) {
-        storeValue(block.model)
+    override fun generateTo(model: MutableKATEObject, destination: DestinationStream) {
+        storeValue(model)
     }
 }
 

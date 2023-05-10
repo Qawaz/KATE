@@ -3,8 +3,10 @@ package com.wakaztahir.kate.model
 import com.wakaztahir.kate.TemplateContext
 import com.wakaztahir.kate.model.model.KATEObject
 import com.wakaztahir.kate.model.model.KATEValue
+import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
 import com.wakaztahir.kate.parser.stream.DestinationStream
+import com.wakaztahir.kate.parser.stream.SourceStream
 import com.wakaztahir.kate.tokenizer.NodeTokenizer
 
 
@@ -89,13 +91,13 @@ class SingleIf(
     val blockValue: LazyBlockSlice,
 ) : CodeGen {
     override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.singleIf
-    override fun generateTo(block: LazyBlock, destination: DestinationStream) {
+    override fun generateTo(model: MutableKATEObject, destination: DestinationStream) {
         blockValue.generateTo(destination = destination)
     }
 }
 
 
-class IfStatement(private val ifs: MutableList<SingleIf>) : BlockContainer {
+class IfStatement(private val ifs: MutableList<SingleIf>,val source: SourceStream) : BlockContainer {
 
     val singleIfs: List<SingleIf> get() = ifs
 
@@ -126,10 +128,10 @@ class IfStatement(private val ifs: MutableList<SingleIf>) : BlockContainer {
         return null
     }
 
-    override fun generateTo(block: LazyBlock, destination: DestinationStream) {
-        evaluate(block.model)?.generateTo(block, destination)
+    override fun generateTo(model: MutableKATEObject, destination: DestinationStream) {
+        evaluate(model)?.generateTo(model, destination)
         ifs.lastOrNull()?.blockValue?.blockEndPointer?.let { end ->
-            block.source.setPointerAt(end)
+            source.setPointerAt(end)
         }
     }
 }

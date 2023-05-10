@@ -105,7 +105,8 @@ fun LazyBlock.parsePlaceholderDefinition(): PlaceholderDefinition? {
             val blockValue = parsePlaceholderBlock(nameAndDef = nameAndDef)
             return PlaceholderDefinition(
                 blockValue = blockValue,
-                isOnce = isOnce
+                isOnce = isOnce,
+                placeholderManager = source.placeholderManager
             )
         } else {
             throw IllegalStateException("placeholder name is required when defining a placeholder using @define_placeholder")
@@ -126,7 +127,9 @@ fun LazyBlock.parsePlaceholderInvocation(): PlaceholderInvocation? {
                 placeholderName = triple.first,
                 definitionName = triple.second,
                 invocationEndPointer = source.pointer,
-                paramValue = triple.third
+                paramValue = triple.third,
+                placeholderManager = source.placeholderManager,
+                source = source
             )
         } else {
             throw IllegalStateException("placeholder name is required when invoking a placeholder using @placeholder")
@@ -139,7 +142,7 @@ fun LazyBlock.parsePlaceholderUse(): PlaceholderUse? {
     if (source.currentChar == '@' && source.increment("@use_placeholder")) {
         val name = source.parsePlaceHolderNameAndDefinition()
         if (name != null) {
-            return PlaceholderUse(placeholderName = name.first, definitionName = name.second)
+            return PlaceholderUse(placeholderName = name.first, definitionName = name.second,placeholderManager = source.placeholderManager)
         } else {
             throw IllegalStateException("placeholder name is required when invoking a placeholder using @placeholder")
         }

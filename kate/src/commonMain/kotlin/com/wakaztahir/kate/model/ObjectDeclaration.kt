@@ -53,9 +53,9 @@ class ObjectDeclaration(
 
     override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.objectDeclaration
     override fun getBlockValue(model: KATEObject): LazyBlock = declarationBlock
-    override fun generateTo(block: LazyBlock, destination: DestinationStream) {
+    override fun generateTo(model: MutableKATEObject, destination: DestinationStream) {
         declarationBlock.generateTo(destination)
-        block.model.insertValue(objectName, declarationBlock.model)
-        itemsType?.let { block.model.setExplicitType(objectName, KATEType.Object(it)) }
+        model.insertValue(objectName, declarationBlock.model)
+        itemsType?.let { model.setExplicitType(objectName, KATEType.Object(it)) }
     }
 }

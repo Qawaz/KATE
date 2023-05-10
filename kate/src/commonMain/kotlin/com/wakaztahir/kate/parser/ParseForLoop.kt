@@ -14,33 +14,23 @@ import com.wakaztahir.kate.tokenizer.NodeTokenizer
 
 sealed interface ForLoop : BlockContainer {
 
-    val blockValue: ForLoopLazyBlockSlice
-
     val forLoopBlock : ForLoopParsedBlock
 
-    val model: MutableKATEObject
-        get() = blockValue.model
+    fun iterate(model: MutableKATEObject,block: (iteration: Int) -> Unit)
 
-    override fun getBlockValue(model: KATEObject): LazyBlock {
-        return blockValue
-    }
-
-    fun iterate(block: (iteration: Int) -> Unit)
-
-    override fun generateTo(block: LazyBlock, destination: DestinationStream) {
+    override fun generateTo(model: MutableKATEObject, destination: DestinationStream) {
         forLoopBlock.hasBroken = false
-        iterate {
-            forLoopBlock.generateTo(blockValue,destination = destination)
+        iterate(forLoopBlock.model) {
+            forLoopBlock.generateTo(forLoopBlock.model, destination = destination)
         }
     }
 
     class ConditionalFor(
         val condition: ReferencedOrDirectValue,
-        override val blockValue: ForLoopLazyBlockSlice,
         override val forLoopBlock: ForLoopParsedBlock
     ) : ForLoop {
         override fun <T> selectNode(tokenizer: NodeTokenizer<T>) = tokenizer.conditionalFor
-        override fun iterate(block: (iteration: Int) -> Unit) {
+        override fun iterate(model: MutableKATEObject, block: (iteration: Int) -> Unit) {
             var i = 0
             while (!forLoopBlock.hasBroken && (condition.asNullablePrimitive(model) as BooleanValue).value) {
                 model.removeAll()
@@ -54,44 +44,43 @@ sealed interface ForLoop : BlockContainer {
         val indexConstName: String?,
         val elementConstName: String,
         val listProperty: ReferencedOrDirectValue,
-        override val blockValue: ForLoopLazyBlockSlice,
         override val forLoopBlock: ForLoopParsedBlock
     ) : ForLoop {
 
         override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.iterableFor
 
-        private fun store(value: Int) {
+        private fun store(model : MutableKATEObject,value: Int) {
             if (indexConstName != null) {
                 model.insertValue(indexConstName, value)
             }
         }
 
-        private fun store(value: KATEValue) {
+        private fun store(model : MutableKATEObject,value: KATEValue) {
             model.insertValue(elementConstName, value)
         }
 
-        private fun remove() {
+        private fun remove(model : MutableKATEObject) {
             if (indexConstName != null) {
                 model.removeKey(indexConstName)
             }
             model.removeKey(elementConstName)
         }
 
-        override fun iterate(block: (iteration: Int) -> Unit) {
+        override fun iterate(model: MutableKATEObject, block: (iteration: Int) -> Unit) {
             var index = 0
             val iterable = listProperty.asNullableList(model)
                 ?: throw IllegalStateException("list property is not iterable in for loop")
             val total = iterable.collection.size
             while (!forLoopBlock.hasBroken && index < total) {
                 model.removeAll()
-                store(index)
-                store(iterable.collection.getOrElse(index) {
+                store(model,index)
+                store(model,iterable.collection.getOrElse(index) {
                     throw IllegalStateException("element at $index in for loop not found")
                 })
                 block(index)
                 index++
             }
-            remove()
+            remove(model)
         }
     }
 
@@ -102,7 +91,6 @@ sealed interface ForLoop : BlockContainer {
         val conditional: ReferencedOrDirectValue,
         val arithmeticOperatorType: ArithmeticOperatorType,
         val incrementer: ReferencedOrDirectValue,
-        override val blockValue: ForLoopLazyBlockSlice,
         override val forLoopBlock: ForLoopParsedBlock
     ) : ForLoop {
 
@@ -121,7 +109,7 @@ sealed interface ForLoop : BlockContainer {
             removeKey(variableName)
         }
 
-        override fun iterate(block: (iteration: Int) -> Unit) {
+        override fun iterate(model: MutableKATEObject, block: (iteration: Int) -> Unit) {
             var i = initializer.intVal(model)
             val conditionValue = conditional.intVal(model)
             val incrementerValue = incrementer.intVal(model)
@@ -139,17 +127,17 @@ sealed interface ForLoop : BlockContainer {
 
 class ForLoopBreak(val slice: ForLoopParsedBlock) : CodeGen {
     override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.forLoopBreak
-    override fun generateTo(block: LazyBlock, destination: DestinationStream) {
+    override fun generateTo(model: MutableKATEObject, destination: DestinationStream) {
         slice.hasBroken = true
     }
 }
 
-class ForLoopParsedBlock(codeGens: List<CodeGenRange>) : ParsedBlock(codeGens) {
+class ForLoopParsedBlock(val model : MutableKATEObject,codeGens: List<CodeGenRange>) : ParsedBlock(codeGens) {
     var hasBroken = false
-    override fun generateTo(block: LazyBlock, destination: DestinationStream) {
+    override fun generateTo(model: MutableKATEObject, destination: DestinationStream) {
         for (range in codeGens) {
             if (hasBroken) break
-            range.gen.generateTo(block = block, destination = destination)
+            range.gen.generateTo(model = this.model, destination = destination)
         }
     }
 }
@@ -159,21 +147,21 @@ class ForLoopLazyBlockSlice(
     startPointer: Int,
     length: Int,
     blockEndPointer: Int,
-    parent: ScopedModelObject,
+    model: ScopedModelObject,
     isDefaultNoRaw: Boolean,
     indentationLevel: Int
 ) : LazyBlockSlice(
     parentBlock = parentBlock,
     startPointer = startPointer,
     length = length,
-    model = parent,
+    model = model,
     blockEndPointer = blockEndPointer,
     isDefaultNoRaw = isDefaultNoRaw,
     indentationLevel = indentationLevel
 ) {
 
     private var parseTimes = 0
-    val forLoopBlock = ForLoopParsedBlock(mutableListOf())
+    val forLoopBlock = ForLoopParsedBlock(model = this.model,mutableListOf())
 
     fun SourceStream.parseBreakForAtDirective(): ForLoopBreak? {
         return if (currentChar == '@' && increment("@breakfor")) {
@@ -202,14 +190,14 @@ private fun LazyBlock.parseForBlockValue(): ForLoopLazyBlockSlice {
         startsWith = "@for",
         endsWith = "@endfor",
         isDefaultNoRaw = isDefaultNoRaw,
-        inheritModel = false
+        model = ScopedModelObject(model)
     )
     return ForLoopLazyBlockSlice(
         parentBlock = this,
         startPointer = slice.startPointer,
         length = slice.length,
         blockEndPointer = slice.blockEndPointer,
-        parent = slice.model as ScopedModelObject,
+        model = slice.model as ScopedModelObject,
         isDefaultNoRaw = slice.isDefaultNoRaw,
         indentationLevel = indentationLevel + 1
     )
@@ -223,7 +211,6 @@ private fun LazyBlock.parseConditionalFor(): ForLoop.ConditionalFor? {
         val blockValue = this@parseConditionalFor.parseForBlockValue()
         return ForLoop.ConditionalFor(
             condition = condition,
-            blockValue = blockValue,
             forLoopBlock = blockValue.parse()
         )
     }
@@ -257,7 +244,6 @@ private fun LazyBlock.parseIterableForLoopAfterVariable(variableName: String): F
                 indexConstName = secondVariableName,
                 elementConstName = variableName,
                 listProperty = referencedValue,
-                blockValue = blockValue,
                 forLoopBlock = blockValue.parse()
             )
         }
@@ -330,7 +316,6 @@ private fun LazyBlock.parseNumberedForLoopAfterVariable(variableName: String): F
                         conditional = conditional,
                         arithmeticOperatorType = incrementer.operatorType,
                         incrementer = incrementer.incrementerValue,
-                        blockValue = blockValue,
                         forLoopBlock = blockValue.parse()
                     )
                 } else {
