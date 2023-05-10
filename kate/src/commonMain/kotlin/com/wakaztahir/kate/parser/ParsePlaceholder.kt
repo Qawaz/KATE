@@ -126,10 +126,8 @@ fun LazyBlock.parsePlaceholderInvocation(): PlaceholderInvocation? {
             return PlaceholderInvocation(
                 placeholderName = triple.first,
                 definitionName = triple.second,
-                invocationEndPointer = source.pointer,
                 paramValue = triple.third,
-                placeholderManager = source.placeholderManager,
-                source = source
+                placeholderManager = source.placeholderManager
             )
         } else {
             throw IllegalStateException("placeholder name is required when invoking a placeholder using @placeholder")

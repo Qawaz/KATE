@@ -16,9 +16,7 @@ class DefaultNoRawExpression(val source : SourceStream,val value : ReferencedOrD
             placeholderName = value.getKnownKATEType().getPlaceholderName(),
             definitionName = null,
             paramValue = value,
-            invocationEndPointer = source.pointer,
-            placeholderManager = source.placeholderManager,
-            source = source
+            placeholderManager = source.placeholderManager
         ).generateTo(model = model, destination = destination)
     }
 

@@ -119,9 +119,7 @@ class PlaceholderInvocation(
     val placeholderName: String,
     val definitionName: String?,
     var paramValue: ReferencedOrDirectValue?,
-    val invocationEndPointer: Int,
-    val placeholderManager: PlaceholderManager,
-    val source : SourceStream
+    val placeholderManager: PlaceholderManager
 ) : CodeGen {
     override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.placeholderInvocation
     override fun generateTo(model: MutableKATEObject, destination: DestinationStream) {
@@ -134,7 +132,6 @@ class PlaceholderInvocation(
         placeholder.setParamValue(paramValue?.getKATEValue(model))
         placeholder.setInvocationModel(model)
         placeholder.generateTo(destination)
-        source.setPointerAt(invocationEndPointer)
     }
 }
 
