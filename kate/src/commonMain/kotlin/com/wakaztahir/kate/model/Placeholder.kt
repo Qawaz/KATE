@@ -5,6 +5,7 @@ import com.wakaztahir.kate.model.model.KATEObject
 import com.wakaztahir.kate.model.model.KATEValue
 import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
 import com.wakaztahir.kate.model.model.MutableKATEObject
+import com.wakaztahir.kate.parser.ParsedBlock
 import com.wakaztahir.kate.parser.parsePartialRawImplicitDirective
 import com.wakaztahir.kate.parser.stream.DestinationStream
 import com.wakaztahir.kate.parser.stream.PlaceholderManager
@@ -77,8 +78,8 @@ open class PlaceholderBlock(
 
 }
 
-class TextPlaceholderBlock(
-    val text: String,
+class BlockPlaceholderBlock(
+    val block : ParsedBlock,
     parent: LazyBlock,
     placeholderName: String,
     definitionName: String,
@@ -89,20 +90,14 @@ class TextPlaceholderBlock(
     definitionName = definitionName,
     startPointer = 0,
     blockEndPointer = 0,
-    length = text.length,
+    length = 1,
     model = parent.model,
     isDefaultNoRaw = false,
     indentationLevel = 0,
     parameterName = parameterName
 ) {
     override fun generateActual(destination: DestinationStream) {
-        TextSourceStream(
-            sourceCode = text,
-            model = model,
-            placeholderManager = source.placeholderManager,
-            embeddingManager = source.embeddingManager,
-            initialize = false
-        ).block.generateTo(destination)
+        block.generateTo(model = model,destination = destination)
     }
 }
 
