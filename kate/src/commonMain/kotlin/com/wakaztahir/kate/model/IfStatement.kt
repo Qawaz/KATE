@@ -2,6 +2,7 @@ package com.wakaztahir.kate.model
 
 import com.wakaztahir.kate.model.model.KATEValue
 import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
+import com.wakaztahir.kate.parser.ParsedBlock
 import com.wakaztahir.kate.parser.stream.DestinationStream
 import com.wakaztahir.kate.tokenizer.NodeTokenizer
 
@@ -84,7 +85,7 @@ enum class IfType(val order: Int) {
 class SingleIf(
     val condition: ReferencedOrDirectValue,
     val type: IfType,
-    val blockValue: LazyBlockSlice,
+    val blockValue: ParsedBlock,
 ) : CodeGen {
     override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.singleIf
     override fun generateTo(destination: DestinationStream) {
@@ -105,10 +106,6 @@ class IfStatement(private val ifs: MutableList<SingleIf>) : BlockContainer {
 
     init {
         sortByOrder()
-    }
-
-    override fun getBlockValue(): LazyBlock? {
-        return evaluate()?.blockValue
     }
 
     fun evaluate(): SingleIf? {

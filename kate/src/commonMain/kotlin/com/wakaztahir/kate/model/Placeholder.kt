@@ -42,10 +42,6 @@ open class PlaceholderBlock(
         isInvocationModelSet = true
     }
 
-    protected open fun generateActual(destination: DestinationStream) {
-        super.generateTo(destination)
-    }
-
     override fun generateTo(destination: DestinationStream) {
         val paramName = parameterName ?: "__param__"
         require(isInvocationModelSet) {
@@ -56,36 +52,13 @@ open class PlaceholderBlock(
                 "couldn't insert value by the name $paramName and $paramValue for placeholder invocation placeholder($placeholderName,$definitionName,$paramName)"
             }
         }
-        generateActual(destination)
+        super.generateTo(destination)
         if (paramValue != null) {
             model.removeKey(paramName)
         }
         isInvocationModelSet = false
     }
 
-}
-
-class BlockPlaceholderBlock(
-    val block : ParsedBlock,
-    parent: LazyBlock,
-    placeholderName: String,
-    definitionName: String,
-    parameterName: String?,
-) : PlaceholderBlock(
-    parentBlock = parent,
-    placeholderName = placeholderName,
-    definitionName = definitionName,
-    startPointer = 0,
-    blockEndPointer = 0,
-    length = 1,
-    model = parent.model,
-    isDefaultNoRaw = false,
-    indentationLevel = 0,
-    parameterName = parameterName
-) {
-    override fun generateActual(destination: DestinationStream) {
-        block.generateTo(destination = destination)
-    }
 }
 
 class PlaceholderDefinition(val blockValue: PlaceholderBlock, val isOnce: Boolean,val placeholderManager: PlaceholderManager) : BlockContainer {

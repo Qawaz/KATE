@@ -91,7 +91,7 @@ internal fun LazyBlock.parseCondition(
 
 }
 
-private fun LazyBlock.parseIfBlockValue(ifType: IfType): LazyBlockSlice {
+private fun LazyBlock.parseIfBlockValue(ifType: IfType): ParsedBlock {
 
     escapeBlockSpacesForward()
 
@@ -137,11 +137,13 @@ private fun LazyBlock.parseIfBlockValue(ifType: IfType): LazyBlockSlice {
         blockEndPointer = source.pointer + blockEnder.length,
         isDefaultNoRaw = isDefaultNoRaw,
         indentationLevel = indentationLevel + 1
-    ).also { it.prepare() }
+    )
+
+    val parsedBlock = block.parse()
 
     source.setPointerAt(pointerBeforeEnder)
 
-    return block
+    return parsedBlock
 }
 
 internal fun LazyBlock.parseSingleIf(start: String, ifType: IfType): SingleIf? {
@@ -195,6 +197,8 @@ internal fun LazyBlock.parseIfStatement(): IfStatement? {
     if (source.increment("@endif")) {
         return IfStatement(ifs)
     } else {
+        println("UNPARSED : ")
+        source.printLeft()
         throw IllegalStateException("@if must end with @endif")
     }
 }

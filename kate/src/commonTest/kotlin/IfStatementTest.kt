@@ -98,7 +98,7 @@ class IfStatementTest {
         val context = TemplateContext(text)
         context.stream.model.insertValue("var1", true)
         val statement = context.stream.block.parseIfStatement()!!
-        assertEquals("blockValue", statement.singleIfs[0].blockValue.getValueAsString())
+        assertEquals("blockValue", statement.singleIfs[0].blockValue.generateToText())
         assertNotEquals(null, statement.evaluate())
         assertEquals(text.length, context.stream.pointer)
     }
@@ -197,9 +197,8 @@ class IfStatementTest {
     fun testParseIf() {
         val iffy = testIfy(firstIf = true, firstElseIf = false, secondElseIf = false)
         val context = TemplateContext(iffy)
-        val ifStatement = context.stream.block.parseIfStatement()
-        assertEquals(12, ifStatement!!.evaluate()!!.blockValue.length)
-        assertEquals("MyFirstValue", ifStatement.evaluate()!!.blockValue.getValueAsString())
+        val ifStatement = context.stream.block.parseIfStatement()!!
+        assertEquals("MyFirstValue", ifStatement.evaluate()!!.blockValue.generateToText())
         assertEquals("MyFirstValue", GenerateCode(iffy))
         assertEquals(iffy.length, context.stream.pointer)
     }
@@ -214,7 +213,7 @@ class IfStatementTest {
         val iffy = testIfy(firstIf = false, firstElseIf = true, secondElseIf = false)
         val context = TemplateContext((iffy))
         val ifStatement = context.stream.block.parseIfStatement()
-        assertEquals("MySecondValue", ifStatement!!.evaluate()!!.blockValue.getValueAsString())
+        assertEquals("MySecondValue", ifStatement!!.evaluate()!!.blockValue.generateToText())
         assertEquals("MySecondValue", GenerateCode(iffy))
         assertEquals(iffy.length, context.stream.pointer)
     }
@@ -224,7 +223,7 @@ class IfStatementTest {
         val iffy = testIfy(firstIf = false, firstElseIf = false, secondElseIf = true)
         val context = TemplateContext((iffy))
         val ifStatement = context.stream.block.parseIfStatement()
-        assertEquals("MyThirdValue", ifStatement!!.evaluate()!!.blockValue.getValueAsString())
+        assertEquals("MyThirdValue", ifStatement!!.evaluate()!!.blockValue.generateToText())
         assertEquals("MyThirdValue", GenerateCode(iffy))
         assertEquals(iffy.length, context.stream.pointer)
     }
@@ -236,7 +235,7 @@ class IfStatementTest {
         val ifStatement = context.stream.block.parseIfStatement()
         assertNotEquals(null, ifStatement)
         assertEquals("MyFourthValue", GenerateCode(iffy))
-        assertEquals("MyFourthValue", ifStatement!!.evaluate()!!.blockValue.getValueAsString())
+        assertEquals("MyFourthValue", ifStatement!!.evaluate()!!.blockValue.generateToText())
         assertEquals(iffy.length, context.stream.pointer)
     }
 
