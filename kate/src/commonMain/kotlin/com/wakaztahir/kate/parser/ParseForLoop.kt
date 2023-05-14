@@ -33,6 +33,7 @@ sealed interface ForLoop : BlockContainer {
         override fun iterate(model: MutableKATEObject, block: (iteration: Int) -> Unit) {
             var i = 0
             while (!forLoopBlock.hasBroken && (condition.asNullablePrimitive() as BooleanValue).value) {
+                forLoopBlock.haltGenFlag = false
                 model.removeAll()
                 block(i)
                 i++
@@ -72,6 +73,7 @@ sealed interface ForLoop : BlockContainer {
                 ?: throw IllegalStateException("list property is not iterable in for loop")
             val total = iterable.collection.size
             while (!forLoopBlock.hasBroken && index < total) {
+                forLoopBlock.haltGenFlag = false
                 model.removeAll()
                 store(model, index)
                 store(model, iterable.collection.getOrElse(index) {
@@ -114,6 +116,7 @@ sealed interface ForLoop : BlockContainer {
             val conditionValue = conditional.intVal()
             val incrementerValue = incrementer.intVal()
             while (!forLoopBlock.hasBroken && conditionType.verifyCompare(i.compareTo(conditionValue))) {
+                forLoopBlock.haltGenFlag = false
                 model.removeAll()
                 model.storeIndex(i)
                 block(i)
@@ -128,6 +131,7 @@ sealed interface ForLoop : BlockContainer {
 class ForLoopBreak(val slice: ForLoopParsedBlock) : CodeGen {
     override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.forLoopBreak
     override fun generateTo(destination: DestinationStream) {
+        slice.haltGenFlag = true
         slice.hasBroken = true
     }
 }
@@ -135,20 +139,18 @@ class ForLoopBreak(val slice: ForLoopParsedBlock) : CodeGen {
 class ForLoopContinue(val block: ForLoopParsedBlock) : CodeGen {
     override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.forLoopContinue
     override fun generateTo(destination: DestinationStream) {
-        block.continueFlag = true
+        block.haltGenFlag = true
     }
 }
 
 class ForLoopParsedBlock(val model: MutableKATEObject, codeGens: List<CodeGenRange>) : ParsedBlock(codeGens) {
+    // if true , break one iteration of loop before next statement gets generated
+    var haltGenFlag = false
+    // if true , stop iterating after this iteration is complete
     var hasBroken = false
-    var continueFlag = false
     override fun generateTo(destination: DestinationStream) {
         for (range in codeGens) {
-            if (hasBroken) break
-            if (continueFlag) {
-                continueFlag = false
-                continue
-            }
+            if (haltGenFlag) return
             range.gen.generateTo(destination = destination)
         }
     }

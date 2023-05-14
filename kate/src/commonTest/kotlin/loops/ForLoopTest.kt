@@ -96,7 +96,7 @@ class ForLoopTest {
 
     @Test
     fun testLoopContinue() {
-        assertEquals("0123567",GenerateCode("@for(@var i = 0;i < 8;i++) @if(i == 4) @continue @endif @var(i) @endfor"))
+        assertEquals("013",GenerateCode("@for(@var i = 0;i < 4;i++) @if(i == 2) @continue @endif @var(i) @endfor"))
     }
 
     @Test
