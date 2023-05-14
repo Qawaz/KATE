@@ -88,7 +88,7 @@ private fun LazyBlock.parsePlaceholderBlock(nameAndDef: Triple<String, String?, 
         blockEndPointer = blockValue.blockEndPointer,
         isDefaultNoRaw = isDefaultNoRaw,
         indentationLevel = blockValue.indentationLevel
-    ).also { it.prepare() }
+    )
 
 }
 

@@ -26,16 +26,6 @@ class TemplateContext(stream: SourceStream) {
         this.stream = TextSourceStream(text, this.stream.model)
     }
 
-    private val embedMap = hashMapOf<String, SourceStream>()
-
-    fun embedStream(path: String, stream: SourceStream) {
-        embedMap[path] = stream
-    }
-
-    fun getEmbeddedStream(path: String): SourceStream? {
-        return embedMap[path]
-    }
-
     @OptIn(KATEDelicateFunction::class)
     fun getDestinationAsString(): String {
         return stream.block.getDestinationString()

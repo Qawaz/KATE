@@ -14,7 +14,7 @@ open class RelativeResourceEmbeddingManager(
     override val embeddedStreams: MutableMap<String, Boolean> = mutableMapOf()
 ) : EmbeddingManager {
 
-    override fun handleException(path: String, stream: SourceStream, exception: Throwable) {
+    override fun handleException(path: String, stream: SourceStream, exception: Throwable): Nothing {
         val indo = stream.getErrorInfoAtCurrentPointer()
         throw Throwable("${completePath(path)}:${indo.first}:${indo.second}", cause = exception)
     }

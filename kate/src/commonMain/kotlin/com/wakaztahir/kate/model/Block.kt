@@ -181,10 +181,6 @@ open class LazyBlockSlice(
     override val indentationLevel: Int
 ) : LazyBlock {
 
-    protected val parsedBlock: ParsedBlock by lazy { parse() }
-
-    fun prepare() = parsedBlock
-
     override val source: SourceStream = parentBlock.source
 
     override fun canIterate(): Boolean {
