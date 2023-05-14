@@ -4,6 +4,8 @@ interface NodeTokenizer<T> {
 
     val forLoopBreak : T
 
+    val forLoopContinue : T
+
     val partialRawFunctionCall : T
 
     val defaultNoRawExpression : T

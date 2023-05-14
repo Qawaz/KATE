@@ -14,9 +14,9 @@ import com.wakaztahir.kate.tokenizer.NodeTokenizer
 
 sealed interface ForLoop : BlockContainer {
 
-    val forLoopBlock : ForLoopParsedBlock
+    val forLoopBlock: ForLoopParsedBlock
 
-    fun iterate(model: MutableKATEObject,block: (iteration: Int) -> Unit)
+    fun iterate(model: MutableKATEObject, block: (iteration: Int) -> Unit)
 
     override fun generateTo(destination: DestinationStream) {
         forLoopBlock.hasBroken = false
@@ -49,17 +49,17 @@ sealed interface ForLoop : BlockContainer {
 
         override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.iterableFor
 
-        private fun store(model : MutableKATEObject,value: Int) {
+        private fun store(model: MutableKATEObject, value: Int) {
             if (indexConstName != null) {
                 model.insertValue(indexConstName, value)
             }
         }
 
-        private fun store(model : MutableKATEObject,value: KATEValue) {
+        private fun store(model: MutableKATEObject, value: KATEValue) {
             model.insertValue(elementConstName, value)
         }
 
-        private fun remove(model : MutableKATEObject) {
+        private fun remove(model: MutableKATEObject) {
             if (indexConstName != null) {
                 model.removeKey(indexConstName)
             }
@@ -73,8 +73,8 @@ sealed interface ForLoop : BlockContainer {
             val total = iterable.collection.size
             while (!forLoopBlock.hasBroken && index < total) {
                 model.removeAll()
-                store(model,index)
-                store(model,iterable.collection.getOrElse(index) {
+                store(model, index)
+                store(model, iterable.collection.getOrElse(index) {
                     throw IllegalStateException("element at $index in for loop not found")
                 })
                 block(index)
@@ -132,11 +132,23 @@ class ForLoopBreak(val slice: ForLoopParsedBlock) : CodeGen {
     }
 }
 
-class ForLoopParsedBlock(val model : MutableKATEObject,codeGens: List<CodeGenRange>) : ParsedBlock(codeGens) {
+class ForLoopContinue(val block: ForLoopParsedBlock) : CodeGen {
+    override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.forLoopContinue
+    override fun generateTo(destination: DestinationStream) {
+        block.continueFlag = true
+    }
+}
+
+class ForLoopParsedBlock(val model: MutableKATEObject, codeGens: List<CodeGenRange>) : ParsedBlock(codeGens) {
     var hasBroken = false
+    var continueFlag = false
     override fun generateTo(destination: DestinationStream) {
         for (range in codeGens) {
             if (hasBroken) break
+            if (continueFlag) {
+                continueFlag = false
+                continue
+            }
             range.gen.generateTo(destination = destination)
         }
     }
@@ -161,11 +173,22 @@ class ForLoopLazyBlockSlice(
 ) {
 
     private var parseTimes = 0
-    val forLoopBlock = ForLoopParsedBlock(model = this.model,mutableListOf())
+    val forLoopBlock = ForLoopParsedBlock(model = this.model, mutableListOf())
 
-    fun SourceStream.parseBreakForAtDirective(): ForLoopBreak? {
-        return if (currentChar == '@' && increment("@breakfor")) {
+    private fun SourceStream.parseBreakForAtDirective(): ForLoopBreak? {
+        return if (currentChar == '@' && increment("@break")) {
+            if(increment("for")){
+                throw IllegalStateException("use new @break instead of @breakfor")
+            }
             ForLoopBreak(forLoopBlock)
+        } else {
+            null
+        }
+    }
+
+    private fun SourceStream.parseContinueForAtDirective(): ForLoopContinue? {
+        return if (currentChar == '@' && increment("@continue")) {
+            ForLoopContinue(forLoopBlock)
         } else {
             null
         }
@@ -173,13 +196,14 @@ class ForLoopLazyBlockSlice(
 
     override fun parse(): ForLoopParsedBlock {
         parseTimes++
-        if(parseTimes > 2) throw IllegalStateException("one instance can parse one block")
+        if (parseTimes > 2) throw IllegalStateException("one instance can parse one block")
         (forLoopBlock.codeGens as MutableList).addAll(super.parse().codeGens)
         return forLoopBlock
     }
 
     override fun parseNestedAtDirective(block: LazyBlock): CodeGen? {
         source.parseBreakForAtDirective()?.let { return it }
+        source.parseContinueForAtDirective()?.let { return it }
         return super.parseNestedAtDirective(block)
     }
 
@@ -297,8 +321,10 @@ private fun LazyBlock.parseNumberedForLoopAfterVariable(variableName: String): F
         if (source.increment(';')) {
             val conditionalConst = source.parseTextWhile { currentChar.isVariableName() }
             if (conditionalConst == variableName) {
+                source.escapeSpaces()
                 val conditionType = source.parseConditionType()
                     ?: throw IllegalStateException("expected conditional operator , got ${source.currentChar}")
+                source.escapeSpaces()
                 val conditional = parseAnyExpressionOrValue(
                     parseDirectRefs = true
                 ) ?: throw IllegalStateException("expected number property of value got ${source.currentChar}")

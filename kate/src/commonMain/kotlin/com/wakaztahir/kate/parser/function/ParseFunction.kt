@@ -121,7 +121,7 @@ abstract class KATERecursiveFunction(
         }
     }
 
-    private fun startInvocation(model: KATEObject, parameters: List<ReferencedOrDirectValue>) {
+    private fun startInvocation(parameters: List<ReferencedOrDirectValue>) {
         invocationNumber++
         if (invocationNumber > 1) {
             previousModels.add(slice.model)
@@ -150,8 +150,8 @@ abstract class KATERecursiveFunction(
         return returnedValue
     }
 
-    fun generateNow(model: KATEObject, parameters: List<ReferencedOrDirectValue>): KATEValue {
-        startInvocation(model = model, parameters = parameters)
+    fun generateNow(parameters: List<ReferencedOrDirectValue>): KATEValue {
+        startInvocation(parameters = parameters)
         slice.generateTo(destination!!)
         return endInvocation()
     }
@@ -170,13 +170,14 @@ class FunctionDefinition(
     override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.functionDefinition
 
     val definition = object : KATERecursiveFunction(slice, parameterNames, returnedType) {
+
         override fun invoke(
             model: KATEObject,
             invokedOn: KATEValue,
             explicitType: KATEType?,
             parameters: List<ReferencedOrDirectValue>
         ): ReferencedOrDirectValue {
-            return generateNow(model = model, parameters)
+            return generateNow(parameters)
         }
 
         override fun toString(): String = functionName + ' ' + super.toString()
