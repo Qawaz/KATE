@@ -91,7 +91,7 @@ internal fun LazyBlock.parseCondition(
 
 }
 
-private fun LazyBlock.parseIfBlockValue(ifType: IfType): ParsedBlock {
+private fun LazyBlock.parseIfBlockValue(ifType: IfType): IfParsedBlock {
 
     escapeBlockSpacesForward()
 
@@ -143,7 +143,7 @@ private fun LazyBlock.parseIfBlockValue(ifType: IfType): ParsedBlock {
 
     source.setPointerAt(pointerBeforeEnder)
 
-    return parsedBlock
+    return IfParsedBlock(model = block.model, parsedBlock.codeGens)
 }
 
 internal fun LazyBlock.parseSingleIf(start: String, ifType: IfType): SingleIf? {

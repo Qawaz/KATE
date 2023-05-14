@@ -15,7 +15,7 @@ object GlobalObjectImplementation {
                     parameters: List<ReferencedOrDirectValue>
                 ): ReferencedOrDirectValue {
                     for (param in parameters) {
-                        (param.asNullablePrimitive()?.value as? String)?.let { println(it) }
+                        println(param.getKATEValue().toString())
                     }
                     return KATEUnit
                 }

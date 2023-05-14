@@ -85,6 +85,7 @@ class ForLoopTest {
 
     @Test
     fun testLoopModelClear() {
+        assertEquals("01",GenerateCode("@for(@var i = 0;i<2;i++) @if(true) @var x = i @var(x) @endif @endfor"))
         assertEquals("543", GenerateCode("@var i = 5 @for(@var(i) > 2) @var(i)@set_var i = i - 1 @endfor"))
         assertEquals("012", GenerateCode("@for(@var i = 0;i<3;i++) @var f = @var(i) @var(f) @endfor"))
         assertEquals("012", GenerateCode("@for(@var i : @list(0,1,2)) @var f = @var(i) @var(f) @endfor"))

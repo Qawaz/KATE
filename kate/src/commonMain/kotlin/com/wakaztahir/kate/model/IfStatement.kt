@@ -1,6 +1,7 @@
 package com.wakaztahir.kate.model
 
 import com.wakaztahir.kate.model.model.KATEValue
+import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
 import com.wakaztahir.kate.parser.ParsedBlock
 import com.wakaztahir.kate.parser.stream.DestinationStream
@@ -82,10 +83,17 @@ enum class IfType(val order: Int) {
     Else(2)
 }
 
+class IfParsedBlock(val model: MutableKATEObject, codeGens: List<CodeGenRange>) : ParsedBlock(codeGens) {
+    override fun generateTo(destination: DestinationStream) {
+        model.removeAll()
+        super.generateTo(destination)
+    }
+}
+
 class SingleIf(
     val condition: ReferencedOrDirectValue,
     val type: IfType,
-    val blockValue: ParsedBlock,
+    val blockValue: IfParsedBlock,
 ) : CodeGen {
     override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.singleIf
     override fun generateTo(destination: DestinationStream) {

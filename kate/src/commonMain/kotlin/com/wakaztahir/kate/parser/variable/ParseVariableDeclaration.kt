@@ -37,7 +37,7 @@ data class VariableDeclaration(
             if (value.second != null) model.setExplicitType(variableName, value.second!!)
         }
         if (!model.insertValue(variableName, value.first)) {
-            throw VariableDeclarationException("couldn't declare variable $variableName which already exists")
+            throw VariableDeclarationException("couldn't declare variable $variableName which already exists in model $model")
         }
     }
 

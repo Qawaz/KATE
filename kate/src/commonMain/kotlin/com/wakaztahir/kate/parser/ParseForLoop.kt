@@ -96,7 +96,7 @@ sealed interface ForLoop : BlockContainer {
 
         override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.numberedFor
 
-        private fun ReferencedOrDirectValue.intVal(context: MutableKATEObject): Int {
+        private fun ReferencedOrDirectValue.intVal(): Int {
             (asNullablePrimitive()?.value as? Int)?.let { return it }
                 ?: throw IllegalStateException("for loop variable must be an integer")
         }
@@ -110,9 +110,9 @@ sealed interface ForLoop : BlockContainer {
         }
 
         override fun iterate(model: MutableKATEObject, block: (iteration: Int) -> Unit) {
-            var i = initializer.intVal(model)
-            val conditionValue = conditional.intVal(model)
-            val incrementerValue = incrementer.intVal(model)
+            var i = initializer.intVal()
+            val conditionValue = conditional.intVal()
+            val incrementerValue = incrementer.intVal()
             while (!forLoopBlock.hasBroken && conditionType.verifyCompare(i.compareTo(conditionValue))) {
                 model.removeAll()
                 model.storeIndex(i)
