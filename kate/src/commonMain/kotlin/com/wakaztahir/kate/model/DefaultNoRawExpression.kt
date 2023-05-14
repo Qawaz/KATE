@@ -6,18 +6,23 @@ import com.wakaztahir.kate.parser.stream.DestinationStream
 import com.wakaztahir.kate.parser.stream.SourceStream
 import com.wakaztahir.kate.tokenizer.NodeTokenizer
 
-class DefaultNoRawExpression(val source : SourceStream,val value : ReferencedOrDirectValue) : CodeGen {
+class DefaultNoRawExpression(
+    val source: SourceStream,
+    val value: ReferencedOrDirectValue,
+    val model : MutableKATEObject,
+) : CodeGen {
 
     override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.defaultNoRawExpression
 
-    override fun generateTo(model: MutableKATEObject, destination: DestinationStream) {
-        val value = value.getKATEValue(model)
+    override fun generateTo(destination: DestinationStream) {
+        val value = value.getKATEValue()
         PlaceholderInvocation(
             placeholderName = value.getKnownKATEType().getPlaceholderName(),
             definitionName = null,
             paramValue = value,
-            placeholderManager = source.placeholderManager
-        ).generateTo(model = model, destination = destination)
+            placeholderManager = source.placeholderManager,
+            invocationModel = model,
+        ).generateTo(destination = destination)
     }
 
 }

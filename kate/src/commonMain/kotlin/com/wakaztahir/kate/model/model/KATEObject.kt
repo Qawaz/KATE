@@ -47,7 +47,7 @@ interface KATEObject : KATEValue {
             is ModelReference.Property -> {
                 when (ref.name) {
                     "this" -> this
-                    "parent" -> (this.asNullableObject(this))?.parent
+                    "parent" -> (this.asNullableObject())?.parent
                     else -> null
                 }
             }
@@ -71,7 +71,7 @@ interface KATEObject : KATEValue {
                     invokedOn = current,
                     explicitType = explicitType,
                     parameters = prop.parametersList
-                )?.getKATEValueAndType(this) ?: throwUnresolved(path, index, current)
+                )?.getKATEValueAndType() ?: throwUnresolved(path, index, current)
             }
 
             is ModelReference.Property -> {

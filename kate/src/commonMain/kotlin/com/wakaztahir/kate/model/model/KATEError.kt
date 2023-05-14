@@ -8,7 +8,7 @@ class KATEParsingError(val throwable: Throwable) : CodeGen, Throwable(cause = th
 
     override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.kateParsingError
 
-    override fun generateTo(model: MutableKATEObject, destination: DestinationStream) {
+    override fun generateTo(destination: DestinationStream) {
         throw throwable
     }
 }

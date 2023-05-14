@@ -22,7 +22,7 @@ object KATEListImplementation {
                 explicitType: KATEType?,
                 parameters: List<ReferencedOrDirectValue>
             ): ReferencedOrDirectValue {
-                val index = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value as? Int
+                val index = parameters.getOrNull(0)?.asNullablePrimitive()?.value as? Int
                 require(index != null) {
                     "list.get(int) expects a single Int parameter instead of ${parameters.size}"
                 }
@@ -85,8 +85,8 @@ object KATEListImplementation {
                 ): ReferencedOrDirectValue {
                     val list = invokedOn.kateList
                     val separator =
-                        parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as? String } ?: ","
-                    val func = parameters.getOrNull(1)?.asNullableFunction(model)
+                        parameters.getOrNull(0)?.asNullablePrimitive()?.value?.let { it as? String } ?: ","
+                    val func = parameters.getOrNull(1)?.asNullableFunction()
                     return StringValue(list.collection.joinToString(separator) {
                         func?.invoke(model, invokedOn = it, explicitType = null, parameters = listOf(it))?.toString()
                             ?: it.toString()

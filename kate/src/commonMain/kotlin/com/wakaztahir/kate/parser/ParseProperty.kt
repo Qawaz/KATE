@@ -1,7 +1,6 @@
 package com.wakaztahir.kate.parser
 
 import com.wakaztahir.kate.model.*
-import com.wakaztahir.kate.model.model.KATEObject
 import com.wakaztahir.kate.model.model.KATEValue
 import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
 import com.wakaztahir.kate.parser.stream.SourceStream
@@ -33,8 +32,8 @@ internal data class ExpressionValue(
     val second: ReferencedOrDirectValue
 ) : ReferencedOrDirectValue {
 
-    override fun getKATEValue(model: KATEObject): KATEValue {
-        return first.getKATEValue(model).operate(operatorType, second.getKATEValue(model))
+    override fun getKATEValue(): KATEValue {
+        return first.getKATEValue().operate(operatorType, second.getKATEValue())
     }
 
     override fun toString(): String {

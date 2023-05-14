@@ -15,7 +15,8 @@ import com.wakaztahir.kate.tokenizer.NodeTokenizer
 data class VariableAssignment(
     val variableName: String,
     val arithmeticOperatorType: ArithmeticOperatorType?,
-    val variableValue: ReferencedOrDirectValue
+    val variableValue: ReferencedOrDirectValue,
+    val model : MutableKATEObject,
 ) : AtDirective {
 
     override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.variableAssignment
@@ -29,13 +30,13 @@ data class VariableAssignment(
 
     private fun getValue(model: MutableKATEObject): KATEValue {
         return if (arithmeticOperatorType == null) {
-            variableValue.getKATEValue(model)
+            variableValue.getKATEValue()
         } else {
             ExpressionValue(
                 first = model.getModelReference(ModelReference.Property(variableName)) ?: throwIt(),
                 operatorType = arithmeticOperatorType,
                 second = variableValue
-            ).getKATEValue(model)
+            ).getKATEValue()
         }
     }
 
@@ -45,7 +46,7 @@ data class VariableAssignment(
         }
     }
 
-    override fun generateTo(model: MutableKATEObject, destination: DestinationStream) {
+    override fun generateTo(destination: DestinationStream) {
         storeValue(model)
     }
 }
@@ -98,7 +99,8 @@ internal fun LazyBlock.parseVariableAssignment(): VariableAssignment? {
         VariableAssignment(
             variableName = lhs.variableName,
             arithmeticOperatorType = lhs.type,
-            variableValue = property
+            variableValue = property,
+            model = model
         )
     } else {
         throw VariableAssignmentException("variable value not found in variable assignment expression $lhs")

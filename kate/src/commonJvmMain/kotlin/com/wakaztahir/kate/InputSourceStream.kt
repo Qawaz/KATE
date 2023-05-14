@@ -12,13 +12,16 @@ class InputSourceStream(
     private val inputStream: InputStream,
     override val model: MutableKATEObject = ModelObjectImpl(GlobalModelObjectName),
     override val embeddingManager: EmbeddingManager = NoEmbeddings,
-    override val placeholderManager: PlaceholderManager = EmptyPlaceholderManager()
+    override val placeholderManager: PlaceholderManager = EmptyPlaceholderManager(),
+    initialize : Boolean = true
 ) : SourceStream() {
 
 
     init {
-        DefaultPlaceholderManagerInitializer.initializerDefaultPlaceholders(this)
-        GlobalObjectImplementation.putIntoObject(model)
+        if(initialize) {
+            DefaultPlaceholderManagerInitializer.initializerDefaultPlaceholders(this)
+            GlobalObjectImplementation.putIntoObject(model)
+        }
     }
 
     override var pointer: Int = 0

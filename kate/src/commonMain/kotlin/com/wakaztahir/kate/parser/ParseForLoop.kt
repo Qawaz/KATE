@@ -18,10 +18,10 @@ sealed interface ForLoop : BlockContainer {
 
     fun iterate(model: MutableKATEObject,block: (iteration: Int) -> Unit)
 
-    override fun generateTo(model: MutableKATEObject, destination: DestinationStream) {
+    override fun generateTo(destination: DestinationStream) {
         forLoopBlock.hasBroken = false
         iterate(forLoopBlock.model) {
-            forLoopBlock.generateTo(forLoopBlock.model, destination = destination)
+            forLoopBlock.generateTo(destination = destination)
         }
     }
 
@@ -32,7 +32,7 @@ sealed interface ForLoop : BlockContainer {
         override fun <T> selectNode(tokenizer: NodeTokenizer<T>) = tokenizer.conditionalFor
         override fun iterate(model: MutableKATEObject, block: (iteration: Int) -> Unit) {
             var i = 0
-            while (!forLoopBlock.hasBroken && (condition.asNullablePrimitive(model) as BooleanValue).value) {
+            while (!forLoopBlock.hasBroken && (condition.asNullablePrimitive() as BooleanValue).value) {
                 model.removeAll()
                 block(i)
                 i++
@@ -68,7 +68,7 @@ sealed interface ForLoop : BlockContainer {
 
         override fun iterate(model: MutableKATEObject, block: (iteration: Int) -> Unit) {
             var index = 0
-            val iterable = listProperty.asNullableList(model)
+            val iterable = listProperty.asNullableList()
                 ?: throw IllegalStateException("list property is not iterable in for loop")
             val total = iterable.collection.size
             while (!forLoopBlock.hasBroken && index < total) {
@@ -97,7 +97,7 @@ sealed interface ForLoop : BlockContainer {
         override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.numberedFor
 
         private fun ReferencedOrDirectValue.intVal(context: MutableKATEObject): Int {
-            (asNullablePrimitive(context)?.value as? Int)?.let { return it }
+            (asNullablePrimitive()?.value as? Int)?.let { return it }
                 ?: throw IllegalStateException("for loop variable must be an integer")
         }
 
@@ -127,17 +127,17 @@ sealed interface ForLoop : BlockContainer {
 
 class ForLoopBreak(val slice: ForLoopParsedBlock) : CodeGen {
     override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.forLoopBreak
-    override fun generateTo(model: MutableKATEObject, destination: DestinationStream) {
+    override fun generateTo(destination: DestinationStream) {
         slice.hasBroken = true
     }
 }
 
 class ForLoopParsedBlock(val model : MutableKATEObject,codeGens: List<CodeGenRange>) : ParsedBlock(codeGens) {
     var hasBroken = false
-    override fun generateTo(model: MutableKATEObject, destination: DestinationStream) {
+    override fun generateTo(destination: DestinationStream) {
         for (range in codeGens) {
             if (hasBroken) break
-            range.gen.generateTo(model = this.model, destination = destination)
+            range.gen.generateTo(destination = destination)
         }
     }
 }

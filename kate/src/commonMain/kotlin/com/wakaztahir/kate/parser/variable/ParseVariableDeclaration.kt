@@ -14,7 +14,8 @@ class VariableDeclarationException(message: String) : Exception(message)
 data class VariableDeclaration(
     val variableName: String,
     val type: KATEType?,
-    val variableValue: ReferencedOrDirectValue
+    val variableValue: ReferencedOrDirectValue,
+    val model : MutableKATEObject
 ) : AtDirective {
 
     override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.variableDeclaration
@@ -22,8 +23,8 @@ data class VariableDeclaration(
     override val isEmptyWriter: Boolean
         get() = true
 
-    fun storeValue(model: MutableKATEObject) {
-        val value = variableValue.getKATEValueAndType(model)
+    fun storeValue() {
+        val value = variableValue.getKATEValueAndType()
         val actualType = value.second ?: value.first.getKnownKATEType()
         if (type != null) {
             if (!type.satisfiedBy(actualType)) {
@@ -40,8 +41,8 @@ data class VariableDeclaration(
         }
     }
 
-    override fun generateTo(model: MutableKATEObject, destination: DestinationStream) {
-        storeValue(model)
+    override fun generateTo(destination: DestinationStream) {
+        storeValue()
     }
 
 }
@@ -186,7 +187,8 @@ internal fun LazyBlock.parseVariableDeclaration(): VariableDeclaration? {
                 VariableDeclaration(
                     variableName = variableName,
                     variableValue = property,
-                    type = type
+                    type = type,
+                    model = model
                 )
             } else {
                 throw VariableDeclarationException("constant's value not found when declaring variable $variableName")

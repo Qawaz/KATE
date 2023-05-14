@@ -91,7 +91,7 @@ interface LazyBlock {
     }
 
     fun generateTo(destination: DestinationStream) {
-        parse().generateTo(model, destination)
+        parse().generateTo(destination)
     }
 
     fun consumeLineIndentation(): Int {
@@ -110,7 +110,7 @@ interface LazyBlock {
     }
 
     fun writeDirective(previous: Int, directive: CodeGen, destination: DestinationStream) {
-        directive.generateTo(model, destination)
+        directive.generateTo(destination)
     }
 
     fun parseNestedAtDirective(block: LazyBlock): CodeGen? {
@@ -120,7 +120,7 @@ interface LazyBlock {
     fun parseImplicitDirectives(): CodeGen? {
         parseVariableReferenceAsExpression(parseDirectRefs = !isDefaultNoRaw)?.let {
             if(isDefaultNoRaw || it.first) {
-                return DefaultNoRawExpression(source = source, value = it.second)
+                return DefaultNoRawExpression(source = source, value = it.second,model = model)
             }else {
                 return PartialRawFunctionCall(it.second)
             }

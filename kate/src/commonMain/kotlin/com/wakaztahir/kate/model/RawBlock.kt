@@ -1,6 +1,5 @@
 package com.wakaztahir.kate.model
 
-import com.wakaztahir.kate.model.model.KATEObject
 import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.parser.ParsedBlock
 import com.wakaztahir.kate.parser.PartialRawParsedBlock
@@ -11,14 +10,14 @@ import kotlin.jvm.JvmInline
 
 class DefaultNoRawBlock(val value: ParsedBlock) : BlockContainer {
     override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.defaultNoRawBlock
-    override fun generateTo(model: MutableKATEObject, destination: DestinationStream) {
-        value.generateTo(model,destination)
+    override fun generateTo(destination: DestinationStream) {
+        value.generateTo(destination)
     }
 }
 
 class RawBlock(val value: String) : CodeGen {
     override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.rawBlock
-    override fun generateTo(model: MutableKATEObject, destination: DestinationStream) {
+    override fun generateTo(destination: DestinationStream) {
         destination.stream.write(value)
     }
 }
@@ -50,7 +49,7 @@ open class PartialRawLazyBlockSlice(
 @JvmInline
 value class PartialRawBlock(val value: PartialRawParsedBlock) : BlockContainer {
     override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.partialRawBlock
-    override fun generateTo(model: MutableKATEObject, destination: DestinationStream) {
-        value.generateTo(model,destination)
+    override fun generateTo(destination: DestinationStream) {
+        value.generateTo(destination)
     }
 }

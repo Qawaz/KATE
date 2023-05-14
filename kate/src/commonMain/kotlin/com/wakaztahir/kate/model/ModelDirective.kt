@@ -68,12 +68,12 @@ class ModelDirective(override val propertyPath: List<ModelReference>, override v
         return current
     }
 
-    override fun getKATEValue(model: KATEObject): KATEValue {
-        return getModelReferenceValueAndType(model).first
+    override fun getKATEValue(): KATEValue {
+        return getModelReferenceValueAndType(referenceModel).first
     }
 
-    override fun getKATEValueAndType(model: KATEObject): Pair<KATEValue, KATEType?> {
-        return getModelReferenceValueAndType(model)
+    override fun getKATEValueAndType(): Pair<KATEValue, KATEType?> {
+        return getModelReferenceValueAndType(referenceModel)
     }
 
     override fun toString(): String = propertyPath.joinToString(".")

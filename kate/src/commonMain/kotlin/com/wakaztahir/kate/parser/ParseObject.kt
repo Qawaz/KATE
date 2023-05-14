@@ -1,7 +1,6 @@
 package com.wakaztahir.kate.parser
 
 import com.wakaztahir.kate.model.*
-import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.parser.stream.DestinationStream
 import com.wakaztahir.kate.parser.stream.SourceStream
 import com.wakaztahir.kate.parser.stream.increment
@@ -24,9 +23,9 @@ private fun SourceStream.parseObjectName(): String {
 }
 
 class ObjectDeclarationParsedBlock(val model : ObjectDeclarationModel,codeGens: List<CodeGenRange>) : ParsedBlock(codeGens) {
-    override fun generateTo(model: MutableKATEObject, destination: DestinationStream) {
+    override fun generateTo(destination: DestinationStream) {
         for (range in codeGens) {
-            range.gen.generateTo(model = this.model, destination = destination)
+            range.gen.generateTo(destination = destination)
         }
     }
 }
@@ -69,7 +68,8 @@ fun LazyBlock.parseObjectDeclaration(): ObjectDeclaration? {
         return ObjectDeclaration(
             objectName = objectName,
             itemsType = itemType,
-            declarationBlock = parseObjectDeclarationSlice(objectName = objectName, itemType = itemType)
+            declarationBlock = parseObjectDeclarationSlice(objectName = objectName, itemType = itemType),
+            model = model
         )
     }
     return null

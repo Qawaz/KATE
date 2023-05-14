@@ -2,7 +2,6 @@ package com.wakaztahir.kate.parser
 
 import com.wakaztahir.kate.model.CodeGen
 import com.wakaztahir.kate.model.LazyBlock
-import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
 import com.wakaztahir.kate.parser.stream.DestinationStream
 import com.wakaztahir.kate.parser.stream.increment
@@ -15,9 +14,9 @@ private const val STRING_DIRECTIVE = "@runtime.print_string"
 @JvmInline
 value class WriteChar(val char: ReferencedOrDirectValue) : CodeGen {
     override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.runtimeWriteChar
-    override fun generateTo(model: MutableKATEObject, destination: DestinationStream) {
+    override fun generateTo(destination: DestinationStream) {
         destination.stream.write(
-            (char.asNullablePrimitive(model)?.value as? Char)
+            (char.asNullablePrimitive()?.value as? Char)
                 ?: throw IllegalStateException("passed value to $CHAR_DIRECTIVE is not a character")
         )
     }
@@ -26,9 +25,9 @@ value class WriteChar(val char: ReferencedOrDirectValue) : CodeGen {
 @JvmInline
 value class WriteString(val string: ReferencedOrDirectValue) : CodeGen {
     override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.runtimeWriteString
-    override fun generateTo(model: MutableKATEObject, destination: DestinationStream) {
+    override fun generateTo(destination: DestinationStream) {
         destination.stream.write(
-            (string.asNullablePrimitive(model)?.value as? String)
+            (string.asNullablePrimitive()?.value as? String)
                 ?: throw IllegalStateException("passed value to $STRING_DIRECTIVE is not a string")
         )
     }
@@ -39,7 +38,7 @@ fun LazyBlock.parseRuntimeGen(): CodeGen? {
         if (source.increment(CHAR_DIRECTIVE)) {
             if (!source.increment('(')) throw IllegalStateException("expected '(' got ${source.currentChar}")
             val value = parseExpression(
-                parseDirectRefs = false
+                parseDirectRefs = true
             ) ?: throw IllegalStateException("value for runtime directive not found")
             if (!source.increment(')')) throw IllegalStateException("expected ')' got ${source.currentChar}")
             return WriteChar(value)

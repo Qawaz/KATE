@@ -21,7 +21,8 @@ class RelativeFileEmbeddingManager(
                 file = resolved.parentFile,
                 embeddedStreams = embeddedStreams
             ),
-            placeholderManager = block.source.placeholderManager
+            placeholderManager = block.source.placeholderManager,
+            initialize = false
         )
     }
 }

@@ -11,19 +11,19 @@ class IfStatementTest {
 
     private fun TemplateContext.evaluateConstants(var1: String, condition: String, var2: String): Boolean {
         updateStream("@var var1 = $var1")
-        stream.block.parseVariableDeclaration()!!.storeValue(stream.model)
+        stream.block.parseVariableDeclaration()!!.storeValue()
         updateStream("@var var2 = $var2")
-        stream.block.parseVariableDeclaration()!!.storeValue(stream.model)
+        stream.block.parseVariableDeclaration()!!.storeValue()
         updateStream("@var(var1) $condition @var(var2)")
-        val result1 = (stream.block.parseCondition(parseDirectRefs = false)!!.asNullablePrimitive(stream.model) as BooleanValue).value
+        val result1 = (stream.block.parseCondition(parseDirectRefs = false)!!.asNullablePrimitive() as BooleanValue).value
         updateStream("var1 $condition var2")
-        val result2 = (stream.block.parseCondition(parseDirectRefs = true)!!.asNullablePrimitive(stream.model) as BooleanValue).value
+        val result2 = (stream.block.parseCondition(parseDirectRefs = true)!!.asNullablePrimitive() as BooleanValue).value
         return result1 && result2
     }
 
     private fun evaluate(var1: String, condition: String, var2: String, constants: Boolean = true): Boolean {
         val context = TemplateContext(("$var1 $condition $var2"))
-        val result = context.stream.block.parseCondition(parseDirectRefs = false)!!.asPrimitive(context.stream.model).value as Boolean
+        val result = context.stream.block.parseCondition(parseDirectRefs = false)!!.asPrimitive().value as Boolean
         val result2 = if (constants) context.evaluateConstants(var1, condition, var2) else true
         //TODO
 //        assertEquals("true", GenerateCode("@var cxc : boolean = $var1 $condition $var2 @var(cxc)"))
@@ -99,7 +99,7 @@ class IfStatementTest {
         context.stream.model.insertValue("var1", true)
         val statement = context.stream.block.parseIfStatement()!!
         assertEquals("blockValue", statement.singleIfs[0].blockValue.getValueAsString())
-        assertNotEquals(null, statement.evaluate(context))
+        assertNotEquals(null, statement.evaluate())
         assertEquals(text.length, context.stream.pointer)
     }
 
@@ -107,8 +107,8 @@ class IfStatementTest {
     fun testUnequalCondition() {
         val context = TemplateContext(("\"ValueOne\" == \"SecondValue\""))
         val condition = context.stream.block.parseCondition(parseDirectRefs = false)!! as LogicalCondition
-        assertEquals("ValueOne", condition.propertyFirst.asPrimitive(context.stream.model).value)
-        assertEquals("SecondValue", condition.propertySecond.asPrimitive(context.stream.model).value)
+        assertEquals("ValueOne", condition.propertyFirst.asPrimitive().value)
+        assertEquals("SecondValue", condition.propertySecond.asPrimitive().value)
     }
 
     @Test
@@ -184,8 +184,8 @@ class IfStatementTest {
     fun testConstantsRefs() {
         val context = TemplateContext(("\"ValueOne\" == \"SecondValue\""))
         val condition = context.stream.block.parseCondition(parseDirectRefs = false)!! as LogicalCondition
-        assertEquals("ValueOne", condition.propertyFirst.asPrimitive(context.stream.model).value)
-        assertEquals("SecondValue", condition.propertySecond.asPrimitive(context.stream.model).value)
+        assertEquals("ValueOne", condition.propertyFirst.asPrimitive().value)
+        assertEquals("SecondValue", condition.propertySecond.asPrimitive().value)
     }
 
     private fun testIfy(firstIf: Boolean, firstElseIf: Boolean, secondElseIf: Boolean): String {
@@ -198,8 +198,8 @@ class IfStatementTest {
         val iffy = testIfy(firstIf = true, firstElseIf = false, secondElseIf = false)
         val context = TemplateContext(iffy)
         val ifStatement = context.stream.block.parseIfStatement()
-        assertEquals(12, ifStatement!!.evaluate(context)!!.blockValue.length)
-        assertEquals("MyFirstValue", ifStatement.evaluate(context)!!.blockValue.getValueAsString())
+        assertEquals(12, ifStatement!!.evaluate()!!.blockValue.length)
+        assertEquals("MyFirstValue", ifStatement.evaluate()!!.blockValue.getValueAsString())
         assertEquals("MyFirstValue", GenerateCode(iffy))
         assertEquals(iffy.length, context.stream.pointer)
     }
@@ -214,7 +214,7 @@ class IfStatementTest {
         val iffy = testIfy(firstIf = false, firstElseIf = true, secondElseIf = false)
         val context = TemplateContext((iffy))
         val ifStatement = context.stream.block.parseIfStatement()
-        assertEquals("MySecondValue", ifStatement!!.evaluate(context)!!.blockValue.getValueAsString())
+        assertEquals("MySecondValue", ifStatement!!.evaluate()!!.blockValue.getValueAsString())
         assertEquals("MySecondValue", GenerateCode(iffy))
         assertEquals(iffy.length, context.stream.pointer)
     }
@@ -224,7 +224,7 @@ class IfStatementTest {
         val iffy = testIfy(firstIf = false, firstElseIf = false, secondElseIf = true)
         val context = TemplateContext((iffy))
         val ifStatement = context.stream.block.parseIfStatement()
-        assertEquals("MyThirdValue", ifStatement!!.evaluate(context)!!.blockValue.getValueAsString())
+        assertEquals("MyThirdValue", ifStatement!!.evaluate()!!.blockValue.getValueAsString())
         assertEquals("MyThirdValue", GenerateCode(iffy))
         assertEquals(iffy.length, context.stream.pointer)
     }
@@ -236,7 +236,7 @@ class IfStatementTest {
         val ifStatement = context.stream.block.parseIfStatement()
         assertNotEquals(null, ifStatement)
         assertEquals("MyFourthValue", GenerateCode(iffy))
-        assertEquals("MyFourthValue", ifStatement!!.evaluate(context)!!.blockValue.getValueAsString())
+        assertEquals("MyFourthValue", ifStatement!!.evaluate()!!.blockValue.getValueAsString())
         assertEquals(iffy.length, context.stream.pointer)
     }
 

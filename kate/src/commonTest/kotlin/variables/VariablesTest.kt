@@ -23,7 +23,7 @@ class VariablesTest {
         assertNotEquals(null, ref)
         assertEquals(ref!!.propertyPath[0].name, "myVar")
 
-        assertEquals("someValue", ref.asPrimitive(context.stream.model).value)
+        assertEquals("someValue", ref.asPrimitive().value)
     }
 
     @Test
@@ -238,20 +238,20 @@ class VariablesTest {
         val property = context.stream.block.parseExpression(
             parseDirectRefs = true
         )
-        assertEquals(property!!.asPrimitive(context.stream.model).value, "someValue")
+        assertEquals(property!!.asPrimitive().value, "someValue")
     }
 
     @Test
     fun testDeclarationAndReference() {
         val decContext = TemplateContext(("@var myVar = \"someValue\""))
         val dec = decContext.stream.block.parseVariableDeclaration()
-        assertEquals("someValue", dec!!.variableValue.asPrimitive(decContext.stream.model).value)
+        assertEquals("someValue", dec!!.variableValue.asPrimitive().value)
         decContext.updateStream("@var myVar2 = @var(myVar)")
-        dec.storeValue(decContext.stream.model)
+        dec.storeValue()
         val refDec = decContext.stream.block.parseVariableDeclaration()
         assertEquals(
-            dec.variableValue.asPrimitive(decContext.stream.model).value,
-            refDec!!.variableValue.asPrimitive(decContext.stream.model).value
+            dec.variableValue.asPrimitive().value,
+            refDec!!.variableValue.asPrimitive().value
         )
     }
 

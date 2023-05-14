@@ -111,9 +111,9 @@ fun LazyBlock.parseRawBlock(): RawBlock? {
 }
 
 class PartialRawParsedBlock(val model : MutableKATEObject,codeGens: List<CodeGenRange>) : ParsedBlock(codeGens) {
-    override fun generateTo(model: MutableKATEObject, destination: DestinationStream) {
+    override fun generateTo(destination: DestinationStream) {
         for (range in codeGens) {
-            range.gen.generateTo(model = this.model, destination = destination)
+            range.gen.generateTo(destination = destination)
         }
     }
 }

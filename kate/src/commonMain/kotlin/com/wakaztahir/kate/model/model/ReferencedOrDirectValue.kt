@@ -1,41 +1,40 @@
 package com.wakaztahir.kate.model.model
 
 import com.wakaztahir.kate.model.KATEType
-import com.wakaztahir.kate.model.PlaceholderInvocation
 import com.wakaztahir.kate.model.PrimitiveValue
 
 interface ReferencedOrDirectValue {
 
-    fun getKATEValue(model: KATEObject): KATEValue
+    fun getKATEValue(): KATEValue
 
-    fun getKATEValueAndType(model : KATEObject) : Pair<KATEValue, KATEType?> {
-        return Pair(getKATEValue(model),null)
+    fun getKATEValueAndType() : Pair<KATEValue, KATEType?> {
+        return Pair(getKATEValue(),null)
     }
 
-    fun asNullablePrimitive(model: KATEObject): PrimitiveValue<*>? {
-        return getKATEValue(model) as? PrimitiveValue<*>
+    fun asNullablePrimitive(): PrimitiveValue<*>? {
+        return getKATEValue() as? PrimitiveValue<*>
     }
 
-    fun asNullableList(model: KATEObject): KATEList<KATEValue>? {
+    fun asNullableList(): KATEList<KATEValue>? {
         @Suppress("UNCHECKED_CAST")
-        return getKATEValue(model) as? KATEList<KATEValue>
+        return getKATEValue() as? KATEList<KATEValue>
     }
 
-    fun asNullableMutableList(model: KATEObject): KATEMutableList<KATEValue>? {
+    fun asNullableMutableList(): KATEMutableList<KATEValue>? {
         @Suppress("UNCHECKED_CAST")
-        return getKATEValue(model) as? KATEMutableList<KATEValue>
+        return getKATEValue() as? KATEMutableList<KATEValue>
     }
 
-    fun asNullableObject(model: KATEObject): KATEObject? {
-        return getKATEValue(model) as? KATEObject
+    fun asNullableObject(): KATEObject? {
+        return getKATEValue() as? KATEObject
     }
 
-    fun asNullableMutableObject(model: KATEObject): MutableKATEObject? {
-        return getKATEValue(model) as? MutableKATEObject
+    fun asNullableMutableObject(): MutableKATEObject? {
+        return getKATEValue() as? MutableKATEObject
     }
 
-    fun asNullableFunction(model: KATEObject): KATEFunction? {
-        return getKATEValue(model) as? KATEFunction
+    fun asNullableFunction(): KATEFunction? {
+        return getKATEValue() as? KATEFunction
     }
 
 }

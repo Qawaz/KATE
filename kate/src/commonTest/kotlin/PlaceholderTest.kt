@@ -31,9 +31,9 @@ class PlaceholderTest {
         assertEquals("Name", invocation.placeholderName)
 
         val destination = TextDestinationStream()
-        definition.generateTo(context.stream.block.model, destination)
+        definition.generateTo(destination)
         assertEquals(definition.blockValue, context.stream.placeholderManager.getPlaceholder("Name"))
-        invocation.generateTo(context.stream.block.model, destination)
+        invocation.generateTo(destination)
         assertEquals("ElonMusk", (destination.stream as TextDestinationStream).getValue())
 
         assertEquals(expected = "ElonMusk", actual = GenerateCode(code = code))

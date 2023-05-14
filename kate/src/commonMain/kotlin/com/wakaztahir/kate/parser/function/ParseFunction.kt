@@ -16,7 +16,7 @@ class FunctionReturn(val slice: FunctionSlice, val value: ReferencedOrDirectValu
 
     override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.functionReturn
 
-    override fun generateTo(model: MutableKATEObject, destination: DestinationStream) {
+    override fun generateTo(destination: DestinationStream) {
         slice.onReturnValueFound(value)
         slice.hasReturned = true
     }
@@ -62,7 +62,7 @@ class FunctionSlice(
         val gens = parse().codeGens
         for (gen in gens) {
             if (hasReturned) break
-            gen.gen.generateTo(model, destination)
+            gen.gen.generateTo(destination)
         }
         source.setPointerAt(blockEndPointer)
     }
@@ -130,7 +130,7 @@ abstract class KATERecursiveFunction(
         slice.model = ScopedModelObject(slice.parentBlock.model)
         slice.model.forEachParam { paramName, paramType, index ->
             if (index < parameters.size) {
-                parameters[index].getKATEValueAndType(model).let {
+                parameters[index].getKATEValueAndType().let {
                     insertValue(paramName, it.first)
                     it.second?.let { type -> setExplicitType(paramName, type) }
                 }
@@ -141,7 +141,7 @@ abstract class KATERecursiveFunction(
     }
 
     private fun endInvocation(): KATEValue {
-        val returnedValue = returnedValues.remove(invocationNumber)?.getKATEValue(slice.model) ?: KATEUnit
+        val returnedValue = returnedValues.remove(invocationNumber)?.getKATEValue() ?: KATEUnit
         invocationNumber--
         if (previousModels.isNotEmpty()) slice.model = previousModels.removeLast()
         previousPointers.remove(invocationNumber)?.let {
@@ -162,6 +162,7 @@ abstract class KATERecursiveFunction(
 class FunctionDefinition(
     val slice: FunctionSlice,
     val functionName: String,
+    val definitionModel : MutableKATEObject,
     parameterNames: Map<String, KATEType>?,
     returnedType: KATEType
 ) : CodeGen, BlockContainer {
@@ -181,13 +182,13 @@ class FunctionDefinition(
         override fun toString(): String = functionName + ' ' + super.toString()
     }
 
-    override fun getBlockValue(model: KATEObject): LazyBlock {
+    override fun getBlockValue(): LazyBlock {
         return slice
     }
 
-    override fun generateTo(model: MutableKATEObject, destination: DestinationStream) {
+    override fun generateTo(destination: DestinationStream) {
         definition.destination = destination
-        model.insertValue(functionName, definition)
+        definitionModel.insertValue(functionName, definition)
     }
 }
 
@@ -257,6 +258,7 @@ fun LazyBlock.parseFunctionDefinition(anonymousFunctionName: String?): FunctionD
         )
         return FunctionDefinition(
             slice = FunctionSlice(slice = slice),
+            definitionModel = model,
             functionName = functionName,
             parameterNames = parameters,
             returnedType = returnedType

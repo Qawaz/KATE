@@ -1,6 +1,5 @@
 package com.wakaztahir.kate.model
 
-import com.wakaztahir.kate.model.model.KATEObject
 import com.wakaztahir.kate.model.model.KATEValue
 import com.wakaztahir.kate.parser.ArithmeticOperatorType
 import com.wakaztahir.kate.runtime.*
@@ -42,7 +41,7 @@ interface PrimitiveValue<T : Any> : KATEValue {
         throw IllegalStateException("couldn't operate ${type.char} between $this and $other")
     }
 
-    override fun asNullablePrimitive(model: KATEObject): PrimitiveValue<*>? {
+    override fun asNullablePrimitive(): PrimitiveValue<*>? {
         return this
     }
 

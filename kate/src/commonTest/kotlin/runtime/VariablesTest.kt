@@ -17,7 +17,7 @@ class VariablesTest {
         val ref = context.stream.block.parseVariableDeclaration()
         assertNotEquals(null, ref)
         assertEquals("myVar", ref!!.variableName)
-        assertEquals("someValue", ref.variableValue.asPrimitive(context.stream.model).value)
+        assertEquals("someValue", ref.variableValue.asPrimitive().value)
     }
 
     @Test

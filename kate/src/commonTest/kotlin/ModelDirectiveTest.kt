@@ -1,7 +1,6 @@
 import com.wakaztahir.kate.TemplateContext
 import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.model.model.*
-import com.wakaztahir.kate.parser.function.KATEInvocation
 import com.wakaztahir.kate.parser.function.KATEParsedFunction
 import com.wakaztahir.kate.parser.variable.parseVariableReference
 import kotlin.test.Test
@@ -74,8 +73,8 @@ class ModelDirectiveTest {
             assertEquals("fourthProp", directive.propertyPath[3].name)
             val call = directive.propertyPath[4] as ModelReference.FunctionCall
             assertEquals("fifthProp", call.name)
-            assertEquals(true, call.parametersList[0].asPrimitive(context.stream.model).value)
-            assertEquals(false, call.parametersList[1].asPrimitive(context.stream.model).value)
+            assertEquals(true, call.parametersList[0].asPrimitive().value)
+            assertEquals(false, call.parametersList[1].asPrimitive().value)
         }
     }
 
@@ -115,7 +114,7 @@ class ModelDirectiveTest {
             insertValue(
                 "callSum",
                 KATEParsedFunction("callSum ()->string") { model, invokedOn, explicitType, parameters ->
-                    IntValue(parameters.map { it.asPrimitive(model) }.sumOf { it.value as Int })
+                    IntValue(parameters.map { it.asPrimitive() }.sumOf { it.value as Int })
                 })
         }
         assertEquals("true1233", GenerateCode("@var(property1)@var(property2.property3)@var(callSum(1,2))", model))

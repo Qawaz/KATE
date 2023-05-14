@@ -42,10 +42,10 @@ class ForLoopTest {
         val context = TemplateContext(code)
         val loop = context.stream.block.parseForLoop()!! as ForLoop.NumberedFor
         assertEquals("i", loop.variableName)
-        assertEquals(0, loop.initializer.asPrimitive(context.stream.model).value)
-        assertEquals(5, loop.conditional.asPrimitive(context.stream.model).value)
+        assertEquals(0, loop.initializer.asPrimitive().value)
+        assertEquals(5, loop.conditional.asPrimitive().value)
         assertEquals(operatorType, loop.arithmeticOperatorType)
-        assertEquals(1, loop.incrementer.asPrimitive(context.stream.model).value)
+        assertEquals(1, loop.incrementer.asPrimitive().value)
         assertEquals("blockValue", loop.forLoopBlock.generateToText())
     }
 

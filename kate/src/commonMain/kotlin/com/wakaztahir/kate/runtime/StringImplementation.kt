@@ -17,7 +17,7 @@ object StringImplementation {
                 parameters: List<ReferencedOrDirectValue>
             ): ReferencedOrDirectValue {
                 val string = invokedOn.let { it.getKotlinValue() as? String }
-                val index = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as? Int }
+                val index = parameters.getOrNull(0)?.asNullablePrimitive()?.value?.let { it as? Int }
                 require(string != null) { "string value is null" }
                 require(index != null) { "String.get(Int) expects a single parameter to get the value of string" }
                 return CharValue(string[index])
@@ -47,7 +47,7 @@ object StringImplementation {
                 parameters: List<ReferencedOrDirectValue>
             ): ReferencedOrDirectValue {
                 val string = invokedOn.getKotlinValue() as? String
-                val find = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
+                val find = parameters.getOrNull(0)?.asNullablePrimitive()?.value?.let { it as String }
                 require(find != null) { "indexOf requires a single string parameter" }
                 require(string != null) { "string value is null" }
                 return IntValue(string.indexOf(find))
@@ -63,7 +63,7 @@ object StringImplementation {
                 parameters: List<ReferencedOrDirectValue>
             ): ReferencedOrDirectValue {
                 val string = invokedOn.getKotlinValue() as? String
-                val find = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
+                val find = parameters.getOrNull(0)?.asNullablePrimitive()?.value?.let { it as String }
                 require(find != null) { "split requires a single string parameter" }
                 require(string != null) { "string value is null" }
                 return KATEListImpl(string.split(find).map { StringValue(it) },itemType = KATEType.String)
@@ -108,8 +108,8 @@ object StringImplementation {
             ): ReferencedOrDirectValue {
                 val string = invokedOn.getKotlinValue() as? String
                 require(string != null) { "string value is null" }
-                val firstIndex = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as Int }
-                val secondIndex = parameters.getOrNull(1)?.asNullablePrimitive(model)?.value?.let { it as Int }
+                val firstIndex = parameters.getOrNull(0)?.asNullablePrimitive()?.value?.let { it as Int }
+                val secondIndex = parameters.getOrNull(1)?.asNullablePrimitive()?.value?.let { it as Int }
                 require(firstIndex != null && secondIndex != null) {
                     "substring requires two parameters of type int"
                 }
@@ -183,8 +183,8 @@ object StringImplementation {
             ): ReferencedOrDirectValue {
                 val string = invokedOn.getKotlinValue() as? String
                 require(string != null) { "string value is null" }
-                val find = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
-                val replace = parameters.getOrNull(1)?.asNullablePrimitive(model)?.value?.let { it as String }
+                val find = parameters.getOrNull(0)?.asNullablePrimitive()?.value?.let { it as String }
+                val replace = parameters.getOrNull(1)?.asNullablePrimitive()?.value?.let { it as String }
                 require(find != null && replace != null) {
                     "replace requires two parameters of type string"
                 }
@@ -202,7 +202,7 @@ object StringImplementation {
             ): ReferencedOrDirectValue {
                 val string = invokedOn.getKotlinValue() as? String
                 require(string != null) { "string value is null" }
-                val firstStr = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
+                val firstStr = parameters.getOrNull(0)?.asNullablePrimitive()?.value?.let { it as String }
                 require(firstStr != null) {
                     "contains requires a string parameter"
                 }
@@ -220,7 +220,7 @@ object StringImplementation {
             ): ReferencedOrDirectValue {
                 val string = invokedOn.getKotlinValue() as? String
                 require(string != null) { "string value is null" }
-                val firstStr = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
+                val firstStr = parameters.getOrNull(0)?.asNullablePrimitive()?.value?.let { it as String }
                 require(firstStr != null) {
                     "startsWith requires a string parameter"
                 }
@@ -238,7 +238,7 @@ object StringImplementation {
             ): ReferencedOrDirectValue {
                 val string = invokedOn.getKotlinValue() as? String
                 require(string != null) { "string value is null" }
-                val firstStr = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
+                val firstStr = parameters.getOrNull(0)?.asNullablePrimitive()?.value?.let { it as String }
                 require(firstStr != null) {
                     "endsWith requires a string parameter"
                 }
@@ -256,7 +256,7 @@ object StringImplementation {
             ): ReferencedOrDirectValue {
                 val string = invokedOn.getKotlinValue() as? String
                 require(string != null) { "string value is null" }
-                val firstStr = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
+                val firstStr = parameters.getOrNull(0)?.asNullablePrimitive()?.value?.let { it as String }
                 require(firstStr != null) {
                     "removePrefix requires a string parameter"
                 }
@@ -274,7 +274,7 @@ object StringImplementation {
             ): ReferencedOrDirectValue {
                 val string = invokedOn.getKotlinValue() as? String
                 require(string != null) { "string value is null" }
-                val firstStr = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
+                val firstStr = parameters.getOrNull(0)?.asNullablePrimitive()?.value?.let { it as String }
                 require(firstStr != null) {
                     "removeSuffix requires a string parameter"
                 }

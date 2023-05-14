@@ -31,7 +31,7 @@ object KATEObjectImplementation {
                 parameters: List<ReferencedOrDirectValue>
             ): ReferencedOrDirectValue {
                 val value = invokedOn.kateObject
-                val required = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
+                val required = parameters.getOrNull(0)?.asNullablePrimitive()?.value?.let { it as String }
                 require(required != null) { "get requires a single parameter" }
                 val ret = value.get(required) ?: KATEUnit
                 return value.getExplicitType(required)?.let { ValueWithType(ret, it) } ?: ret
@@ -59,8 +59,8 @@ object KATEObjectImplementation {
                 parameters: List<ReferencedOrDirectValue>
             ): ReferencedOrDirectValue {
                 if(explicitType == null) return StringValue("")
-                val param = parameters.getOrNull(0)?.getKATEValue(model)?.getKotlinValue()?.let { it as? String }
-                val metaName = parameters.getOrNull(1)?.getKATEValue(model)?.getKotlinValue()?.let { it as? String }
+                val param = parameters.getOrNull(0)?.getKATEValue()?.getKotlinValue()?.let { it as? String }
+                val metaName = parameters.getOrNull(1)?.getKATEValue()?.getKotlinValue()?.let { it as? String }
                 require(param != null) { "meta property requires two string parameters , the name property and name of meta property" }
                 require(metaName != null){ "meta name cannot be null" }
                 val type = ((explicitType as? KATEType.Object)?.itemsType as? KATEType.Class)
@@ -103,7 +103,7 @@ object KATEObjectImplementation {
                 parameters: List<ReferencedOrDirectValue>
             ): ReferencedOrDirectValue {
                 val value = invokedOn.kateObject
-                val required = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
+                val required = parameters.getOrNull(0)?.asNullablePrimitive()?.value?.let { it as String }
                 require(required != null) { "contains require a single parameter by the name of object" }
                 return BooleanValue(value.contains(required))
             }
@@ -119,7 +119,7 @@ object KATEObjectImplementation {
                 parameters: List<ReferencedOrDirectValue>
             ): ReferencedOrDirectValue {
                 val value = invokedOn.kateObject
-                val required = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
+                val required = parameters.getOrNull(0)?.asNullablePrimitive()?.value?.let { it as String }
                 require(required != null) { "containsInAncestors require a single parameter by the name of object" }
                 return BooleanValue(value.containsInAncestors(required))
             }
@@ -135,8 +135,8 @@ object KATEObjectImplementation {
                 parameters: List<ReferencedOrDirectValue>
             ): ReferencedOrDirectValue {
                 val value = invokedOn.mutableKateObject
-                val key = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
-                val other = parameters.getOrNull(1)?.asNullablePrimitive(model)?.value?.let { it as String }
+                val key = parameters.getOrNull(0)?.asNullablePrimitive()?.value?.let { it as String }
+                val other = parameters.getOrNull(1)?.asNullablePrimitive()?.value?.let { it as String }
                 require(key != null) { "rename requires the 1st key parameter" }
                 require(other != null) { "rename requires the 2nd replace parameter" }
                 value.rename(key, other)
@@ -153,7 +153,7 @@ object KATEObjectImplementation {
                 parameters: List<ReferencedOrDirectValue>
             ): ReferencedOrDirectValue {
                 val value = invokedOn.mutableKateObject
-                val required = parameters.getOrNull(0)?.asNullablePrimitive(model)?.value?.let { it as String }
+                val required = parameters.getOrNull(0)?.asNullablePrimitive()?.value?.let { it as String }
                 require(required != null) { "exists require a single parameter by the name of object" }
                 value.removeKey(required)
                 return KATEUnit

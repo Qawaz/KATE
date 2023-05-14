@@ -2,7 +2,6 @@ package com.wakaztahir.kate.parser
 
 import com.wakaztahir.kate.model.KATEType
 import com.wakaztahir.kate.model.LazyBlock
-import com.wakaztahir.kate.model.ModelReference
 import com.wakaztahir.kate.model.model.*
 import com.wakaztahir.kate.parser.stream.increment
 import com.wakaztahir.kate.parser.variable.parseValueOfType
@@ -69,9 +68,9 @@ class ListOfReferencedOrDirectValues(
         private set
 
     // todo not at all fast
-    override fun getKATEValue(model: KATEObject): KATEValue {
+    override fun getKATEValue(): KATEValue {
         if (value == null) {
-            val params = parameters.map { it.getKATEValueAndType(model) }
+            val params = parameters.map { it.getKATEValueAndType() }
             value = if (isMutable) KATEMutableListImpl(
                 collection = params.map { it.first }.toMutableList(),
                 itemType = itemType
@@ -88,8 +87,8 @@ class ListOfReferencedOrDirectValues(
         return value!!
     }
 
-    override fun getKATEValueAndType(model: KATEObject): Pair<KATEValue, KATEType?> {
-        return getKATEValue(model).let { Pair(it, it.getKnownKATEType()) }
+    override fun getKATEValueAndType(): Pair<KATEValue, KATEType?> {
+        return getKATEValue().let { Pair(it, it.getKnownKATEType()) }
     }
 
 }

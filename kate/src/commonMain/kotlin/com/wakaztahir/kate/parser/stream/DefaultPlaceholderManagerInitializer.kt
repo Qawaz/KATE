@@ -1,12 +1,5 @@
 package com.wakaztahir.kate.parser.stream
 
-import com.wakaztahir.kate.model.BlockPlaceholderBlock
-import com.wakaztahir.kate.model.ModelDirective
-import com.wakaztahir.kate.model.ModelReference
-import com.wakaztahir.kate.parser.ParsedBlock
-import com.wakaztahir.kate.parser.WriteChar
-import com.wakaztahir.kate.parser.WriteString
-
 object DefaultPlaceholderManagerInitializer {
 
     private const val UnitPlaceholderName = "unit"
@@ -20,120 +13,39 @@ object DefaultPlaceholderManagerInitializer {
     private const val MutableListPlaceholderName = "mutable_list"
     private const val ObjectPlaceholderName = "object"
 
-    private fun paramToStringCall(source: SourceStream, call: String): ParsedBlock {
-        return ParsedBlock(
-            listOf(
-                ParsedBlock.CodeGenRange(
-                    gen = WriteString(
-                        ModelDirective(
-                            listOf(
-                                ModelReference.Property("__param__"),
-                                ModelReference.FunctionCall(call, emptyList())
-                            ),
-                            referenceModel = source.block.model
-                        )
-                    ),
-                    start = 0,
-                    end = 0
-                )
-            )
-        )
-    }
+    private fun placeholderBlock(name: String, content: String) =
+        "@define_placeholder($name) $content @end_define_placeholder"
 
-    private fun paramToChar(source: SourceStream): ParsedBlock {
-        return ParsedBlock(
-            listOf(
-                ParsedBlock.CodeGenRange(
-                    gen = WriteChar(
-                        ModelDirective(
-                            propertyPath = listOf(ModelReference.Property("__param__")),
-                            referenceModel = source.block.model
-                        )
-                    ),
-                    start = 0,
-                    end = 0
-                )
-            )
-        )
-    }
+    private fun functionPlaceholder(name: String, call: String, writer: String = "print_string") =
+        placeholderBlock(name = name, content = "@runtime.$writer(__param__$call)")
+
+    private fun toStringPlaceholder(name: String) = functionPlaceholder(name = name, call = ".toString()")
+    private fun joinToStringPlaceholder(name: String) = functionPlaceholder(name = name, call = ".joinToString()")
+    private fun toCharPlaceholder(name: String) = functionPlaceholder(name = name, call = "", writer = "print_char")
 
     fun initializerDefaultPlaceholders(source: SourceStream) {
-        val paramToStringParsedBlock = paramToStringCall(source, "toString")
-        val paramJoinToStringParsedBlock = paramToStringCall(source, "joinToString")
-        source.placeholderManager.placeholders.addAll(
-            listOf(
-                BlockPlaceholderBlock(
-                    block = ParsedBlock(emptyList()),
-                    parent = source.block,
-                    placeholderName = UnitPlaceholderName,
-                    definitionName = UnitPlaceholderName,
-                    parameterName = null
-                ),
-                BlockPlaceholderBlock(
-                    block = paramToStringParsedBlock,
-                    parent = source.block,
-                    placeholderName = DoublePlaceholderName,
-                    definitionName = DoublePlaceholderName,
-                    parameterName = null
-                ),
-                BlockPlaceholderBlock(
-                    block = paramToStringParsedBlock,
-                    parent = source.block,
-                    placeholderName = IntPlaceholderName,
-                    definitionName = IntPlaceholderName,
-                    parameterName = null
-                ),
-                BlockPlaceholderBlock(
-                    block = paramToStringParsedBlock,
-                    parent = source.block,
-                    placeholderName = LongPlaceholderName,
-                    definitionName = LongPlaceholderName,
-                    parameterName = null
-                ),
-                BlockPlaceholderBlock(
-                    block = paramToStringParsedBlock,
-                    parent = source.block,
-                    placeholderName = StringPlaceholderName,
-                    definitionName = StringPlaceholderName,
-                    parameterName = null
-                ),
-                BlockPlaceholderBlock(
-                    block = paramToChar(source),
-                    parent = source.block,
-                    placeholderName = CharPlaceholderName,
-                    definitionName = CharPlaceholderName,
-                    parameterName = null
-                ),
-                BlockPlaceholderBlock(
-                    block = paramToStringParsedBlock,
-                    parent = source.block,
-                    placeholderName = BooleanPlaceholderName,
-                    definitionName = BooleanPlaceholderName,
-                    parameterName = null
-                ),
-                BlockPlaceholderBlock(
-                    block = paramJoinToStringParsedBlock,
-                    parent = source.block,
-                    placeholderName = ListPlaceholderName,
-                    definitionName = ListPlaceholderName,
-                    parameterName = null
-                ),
-                BlockPlaceholderBlock(
-                    block = paramJoinToStringParsedBlock,
-                    parent = source.block,
-                    placeholderName = MutableListPlaceholderName,
-                    definitionName = MutableListPlaceholderName,
-                    parameterName = null
-                ),
-                BlockPlaceholderBlock(
-                    block = paramToStringParsedBlock,
-                    parent = source.block,
-                    placeholderName = ObjectPlaceholderName,
-                    definitionName = ObjectPlaceholderName,
-                    parameterName = null
-                )
-            )
-        )
+        val destination = TextDestinationStream()
+        try {
+            TextSourceStream(
+                sourceCode = placeholderBlock(name = UnitPlaceholderName, content = "") +
+                        toStringPlaceholder(DoublePlaceholderName) +
+                        toStringPlaceholder(IntPlaceholderName) +
+                        toStringPlaceholder(LongPlaceholderName) +
+                        functionPlaceholder(StringPlaceholderName, call = "") +
+                        toCharPlaceholder(CharPlaceholderName) +
+                        toStringPlaceholder(BooleanPlaceholderName) +
+                        joinToStringPlaceholder(ListPlaceholderName) +
+                        joinToStringPlaceholder(MutableListPlaceholderName) +
+                        toStringPlaceholder(ObjectPlaceholderName),
+                model = source.model,
+                placeholderManager = source.placeholderManager,
+                embeddingManager = source.embeddingManager,
+                initialize = false
+            ).block.generateTo(destination)
+        }catch (e : Exception){
+            throw IllegalStateException("default placeholder initialization failed",e)
+        }
+        require(destination.getValue().isEmpty())
     }
 
 }

@@ -1,7 +1,6 @@
 package com.wakaztahir.kate.model
 
 import com.wakaztahir.kate.dsl.ModelObjectImpl
-import com.wakaztahir.kate.model.model.KATEObject
 import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.parser.ObjectDeclarationParsedBlock
 import com.wakaztahir.kate.parser.function.parseFunctionDefinition
@@ -46,15 +45,16 @@ class ObjectDeclarationBlockSlice(
 class ObjectDeclaration(
     val objectName: String,
     val itemsType: KATEType?,
-    val declarationBlock: ObjectDeclarationParsedBlock
+    val declarationBlock: ObjectDeclarationParsedBlock,
+    val model : MutableKATEObject,
 ) : BlockContainer {
 
     override val isEmptyWriter: Boolean
         get() = true
 
     override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.objectDeclaration
-    override fun generateTo(model: MutableKATEObject, destination: DestinationStream) {
-        declarationBlock.generateTo(model,destination)
+    override fun generateTo(destination: DestinationStream) {
+        declarationBlock.generateTo(destination)
         model.insertValue(objectName, declarationBlock.model)
         itemsType?.let { model.setExplicitType(objectName, KATEType.Object(it)) }
     }

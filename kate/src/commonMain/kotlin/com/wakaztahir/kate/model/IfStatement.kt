@@ -1,12 +1,8 @@
 package com.wakaztahir.kate.model
 
-import com.wakaztahir.kate.TemplateContext
-import com.wakaztahir.kate.model.model.KATEObject
 import com.wakaztahir.kate.model.model.KATEValue
-import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
 import com.wakaztahir.kate.parser.stream.DestinationStream
-import com.wakaztahir.kate.parser.stream.SourceStream
 import com.wakaztahir.kate.tokenizer.NodeTokenizer
 
 
@@ -61,10 +57,10 @@ enum class ConditionType {
 
 interface Condition : ReferencedOrDirectValue {
 
-    fun evaluate(context: KATEObject): Boolean
+    fun evaluate(): Boolean
 
-    override fun getKATEValue(model: KATEObject): KATEValue {
-        return BooleanValue(evaluate(model))
+    override fun getKATEValue(): KATEValue {
+        return BooleanValue(evaluate())
     }
 
 }
@@ -74,8 +70,8 @@ internal class LogicalCondition(
     val type: ConditionType,
     val propertySecond: ReferencedOrDirectValue
 ) : Condition {
-    override fun evaluate(context: KATEObject): Boolean {
-        return type.compare(propertyFirst.getKATEValue(context), propertySecond.getKATEValue(context))
+    override fun evaluate(): Boolean {
+        return type.compare(propertyFirst.getKATEValue(), propertySecond.getKATEValue())
     }
 }
 
@@ -91,7 +87,7 @@ class SingleIf(
     val blockValue: LazyBlockSlice,
 ) : CodeGen {
     override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.singleIf
-    override fun generateTo(model: MutableKATEObject, destination: DestinationStream) {
+    override fun generateTo(destination: DestinationStream) {
         blockValue.generateTo(destination = destination)
     }
 }
@@ -111,24 +107,20 @@ class IfStatement(private val ifs: MutableList<SingleIf>) : BlockContainer {
         sortByOrder()
     }
 
-    override fun getBlockValue(model: KATEObject): LazyBlock? {
-        return evaluate(model)?.blockValue
+    override fun getBlockValue(): LazyBlock? {
+        return evaluate()?.blockValue
     }
 
-    fun evaluate(context: TemplateContext): SingleIf? {
-        return evaluate(context.stream.model)
-    }
-
-    fun evaluate(context: KATEObject): SingleIf? {
+    fun evaluate(): SingleIf? {
         for (iffy in ifs) {
-            if ((iffy.condition.asNullablePrimitive(context)!! as BooleanValue).value) {
+            if ((iffy.condition.asNullablePrimitive()!! as BooleanValue).value) {
                 return iffy
             }
         }
         return null
     }
 
-    override fun generateTo(model: MutableKATEObject, destination: DestinationStream) {
-        evaluate(model)?.generateTo(model, destination)
+    override fun generateTo(destination: DestinationStream) {
+        evaluate()?.generateTo(destination)
     }
 }

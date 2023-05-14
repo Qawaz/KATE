@@ -12,7 +12,7 @@ interface KATEValue : ReferencedOrDirectValue {
 
     fun getKotlinValue() : Any
 
-    override fun getKATEValue(model: KATEObject): KATEValue = this
+    override fun getKATEValue(): KATEValue = this
 
     override fun toString(): String
 

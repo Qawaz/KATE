@@ -1,6 +1,5 @@
 package com.wakaztahir.kate.model
 
-import com.wakaztahir.kate.model.model.KATEObject
 import com.wakaztahir.kate.model.model.KATEValue
 import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
 
@@ -14,8 +13,8 @@ class LazyReferencedValue(private val creator: () -> KATEValue) : ReferencedOrDi
             return _value!!
         }
 
-    override fun getKATEValue(model: KATEObject): KATEValue = value.getKATEValue(model)
+    override fun getKATEValue(): KATEValue = value.getKATEValue()
 
-    override fun getKATEValueAndType(model: KATEObject): Pair<KATEValue, KATEType?> = value.getKATEValueAndType(model)
+    override fun getKATEValueAndType(): Pair<KATEValue, KATEType?> = value.getKATEValueAndType()
 
 }
