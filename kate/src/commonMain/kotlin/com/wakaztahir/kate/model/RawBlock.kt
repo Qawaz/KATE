@@ -2,17 +2,17 @@ package com.wakaztahir.kate.model
 
 import com.wakaztahir.kate.model.model.KATEObject
 import com.wakaztahir.kate.model.model.MutableKATEObject
+import com.wakaztahir.kate.parser.ParsedBlock
 import com.wakaztahir.kate.parser.PartialRawParsedBlock
 import com.wakaztahir.kate.parser.parseDefaultNoRaw
 import com.wakaztahir.kate.parser.stream.DestinationStream
 import com.wakaztahir.kate.tokenizer.NodeTokenizer
 import kotlin.jvm.JvmInline
 
-class DefaultNoRawBlock(val value: LazyBlockSlice) : BlockContainer {
+class DefaultNoRawBlock(val value: ParsedBlock) : BlockContainer {
     override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.defaultNoRawBlock
-    override fun getBlockValue(model: KATEObject): LazyBlock = value
     override fun generateTo(model: MutableKATEObject, destination: DestinationStream) {
-        value.generateTo(destination)
+        value.generateTo(model,destination)
     }
 }
 

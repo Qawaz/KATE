@@ -155,7 +155,7 @@ fun LazyBlock.parseDefaultNoRaw(): DefaultNoRawBlock? {
                 endsWith = "@end_default_no_raw",
                 isDefaultNoRaw = true,
                 inheritModel = true
-            )
+            ).parse()
         )
     }
     return null
