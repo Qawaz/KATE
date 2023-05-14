@@ -1,6 +1,8 @@
 package com.wakaztahir.kate.parser
 
 import com.wakaztahir.kate.model.*
+import com.wakaztahir.kate.model.model.MutableKATEObject
+import com.wakaztahir.kate.parser.stream.DestinationStream
 import com.wakaztahir.kate.parser.stream.SourceStream
 import com.wakaztahir.kate.parser.stream.increment
 import com.wakaztahir.kate.parser.stream.parseTextWhile
@@ -21,21 +23,35 @@ private fun SourceStream.parseObjectName(): String {
     }
 }
 
-private fun LazyBlock.parseObjectDeclarationSlice(objectName: String, itemType: KATEType?): ObjectDeclarationBlockSlice {
+class ObjectDeclarationParsedBlock(val model : ObjectDeclarationModel,codeGens: List<CodeGenRange>) : ParsedBlock(codeGens) {
+    override fun generateTo(model: MutableKATEObject, destination: DestinationStream) {
+        for (range in codeGens) {
+            range.gen.generateTo(model = this.model, destination = destination)
+        }
+    }
+}
+
+private fun LazyBlock.parseObjectDeclarationSlice(objectName: String, itemType: KATEType?): ObjectDeclarationParsedBlock {
     val slice = parseBlockSlice(
         startsWith = "@define_object",
         endsWith = "@end_define_object",
         isDefaultNoRaw = false,
         inheritModel = true
     )
-    return ObjectDeclarationBlockSlice(
+
+    val current = ObjectDeclarationModel(objectName = objectName, parent = model)
+
+    val block = ObjectDeclarationBlockSlice(
         parentBlock = this,
         startPointer = slice.startPointer,
         length = slice.length,
         blockEndPointer = slice.blockEndPointer,
-        model = ObjectDeclarationModel(objectName = objectName, parent = model),
+        model = current,
         indentationLevel = indentationLevel + 1
-    ).also { it.prepare() }
+    ).parse()
+
+    return ObjectDeclarationParsedBlock(model = current,codeGens = block.codeGens)
+
 }
 
 fun LazyBlock.parseObjectDeclaration(): ObjectDeclaration? {
