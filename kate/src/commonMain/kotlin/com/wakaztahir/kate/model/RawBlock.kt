@@ -2,6 +2,7 @@ package com.wakaztahir.kate.model
 
 import com.wakaztahir.kate.model.model.KATEObject
 import com.wakaztahir.kate.model.model.MutableKATEObject
+import com.wakaztahir.kate.parser.PartialRawParsedBlock
 import com.wakaztahir.kate.parser.parseDefaultNoRaw
 import com.wakaztahir.kate.parser.stream.DestinationStream
 import com.wakaztahir.kate.tokenizer.NodeTokenizer
@@ -47,10 +48,9 @@ open class PartialRawLazyBlockSlice(
 }
 
 @JvmInline
-value class PartialRawBlock(val value: PartialRawLazyBlockSlice) : BlockContainer {
+value class PartialRawBlock(val value: PartialRawParsedBlock) : BlockContainer {
     override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.partialRawBlock
-    override fun getBlockValue(model: KATEObject): LazyBlock = value
     override fun generateTo(model: MutableKATEObject, destination: DestinationStream) {
-        value.generateTo(destination)
+        value.generateTo(model,destination)
     }
 }

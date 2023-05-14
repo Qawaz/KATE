@@ -5,7 +5,6 @@ import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.parser.stream.*
 import com.wakaztahir.kate.parser.stream.increment
-import com.wakaztahir.kate.parser.variable.parseVariableReference
 
 fun LazyBlock.parseBlockSlice(
     startsWith: String,
@@ -111,23 +110,38 @@ fun LazyBlock.parseRawBlock(): RawBlock? {
     return null
 }
 
+class PartialRawParsedBlock(val model : MutableKATEObject,codeGens: List<CodeGenRange>) : ParsedBlock(codeGens) {
+    override fun generateTo(model: MutableKATEObject, destination: DestinationStream) {
+        for (range in codeGens) {
+            range.gen.generateTo(model = this.model, destination = destination)
+        }
+    }
+}
+
 fun LazyBlock.parsePartialRaw(): PartialRawBlock? {
     if (source.currentChar == '@' && source.increment("@partial_raw")) {
+
         val slice = parseBlockSlice(
             startsWith = "@partial_raw",
             endsWith = "@end_partial_raw",
             isDefaultNoRaw = false,
             inheritModel = true
         )
+
+        val partialRawSlice = PartialRawLazyBlockSlice(
+            parentBlock = this,
+            startPointer = slice.startPointer,
+            length = slice.length,
+            blockEndPointer = slice.blockEndPointer,
+            model = slice.model,
+            indentationLevel = slice.indentationLevel
+        )
+
         return PartialRawBlock(
-            value = PartialRawLazyBlockSlice(
-                parentBlock = this,
-                startPointer = slice.startPointer,
-                length = slice.length,
-                blockEndPointer = slice.blockEndPointer,
-                model = slice.model,
-                indentationLevel = slice.indentationLevel
-            ).also { it.prepare() }
+            value = PartialRawParsedBlock(
+                model = partialRawSlice.model,
+                codeGens = partialRawSlice.parse().codeGens,
+            )
         )
     }
     return null
