@@ -1,7 +1,7 @@
 package com.wakaztahir.kate.parser
 
 import com.wakaztahir.kate.model.*
-import com.wakaztahir.kate.parser.stream.*
+import com.wakaztahir.kate.parser.stream.SourceStream
 import com.wakaztahir.kate.parser.stream.increment
 import com.wakaztahir.kate.parser.stream.parseTextWhile
 import com.wakaztahir.kate.parser.variable.isVariableName
@@ -68,26 +68,25 @@ private fun <T> SourceStream.parsePlaceHolderNameAndDefinitionAndParameter(parse
     return null
 }
 
-private fun LazyBlock.parsePlaceholderBlock(nameAndDef: Triple<String, String?, String?>): PlaceholderBlock {
+private fun LazyBlock.parsePlaceholderBlock(nameAndDef: Triple<String, String?, String?>): PlaceholderParsedBlock {
 
-    val blockValue = parseBlockSlice(
+    val provider = ModelProvider.LateInit()
+
+    val block = parseBlockSlice(
         startsWith = "@define_placeholder",
         endsWith = "@end_define_placeholder",
         isDefaultNoRaw = isDefaultNoRaw,
-        inheritModel = false
+        provider = provider
     )
 
-    return PlaceholderBlock(
-        parentBlock = this,
+    val parsedBlock = block.parse()
+
+    return PlaceholderParsedBlock(
+        provider = provider,
         placeholderName = nameAndDef.first,
         definitionName = nameAndDef.second ?: nameAndDef.first,
-        parameterName = nameAndDef.third,
-        startPointer = blockValue.startPointer,
-        length = blockValue.length,
-        provider = ModelProvider.Changeable(blockValue.model),
-        blockEndPointer = blockValue.blockEndPointer,
-        isDefaultNoRaw = isDefaultNoRaw,
-        indentationLevel = blockValue.indentationLevel
+        parameterName = nameAndDef.third ?: "__param__",
+        codeGens = parsedBlock.codeGens
     )
 
 }
@@ -128,7 +127,7 @@ fun LazyBlock.parsePlaceholderInvocation(): PlaceholderInvocation? {
                 definitionName = triple.second,
                 paramValue = triple.third,
                 placeholderManager = source.placeholderManager,
-                invocationModel = model
+                invocationProvider = provider
             )
         } else {
             throw IllegalStateException("placeholder name is required when invoking a placeholder using @placeholder")
@@ -141,7 +140,11 @@ fun LazyBlock.parsePlaceholderUse(): PlaceholderUse? {
     if (source.currentChar == '@' && source.increment("@use_placeholder")) {
         val name = source.parsePlaceHolderNameAndDefinition()
         if (name != null) {
-            return PlaceholderUse(placeholderName = name.first, definitionName = name.second,placeholderManager = source.placeholderManager)
+            return PlaceholderUse(
+                placeholderName = name.first,
+                definitionName = name.second,
+                placeholderManager = source.placeholderManager
+            )
         } else {
             throw IllegalStateException("placeholder name is required when invoking a placeholder using @placeholder")
         }

@@ -9,7 +9,7 @@ import com.wakaztahir.kate.tokenizer.NodeTokenizer
 class DefaultNoRawExpression(
     val source: SourceStream,
     val value: ReferencedOrDirectValue,
-    val model : MutableKATEObject,
+    val provider : ModelProvider,
 ) : CodeGen {
 
     override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.defaultNoRawExpression
@@ -21,7 +21,7 @@ class DefaultNoRawExpression(
             definitionName = null,
             paramValue = value,
             placeholderManager = source.placeholderManager,
-            invocationModel = model,
+            invocationProvider = provider,
         ).generateTo(destination = destination)
     }
 

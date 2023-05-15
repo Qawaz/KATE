@@ -22,12 +22,11 @@ class PlaceholderTest {
 
         assertEquals(code.length, context.stream.pointer)
 
-        val parsedBlock = definition.blockValue.parse()
-        assertNotEquals(0,parsedBlock.codeGens.size)
+        assertNotEquals(0,definition.blockValue.codeGens.size)
 
         assertEquals("Name", definition.blockValue.placeholderName)
         assertEquals("Name", definition.blockValue.definitionName)
-        assertEquals("ElonMusk", definition.blockValue.getValueAsString())
+        assertEquals("ElonMusk", definition.blockValue.generateToText())
         assertEquals("Name", invocation.placeholderName)
 
         val destination = TextDestinationStream()

@@ -1,23 +1,23 @@
 package com.wakaztahir.kate.parser.stream
 
-import com.wakaztahir.kate.model.PlaceholderBlock
+import com.wakaztahir.kate.model.PlaceholderParsedBlock
 
 interface PlaceholderManager {
 
-    val placeholders: MutableList<PlaceholderBlock>
-    val undefinedPlaceholders: MutableList<PlaceholderBlock>
+    val placeholders: MutableList<PlaceholderParsedBlock>
+    val undefinedPlaceholders: MutableList<PlaceholderParsedBlock>
     val placeholderListeners: MutableMap<String, PlaceholderEventListener>
 
     interface PlaceholderEventListener {
         fun onPlaceholderUndefined()
-        fun onPlaceholderDefined(defined: PlaceholderBlock)
+        fun onPlaceholderDefined(defined: PlaceholderParsedBlock)
     }
 
     fun setPlaceholderEventListener(placeholderName: String, listener: PlaceholderEventListener) {
         placeholderListeners[placeholderName] = listener
     }
 
-    fun definePlaceholder(placeholder: PlaceholderBlock, throwIfExists: Boolean) {
+    fun definePlaceholder(placeholder: PlaceholderParsedBlock, throwIfExists: Boolean) {
         val iterator = placeholders.iterator()
         while (iterator.hasNext()) {
             val next = iterator.next()
@@ -38,11 +38,11 @@ interface PlaceholderManager {
         placeholderListeners[placeholder.placeholderName]?.onPlaceholderDefined(placeholder)
     }
 
-    fun getPlaceholder(placeholderName: String): PlaceholderBlock? {
+    fun getPlaceholder(placeholderName: String): PlaceholderParsedBlock? {
         return placeholders.find { it.placeholderName == placeholderName }
     }
 
-    fun getPlaceholder(placeholderName: String, definitionName: String): PlaceholderBlock? {
+    fun getPlaceholder(placeholderName: String, definitionName: String): PlaceholderParsedBlock? {
         placeholders.find { it.placeholderName == placeholderName && it.definitionName == definitionName }
             ?.let { return it }
         undefinedPlaceholders.find { it.placeholderName == placeholderName && it.definitionName == definitionName }

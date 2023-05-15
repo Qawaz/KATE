@@ -146,6 +146,7 @@ class ForLoopContinue(val block: ForLoopParsedBlock) : CodeGen {
 class ForLoopParsedBlock(val provider: ModelProvider, codeGens: List<CodeGenRange>) : ParsedBlock(codeGens) {
     // if true , break one iteration of loop before next statement gets generated
     var haltGenFlag = false
+
     // if true , stop iterating after this iteration is complete
     var hasBroken = false
     override fun generateTo(destination: DestinationStream) {
@@ -179,7 +180,7 @@ class ForLoopLazyBlockSlice(
 
     private fun SourceStream.parseBreakForAtDirective(): ForLoopBreak? {
         return if (currentChar == '@' && increment("@break")) {
-            if(increment("for")){
+            if (increment("for")) {
                 throw IllegalStateException("use new @break instead of @breakfor")
             }
             ForLoopBreak(forLoopBlock)
@@ -216,7 +217,7 @@ private fun LazyBlock.parseForBlockValue(): ForLoopLazyBlockSlice {
         startsWith = "@for",
         endsWith = "@endfor",
         isDefaultNoRaw = isDefaultNoRaw,
-        model = ScopedModelObject(model)
+        provider = ModelProvider.Lazy { ScopedModelObject(model) }
     )
     return ForLoopLazyBlockSlice(
         parentBlock = this,

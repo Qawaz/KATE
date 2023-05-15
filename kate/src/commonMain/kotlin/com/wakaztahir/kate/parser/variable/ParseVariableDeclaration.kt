@@ -2,6 +2,7 @@ package com.wakaztahir.kate.parser.variable
 
 import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.model.*
+import com.wakaztahir.kate.model.model.KATEObject
 import com.wakaztahir.kate.model.model.KATEValue
 import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
 import com.wakaztahir.kate.parser.parsePrimitiveValue
@@ -15,7 +16,7 @@ data class VariableDeclaration(
     val variableName: String,
     val type: KATEType?,
     val variableValue: ReferencedOrDirectValue,
-    val model : MutableKATEObject
+    val provider: ModelProvider
 ) : AtDirective {
 
     override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.variableDeclaration
@@ -23,7 +24,7 @@ data class VariableDeclaration(
     override val isEmptyWriter: Boolean
         get() = true
 
-    fun storeValue() {
+    fun storeValue(model : MutableKATEObject = provider.model) {
         val value = variableValue.getKATEValueAndType()
         val actualType = value.second ?: value.first.getKnownKATEType()
         if (type != null) {
@@ -188,7 +189,7 @@ internal fun LazyBlock.parseVariableDeclaration(): VariableDeclaration? {
                     variableName = variableName,
                     variableValue = property,
                     type = type,
-                    model = model
+                    provider = provider
                 )
             } else {
                 throw VariableDeclarationException("constant's value not found when declaring variable $variableName")

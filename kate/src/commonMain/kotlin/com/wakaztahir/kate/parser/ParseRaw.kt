@@ -10,7 +10,7 @@ fun LazyBlock.parseBlockSlice(
     startsWith: String,
     endsWith: String,
     isDefaultNoRaw: Boolean,
-    model: MutableKATEObject,
+    provider: ModelProvider,
     indentationLevel: Int = this.indentationLevel + 1
 ): LazyBlockSlice {
 
@@ -37,7 +37,7 @@ fun LazyBlock.parseBlockSlice(
         parentBlock = this,
         startPointer = previous,
         length = length,
-        provider = ModelProvider.Single(model),
+        provider = provider,
         blockEndPointer = source.pointer,
         isDefaultNoRaw = isDefaultNoRaw,
         indentationLevel = indentationLevel
@@ -55,7 +55,7 @@ fun LazyBlock.parseBlockSlice(
     startsWith = startsWith,
     endsWith = endsWith,
     isDefaultNoRaw = isDefaultNoRaw,
-    model = if (inheritModel) model else ScopedModelObject(model),
+    provider = ModelProvider.Lazy { if (inheritModel) model else ScopedModelObject(model)},
     indentationLevel = indentationLevel
 )
 

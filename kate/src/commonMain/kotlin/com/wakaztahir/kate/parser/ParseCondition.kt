@@ -133,7 +133,7 @@ private fun LazyBlock.parseIfBlockValue(ifType: IfType): IfParsedBlock {
         parentBlock = this,
         startPointer = previous,
         length = length,
-        provider = ModelProvider.Single(ScopedModelObject(parent = provider.model)),
+        provider = ModelProvider.Lazy { ScopedModelObject(parent = provider.model) },
         blockEndPointer = source.pointer + blockEnder.length,
         isDefaultNoRaw = isDefaultNoRaw,
         indentationLevel = indentationLevel + 1
@@ -143,7 +143,7 @@ private fun LazyBlock.parseIfBlockValue(ifType: IfType): IfParsedBlock {
 
     source.setPointerAt(pointerBeforeEnder)
 
-    return IfParsedBlock(model = block.model, parsedBlock.codeGens)
+    return IfParsedBlock(provider = block.provider, parsedBlock.codeGens)
 }
 
 internal fun LazyBlock.parseSingleIf(start: String, ifType: IfType): SingleIf? {

@@ -2,9 +2,8 @@ package com.wakaztahir.kate.parser.stream
 
 import com.wakaztahir.kate.model.LazyBlock
 import com.wakaztahir.kate.model.ModelProvider
-import com.wakaztahir.kate.model.PlaceholderBlock
+import com.wakaztahir.kate.model.PlaceholderParsedBlock
 import com.wakaztahir.kate.model.model.MutableKATEObject
-import com.wakaztahir.kate.runtime.GlobalObjectImplementation
 
 abstract class SourceStream {
 
@@ -16,8 +15,8 @@ abstract class SourceStream {
     }
 
     protected class EmptyPlaceholderManager : PlaceholderManager {
-        override val placeholders: MutableList<PlaceholderBlock> = mutableListOf()
-        override val undefinedPlaceholders: MutableList<PlaceholderBlock> = mutableListOf()
+        override val placeholders: MutableList<PlaceholderParsedBlock> = mutableListOf()
+        override val undefinedPlaceholders: MutableList<PlaceholderParsedBlock> = mutableListOf()
         override val placeholderListeners = mutableMapOf<String, PlaceholderManager.PlaceholderEventListener>()
     }
 

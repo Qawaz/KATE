@@ -122,7 +122,7 @@ interface LazyBlock {
     fun parseImplicitDirectives(): CodeGen? {
         parseVariableReferenceAsExpression(parseDirectRefs = !isDefaultNoRaw)?.let {
             if(isDefaultNoRaw || it.first) {
-                return DefaultNoRawExpression(source = source, value = it.second,model = model)
+                return DefaultNoRawExpression(source = source, value = it.second,provider = provider)
             }else {
                 return PartialRawFunctionCall(it.second)
             }

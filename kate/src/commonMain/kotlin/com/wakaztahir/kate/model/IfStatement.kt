@@ -83,9 +83,9 @@ enum class IfType(val order: Int) {
     Else(2)
 }
 
-class IfParsedBlock(val model: MutableKATEObject, codeGens: List<CodeGenRange>) : ParsedBlock(codeGens) {
+class IfParsedBlock(val provider: ModelProvider, codeGens: List<CodeGenRange>) : ParsedBlock(codeGens) {
     override fun generateTo(destination: DestinationStream) {
-        model.removeAll()
+        provider.model.removeAll()
         super.generateTo(destination)
     }
 }
