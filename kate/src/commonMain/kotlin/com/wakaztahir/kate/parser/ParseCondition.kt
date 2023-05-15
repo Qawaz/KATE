@@ -1,5 +1,6 @@
 package com.wakaztahir.kate.parser
 
+import com.wakaztahir.kate.dsl.ScopedModelLazyParent
 import com.wakaztahir.kate.dsl.ScopedModelObject
 import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
@@ -133,7 +134,7 @@ private fun LazyBlock.parseIfBlockValue(ifType: IfType): IfParsedBlock {
         parentBlock = this,
         startPointer = previous,
         length = length,
-        provider = ModelProvider.Lazy { ScopedModelObject(parent = provider.model) },
+        provider = ModelProvider.Single(ScopedModelLazyParent { provider.model }),
         blockEndPointer = source.pointer + blockEnder.length,
         isDefaultNoRaw = isDefaultNoRaw,
         indentationLevel = indentationLevel + 1

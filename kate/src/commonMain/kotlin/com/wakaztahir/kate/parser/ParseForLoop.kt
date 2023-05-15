@@ -1,5 +1,6 @@
 package com.wakaztahir.kate.parser
 
+import com.wakaztahir.kate.dsl.ScopedModelLazyParent
 import com.wakaztahir.kate.dsl.ScopedModelObject
 import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.model.ConditionType
@@ -217,7 +218,7 @@ private fun LazyBlock.parseForBlockValue(): ForLoopLazyBlockSlice {
         startsWith = "@for",
         endsWith = "@endfor",
         isDefaultNoRaw = isDefaultNoRaw,
-        provider = ModelProvider.Lazy { ScopedModelObject(model) }
+        provider = ModelProvider.Single(ScopedModelLazyParent { model })
     )
     return ForLoopLazyBlockSlice(
         parentBlock = this,

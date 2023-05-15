@@ -131,9 +131,9 @@ abstract class KATERecursiveFunction(
         }
     }
 
-    private fun startInvocation(parameters: List<ReferencedOrDirectValue>) {
+    private fun startInvocation(parameters: List<Pair<KATEValue, KATEType?>>) {
         invocationNumber++
-        print("Preparing Function $invocationNumber ")
+//        print("Preparing Function $invocationNumber ")
         if (invocationNumber > 1) {
             previousModels.add(slice.provider.model)
 //            previousPointers[invocationNumber - 1] = slice.source.pointer
@@ -141,14 +141,14 @@ abstract class KATERecursiveFunction(
         slice.provider.model = ScopedModelObject(parentProvider.model)
         slice.provider.model.forEachParam { paramName, paramType, index ->
             if (index < parameters.size) {
-                parameters[index].getKATEValueAndType().let {
+                parameters[index].let {
                     require(insertValue(paramName, it.first)) {
                         "couldn't insert function parameter into model with name $paramName"
                     }
-                    print("PARAM $paramName = ${it.first} FROM (${(parameters[index])}) , ")
+//                    print("PARAM $paramName = ${it.first} FROM (${(parameters[index])}) , ")
                     it.second?.let { type -> setExplicitType(paramName, type) }
                 }
-                println()
+//                println()
             } else {
                 throw IllegalStateException("function expects ${parameterNames?.size} parameters and not ${parameters.size}")
             }
@@ -165,7 +165,7 @@ abstract class KATERecursiveFunction(
         return returnedValue
     }
 
-    private fun generateNow(parameters: List<ReferencedOrDirectValue>): KATEValue {
+    private fun generateNow(parameters: List<Pair<KATEValue, KATEType?>>): KATEValue {
         startInvocation(parameters = parameters)
         slice.generateTo(destination!!)
         return endInvocation()
@@ -177,7 +177,7 @@ abstract class KATERecursiveFunction(
         explicitType: KATEType?,
         parameters: List<ReferencedOrDirectValue>
     ): ReferencedOrDirectValue {
-        return generateNow(parameters)
+        return generateNow(parameters.map { it.getKATEValueAndType() })
     }
 
 }
