@@ -30,10 +30,7 @@ abstract class SourceStream {
 
         override val source: SourceStream get() = this@SourceStream
 
-        override val provider: ModelProvider = object : ModelProvider {
-            override val model: MutableKATEObject
-                get() = source.model
-        }
+        override val provider: ModelProvider = ModelProvider.Lazy { source.model }
 
         override val isDefaultNoRaw: Boolean
             get() = true

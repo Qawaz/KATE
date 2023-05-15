@@ -2,7 +2,7 @@ package com.wakaztahir.kate.model
 
 import com.wakaztahir.kate.model.model.MutableKATEObject
 
-interface ModelProvider {
+sealed interface ModelProvider {
 
     val model: MutableKATEObject
 
