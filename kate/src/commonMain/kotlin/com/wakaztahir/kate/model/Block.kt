@@ -92,10 +92,6 @@ interface LazyBlock {
         return ParsedBlock(codeGens = gens)
     }
 
-    fun generateTo(destination: DestinationStream) {
-        parse().generateTo(destination)
-    }
-
     fun consumeLineIndentation(): Int {
         if (indentationLevel < 1) return indentationLevel
         var x = 0
@@ -166,7 +162,7 @@ interface LazyBlock {
     @KATEDelicateFunction
     fun getDestinationString(): String {
         val destination = TextDestinationStream()
-        generateTo(destination)
+        parse().generateTo(destination)
         return (destination.stream as TextDestinationStream).getValue()
     }
 

@@ -41,7 +41,7 @@ object DefaultPlaceholderManagerInitializer {
                 placeholderManager = source.placeholderManager,
                 embeddingManager = source.embeddingManager,
                 initialize = false
-            ).block.generateTo(destination)
+            ).block.parse().generateTo(destination)
         }catch (e : Exception){
             throw IllegalStateException("default placeholder initialization failed",e)
         }

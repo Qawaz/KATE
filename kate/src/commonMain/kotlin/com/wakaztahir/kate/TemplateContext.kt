@@ -32,7 +32,7 @@ class TemplateContext(stream: SourceStream) {
     }
 
     fun generateTo(destination: DestinationStream) {
-        stream.block.generateTo(destination)
+        stream.block.parse().generateTo(destination)
     }
 
 }
