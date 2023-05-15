@@ -73,7 +73,7 @@ fun LazyBlock.parseObjectDeclaration(): ObjectDeclaration? {
         return ObjectDeclaration(
             objectName = objectName,
             itemsType = itemType,
-            declarationBlock = parseObjectDeclarationSlice(objectName = objectName, itemType = itemType),
+            parsedBlock = parseObjectDeclarationSlice(objectName = objectName, itemType = itemType),
             model = model
         )
     }

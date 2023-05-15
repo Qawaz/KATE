@@ -1,7 +1,6 @@
 package com.wakaztahir.kate.parser
 
 import com.wakaztahir.kate.dsl.ScopedModelLazyParent
-import com.wakaztahir.kate.dsl.ScopedModelObject
 import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.model.ConditionType
 import com.wakaztahir.kate.model.model.*
@@ -15,26 +14,26 @@ import com.wakaztahir.kate.tokenizer.NodeTokenizer
 
 sealed interface ForLoop : BlockContainer {
 
-    val forLoopBlock: ForLoopParsedBlock
+    override val parsedBlock: ForLoopParsedBlock
 
     fun iterate(model: MutableKATEObject, block: (iteration: Int) -> Unit)
 
     override fun generateTo(destination: DestinationStream) {
-        forLoopBlock.hasBroken = false
-        iterate(forLoopBlock.provider.model) {
-            forLoopBlock.generateTo(destination = destination)
+        parsedBlock.hasBroken = false
+        iterate(parsedBlock.provider.model) {
+            parsedBlock.generateTo(destination = destination)
         }
     }
 
     class ConditionalFor(
         val condition: ReferencedOrDirectValue,
-        override val forLoopBlock: ForLoopParsedBlock
+        override val parsedBlock: ForLoopParsedBlock
     ) : ForLoop {
         override fun <T> selectNode(tokenizer: NodeTokenizer<T>) = tokenizer.conditionalFor
         override fun iterate(model: MutableKATEObject, block: (iteration: Int) -> Unit) {
             var i = 0
-            while (!forLoopBlock.hasBroken && (condition.asNullablePrimitive() as BooleanValue).value) {
-                forLoopBlock.haltGenFlag = false
+            while (!parsedBlock.hasBroken && (condition.asNullablePrimitive() as BooleanValue).value) {
+                parsedBlock.haltGenFlag = false
                 model.removeAll()
                 block(i)
                 i++
@@ -46,7 +45,7 @@ sealed interface ForLoop : BlockContainer {
         val indexConstName: String?,
         val elementConstName: String,
         val listProperty: ReferencedOrDirectValue,
-        override val forLoopBlock: ForLoopParsedBlock
+        override val parsedBlock: ForLoopParsedBlock
     ) : ForLoop {
 
         override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.iterableFor
@@ -73,8 +72,8 @@ sealed interface ForLoop : BlockContainer {
             val iterable = listProperty.asNullableList()
                 ?: throw IllegalStateException("list property is not iterable in for loop")
             val total = iterable.collection.size
-            while (!forLoopBlock.hasBroken && index < total) {
-                forLoopBlock.haltGenFlag = false
+            while (!parsedBlock.hasBroken && index < total) {
+                parsedBlock.haltGenFlag = false
                 model.removeAll()
                 store(model, index)
                 store(model, iterable.collection.getOrElse(index) {
@@ -94,7 +93,7 @@ sealed interface ForLoop : BlockContainer {
         val conditional: ReferencedOrDirectValue,
         val arithmeticOperatorType: ArithmeticOperatorType,
         val incrementer: ReferencedOrDirectValue,
-        override val forLoopBlock: ForLoopParsedBlock
+        override val parsedBlock: ForLoopParsedBlock
     ) : ForLoop {
 
         override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.numberedFor
@@ -105,7 +104,9 @@ sealed interface ForLoop : BlockContainer {
         }
 
         private fun MutableKATEObject.storeIndex(value: Int) {
-            insertValue(variableName, value)
+            require(insertValue(variableName, value)) {
+                "couldn't insert index with name $variableName in numbered for loop with value $value"
+            }
         }
 
         private fun MutableKATEObject.removeIndex() {
@@ -116,8 +117,8 @@ sealed interface ForLoop : BlockContainer {
             var i = initializer.intVal()
             val conditionValue = conditional.intVal()
             val incrementerValue = incrementer.intVal()
-            while (!forLoopBlock.hasBroken && conditionType.verifyCompare(i.compareTo(conditionValue))) {
-                forLoopBlock.haltGenFlag = false
+            while (!parsedBlock.hasBroken && conditionType.verifyCompare(i.compareTo(conditionValue))) {
+                parsedBlock.haltGenFlag = false
                 model.removeAll()
                 model.storeIndex(i)
                 block(i)
@@ -145,17 +146,8 @@ class ForLoopContinue(val block: ForLoopParsedBlock) : CodeGen {
 }
 
 class ForLoopParsedBlock(val provider: ModelProvider, codeGens: List<CodeGenRange>) : ParsedBlock(codeGens) {
-    // if true , break one iteration of loop before next statement gets generated
-    var haltGenFlag = false
-
     // if true , stop iterating after this iteration is complete
     var hasBroken = false
-    override fun generateTo(destination: DestinationStream) {
-        for (range in codeGens) {
-            if (haltGenFlag) return
-            range.gen.generateTo(destination = destination)
-        }
-    }
 }
 
 class ForLoopLazyBlockSlice(
@@ -239,7 +231,7 @@ private fun LazyBlock.parseConditionalFor(): ForLoop.ConditionalFor? {
         val blockValue = this@parseConditionalFor.parseForBlockValue()
         return ForLoop.ConditionalFor(
             condition = condition,
-            forLoopBlock = blockValue.parse()
+            parsedBlock = blockValue.parse()
         )
     }
     return null
@@ -272,7 +264,7 @@ private fun LazyBlock.parseIterableForLoopAfterVariable(variableName: String): F
                 indexConstName = secondVariableName,
                 elementConstName = variableName,
                 listProperty = referencedValue,
-                forLoopBlock = blockValue.parse()
+                parsedBlock = blockValue.parse()
             )
         }
     }
@@ -346,7 +338,7 @@ private fun LazyBlock.parseNumberedForLoopAfterVariable(variableName: String): F
                         conditional = conditional,
                         arithmeticOperatorType = incrementer.operatorType,
                         incrementer = incrementer.incrementerValue,
-                        forLoopBlock = blockValue.parse()
+                        parsedBlock = blockValue.parse()
                     )
                 } else {
                     throw IllegalStateException("unexpected ${source.currentChar} , expected ';'")

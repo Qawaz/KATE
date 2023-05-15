@@ -7,6 +7,8 @@ interface CodeGen {
 
     val isEmptyWriter get() = false
 
+    val expectSpaceOrNewLineWithIndentationAfterwards get() = false
+
     fun <T> selectNode(tokenizer: NodeTokenizer<T>) : T
 
     fun generateTo(destination: DestinationStream)

@@ -6,6 +6,7 @@ import com.wakaztahir.kate.dsl.ModelObjectImpl
 import com.wakaztahir.kate.model.model.KATEObject
 import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.parser.stream.getErrorInfoAtCurrentPointer
+import com.wakaztahir.kate.parser.stream.printErrorLineNumberAndCharacterIndex
 import org.junit.Test
 import java.io.File
 import kotlin.test.assertEquals
@@ -105,8 +106,8 @@ class TestTemplates {
         try {
             context.generateTo(output)
         } catch (e: Exception) {
-            val indo = context.stream.getErrorInfoAtCurrentPointer()
-            throw Throwable("${indo.first}:${indo.second}", cause = e)
+            context.stream.printErrorLineNumberAndCharacterIndex()
+            throw e
         }
         output.outputStream.close()
     }

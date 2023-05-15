@@ -103,7 +103,7 @@ fun LazyBlock.parsePlaceholderDefinition(): PlaceholderDefinition? {
         if (nameAndDef != null) {
             val blockValue = parsePlaceholderBlock(nameAndDef = nameAndDef)
             return PlaceholderDefinition(
-                blockValue = blockValue,
+                parsedBlock = blockValue,
                 isOnce = isOnce,
                 placeholderManager = source.placeholderManager
             )

@@ -45,7 +45,7 @@ class ObjectDeclarationBlockSlice(
 class ObjectDeclaration(
     val objectName: String,
     val itemsType: KATEType?,
-    val declarationBlock: ObjectDeclarationParsedBlock,
+    override val parsedBlock: ObjectDeclarationParsedBlock,
     val model : MutableKATEObject,
 ) : BlockContainer {
 
@@ -54,8 +54,8 @@ class ObjectDeclaration(
 
     override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.objectDeclaration
     override fun generateTo(destination: DestinationStream) {
-        declarationBlock.generateTo(destination)
-        model.insertValue(objectName, declarationBlock.model)
+        parsedBlock.generateTo(destination)
+        model.insertValue(objectName, parsedBlock.model)
         itemsType?.let { model.setExplicitType(objectName, KATEType.Object(it)) }
     }
 }

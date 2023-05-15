@@ -9,10 +9,14 @@ open class ParsedBlock(val codeGens: List<CodeGenRange>) : CodeGen {
 
     class CodeGenRange(val gen: CodeGen, val start: Int, val end: Int)
 
+    // if true , break one iteration of loop before next statement gets generated
+    var haltGenFlag = false
+
     override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.block
 
     override fun generateTo(destination: DestinationStream) {
         for (range in codeGens) {
+            if (haltGenFlag) return
             range.gen.generateTo(destination = destination)
         }
     }

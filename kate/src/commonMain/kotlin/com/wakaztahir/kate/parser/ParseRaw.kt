@@ -1,7 +1,6 @@
 package com.wakaztahir.kate.parser
 
 import com.wakaztahir.kate.dsl.ScopedModelLazyParent
-import com.wakaztahir.kate.dsl.ScopedModelObject
 import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.parser.stream.*
@@ -56,7 +55,7 @@ fun LazyBlock.parseBlockSlice(
     startsWith = startsWith,
     endsWith = endsWith,
     isDefaultNoRaw = isDefaultNoRaw,
-    provider = if(inheritModel) provider else ModelProvider.Single(ScopedModelLazyParent{ provider.model }),
+    provider = if(inheritModel) provider else ModelProvider.Single(ScopedModelLazyParent{ model }),
     indentationLevel = indentationLevel
 )
 
@@ -139,7 +138,7 @@ fun LazyBlock.parsePartialRaw(): PartialRawBlock? {
         )
 
         return PartialRawBlock(
-            value = PartialRawParsedBlock(
+            parsedBlock = PartialRawParsedBlock(
                 model = partialRawSlice.model,
                 codeGens = partialRawSlice.parse().codeGens,
             )

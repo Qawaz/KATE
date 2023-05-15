@@ -16,13 +16,13 @@ class PlaceholderParsedBlock(
 ) : ParsedBlock(codeGens)
 
 class PlaceholderDefinition(
-    val blockValue: PlaceholderParsedBlock,
+    override val parsedBlock: PlaceholderParsedBlock,
     val isOnce: Boolean,
     val placeholderManager: PlaceholderManager
 ) : BlockContainer {
     override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.placeholderDefinition
     override fun generateTo(destination: DestinationStream) {
-        placeholderManager.definePlaceholder(placeholder = blockValue, throwIfExists = !isOnce)
+        placeholderManager.definePlaceholder(placeholder = parsedBlock, throwIfExists = !isOnce)
     }
 }
 

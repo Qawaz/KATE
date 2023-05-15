@@ -1,3 +1,8 @@
+package functions
+
+import GenerateCode
+import GenerateExpression
+import GeneratePartialRaw
 import com.wakaztahir.kate.TemplateContext
 import com.wakaztahir.kate.parser.stream.TextDestinationStream
 import kotlin.test.Test
@@ -47,6 +52,10 @@ class FunctionsTest {
 
     @Test
     fun testFunctionDefinition() {
+        assertEquals(
+            expected = "5",
+            actual = GenerateCode("@var i = 5 @function Parent() @for(@var j = 0;j < 2;j++) @return i + j @endfor @end_function @var(Parent())")
+        )
         assertEquals(
             expected = "hello1",
             actual = GenerateCode(
@@ -207,6 +216,14 @@ class FunctionsTest {
                 |@default_no_raw @var(fact(9)) @end_default_no_raw
                 """.trimMargin()
             )
+        )
+    }
+
+    @Test
+    fun testFunctionsInsideFunction() {
+        assertEquals(
+            expected = "10",
+            actual = GenerateCode("@var i = 5 @function Parent() @var j = 5 @function Child() @return i @end_function @return Child() + j @end_function @var(Parent())")
         )
     }
 

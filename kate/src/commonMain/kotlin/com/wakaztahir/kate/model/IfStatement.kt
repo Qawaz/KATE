@@ -1,7 +1,6 @@
 package com.wakaztahir.kate.model
 
 import com.wakaztahir.kate.model.model.KATEValue
-import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
 import com.wakaztahir.kate.parser.ParsedBlock
 import com.wakaztahir.kate.parser.stream.DestinationStream
@@ -93,16 +92,16 @@ class IfParsedBlock(val provider: ModelProvider, codeGens: List<CodeGenRange>) :
 class SingleIf(
     val condition: ReferencedOrDirectValue,
     val type: IfType,
-    val blockValue: IfParsedBlock,
-) : CodeGen {
+    override val parsedBlock: IfParsedBlock,
+) : BlockContainer {
     override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.singleIf
     override fun generateTo(destination: DestinationStream) {
-        blockValue.generateTo(destination = destination)
+        parsedBlock.generateTo(destination = destination)
     }
 }
 
 
-class IfStatement(private val ifs: MutableList<SingleIf>) : BlockContainer {
+class IfStatement(private val ifs: MutableList<SingleIf>) : MultipleBlocksContainer {
 
     val singleIfs: List<SingleIf> get() = ifs
 

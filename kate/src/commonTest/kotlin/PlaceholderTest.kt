@@ -22,16 +22,16 @@ class PlaceholderTest {
 
         assertEquals(code.length, context.stream.pointer)
 
-        assertNotEquals(0,definition.blockValue.codeGens.size)
+        assertNotEquals(0,definition.parsedBlock.codeGens.size)
 
-        assertEquals("Name", definition.blockValue.placeholderName)
-        assertEquals("Name", definition.blockValue.definitionName)
-        assertEquals("ElonMusk", definition.blockValue.generateToText())
+        assertEquals("Name", definition.parsedBlock.placeholderName)
+        assertEquals("Name", definition.parsedBlock.definitionName)
+        assertEquals("ElonMusk", definition.parsedBlock.generateToText())
         assertEquals("Name", invocation.placeholderName)
 
         val destination = TextDestinationStream()
         definition.generateTo(destination)
-        assertEquals(definition.blockValue, context.stream.placeholderManager.getPlaceholder("Name"))
+        assertEquals(definition.parsedBlock, context.stream.placeholderManager.getPlaceholder("Name"))
         invocation.generateTo(destination)
         assertEquals("ElonMusk", (destination.stream as TextDestinationStream).getValue())
 

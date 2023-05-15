@@ -14,29 +14,17 @@ interface MutableKATEObject : KATEObject {
 
     // Extensions
 
-    fun insertValue(key: String, value: String) {
-        insertValue(key, StringValue(value))
-    }
+    fun insertValue(key: String, value: String) = insertValue(key, StringValue(value))
 
-    fun insertValue(key: String, value: Int) {
-        insertValue(key, IntValue(value))
-    }
+    fun insertValue(key: String, value: Int) = insertValue(key, IntValue(value))
 
-    fun insertValue(key: String, value: Float) {
-        insertValue(key, DoubleValue(value.toDouble()))
-    }
+    fun insertValue(key: String, value: Float) = insertValue(key, DoubleValue(value.toDouble()))
 
-    fun insertValue(key: String, value: Double) {
-        insertValue(key, DoubleValue(value))
-    }
+    fun insertValue(key: String, value: Double) = insertValue(key, DoubleValue(value))
 
-    fun insertValue(key: String, value: Boolean) {
-        insertValue(key, BooleanValue(value))
-    }
+    fun insertValue(key: String, value: Boolean) = insertValue(key, BooleanValue(value))
 
-    fun insertValue(key: String, value: List<Int>) {
-        insertValue(key, KATEListImpl(value.map { IntValue(it) }, itemType = KATEType.Int))
-    }
+    fun insertValue(key: String, value: List<Int>) = insertValue(key, KATEListImpl(value.map { IntValue(it) }, itemType = KATEType.Int))
 
     interface PutObjectsScope {
         fun putObject(block: MutableKATEObject.() -> Unit)

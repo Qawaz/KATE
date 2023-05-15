@@ -62,7 +62,7 @@ interface LazyBlock {
             }
             if (directive != null) {
                 gens.add(ParsedBlock.CodeGenRange(gen = directive, start = previous, end = source.pointer))
-                if (!source.hasEnded && directive is BlockContainer) {
+                if (!source.hasEnded && directive.expectSpaceOrNewLineWithIndentationAfterwards) {
                     if (!source.increment('\n')) {
                         source.increment(' ')
                     } else {

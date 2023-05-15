@@ -17,19 +17,27 @@ class FunctionReturn(val slice: FunctionParsedBlock, val value: ReferencedOrDire
     override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.functionReturn
 
     override fun generateTo(destination: DestinationStream) {
-        slice.onReturnValueFound(value)
+        slice.onReturnValueFound(value.getKATEValue())
         slice.hasReturned = true
+        if (slice.currentGen is BlockContainer) {
+            (slice.currentGen as BlockContainer).parsedBlock.haltGenFlag = true
+            if(slice.currentGen is ForLoop){
+                (slice.currentGen as ForLoop).parsedBlock.hasBroken = true
+            }
+        }
     }
 
 }
 
 class FunctionParsedBlock(val provider: ModelProvider.LateInit, codeGens: List<CodeGenRange>) : ParsedBlock(codeGens) {
     var hasReturned = false
-    var onReturnValueFound: (ReferencedOrDirectValue) -> Unit = {}
+    var onReturnValueFound: (KATEValue) -> Unit = {}
+    var currentGen: CodeGen? = null
     override fun generateTo(destination: DestinationStream) {
         hasReturned = false
         for (gen in codeGens) {
             if (hasReturned) break
+            currentGen = gen.gen
             gen.gen.generateTo(destination)
         }
     }
@@ -105,7 +113,7 @@ abstract class KATERecursiveFunction(
     var destination: DestinationStream? = null
 
     private var invocationNumber = 0
-    private var returnedValues = hashMapOf<Int, ReferencedOrDirectValue>()
+    private var returnedValues = hashMapOf<Int, KATEValue>()
     private val previousModels = mutableListOf<MutableKATEObject>()
 //    private val previousPointers = hashMapOf<Int, Int>()
 
@@ -183,17 +191,17 @@ abstract class KATERecursiveFunction(
 }
 
 class FunctionDefinition(
-    val slice: FunctionParsedBlock,
+    override val parsedBlock: FunctionParsedBlock,
     val functionName: String,
     val definitionModel: ModelProvider,
     parameterNames: Map<String, KATEType>?,
     returnedType: KATEType
-) : CodeGen, BlockContainer {
+) : BlockContainer {
 
     override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.functionDefinition
 
     val definition =
-        object : KATERecursiveFunction(parentProvider = definitionModel, slice = slice, parameterNames, returnedType) {
+        object : KATERecursiveFunction(parentProvider = definitionModel, slice = parsedBlock, parameterNames, returnedType) {
             override fun toString(): String = functionName + ' ' + super.toString()
         }
 
@@ -271,7 +279,7 @@ fun LazyBlock.parseFunctionDefinition(anonymousFunctionName: String?): FunctionD
         val blockParser = FunctionSlice(slice = slice)
 
         return FunctionDefinition(
-            slice = blockParser.parse(),
+            parsedBlock = blockParser.parse(),
             definitionModel = provider,
             functionName = functionName,
             parameterNames = parameters,

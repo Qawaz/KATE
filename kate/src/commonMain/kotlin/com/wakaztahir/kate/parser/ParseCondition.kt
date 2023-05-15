@@ -1,7 +1,6 @@
 package com.wakaztahir.kate.parser
 
 import com.wakaztahir.kate.dsl.ScopedModelLazyParent
-import com.wakaztahir.kate.dsl.ScopedModelObject
 import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
 import com.wakaztahir.kate.parser.stream.*
@@ -134,7 +133,7 @@ private fun LazyBlock.parseIfBlockValue(ifType: IfType): IfParsedBlock {
         parentBlock = this,
         startPointer = previous,
         length = length,
-        provider = ModelProvider.Single(ScopedModelLazyParent { provider.model }),
+        provider = ModelProvider.Single(ScopedModelLazyParent { model }),
         blockEndPointer = source.pointer + blockEnder.length,
         isDefaultNoRaw = isDefaultNoRaw,
         indentationLevel = indentationLevel + 1
@@ -158,7 +157,7 @@ internal fun LazyBlock.parseSingleIf(start: String, ifType: IfType): SingleIf? {
                     return SingleIf(
                         condition = condition,
                         type = ifType,
-                        blockValue = value
+                        parsedBlock = value
                     )
                 } else {
                     source.printErrorLineNumberAndCharacterIndex()
@@ -171,7 +170,7 @@ internal fun LazyBlock.parseSingleIf(start: String, ifType: IfType): SingleIf? {
             return SingleIf(
                 condition = BooleanValue(true),
                 type = IfType.Else,
-                blockValue = value
+                parsedBlock = value
             )
         }
     }
