@@ -76,6 +76,6 @@ class ModelDirective(override val propertyPath: List<ModelReference>, override v
         return getModelReferenceValueAndType(provider.model)
     }
 
-    override fun toString(): String = propertyPath.joinToString(".")
+    override fun toString(): String = propertyPath.joinToString(".") + '=' + getKATEValue()
 
 }

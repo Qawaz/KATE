@@ -3,8 +3,8 @@ package com.wakaztahir.kate.parser.function
 import com.wakaztahir.kate.dsl.ScopedModelObject
 import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.model.model.*
+import com.wakaztahir.kate.parser.*
 import com.wakaztahir.kate.parser.parseAnyExpressionOrValue
-import com.wakaztahir.kate.parser.parseBlockSlice
 import com.wakaztahir.kate.parser.stream.*
 import com.wakaztahir.kate.parser.stream.increment
 import com.wakaztahir.kate.parser.stream.parseTextWhile
@@ -12,7 +12,7 @@ import com.wakaztahir.kate.parser.variable.isVariableName
 import com.wakaztahir.kate.parser.variable.parseKATEType
 import com.wakaztahir.kate.tokenizer.NodeTokenizer
 
-class FunctionReturn(val slice: FunctionSlice, val value: ReferencedOrDirectValue) : CodeGen {
+class FunctionReturn(val slice: FunctionParsedBlock, val value: ReferencedOrDirectValue) : CodeGen {
 
     override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.functionReturn
 
@@ -23,68 +23,79 @@ class FunctionReturn(val slice: FunctionSlice, val value: ReferencedOrDirectValu
 
 }
 
+class FunctionParsedBlock(val provider: ModelProvider.LateInit, codeGens: List<CodeGenRange>) : ParsedBlock(codeGens) {
+    var hasReturned = false
+    var onReturnValueFound: (ReferencedOrDirectValue) -> Unit = {}
+    override fun generateTo(destination: DestinationStream) {
+        hasReturned = false
+        for (gen in codeGens) {
+            if (hasReturned) break
+            gen.gen.generateTo(destination)
+        }
+    }
+}
+
 class FunctionSlice(
     parentBlock: LazyBlock,
     startPointer: Int,
     length: Int,
     blockEndPointer: Int,
-    override val provider: ModelProvider.Changeable,
+    override val provider: ModelProvider.LateInit,
     indentationLevel: Int
-) : PartialRawLazyBlockSlice(
+) : LazyBlockSlice(
     parentBlock = parentBlock,
     startPointer = startPointer,
     length = length,
     blockEndPointer = blockEndPointer,
     provider = provider,
-    indentationLevel = indentationLevel
+    indentationLevel = indentationLevel,
+    isDefaultNoRaw = false
 ) {
 
-    var keepIterating: () -> Boolean = { true }
-    var hasReturned = false
-    var onReturnValueFound: (ReferencedOrDirectValue) -> Unit = {}
+    private var parseTimes = 0
 
-    override fun canIterate(): Boolean = super.canIterate() && keepIterating()
+    private val parsedBlock = FunctionParsedBlock(provider = provider, codeGens = mutableListOf())
 
     constructor(slice: LazyBlockSlice) : this(
         parentBlock = slice.parentBlock,
         startPointer = slice.startPointer,
         length = slice.length,
         blockEndPointer = slice.blockEndPointer,
-        provider = ModelProvider.Changeable(slice.provider.model),
+        provider = slice.provider as ModelProvider.LateInit,
         indentationLevel = slice.indentationLevel
     )
 
-    override fun generateTo(destination: DestinationStream) {
-        source.setPointerAt(startPointer)
-        hasReturned = false
-        // TODO don't parse here
-        val gens = parse().codeGens
-        for (gen in gens) {
-            if (hasReturned) break
-            gen.gen.generateTo(destination)
-        }
-        source.setPointerAt(blockEndPointer)
+    override fun parse(): FunctionParsedBlock {
+        parseTimes++
+        if (parseTimes > 2) throw IllegalStateException("one instance can parse one block")
+        val parsed = super.parse()
+        (parsedBlock.codeGens as MutableList).addAll(parsed.codeGens)
+        return parsedBlock
     }
 
     override fun parseNestedAtDirective(block: LazyBlock): CodeGen? {
-        block.parseFunctionReturn()?.let { return FunctionReturn(this, it) }
+        block.parseFunctionReturn()?.let { return FunctionReturn(parsedBlock, it) }
+        block.parseDefaultNoRaw()?.let { return it }
         return super.parseNestedAtDirective(block)
     }
 
 }
 
 abstract class KATERecursiveFunction(
-    val slice: FunctionSlice,
+    val parentProvider: ModelProvider,
+    val slice: FunctionParsedBlock,
     val parameterNames: List<String>?,
     parameterTypes: List<KATEType>?,
     returnedType: KATEType,
 ) : KATEFunction(returnedType, parameterTypes) {
 
     constructor(
-        slice: FunctionSlice,
+        parentProvider: ModelProvider,
+        slice: FunctionParsedBlock,
         parameterNameAndTypes: Map<String, KATEType>?,
         returnedType: KATEType,
     ) : this(
+        parentProvider = parentProvider,
         slice = slice,
         parameterNames = parameterNameAndTypes?.keys?.toList(),
         parameterTypes = parameterNameAndTypes?.values?.toList(),
@@ -96,15 +107,15 @@ abstract class KATERecursiveFunction(
     private var invocationNumber = 0
     private var returnedValues = hashMapOf<Int, ReferencedOrDirectValue>()
     private val previousModels = mutableListOf<MutableKATEObject>()
-    private val previousPointers = hashMapOf<Int, Int>()
+//    private val previousPointers = hashMapOf<Int, Int>()
 
     init {
         slice.onReturnValueFound = {
             returnedValues[invocationNumber] = it
         }
-        slice.keepIterating = {
-            !returnedValues.containsKey(invocationNumber)
-        }
+//        slice.keepIterating = {
+//            !returnedValues.containsKey(invocationNumber)
+//        }
     }
 
     private inline fun KATEObject.forEachParam(block: MutableKATEObject.(String, KATEType, Int) -> Unit) {
@@ -122,17 +133,22 @@ abstract class KATERecursiveFunction(
 
     private fun startInvocation(parameters: List<ReferencedOrDirectValue>) {
         invocationNumber++
+        print("Preparing Function $invocationNumber ")
         if (invocationNumber > 1) {
-            previousModels.add(slice.model)
-            previousPointers[invocationNumber - 1] = slice.source.pointer
+            previousModels.add(slice.provider.model)
+//            previousPointers[invocationNumber - 1] = slice.source.pointer
         }
-        slice.provider.model =ScopedModelObject(slice.parentBlock.model)
-        slice.model.forEachParam { paramName, paramType, index ->
+        slice.provider.model = ScopedModelObject(parentProvider.model)
+        slice.provider.model.forEachParam { paramName, paramType, index ->
             if (index < parameters.size) {
                 parameters[index].getKATEValueAndType().let {
-                    insertValue(paramName, it.first)
+                    require(insertValue(paramName, it.first)) {
+                        "couldn't insert function parameter into model with name $paramName"
+                    }
+                    print("PARAM $paramName = ${it.first} FROM (${(parameters[index])}) , ")
                     it.second?.let { type -> setExplicitType(paramName, type) }
                 }
+                println()
             } else {
                 throw IllegalStateException("function expects ${parameterNames?.size} parameters and not ${parameters.size}")
             }
@@ -143,52 +159,47 @@ abstract class KATERecursiveFunction(
         val returnedValue = returnedValues.remove(invocationNumber)?.getKATEValue() ?: KATEUnit
         invocationNumber--
         if (previousModels.isNotEmpty()) slice.provider.model = previousModels.removeLast()
-        previousPointers.remove(invocationNumber)?.let {
-            slice.source.setPointerAt(it)
-        }
+//        previousPointers.remove(invocationNumber)?.let {
+//            slice.source.setPointerAt(it)
+//        }
         return returnedValue
     }
 
-    fun generateNow(parameters: List<ReferencedOrDirectValue>): KATEValue {
+    private fun generateNow(parameters: List<ReferencedOrDirectValue>): KATEValue {
         startInvocation(parameters = parameters)
         slice.generateTo(destination!!)
         return endInvocation()
     }
 
+    override fun invoke(
+        model: KATEObject,
+        invokedOn: KATEValue,
+        explicitType: KATEType?,
+        parameters: List<ReferencedOrDirectValue>
+    ): ReferencedOrDirectValue {
+        return generateNow(parameters)
+    }
 
 }
 
 class FunctionDefinition(
-    val slice: FunctionSlice,
+    val slice: FunctionParsedBlock,
     val functionName: String,
-    val definitionModel : MutableKATEObject,
+    val definitionModel: ModelProvider,
     parameterNames: Map<String, KATEType>?,
     returnedType: KATEType
 ) : CodeGen, BlockContainer {
 
     override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.functionDefinition
 
-    val definition = object : KATERecursiveFunction(slice, parameterNames, returnedType) {
-
-        override fun invoke(
-            model: KATEObject,
-            invokedOn: KATEValue,
-            explicitType: KATEType?,
-            parameters: List<ReferencedOrDirectValue>
-        ): ReferencedOrDirectValue {
-            return generateNow(parameters)
+    val definition =
+        object : KATERecursiveFunction(parentProvider = definitionModel, slice = slice, parameterNames, returnedType) {
+            override fun toString(): String = functionName + ' ' + super.toString()
         }
-
-        override fun toString(): String = functionName + ' ' + super.toString()
-    }
-
-    override fun getBlockValue(): LazyBlock {
-        return slice
-    }
 
     override fun generateTo(destination: DestinationStream) {
         definition.destination = destination
-        definitionModel.insertValue(functionName, definition)
+        definitionModel.model.insertValue(functionName, definition)
     }
 }
 
@@ -254,11 +265,14 @@ fun LazyBlock.parseFunctionDefinition(anonymousFunctionName: String?): FunctionD
             startsWith = "@function",
             endsWith = "@end_function",
             isDefaultNoRaw = false,
-            inheritModel = true
+            provider = ModelProvider.LateInit()
         )
+
+        val blockParser = FunctionSlice(slice = slice)
+
         return FunctionDefinition(
-            slice = FunctionSlice(slice = slice),
-            definitionModel = model,
+            slice = blockParser.parse(),
+            definitionModel = provider,
             functionName = functionName,
             parameterNames = parameters,
             returnedType = returnedType

@@ -22,7 +22,7 @@ class RawBlock(val value: String) : CodeGen {
     }
 }
 
-open class PartialRawLazyBlockSlice(
+class PartialRawLazyBlockSlice(
     parentBlock: LazyBlock,
     startPointer: Int,
     length: Int,
