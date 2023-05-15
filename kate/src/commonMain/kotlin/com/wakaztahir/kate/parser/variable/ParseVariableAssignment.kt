@@ -16,7 +16,7 @@ data class VariableAssignment(
     val variableName: String,
     val arithmeticOperatorType: ArithmeticOperatorType?,
     val variableValue: ReferencedOrDirectValue,
-    val model : MutableKATEObject,
+    val provider: ModelProvider,
 ) : AtDirective {
 
     override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.variableAssignment
@@ -47,7 +47,7 @@ data class VariableAssignment(
     }
 
     override fun generateTo(destination: DestinationStream) {
-        storeValue(model)
+        storeValue(provider.model)
     }
 }
 
@@ -100,7 +100,7 @@ internal fun LazyBlock.parseVariableAssignment(): VariableAssignment? {
             variableName = lhs.variableName,
             arithmeticOperatorType = lhs.type,
             variableValue = property,
-            model = model
+            provider = provider,
         )
     } else {
         throw VariableAssignmentException("variable value not found in variable assignment expression $lhs")

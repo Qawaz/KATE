@@ -37,7 +37,7 @@ sealed interface ModelReference {
 
 }
 
-class ModelDirective(override val propertyPath: List<ModelReference>, override val referenceModel: KATEObject) :
+class ModelDirective(override val propertyPath: List<ModelReference>, override val provider: ModelProvider) :
     ReferencedValue {
 
     init {
@@ -69,11 +69,11 @@ class ModelDirective(override val propertyPath: List<ModelReference>, override v
     }
 
     override fun getKATEValue(): KATEValue {
-        return getModelReferenceValueAndType(referenceModel).first
+        return getModelReferenceValueAndType(provider.model).first
     }
 
     override fun getKATEValueAndType(): Pair<KATEValue, KATEType?> {
-        return getModelReferenceValueAndType(referenceModel)
+        return getModelReferenceValueAndType(provider.model)
     }
 
     override fun toString(): String = propertyPath.joinToString(".")

@@ -22,14 +22,14 @@ class ObjectDeclarationBlockSlice(
     startPointer: Int,
     length: Int,
     blockEndPointer: Int,
-    override val model: ObjectDeclarationModel,
+    provider: ModelProvider,
     indentationLevel: Int
 ) : LazyBlockSlice(
     parentBlock = parentBlock,
     startPointer = startPointer,
     length = length,
     blockEndPointer = blockEndPointer,
-    model = model,
+    provider = provider,
     isDefaultNoRaw = false,
     indentationLevel = indentationLevel
 ) {

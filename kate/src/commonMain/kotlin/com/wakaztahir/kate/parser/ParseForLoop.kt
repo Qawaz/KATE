@@ -20,7 +20,7 @@ sealed interface ForLoop : BlockContainer {
 
     override fun generateTo(destination: DestinationStream) {
         forLoopBlock.hasBroken = false
-        iterate(forLoopBlock.model) {
+        iterate(forLoopBlock.provider.model) {
             forLoopBlock.generateTo(destination = destination)
         }
     }
@@ -143,7 +143,7 @@ class ForLoopContinue(val block: ForLoopParsedBlock) : CodeGen {
     }
 }
 
-class ForLoopParsedBlock(val model: MutableKATEObject, codeGens: List<CodeGenRange>) : ParsedBlock(codeGens) {
+class ForLoopParsedBlock(val provider: ModelProvider, codeGens: List<CodeGenRange>) : ParsedBlock(codeGens) {
     // if true , break one iteration of loop before next statement gets generated
     var haltGenFlag = false
     // if true , stop iterating after this iteration is complete
@@ -161,21 +161,21 @@ class ForLoopLazyBlockSlice(
     startPointer: Int,
     length: Int,
     blockEndPointer: Int,
-    model: ScopedModelObject,
+    provider: ModelProvider,
     isDefaultNoRaw: Boolean,
     indentationLevel: Int
 ) : LazyBlockSlice(
     parentBlock = parentBlock,
     startPointer = startPointer,
     length = length,
-    model = model,
+    provider = provider,
     blockEndPointer = blockEndPointer,
     isDefaultNoRaw = isDefaultNoRaw,
     indentationLevel = indentationLevel
 ) {
 
     private var parseTimes = 0
-    val forLoopBlock = ForLoopParsedBlock(model = this.model, mutableListOf())
+    val forLoopBlock = ForLoopParsedBlock(provider = this.provider, mutableListOf())
 
     private fun SourceStream.parseBreakForAtDirective(): ForLoopBreak? {
         return if (currentChar == '@' && increment("@break")) {
@@ -223,7 +223,7 @@ private fun LazyBlock.parseForBlockValue(): ForLoopLazyBlockSlice {
         startPointer = slice.startPointer,
         length = slice.length,
         blockEndPointer = slice.blockEndPointer,
-        model = slice.model as ScopedModelObject,
+        provider = slice.provider,
         isDefaultNoRaw = slice.isDefaultNoRaw,
         indentationLevel = indentationLevel + 1
     )

@@ -22,7 +22,8 @@ private fun SourceStream.parseObjectName(): String {
     }
 }
 
-class ObjectDeclarationParsedBlock(val model : ObjectDeclarationModel,codeGens: List<CodeGenRange>) : ParsedBlock(codeGens) {
+class ObjectDeclarationParsedBlock(val model: ObjectDeclarationModel, codeGens: List<CodeGenRange>) :
+    ParsedBlock(codeGens) {
     override fun generateTo(destination: DestinationStream) {
         for (range in codeGens) {
             range.gen.generateTo(destination = destination)
@@ -30,7 +31,11 @@ class ObjectDeclarationParsedBlock(val model : ObjectDeclarationModel,codeGens: 
     }
 }
 
-private fun LazyBlock.parseObjectDeclarationSlice(objectName: String, itemType: KATEType?): ObjectDeclarationParsedBlock {
+private fun LazyBlock.parseObjectDeclarationSlice(
+    objectName: String,
+    itemType: KATEType?
+): ObjectDeclarationParsedBlock {
+
     val slice = parseBlockSlice(
         startsWith = "@define_object",
         endsWith = "@end_define_object",
@@ -45,11 +50,11 @@ private fun LazyBlock.parseObjectDeclarationSlice(objectName: String, itemType: 
         startPointer = slice.startPointer,
         length = slice.length,
         blockEndPointer = slice.blockEndPointer,
-        model = current,
+        provider = ModelProvider.Single(current),
         indentationLevel = indentationLevel + 1
     ).parse()
 
-    return ObjectDeclarationParsedBlock(model = current,codeGens = block.codeGens)
+    return ObjectDeclarationParsedBlock(model = current, codeGens = block.codeGens)
 
 }
 

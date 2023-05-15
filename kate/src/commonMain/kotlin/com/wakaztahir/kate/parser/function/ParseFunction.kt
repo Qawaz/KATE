@@ -28,18 +28,17 @@ class FunctionSlice(
     startPointer: Int,
     length: Int,
     blockEndPointer: Int,
-    model: MutableKATEObject,
+    override val provider: ModelProvider.Changeable,
     indentationLevel: Int
 ) : PartialRawLazyBlockSlice(
     parentBlock = parentBlock,
     startPointer = startPointer,
     length = length,
     blockEndPointer = blockEndPointer,
-    model = model,
+    provider = provider,
     indentationLevel = indentationLevel
 ) {
 
-    override var model: MutableKATEObject = parentBlock.model
     var keepIterating: () -> Boolean = { true }
     var hasReturned = false
     var onReturnValueFound: (ReferencedOrDirectValue) -> Unit = {}
@@ -51,7 +50,7 @@ class FunctionSlice(
         startPointer = slice.startPointer,
         length = slice.length,
         blockEndPointer = slice.blockEndPointer,
-        model = slice.model,
+        provider = ModelProvider.Changeable(slice.provider.model),
         indentationLevel = slice.indentationLevel
     )
 
@@ -127,7 +126,7 @@ abstract class KATERecursiveFunction(
             previousModels.add(slice.model)
             previousPointers[invocationNumber - 1] = slice.source.pointer
         }
-        slice.model = ScopedModelObject(slice.parentBlock.model)
+        slice.provider.model =ScopedModelObject(slice.parentBlock.model)
         slice.model.forEachParam { paramName, paramType, index ->
             if (index < parameters.size) {
                 parameters[index].getKATEValueAndType().let {
@@ -143,7 +142,7 @@ abstract class KATERecursiveFunction(
     private fun endInvocation(): KATEValue {
         val returnedValue = returnedValues.remove(invocationNumber)?.getKATEValue() ?: KATEUnit
         invocationNumber--
-        if (previousModels.isNotEmpty()) slice.model = previousModels.removeLast()
+        if (previousModels.isNotEmpty()) slice.provider.model = previousModels.removeLast()
         previousPointers.remove(invocationNumber)?.let {
             slice.source.setPointerAt(it)
         }

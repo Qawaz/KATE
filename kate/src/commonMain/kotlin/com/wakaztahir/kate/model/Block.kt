@@ -16,7 +16,9 @@ interface LazyBlock {
 
     val source: SourceStream
 
-    val model: MutableKATEObject
+    val provider : ModelProvider
+
+    val model: MutableKATEObject get() = provider.model
 
     // Text that couldn't be processed by the parser is written to destination stream as it is
     val isDefaultNoRaw: Boolean
@@ -176,7 +178,7 @@ open class LazyBlockSlice(
     val startPointer: Int,
     val length: Int,
     val blockEndPointer: Int,
-    override val model: MutableKATEObject,
+    override val provider: ModelProvider,
     override val isDefaultNoRaw: Boolean,
     override val indentationLevel: Int
 ) : LazyBlock {

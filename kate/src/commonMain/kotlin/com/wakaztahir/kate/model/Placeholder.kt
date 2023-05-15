@@ -4,7 +4,6 @@ import com.wakaztahir.kate.dsl.ScopedModelObject
 import com.wakaztahir.kate.model.model.KATEValue
 import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
 import com.wakaztahir.kate.model.model.MutableKATEObject
-import com.wakaztahir.kate.parser.ParsedBlock
 import com.wakaztahir.kate.parser.stream.DestinationStream
 import com.wakaztahir.kate.parser.stream.PlaceholderManager
 import com.wakaztahir.kate.tokenizer.NodeTokenizer
@@ -17,7 +16,7 @@ open class PlaceholderBlock(
     startPointer: Int,
     length: Int,
     blockEndPointer: Int,
-    override var model: MutableKATEObject,
+    override val provider: ModelProvider.Changeable,
     isDefaultNoRaw: Boolean,
     indentationLevel: Int
 ) : LazyBlockSlice(
@@ -25,7 +24,7 @@ open class PlaceholderBlock(
     startPointer = startPointer,
     length = length,
     blockEndPointer = blockEndPointer,
-    model = model,
+    provider = provider,
     isDefaultNoRaw = isDefaultNoRaw,
     indentationLevel = indentationLevel
 ) {
@@ -38,7 +37,7 @@ open class PlaceholderBlock(
     }
 
     fun setInvocationModel(model: MutableKATEObject) {
-        this.model = ScopedModelObject(model)
+        this.provider.model = ScopedModelObject(model)
         isInvocationModelSet = true
     }
 

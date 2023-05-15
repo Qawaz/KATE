@@ -37,7 +37,7 @@ fun LazyBlock.parseBlockSlice(
         parentBlock = this,
         startPointer = previous,
         length = length,
-        model = model,
+        provider = ModelProvider.Single(model),
         blockEndPointer = source.pointer,
         isDefaultNoRaw = isDefaultNoRaw,
         indentationLevel = indentationLevel
@@ -133,7 +133,7 @@ fun LazyBlock.parsePartialRaw(): PartialRawBlock? {
             startPointer = slice.startPointer,
             length = slice.length,
             blockEndPointer = slice.blockEndPointer,
-            model = slice.model,
+            provider = slice.provider,
             indentationLevel = slice.indentationLevel
         )
 

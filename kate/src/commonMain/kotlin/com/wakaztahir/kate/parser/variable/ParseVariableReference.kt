@@ -105,7 +105,7 @@ internal fun LazyBlock.parseModelDirective(
     parseDotReferencesInto(
         parseDirectRefs = parseDirectRefs,
         throwOnEmptyVariableName = throwOnEmptyVariableName,
-    )?.let { return ModelDirective(it, model) }
+    )?.let { return ModelDirective(it, provider) }
     return null
 }
 

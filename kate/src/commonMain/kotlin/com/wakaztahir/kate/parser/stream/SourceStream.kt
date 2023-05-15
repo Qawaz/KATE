@@ -1,6 +1,7 @@
 package com.wakaztahir.kate.parser.stream
 
 import com.wakaztahir.kate.model.LazyBlock
+import com.wakaztahir.kate.model.ModelProvider
 import com.wakaztahir.kate.model.PlaceholderBlock
 import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.runtime.GlobalObjectImplementation
@@ -24,14 +25,16 @@ abstract class SourceStream {
 
     abstract val placeholderManager: PlaceholderManager
 
-    abstract val model : MutableKATEObject
+    abstract val model: MutableKATEObject
 
-    val block : LazyBlock = object : LazyBlock {
+    val block: LazyBlock = object : LazyBlock {
 
         override val source: SourceStream get() = this@SourceStream
 
-        override val model: MutableKATEObject
-            get() = source.model
+        override val provider: ModelProvider = object : ModelProvider {
+            override val model: MutableKATEObject
+                get() = source.model
+        }
 
         override val isDefaultNoRaw: Boolean
             get() = true

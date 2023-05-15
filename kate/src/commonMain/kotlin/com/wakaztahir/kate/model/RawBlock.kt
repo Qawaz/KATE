@@ -27,14 +27,14 @@ open class PartialRawLazyBlockSlice(
     startPointer: Int,
     length: Int,
     blockEndPointer: Int,
-    model: MutableKATEObject,
+    provider: ModelProvider,
     indentationLevel: Int
 ) : LazyBlockSlice(
     parentBlock = parentBlock,
     startPointer = startPointer,
     length = length,
     blockEndPointer = blockEndPointer,
-    model = model,
+    provider = provider,
     isDefaultNoRaw = false,
     indentationLevel = indentationLevel
 ) {
