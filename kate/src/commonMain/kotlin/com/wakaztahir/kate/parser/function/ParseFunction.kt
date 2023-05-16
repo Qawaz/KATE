@@ -1,5 +1,6 @@
 package com.wakaztahir.kate.parser.function
 
+import com.wakaztahir.kate.dsl.ScopedModelLazyParent
 import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.model.model.*
 import com.wakaztahir.kate.parser.*
@@ -27,9 +28,9 @@ class FunctionReturn(val block: FunctionParsedBlock, val value: ReferencedOrDire
 
 class FunctionParsedBlock(
     parentProvider: ModelProvider,
-    provider: ModelProvider.LateInit,
+    provider: ModelProvider.Changeable,
     codeGens: List<CodeGenRange>
-) : MultiInvocationBlock(
+) : NestableInvocationBlock(
     parentProvider = parentProvider, provider = provider, codeGens = codeGens
 ) {
     val returnedValues = hashMapOf<Int, KATEValue>()
@@ -55,7 +56,7 @@ class FunctionSlice(
     startPointer: Int,
     length: Int,
     blockEndPointer: Int,
-    override val provider: ModelProvider.LateInit,
+    override val provider: ModelProvider.Changeable,
     indentationLevel: Int
 ) : LazyBlockSlice(
     parentBlock = parentBlock,
@@ -71,15 +72,6 @@ class FunctionSlice(
 
     private val parsedBlock =
         FunctionParsedBlock(parentProvider = parentBlock.provider, provider = provider, codeGens = mutableListOf())
-
-    constructor(slice: LazyBlockSlice) : this(
-        parentBlock = slice.parentBlock,
-        startPointer = slice.startPointer,
-        length = slice.length,
-        blockEndPointer = slice.blockEndPointer,
-        provider = slice.provider as ModelProvider.LateInit,
-        indentationLevel = slice.indentationLevel
-    )
 
     override fun parse(): FunctionParsedBlock {
         parseTimes++
@@ -135,7 +127,7 @@ abstract class KATERecursiveFunction(
             if (index < parameters.size) {
                 parameters[index].let {
                     require(insertValue(paramName, it.first)) {
-                        "couldn't insert function parameter into model with name $paramName"
+                        "couldn't insert function(${parsedBlock.invocationNumber}) parameter with name $paramName = $it into model $this"
                     }
 //                    print("PARAM $paramName = ${it.first} FROM (${(parameters[index])}) , ")
                     it.second?.let { type -> setExplicitType(paramName, type) }
@@ -248,10 +240,17 @@ fun LazyBlock.parseFunctionDefinition(anonymousFunctionName: String?): FunctionD
             startsWith = "@function",
             endsWith = "@end_function",
             isDefaultNoRaw = false,
-            provider = ModelProvider.LateInit()
+            provider = ModelProvider.Changeable(ScopedModelLazyParent { provider.model })
         )
 
-        val blockParser = FunctionSlice(slice = slice)
+        val blockParser = FunctionSlice(
+            parentBlock = slice.parentBlock,
+            startPointer = slice.startPointer,
+            length = slice.length,
+            blockEndPointer = slice.blockEndPointer,
+            provider = slice.provider as ModelProvider.Changeable,
+            indentationLevel = slice.indentationLevel
+        )
 
         return FunctionDefinition(
             parsedBlock = blockParser.parse(),

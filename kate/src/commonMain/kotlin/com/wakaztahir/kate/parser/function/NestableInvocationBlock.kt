@@ -6,17 +6,19 @@ import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.parser.ParsedBlock
 import com.wakaztahir.kate.parser.stream.DestinationStream
 
-open class MultiInvocationBlock(
+open class NestableInvocationBlock(
     val parentProvider: ModelProvider,
-    val provider: ModelProvider.LateInit,
+    val provider: ModelProvider.Changeable,
     codeGens: List<CodeGenRange>
 ) : ParsedBlock(codeGens) {
     var invocationNumber = 0
+    private set
     private val previousModels by lazy { mutableListOf<MutableKATEObject>() }
     fun startInvocation() {
         invocationNumber++
-//        print("Preparing Function $invocationNumber ")
-        if (invocationNumber > 1) previousModels.add(provider.model)
+        if (invocationNumber > 1) {
+            previousModels.add(provider.model)
+        }
         provider.model = ScopedModelObject(parentProvider.model)
     }
 
