@@ -19,6 +19,7 @@ class ForLoopTest {
     fun parseForLoop() {
         val context = TemplateContext("@for(true) blockValue @endfor")
         val loop = context.stream.block.parseForLoop()!! as ForLoop.ConditionalFor
+        loop.parsedBlock.startInvocation()
         assertEquals("blockValue", loop.parsedBlock.generateToText())
     }
 
@@ -32,6 +33,7 @@ class ForLoopTest {
         var loop = context.stream.block.parseForLoop()!! as ForLoop.IterableFor
         assertEquals("listName", loop.elementConstName)
         assertEquals(null, loop.indexConstName)
+        loop.parsedBlock.startInvocation()
         assertEquals("blockValue", loop.parsedBlock.generateToText())
         assertEquals("mList", (loop.listProperty as ModelDirective).propertyPath[0].name)
         context.updateStream("@for(@var listName,indexName : @var(mList)) blockValue @endfor")
@@ -50,6 +52,7 @@ class ForLoopTest {
         assertEquals(5, loop.conditional.asPrimitive().value)
         assertEquals(operatorType, loop.arithmeticOperatorType)
         assertEquals(1, loop.incrementer.asPrimitive().value)
+        loop.parsedBlock.startInvocation()
         assertEquals("blockValue", loop.parsedBlock.generateToText())
     }
 

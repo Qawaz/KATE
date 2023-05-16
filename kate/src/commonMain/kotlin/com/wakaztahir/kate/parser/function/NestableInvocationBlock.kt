@@ -6,7 +6,7 @@ import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.parser.ParsedBlock
 import com.wakaztahir.kate.parser.stream.DestinationStream
 
-open class NestableInvocationBlock(
+abstract class NestableInvocationBlock(
     val parentProvider: ModelProvider,
     val provider: ModelProvider.Changeable,
     codeGens: List<CodeGenRange>

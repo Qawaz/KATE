@@ -4,6 +4,7 @@ import com.wakaztahir.kate.dsl.ScopedModelLazyParent
 import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.model.ConditionType
 import com.wakaztahir.kate.model.model.*
+import com.wakaztahir.kate.parser.function.NestableInvocationBlock
 import com.wakaztahir.kate.parser.stream.*
 import com.wakaztahir.kate.parser.stream.increment
 import com.wakaztahir.kate.parser.stream.parseTextWhile
@@ -20,9 +21,11 @@ sealed interface ForLoop : BlockContainer {
 
     override fun generateTo(destination: DestinationStream) {
         parsedBlock.hasBroken = false
+        parsedBlock.startInvocation()
         iterate(parsedBlock.provider.model) {
             parsedBlock.generateTo(destination = destination)
         }
+        parsedBlock.endInvocation()
     }
 
     class ConditionalFor(
@@ -110,9 +113,7 @@ sealed interface ForLoop : BlockContainer {
         }
 
         private fun MutableKATEObject.removeIndex() {
-            require(removeKey(variableName) != null) {
-                "couldn't remove index $variableName in numbered for loop"
-            }
+            removeKey(variableName)
         }
 
         override fun iterate(model: MutableKATEObject, block: (iteration: Int) -> Unit) {
@@ -147,7 +148,11 @@ class ForLoopContinue(val block: ForLoopParsedBlock) : CodeGen {
     }
 }
 
-class ForLoopParsedBlock(val provider: ModelProvider, codeGens: List<CodeGenRange>) : ParsedBlock(codeGens) {
+class ForLoopParsedBlock(parentProvider: ModelProvider,provider: ModelProvider.Changeable, codeGens: List<CodeGenRange>) : NestableInvocationBlock(
+    parentProvider = parentProvider,
+    provider = provider,
+    codeGens = codeGens
+) {
     // if true , stop iterating after this iteration is complete
     var hasBroken = false
     override fun onFunctionReturn() {
@@ -161,7 +166,7 @@ class ForLoopLazyBlockSlice(
     startPointer: Int,
     length: Int,
     blockEndPointer: Int,
-    provider: ModelProvider,
+    override val provider: ModelProvider.Changeable,
     isDefaultNoRaw: Boolean,
     indentationLevel: Int
 ) : LazyBlockSlice(
@@ -175,7 +180,7 @@ class ForLoopLazyBlockSlice(
 ) {
 
     private var parseTimes = 0
-    val forLoopBlock = ForLoopParsedBlock(provider = this.provider, mutableListOf())
+    val forLoopBlock = ForLoopParsedBlock(parentProvider = parentBlock.provider,provider = this.provider, mutableListOf())
 
     private fun SourceStream.parseBreakForAtDirective(): ForLoopBreak? {
         return if (currentChar == '@' && increment("@break")) {
@@ -216,14 +221,14 @@ private fun LazyBlock.parseForBlockValue(): ForLoopLazyBlockSlice {
         startsWith = "@for",
         endsWith = "@endfor",
         isDefaultNoRaw = isDefaultNoRaw,
-        provider = ModelProvider.Single(ScopedModelLazyParent { model })
+        provider = ModelProvider.Changeable(ScopedModelLazyParent { model })
     )
     return ForLoopLazyBlockSlice(
         parentBlock = this,
         startPointer = slice.startPointer,
         length = slice.length,
         blockEndPointer = slice.blockEndPointer,
-        provider = slice.provider,
+        provider = slice.provider as ModelProvider.Changeable,
         isDefaultNoRaw = slice.isDefaultNoRaw,
         indentationLevel = indentationLevel + 1
     )
