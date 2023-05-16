@@ -4,7 +4,7 @@ import com.wakaztahir.kate.model.CodeGen
 import com.wakaztahir.kate.parser.stream.DestinationStream
 import com.wakaztahir.kate.tokenizer.NodeTokenizer
 
-class KATEParsingError(val throwable: Throwable) : CodeGen, Throwable(cause = throwable) {
+class KATEParsingError(val throwable: Throwable) : CodeGen {
 
     override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.kateParsingError
 

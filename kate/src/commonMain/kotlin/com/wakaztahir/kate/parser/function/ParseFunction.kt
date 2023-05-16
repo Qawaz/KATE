@@ -1,6 +1,5 @@
 package com.wakaztahir.kate.parser.function
 
-import com.wakaztahir.kate.dsl.ScopedModelObject
 import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.model.model.*
 import com.wakaztahir.kate.parser.*
@@ -12,31 +11,39 @@ import com.wakaztahir.kate.parser.variable.isVariableName
 import com.wakaztahir.kate.parser.variable.parseKATEType
 import com.wakaztahir.kate.tokenizer.NodeTokenizer
 
-class FunctionReturn(val slice: FunctionParsedBlock, val value: ReferencedOrDirectValue) : CodeGen {
+class FunctionReturn(val block: FunctionParsedBlock, val value: ReferencedOrDirectValue) : CodeGen {
 
     override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.functionReturn
 
     override fun generateTo(destination: DestinationStream) {
-        slice.onReturnValueFound(value.getKATEValue())
-        slice.hasReturned = true
-        if (slice.currentGen is BlockContainer) {
-            (slice.currentGen as BlockContainer).parsedBlock.haltGenFlag = true
-            if(slice.currentGen is ForLoop){
-                (slice.currentGen as ForLoop).parsedBlock.hasBroken = true
-            }
+        block.returnedValues[block.invocationNumber] = value.getKATEValue()
+        block.haltGenFlag = true
+        if (block.currentGen is BlockContainer) {
+            (block.currentGen as BlockContainer).parsedBlock.onFunctionReturn()
         }
     }
 
 }
 
-class FunctionParsedBlock(val provider: ModelProvider.LateInit, codeGens: List<CodeGenRange>) : ParsedBlock(codeGens) {
-    var hasReturned = false
-    var onReturnValueFound: (KATEValue) -> Unit = {}
+class FunctionParsedBlock(
+    parentProvider: ModelProvider,
+    provider: ModelProvider.LateInit,
+    codeGens: List<CodeGenRange>
+) : MultiInvocationBlock(
+    parentProvider = parentProvider, provider = provider, codeGens = codeGens
+) {
+    val returnedValues = hashMapOf<Int, KATEValue>()
     var currentGen: CodeGen? = null
+    fun endInvocationAndGetReturnedValue(): KATEValue {
+        val returnedValue = returnedValues.remove(invocationNumber)?.getKATEValue() ?: KATEUnit
+        endInvocation()
+        return returnedValue
+    }
+
     override fun generateTo(destination: DestinationStream) {
-        hasReturned = false
+        haltGenFlag = false
         for (gen in codeGens) {
-            if (hasReturned) break
+            if (haltGenFlag) break
             currentGen = gen.gen
             gen.gen.generateTo(destination)
         }
@@ -62,7 +69,8 @@ class FunctionSlice(
 
     private var parseTimes = 0
 
-    private val parsedBlock = FunctionParsedBlock(provider = provider, codeGens = mutableListOf())
+    private val parsedBlock =
+        FunctionParsedBlock(parentProvider = parentBlock.provider, provider = provider, codeGens = mutableListOf())
 
     constructor(slice: LazyBlockSlice) : this(
         parentBlock = slice.parentBlock,
@@ -75,7 +83,7 @@ class FunctionSlice(
 
     override fun parse(): FunctionParsedBlock {
         parseTimes++
-        if (parseTimes > 2) throw IllegalStateException("one instance can parse one block")
+        if (parseTimes > 1) throw IllegalStateException("one instance can parse one block")
         val parsed = super.parse()
         (parsedBlock.codeGens as MutableList).addAll(parsed.codeGens)
         return parsedBlock
@@ -90,41 +98,24 @@ class FunctionSlice(
 }
 
 abstract class KATERecursiveFunction(
-    val parentProvider: ModelProvider,
-    val slice: FunctionParsedBlock,
+    val parsedBlock: FunctionParsedBlock,
     val parameterNames: List<String>?,
     parameterTypes: List<KATEType>?,
     returnedType: KATEType,
 ) : KATEFunction(returnedType, parameterTypes) {
 
     constructor(
-        parentProvider: ModelProvider,
         slice: FunctionParsedBlock,
         parameterNameAndTypes: Map<String, KATEType>?,
         returnedType: KATEType,
     ) : this(
-        parentProvider = parentProvider,
-        slice = slice,
+        parsedBlock = slice,
         parameterNames = parameterNameAndTypes?.keys?.toList(),
         parameterTypes = parameterNameAndTypes?.values?.toList(),
         returnedType = returnedType
     )
 
     var destination: DestinationStream? = null
-
-    private var invocationNumber = 0
-    private var returnedValues = hashMapOf<Int, KATEValue>()
-    private val previousModels = mutableListOf<MutableKATEObject>()
-//    private val previousPointers = hashMapOf<Int, Int>()
-
-    init {
-        slice.onReturnValueFound = {
-            returnedValues[invocationNumber] = it
-        }
-//        slice.keepIterating = {
-//            !returnedValues.containsKey(invocationNumber)
-//        }
-    }
 
     private inline fun KATEObject.forEachParam(block: MutableKATEObject.(String, KATEType, Int) -> Unit) {
         (this as? MutableKATEObject)?.let {
@@ -139,15 +130,8 @@ abstract class KATERecursiveFunction(
         }
     }
 
-    private fun startInvocation(parameters: List<Pair<KATEValue, KATEType?>>) {
-        invocationNumber++
-//        print("Preparing Function $invocationNumber ")
-        if (invocationNumber > 1) {
-            previousModels.add(slice.provider.model)
-//            previousPointers[invocationNumber - 1] = slice.source.pointer
-        }
-        slice.provider.model = ScopedModelObject(parentProvider.model)
-        slice.provider.model.forEachParam { paramName, paramType, index ->
+    private fun putParametersIntoBlock(parameters: List<Pair<KATEValue, KATEType?>>) {
+        parsedBlock.provider.model.forEachParam { paramName, paramType, index ->
             if (index < parameters.size) {
                 parameters[index].let {
                     require(insertValue(paramName, it.first)) {
@@ -163,20 +147,11 @@ abstract class KATERecursiveFunction(
         }
     }
 
-    private fun endInvocation(): KATEValue {
-        val returnedValue = returnedValues.remove(invocationNumber)?.getKATEValue() ?: KATEUnit
-        invocationNumber--
-        if (previousModels.isNotEmpty()) slice.provider.model = previousModels.removeLast()
-//        previousPointers.remove(invocationNumber)?.let {
-//            slice.source.setPointerAt(it)
-//        }
-        return returnedValue
-    }
-
     private fun generateNow(parameters: List<Pair<KATEValue, KATEType?>>): KATEValue {
-        startInvocation(parameters = parameters)
-        slice.generateTo(destination!!)
-        return endInvocation()
+        parsedBlock.startInvocation()
+        putParametersIntoBlock(parameters = parameters)
+        parsedBlock.generateTo(destination!!)
+        return parsedBlock.endInvocationAndGetReturnedValue()
     }
 
     override fun invoke(
@@ -201,7 +176,7 @@ class FunctionDefinition(
     override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.functionDefinition
 
     val definition =
-        object : KATERecursiveFunction(parentProvider = definitionModel, slice = parsedBlock, parameterNames, returnedType) {
+        object : KATERecursiveFunction(slice = parsedBlock, parameterNames, returnedType) {
             override fun toString(): String = functionName + ' ' + super.toString()
         }
 

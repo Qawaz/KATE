@@ -110,7 +110,9 @@ sealed interface ForLoop : BlockContainer {
         }
 
         private fun MutableKATEObject.removeIndex() {
-            removeKey(variableName)
+            require(removeKey(variableName) != null) {
+                "couldn't remove index $variableName in numbered for loop"
+            }
         }
 
         override fun iterate(model: MutableKATEObject, block: (iteration: Int) -> Unit) {
@@ -148,6 +150,10 @@ class ForLoopContinue(val block: ForLoopParsedBlock) : CodeGen {
 class ForLoopParsedBlock(val provider: ModelProvider, codeGens: List<CodeGenRange>) : ParsedBlock(codeGens) {
     // if true , stop iterating after this iteration is complete
     var hasBroken = false
+    override fun onFunctionReturn() {
+        super.onFunctionReturn()
+        this.hasBroken = true
+    }
 }
 
 class ForLoopLazyBlockSlice(
@@ -192,7 +198,7 @@ class ForLoopLazyBlockSlice(
 
     override fun parse(): ForLoopParsedBlock {
         parseTimes++
-        if (parseTimes > 2) throw IllegalStateException("one instance can parse one block")
+        if (parseTimes > 1) throw IllegalStateException("one instance can parse one block")
         (forLoopBlock.codeGens as MutableList).addAll(super.parse().codeGens)
         return forLoopBlock
     }

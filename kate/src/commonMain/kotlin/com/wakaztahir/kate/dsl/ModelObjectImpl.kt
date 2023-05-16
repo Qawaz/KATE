@@ -104,8 +104,8 @@ open class ModelObjectImpl(
         }
     }
 
-    override fun removeKey(key: String) {
-        container.remove(key)
+    override fun removeKey(key: String): KATEValue? {
+        return container.remove(key)
     }
 
     override fun removeAll() {

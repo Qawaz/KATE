@@ -48,7 +48,7 @@ interface MutableKATEObject : KATEObject {
 
     fun rename(key: String, other: String)
 
-    fun removeKey(key: String)
+    fun removeKey(key: String) : KATEValue?
 
     fun removeAll()
 
