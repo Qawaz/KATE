@@ -9,6 +9,7 @@ import com.wakaztahir.kate.parser.stream.getErrorInfoAtCurrentPointer
 import com.wakaztahir.kate.parser.stream.printErrorLineNumberAndCharacterIndex
 import org.junit.Test
 import java.io.File
+import java.io.InputStream
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 
@@ -52,7 +53,6 @@ class TestTemplates {
 
     private fun output(path: String): OutputDestinationStream {
         val file = File("src/jvmTest/resources/$path")
-        println(file.absolutePath)
         val outputStream = file.outputStream()
         return OutputDestinationStream(outputStream)
     }
@@ -95,14 +95,41 @@ class TestTemplates {
         return getContextFor(basePath = basePath, inputPath, model = model).getDestinationAsString()
     }
 
+    private fun compareInputStreams(path: String, first: InputStream, second: InputStream) {
+        var lines = 1
+        var charAt = 0
+        var firstChar = first.read()
+        var secondChar = second.read()
+        while (firstChar != -1 && secondChar != -1) {
+            if (firstChar != secondChar) {
+                throw IllegalStateException("${firstChar.toChar()} != ${secondChar.toChar()} in path $path($lines:$charAt)")
+            } else {
+                charAt++
+                if (firstChar.toChar() == '\n') {
+                    lines++
+                    charAt = 0
+                }
+            }
+            firstChar = first.read()
+            secondChar = second.read()
+        }
+        if (firstChar == -1 && secondChar == -1) {
+            return
+        } else {
+            throw IllegalStateException("${firstChar.toChar()} != ${secondChar.toChar()} in path $path($lines:$charAt)")
+        }
+    }
+
     private fun testTemplate(
         basePath: String,
         inputPath: String,
         outputPath: String,
+        expectedPath: String = outputPath,
         model: MutableKATEObject = MutableKATEObject { }
     ) {
         val context = getContextFor(basePath = basePath, inputPath = inputPath, model = model)
-        val output = output("output/$outputPath")
+        val outputFile = File("src/jvmTest/resources/output/$outputPath")
+        val output = OutputDestinationStream(outputFile.outputStream())
         try {
             context.generateTo(output)
         } catch (e: Exception) {
@@ -110,6 +137,12 @@ class TestTemplates {
             throw e
         }
         output.outputStream.close()
+        val generatedStream = outputFile.inputStream()
+        val expectedFile = File("src/jvmTest/resources/expected/$expectedPath")
+        val expectedStream = expectedFile.inputStream()
+        compareInputStreams("src/jvmTest/resources/output/$outputPath",generatedStream,expectedStream)
+        generatedStream.close()
+        expectedStream.close()
     }
 
     private fun testSchemaTemplate(basePath: String, inputPath: String, outputPath: String) {

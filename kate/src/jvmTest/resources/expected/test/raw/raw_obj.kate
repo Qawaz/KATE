@@ -1,0 +1,19 @@
+{
+	NestedObject : object = {
+		testList : list<int> = 1,2,3,4
+		testMList : mutable_list<double> = 1.2,3.4,5.6,3.4
+		testBoolean : boolean = false
+		testChar : char = s
+		testVariable : string = My First Variable
+		testDouble : double = 0.123433
+		testLong : long = 12322
+	}
+	testList : list<int> = 1,2,3,4
+	testMList : mutable_list<double> = 1.2,3.4,5.6,3.4
+	testBoolean : boolean = false
+	testChar : char = s
+	testVariable : string = My First Variable
+	testListList : list<any> = 1,2,3,4,5,6
+	testDouble : double = 0.123433
+	testLong : long = 12322
+}
