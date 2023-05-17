@@ -16,7 +16,7 @@ interface LazyBlock {
 
     val source: SourceStream
 
-    val provider : ModelProvider
+    val provider: ModelProvider
 
     val model: MutableKATEObject get() = provider.model
 
@@ -30,14 +30,7 @@ interface LazyBlock {
 
     private fun MutableList<ParsedBlock.CodeGenRange>.appendCurrentChar() {
         if (isNotEmpty() && last().gen is DefaultNoRawString) {
-            val defaultNoRawString = removeLast()
-            add(
-                ParsedBlock.CodeGenRange(
-                    gen = defaultNoRawString.gen.also { (it as DefaultNoRawString).stringValue += source.currentChar },
-                    start = defaultNoRawString.start,
-                    end = source.pointer + 1
-                )
-            )
+            last().incrementEndForDefaultNoRawStringGen(source.currentChar)
         } else {
             add(
                 ParsedBlock.CodeGenRange(
@@ -117,9 +110,9 @@ interface LazyBlock {
 
     fun parseImplicitDirectives(): CodeGen? {
         parseVariableReferenceAsExpression(parseDirectRefs = !isDefaultNoRaw)?.let {
-            if(isDefaultNoRaw || it.first) {
-                return DefaultNoRawExpression(source = source, value = it.second,provider = provider)
-            }else {
+            if (isDefaultNoRaw || it.first) {
+                return DefaultNoRawExpression(source = source, value = it.second, provider = provider)
+            } else {
                 return PartialRawFunctionCall(it.second)
             }
         }
