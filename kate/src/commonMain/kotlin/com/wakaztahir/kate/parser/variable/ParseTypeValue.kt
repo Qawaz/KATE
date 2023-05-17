@@ -79,6 +79,11 @@ fun LazyBlock.parseValueOfType(
             return null
         }
 
+        is KATEType.Enum -> {
+            // TODO enum should be parsed
+            return null
+        }
+
         is KATEType.Function -> {
             // TODO function should be parsed
             return null

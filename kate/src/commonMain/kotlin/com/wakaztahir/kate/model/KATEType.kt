@@ -1,5 +1,6 @@
 package com.wakaztahir.kate.model
 
+import com.wakaztahir.kate.model.model.KATEList
 import com.wakaztahir.kate.model.model.KATEValue
 
 sealed class KATEType {
@@ -123,6 +124,14 @@ sealed class KATEType {
 
         override fun satisfiedBy(valueOfType: KATEType): kotlin.Boolean = valueOfType is Boolean
 
+    }
+
+    class Enum(val values : KATEList<StringValue>) : KATEType() {
+        override fun getPlaceholderName(): kotlin.String = "enum"
+
+        override fun getKATEType(): kotlin.String = "enum"
+
+        override fun satisfiedBy(valueOfType: KATEType): kotlin.Boolean = valueOfType is Enum && values == valueOfType.values
     }
 
     open class List(val itemType: KATEType) : KATEType() {
