@@ -23,7 +23,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                api(project(":kate-parser"))
+
             }
         }
         val commonTest by getting {
