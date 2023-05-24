@@ -1,7 +1,6 @@
 package com.wakaztahir.kate.parser.block
 
 import com.wakaztahir.kate.model.CodeGen
-import com.wakaztahir.kate.model.block.DefaultNoRawString
 import com.wakaztahir.kate.parser.stream.DestinationStream
 import com.wakaztahir.kate.parser.stream.TextDestinationStream
 import com.wakaztahir.kate.tokenizer.NodeTokenizer

@@ -1,7 +1,7 @@
 package com.wakaztahir.kate.model
 
 import com.wakaztahir.kate.KATEDelicateFunction
-import com.wakaztahir.kate.model.block.DefaultNoRawString
+import com.wakaztahir.kate.parser.block.DefaultNoRawString
 import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.parser.*
 import com.wakaztahir.kate.parser.block.ParsedBlock
