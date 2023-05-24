@@ -1,4 +1,4 @@
-package com.wakaztahir.kate.parser
+package com.wakaztahir.kate.parser.block
 
 import com.wakaztahir.kate.model.CodeGen
 import com.wakaztahir.kate.model.block.DefaultNoRawString

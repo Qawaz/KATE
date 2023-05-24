@@ -2,7 +2,7 @@ package com.wakaztahir.kate.model
 
 import com.wakaztahir.kate.dsl.ScopedModelObject
 import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
-import com.wakaztahir.kate.parser.ParsedBlock
+import com.wakaztahir.kate.parser.block.ParsedBlock
 import com.wakaztahir.kate.parser.stream.DestinationStream
 import com.wakaztahir.kate.parser.stream.PlaceholderManager
 import com.wakaztahir.kate.tokenizer.NodeTokenizer
@@ -35,22 +35,22 @@ class PlaceholderInvocation(
 ) : CodeGen {
     override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T = tokenizer.placeholderInvocation
     override fun generateTo(destination: DestinationStream) {
-        val invocationModel = invocationProvider.model
         val placeholder = (if (definitionName == null)
             placeholderManager.getPlaceholder(placeholderName = placeholderName)
         else placeholderManager.getPlaceholder(
             placeholderName = placeholderName,
             definitionName = definitionName
         )) ?: throw IllegalStateException("placeholder with name $placeholderName not found")
-        placeholder.provider.model = ScopedModelObject(invocationModel)
+        val model = ScopedModelObject(invocationProvider.model)
+        placeholder.provider.model = model
         paramValue?.getKATEValue()?.let {
-            require(invocationModel.insertValue(placeholder.parameterName, it)) {
+            require(model.insertValue(placeholder.parameterName, it)) {
                 "couldn't insert value by the name ${placeholder.parameterName} and $paramValue for placeholder invocation placeholder($placeholderName,$definitionName,${placeholder.parameterName})"
             }
         }
         placeholder.generateTo(destination)
         if (paramValue != null) {
-            invocationModel.removeKey(placeholder.parameterName)
+            model.removeKey(placeholder.parameterName)
         }
     }
 }

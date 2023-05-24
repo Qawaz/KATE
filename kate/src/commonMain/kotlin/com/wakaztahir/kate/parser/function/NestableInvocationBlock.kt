@@ -3,7 +3,7 @@ package com.wakaztahir.kate.parser.function
 import com.wakaztahir.kate.dsl.ScopedModelObject
 import com.wakaztahir.kate.model.ModelProvider
 import com.wakaztahir.kate.model.model.MutableKATEObject
-import com.wakaztahir.kate.parser.ParsedBlock
+import com.wakaztahir.kate.parser.block.ParsedBlock
 import com.wakaztahir.kate.parser.stream.DestinationStream
 
 abstract class NestableInvocationBlock(

@@ -4,7 +4,7 @@ import com.wakaztahir.kate.model.LazyBlock
 
 internal class UnexpectedEndOfStream(message: String) : Exception(message)
 
-internal fun SourceStream.increment(char: Char): Boolean {
+fun SourceStream.increment(char: Char): Boolean {
     return if (!hasEnded && currentChar == char) {
         return incrementPointer()
     } else {

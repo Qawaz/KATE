@@ -2,7 +2,7 @@ package com.wakaztahir.kate.model
 
 import com.wakaztahir.kate.model.model.KATEValue
 import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
-import com.wakaztahir.kate.parser.ParsedBlock
+import com.wakaztahir.kate.parser.block.ParsedBlock
 import com.wakaztahir.kate.parser.stream.DestinationStream
 import com.wakaztahir.kate.tokenizer.NodeTokenizer
 

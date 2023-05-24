@@ -2,9 +2,10 @@ package com.wakaztahir.kate.model
 
 import com.wakaztahir.kate.KATEDelicateFunction
 import com.wakaztahir.kate.model.block.DefaultNoRawString
-import com.wakaztahir.kate.model.model.KATEParsingError
 import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.parser.*
+import com.wakaztahir.kate.parser.block.ParsedBlock
+import com.wakaztahir.kate.parser.block.parse
 import com.wakaztahir.kate.parser.function.parseFunctionDefinition
 import com.wakaztahir.kate.parser.stream.*
 import com.wakaztahir.kate.parser.stream.increment
@@ -28,13 +29,13 @@ interface LazyBlock {
 
     fun canIterate(): Boolean
 
-    private fun MutableList<ParsedBlock.CodeGenRange>.appendCurrentChar() {
+    private fun MutableList<ParsedBlock.CodeGenRange>.appendChar(char: Char) {
         if (isNotEmpty() && last().gen is DefaultNoRawString) {
-            last().incrementEndForDefaultNoRawStringGen(source.currentChar)
+            last().incrementEndForDefaultNoRawStringGen(char)
         } else {
             add(
                 ParsedBlock.CodeGenRange(
-                    gen = DefaultNoRawString("${source.currentChar}"),
+                    gen = DefaultNoRawString("$char"),
                     start = source.pointer,
                     end = source.pointer + 1
                 )
@@ -44,44 +45,10 @@ interface LazyBlock {
 
     fun parse(): ParsedBlock {
         val gens = mutableListOf<ParsedBlock.CodeGenRange>()
-        var blockLineNumber = 1
-        var hasConsumedFirstLineIndentation = false
-        while (canIterate()) {
-            val previous = source.pointer
-            val directive = try {
-                parseAtDirective()
-            } catch (e: Throwable) {
-                KATEParsingError(e)
-            }
-            if (directive != null) {
-                gens.add(ParsedBlock.CodeGenRange(gen = directive, start = previous, end = source.pointer))
-                if (!source.hasEnded && directive.expectSpaceOrNewLineWithIndentationAfterwards) {
-                    if (!source.increment('\n')) {
-                        source.increment(' ')
-                    } else {
-                        consumeLineIndentation()
-                    }
-                } else if (directive.isEmptyWriter) {
-                    source.increment(' ')
-                }
-            } else {
-                if (isDefaultNoRaw) {
-                    if (blockLineNumber == 1 && (source.currentChar == '\t' || source.currentChar == ' ') && indentationLevel > 0 && !hasConsumedFirstLineIndentation) {
-                        consumeLineIndentation()
-                        hasConsumedFirstLineIndentation = true
-                        continue
-                    } else {
-                        gens.appendCurrentChar()
-                    }
-                }
-                val isNewLine = source.currentChar == '\n'
-                source.incrementPointer()
-                if (isNewLine) {
-                    consumeLineIndentation()
-                    blockLineNumber++
-                }
-            }
-        }
+        parse(
+            onDirective = { gens.add(it) },
+            onDefaultNoRawChar = { gens.appendChar(it) }
+        )
         return ParsedBlock(codeGens = gens)
     }
 

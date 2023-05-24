@@ -1,7 +1,7 @@
 package com.wakaztahir.kate.parser.stream
 
 import com.wakaztahir.kate.model.LazyBlock
-import com.wakaztahir.kate.parser.ParsedBlock
+import com.wakaztahir.kate.parser.block.ParsedBlock
 
 interface EmbeddingManager {
 

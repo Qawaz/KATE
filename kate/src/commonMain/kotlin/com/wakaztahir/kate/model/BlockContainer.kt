@@ -1,6 +1,6 @@
 package com.wakaztahir.kate.model
 
-import com.wakaztahir.kate.parser.ParsedBlock
+import com.wakaztahir.kate.parser.block.ParsedBlock
 
 interface BlockContainer : AtDirective {
 

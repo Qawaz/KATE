@@ -1,6 +1,7 @@
 package com.wakaztahir.kate.parser
 
 import com.wakaztahir.kate.model.*
+import com.wakaztahir.kate.parser.block.ParsedBlock
 import com.wakaztahir.kate.parser.stream.DestinationStream
 import com.wakaztahir.kate.parser.stream.SourceStream
 import com.wakaztahir.kate.parser.stream.increment
