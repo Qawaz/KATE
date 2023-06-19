@@ -1,6 +1,8 @@
 package com.wakaztahir.kate.parser
 
 import com.wakaztahir.kate.dsl.ScopedModelLazyParent
+import com.wakaztahir.kate.lexer.tokens.StaticTokens
+import com.wakaztahir.kate.lexer.tokens.StringStaticToken
 import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.parser.block.ParsedBlock
@@ -8,8 +10,8 @@ import com.wakaztahir.kate.parser.stream.*
 import com.wakaztahir.kate.parser.stream.increment
 
 fun LazyBlock.parseBlockSlice(
-    startsWith: String,
-    endsWith: String,
+    startsWith: StringStaticToken,
+    endsWith: StringStaticToken,
     isDefaultNoRaw: Boolean,
     provider: ModelProvider,
     indentationLevel: Int = this.indentationLevel + 1
@@ -20,7 +22,7 @@ fun LazyBlock.parseBlockSlice(
     val previous = source.pointer
 
     val ender: String = source.incrementUntilDirectiveWithSkip(startsWith) {
-        if (source.increment(endsWith)) endsWith else null
+        source.incrementAndReturnDirective(endsWith)
     } ?: throw IllegalStateException("$startsWith must end with $endsWith")
 
 
@@ -47,8 +49,8 @@ fun LazyBlock.parseBlockSlice(
 }
 
 fun LazyBlock.parseBlockSlice(
-    startsWith: String,
-    endsWith: String,
+    startsWith: StringStaticToken,
+    endsWith: StringStaticToken,
     isDefaultNoRaw: Boolean,
     inheritModel: Boolean,
     indentationLevel: Int = this.indentationLevel + 1
@@ -56,7 +58,7 @@ fun LazyBlock.parseBlockSlice(
     startsWith = startsWith,
     endsWith = endsWith,
     isDefaultNoRaw = isDefaultNoRaw,
-    provider = if(inheritModel) provider else ModelProvider.Single(ScopedModelLazyParent{ model }),
+    provider = if (inheritModel) provider else ModelProvider.Single(ScopedModelLazyParent { model }),
     indentationLevel = indentationLevel
 )
 
@@ -75,7 +77,7 @@ private fun String.deIndented(indentationLevel: Int): String {
     var text = ""
     while (i < length) {
         if ((i == 0 || this[i - 1] == '\n') &&
-            (this[i] == '\t' || (this.containsAt(i,"    ")))
+            (this[i] == '\t' || (this.containsAt(i, "    ")))
             && indentationLevel > 0
         ) {
             var x = 0
@@ -98,20 +100,20 @@ private fun String.deIndented(indentationLevel: Int): String {
 
 fun LazyBlock.parseRawBlockText(): String {
     escapeBlockSpacesForward()
-    var text = source.parseTextUntilConsumedNew("@endraw")
+    var text = source.parseTextUntilConsumedDirectiveNew(StaticTokens.EndRaw)
         ?: throw IllegalStateException("@raw must end with @endraw")
     text = text.deIndented(indentationLevel + 1)
     return text.escapeBlockSpacesBackward(indentationLevel)
 }
 
 fun LazyBlock.parseRawBlock(): RawBlock? {
-    if (source.currentChar == '@' && source.increment("@raw")) {
+    if (source.incrementDirective(StaticTokens.Raw)) {
         return RawBlock(parseRawBlockText())
     }
     return null
 }
 
-class PartialRawParsedBlock(val model : MutableKATEObject,codeGens: List<CodeGenRange>) : ParsedBlock(codeGens) {
+class PartialRawParsedBlock(val model: MutableKATEObject, codeGens: List<CodeGenRange>) : ParsedBlock(codeGens) {
     override fun generateTo(destination: DestinationStream) {
         for (range in codeGens) {
             range.gen.generateTo(destination = destination)
@@ -120,11 +122,11 @@ class PartialRawParsedBlock(val model : MutableKATEObject,codeGens: List<CodeGen
 }
 
 fun LazyBlock.parsePartialRaw(): PartialRawBlock? {
-    if (source.currentChar == '@' && source.increment("@partial_raw")) {
+    if (source.incrementDirective(StaticTokens.PartialRaw)) {
 
         val slice = parseBlockSlice(
-            startsWith = "@partial_raw",
-            endsWith = "@end_partial_raw",
+            startsWith = StaticTokens.PartialRaw,
+            endsWith = StaticTokens.EndPartialRaw,
             isDefaultNoRaw = false,
             inheritModel = true
         )
@@ -149,11 +151,11 @@ fun LazyBlock.parsePartialRaw(): PartialRawBlock? {
 }
 
 fun LazyBlock.parseDefaultNoRaw(): DefaultNoRawBlock? {
-    if (source.currentChar == '@' && source.increment("@default_no_raw")) {
+    if (source.incrementDirective(StaticTokens.DefaultNoRaw)) {
         return DefaultNoRawBlock(
             parseBlockSlice(
-                startsWith = "@default_no_raw",
-                endsWith = "@end_default_no_raw",
+                startsWith = StaticTokens.DefaultNoRaw,
+                endsWith = StaticTokens.EndDefaultNoRaw,
                 isDefaultNoRaw = true,
                 inheritModel = true
             ).parse()

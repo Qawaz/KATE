@@ -1,5 +1,6 @@
 package com.wakaztahir.kate.parser.variable
 
+import com.wakaztahir.kate.lexer.tokens.StaticTokens
 import com.wakaztahir.kate.model.BooleanValue
 import com.wakaztahir.kate.model.LazyBlock
 import com.wakaztahir.kate.model.ModelDirective
@@ -16,8 +17,8 @@ import com.wakaztahir.kate.parser.stream.increment
 import com.wakaztahir.kate.parser.stream.parseTextWhile
 
 internal fun LazyBlock.parseFunctionParameters(): List<ReferencedOrDirectValue>? {
-    if (source.increment('(')) {
-        if (source.increment(')')) {
+    if (source.increment(StaticTokens.LeftParenthesis)) {
+        if (source.increment(StaticTokens.RightParenthesis)) {
             return emptyList()
         }
         val parameters = mutableListOf<ReferencedOrDirectValue>()
@@ -30,8 +31,8 @@ internal fun LazyBlock.parseFunctionParameters(): List<ReferencedOrDirectValue>?
             } else {
                 break
             }
-        } while (source.increment(','))
-        if (!source.increment(')')) {
+        } while (source.increment(StaticTokens.Comma))
+        if (!source.increment(StaticTokens.RightParenthesis)) {
             source.printErrorLineNumberAndCharacterIndex()
             throw IllegalStateException("a function call must end with ')' but instead found ${source.currentChar}")
         }
@@ -50,10 +51,10 @@ private fun LazyBlock.parseIndexingOperatorValue(parseDirectRefs: Boolean): Refe
 internal fun LazyBlock.parseIndexingOperatorCall(
     parseDirectRefs: Boolean,
 ): ModelReference.FunctionCall? {
-    if (source.increment('[')) {
+    if (source.increment(StaticTokens.LeftBracket)) {
         val indexingValue = parseIndexingOperatorValue(parseDirectRefs)
             ?: throw IllegalStateException("couldn't get indexing value inside indexing operator")
-        if (source.increment(']')) {
+        if (source.increment(StaticTokens.RightBracket)) {
             return ModelReference.FunctionCall(
                 name = "get",
                 parametersList = listOf(indexingValue)
@@ -92,7 +93,7 @@ internal fun LazyBlock.parseDotReferencesInto(
             propertyPath.add(ModelReference.Property(propertyName))
         }
         parseIndexingOperatorCall(parseDirectRefs = parseDirectRefs)?.let { propertyPath.add(it) }
-    } while (source.increment('.'))
+    } while (source.increment(StaticTokens.Dot))
     return propertyPath
 }
 
@@ -110,28 +111,28 @@ internal fun LazyBlock.parseModelDirective(
 }
 
 // returns a pair , where first value tells whether the expression is inside @var() or direct
-internal fun LazyBlock.parseVariableReferenceAsExpression(parseDirectRefs: Boolean): Pair<Boolean,ReferencedOrDirectValue>? {
-    if (source.currentChar == '@' && source.increment("@var(")) {
+internal fun LazyBlock.parseVariableReferenceAsExpression(parseDirectRefs: Boolean): Pair<Boolean, ReferencedOrDirectValue>? {
+    if (source.incrementDirective(StaticTokens.Var, StaticTokens.LeftParenthesis)) {
         val expression = parseAnyExpressionOrValue(parseDirectRefs = true)
-        if (!source.increment(')')) {
+        if (!source.increment(StaticTokens.RightParenthesis)) {
             source.printErrorLineNumberAndCharacterIndex()
-            throw VariableReferenceParseException("expected ')' got ${source.currentChar} at ${source.pointer}")
+            throw VariableReferenceParseException("expected '${StaticTokens.RightParenthesis}' got ${source.currentChar} at ${source.pointer}")
         }
-        return expression?.let { Pair(true,it) }
+        return expression?.let { Pair(true, it) }
     }
     if (parseDirectRefs) return parseModelDirective(
         parseDirectRefs = true,
         throwOnEmptyVariableName = false
-    )?.let { return Pair(false,it) }
+    )?.let { return Pair(false, it) }
     return null
 }
 
 internal fun LazyBlock.parseVariableReference(parseDirectRefs: Boolean): ReferencedValue? {
-    if (source.currentChar == '@' && source.increment("@var(")) {
+    if (source.incrementDirective(StaticTokens.Var, StaticTokens.LeftParenthesis)) {
         val directive = parseModelDirective(parseDirectRefs = true, throwOnEmptyVariableName = true)
-        if (!source.increment(')')) {
+        if (!source.increment(StaticTokens.RightParenthesis)) {
             source.printErrorLineNumberAndCharacterIndex()
-            throw VariableReferenceParseException("expected ')' got ${source.currentChar} at ${source.pointer}")
+            throw VariableReferenceParseException("expected ${StaticTokens.RightParenthesis} got ${source.currentChar} at ${source.pointer}")
         }
         return directive
     }

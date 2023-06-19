@@ -1,6 +1,7 @@
 package com.wakaztahir.kate.parser.function
 
 import com.wakaztahir.kate.dsl.ScopedModelLazyParent
+import com.wakaztahir.kate.lexer.tokens.StaticTokens
 import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.model.model.*
 import com.wakaztahir.kate.parser.*
@@ -179,7 +180,10 @@ class FunctionDefinition(
 }
 
 private fun LazyBlock.parseFunctionReturn(): ReferencedOrDirectValue? {
-    if (source.currentChar == '@' && source.increment("@return ")) {
+    if (source.incrementDirective(StaticTokens.Return)) {
+        if (!source.increment(StaticTokens.SingleSpace)) {
+            throw IllegalStateException("expected a single space after return")
+        }
         return parseAnyExpressionOrValue(
             parseDirectRefs = true
         ) ?: KATEUnit
@@ -188,46 +192,46 @@ private fun LazyBlock.parseFunctionReturn(): ReferencedOrDirectValue? {
 }
 
 private fun ParserSourceStream.parseFunctionParameters(): Map<String, KATEType>? {
-    if (increment('(')) {
+    if (increment(StaticTokens.LeftParenthesis)) {
         val parameters = mutableMapOf<String, KATEType>()
         do {
             val paramName = parseTextWhile { currentChar.isVariableName() }
             if (paramName.isEmpty()) continue
             escapeSpaces()
-            val paramType = if (increment(':')) {
+            val paramType = if (increment(StaticTokens.Colon)) {
                 escapeSpaces()
                 parseKATEType(parseMetadata = false) ?: KATEType.Any
             } else KATEType.Any
             parameters[paramName] = paramType
-        } while (increment(','))
-        if (!increment(')')) {
+        } while (increment(StaticTokens.Comma))
+        if (!increment(StaticTokens.RightParenthesis)) {
             throw IllegalStateException("expected ')' got $currentChar in function parameter definition")
         }
         if (parameters.isEmpty()) return null
         return parameters
     }
-    if (!increment(')')) {
+    if (!increment(StaticTokens.RightParenthesis)) {
         throw IllegalStateException("expected ')' got $currentChar in function parameter definition")
     }
     return null
 }
 
 fun LazyBlock.parseFunctionDefinition(anonymousFunctionName: String?): FunctionDefinition? {
-    if (source.currentChar == '@' && source.increment("@function")) {
-        source.increment(' ')
+    if (source.incrementDirective(StaticTokens.Function)) {
+        source.increment(StaticTokens.SingleSpace)
         val functionName: String = anonymousFunctionName
             ?: source.parseTextWhile { currentChar.isVariableName() }.also {
                 if (it.isEmpty()) {
                     throw IllegalStateException("functionName cannot be empty")
                 }
             }
-        source.increment(' ')
+        source.increment(StaticTokens.SingleSpace)
         val parameters = source.parseFunctionParameters()
 
         val afterParametersPointer = source.pointer
 
         source.escapeSpaces()
-        val returnedType = if (source.increment("->")) {
+        val returnedType = if (source.increment(StaticTokens.FunctionReturnTypeLeader)) {
             source.escapeSpaces()
             source.parseKATEType(parseMetadata = false)
                 ?: throw IllegalStateException("expected a type after \"->\" but got ${source.currentChar}")
@@ -237,8 +241,8 @@ fun LazyBlock.parseFunctionDefinition(anonymousFunctionName: String?): FunctionD
         }
 
         val slice = parseBlockSlice(
-            startsWith = "@function",
-            endsWith = "@end_function",
+            startsWith = StaticTokens.Function,
+            endsWith = StaticTokens.EndFunction,
             isDefaultNoRaw = false,
             provider = ModelProvider.Changeable(ScopedModelLazyParent { provider.model })
         )

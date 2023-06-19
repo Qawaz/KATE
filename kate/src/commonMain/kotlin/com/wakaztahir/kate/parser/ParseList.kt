@@ -1,9 +1,11 @@
 package com.wakaztahir.kate.parser
 
+import com.wakaztahir.kate.lexer.tokens.StaticTokens
 import com.wakaztahir.kate.model.KATEType
 import com.wakaztahir.kate.model.LazyBlock
 import com.wakaztahir.kate.model.model.*
 import com.wakaztahir.kate.parser.stream.increment
+import com.wakaztahir.kate.parser.stream.incrementDirective
 import com.wakaztahir.kate.parser.variable.parseValueOfType
 
 private fun KATEType.actual() = if (this is KATEType.NullableKateType) this.actual else this
@@ -50,8 +52,8 @@ private fun LazyBlock.parseListParameters(
                 throw IllegalStateException("expected a referenced value in list parameters")
             }
         }
-    } while (source.increment(','))
-    if (source.increment(')')) {
+    } while (source.increment(StaticTokens.Comma))
+    if (source.increment(StaticTokens.RightParenthesis)) {
         return list
     } else {
         throw IllegalStateException("expected ')' when defining list , got ${source.currentChar}")
@@ -94,8 +96,8 @@ class ListOfReferencedOrDirectValues(
 }
 
 fun LazyBlock.parseListDefinition(itemType: KATEType? = null): ReferencedOrDirectValue? {
-    if (source.currentChar == '@' && source.increment("@list")) {
-        if (source.increment('(')) {
+    if (source.incrementDirective(StaticTokens.List)) {
+        if (source.increment(StaticTokens.LeftParenthesis)) {
             val parameters = parseListParameters(allowEmpty = true, itemType = itemType ?: KATEType.Any)
             return ListOfReferencedOrDirectValues(
                 parameters = parameters,
@@ -110,8 +112,8 @@ fun LazyBlock.parseListDefinition(itemType: KATEType? = null): ReferencedOrDirec
 }
 
 fun LazyBlock.parseMutableListDefinition(itemType: KATEType? = null): ReferencedOrDirectValue? {
-    if (source.currentChar == '@' && source.increment("@mutable_list")) {
-        if (source.increment('(')) {
+    if (source.incrementDirective(StaticTokens.MutableList)) {
+        if (source.increment(StaticTokens.LeftParenthesis)) {
             val parameters = parseListParameters(allowEmpty = true, itemType = itemType ?: KATEType.Any)
             return ListOfReferencedOrDirectValues(
                 parameters = parameters,

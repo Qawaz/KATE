@@ -1,6 +1,8 @@
 package com.wakaztahir.kate.parser
 
 import com.wakaztahir.kate.dsl.ScopedModelLazyParent
+import com.wakaztahir.kate.lexer.tokens.StaticTokens
+import com.wakaztahir.kate.lexer.tokens.StringStaticToken
 import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
 import com.wakaztahir.kate.parser.stream.*
@@ -10,22 +12,22 @@ import com.wakaztahir.kate.parser.stream.incrementUntilDirectiveWithSkip
 import com.wakaztahir.kate.parser.variable.parseValueOfType
 
 internal fun ParserSourceStream.parseConditionType(): ConditionType? {
-    if (increment("==")) {
-        return if (increment('=')) {
+    if (increment(StaticTokens.Equals)) {
+        return if (increment(StaticTokens.SingleEqual)) {
             ConditionType.ReferentiallyEquals
         } else {
             ConditionType.Equals
         }
-    } else if (increment("!=")) {
+    } else if (increment(StaticTokens.NotEqual)) {
         return ConditionType.NotEquals
-    } else if (increment('>')) {
-        return if (increment('=')) {
+    } else if (increment(StaticTokens.BiggerThan)) {
+        return if (increment(StaticTokens.SingleEqual)) {
             ConditionType.GreaterThanEqualTo
         } else {
             ConditionType.GreaterThan
         }
-    } else if (increment('<')) {
-        return if (increment('=')) {
+    } else if (increment(StaticTokens.LessThan)) {
+        return if (increment(StaticTokens.SingleEqual)) {
             ConditionType.LessThanEqualTo
         } else {
             ConditionType.LessThan
@@ -97,22 +99,18 @@ private fun LazyBlock.parseIfBlockValue(ifType: IfType): IfParsedBlock {
 
     val previous = source.pointer
 
-    val blockEnder: String? = if (ifType == IfType.Else) {
-        source.incrementUntilDirectiveWithSkip("@if") {
-            if (source.increment("@endif")) "@endif" else null
+    val blockEnder = if (ifType == IfType.Else) {
+        source.incrementUntilDirectiveWithSkip(StaticTokens.If) {
+            source.incrementAndReturnDirective(StaticTokens.EndIf)
         }
     } else {
-        source.incrementUntilDirectiveWithSkip("@if") { skips ->
+        source.incrementUntilDirectiveWithSkip(StaticTokens.If) { skips ->
             if (skips == 0) {
-                if (source.increment("@elseif")) {
-                    "@elseif"
-                } else if (source.increment("@else")) {
-                    "@else"
-                } else if (source.increment("@endif")) {
-                    "@endif"
-                } else null
+                source.incrementAndReturnDirective(StaticTokens.ElseIf) ?: source.incrementAndReturnDirective(
+                    StaticTokens.Else
+                ) ?: source.incrementAndReturnDirective(StaticTokens.EndIf)
             } else {
-                if (source.increment("@endif")) "@endif" else null
+                source.incrementAndReturnDirective(StaticTokens.EndIf)
             }
         }
     }
@@ -146,13 +144,16 @@ private fun LazyBlock.parseIfBlockValue(ifType: IfType): IfParsedBlock {
     return IfParsedBlock(provider = block.provider, parsedBlock.codeGens)
 }
 
-internal fun LazyBlock.parseSingleIf(start: String, ifType: IfType): SingleIf? {
-    if (source.currentChar == '@' && source.increment(start)) {
+internal fun LazyBlock.parseSingleIf(start: StringStaticToken, ifType: IfType): SingleIf? {
+    if (source.incrementDirective(start)) {
         if (ifType != IfType.Else) {
+            if (!source.increment(StaticTokens.LeftParenthesis)) {
+                throw IllegalStateException("missing '(' in $start statement of $ifType")
+            }
             val condition = parseCondition(parseDirectRefs = true)
             if (condition != null) {
-                if (source.increment(')')) {
-                    source.increment(' ')
+                if (source.increment(StaticTokens.RightParenthesis)) {
+                    source.increment(StaticTokens.SingleSpace)
                     val value = parseIfBlockValue(ifType = ifType)
                     return SingleIf(
                         condition = condition,
@@ -161,11 +162,11 @@ internal fun LazyBlock.parseSingleIf(start: String, ifType: IfType): SingleIf? {
                     )
                 } else {
                     source.printErrorLineNumberAndCharacterIndex()
-                    throw IllegalStateException("missing ')' in $start statement of $ifType")
+                    throw IllegalStateException("missing '${StaticTokens.RightParenthesis}' in $start statement of $ifType")
                 }
             }
         } else {
-            source.increment(' ')
+            source.increment(StaticTokens.SingleSpace)
             val value = parseIfBlockValue(ifType = ifType)
             return SingleIf(
                 condition = BooleanValue(true),
@@ -178,13 +179,13 @@ internal fun LazyBlock.parseSingleIf(start: String, ifType: IfType): SingleIf? {
 }
 
 internal fun LazyBlock.parseFirstIf(): SingleIf? =
-    parseSingleIf(start = "@if(", ifType = IfType.If)
+    parseSingleIf(start = StaticTokens.If, ifType = IfType.If)
 
 internal fun LazyBlock.parseElseIf(): SingleIf? =
-    parseSingleIf(start = "@elseif(", ifType = IfType.ElseIf)
+    parseSingleIf(start = StaticTokens.ElseIf, ifType = IfType.ElseIf)
 
 internal fun LazyBlock.parseElse(): SingleIf? =
-    parseSingleIf(start = "@else", ifType = IfType.Else)
+    parseSingleIf(start = StaticTokens.Else, ifType = IfType.Else)
 
 internal fun LazyBlock.parseIfStatement(): IfStatement? {
     val singleIf = parseFirstIf() ?: return null
@@ -194,7 +195,7 @@ internal fun LazyBlock.parseIfStatement(): IfStatement? {
         ifs.add(elseIf)
     }
     parseElse()?.let { ifs.add(it) }
-    if (source.increment("@endif")) {
+    if (source.incrementDirective(StaticTokens.EndIf)) {
         return IfStatement(ifs)
     } else {
         println("UNPARSED : ")

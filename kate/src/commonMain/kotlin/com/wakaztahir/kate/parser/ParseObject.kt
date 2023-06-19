@@ -1,25 +1,24 @@
 package com.wakaztahir.kate.parser
 
+import com.wakaztahir.kate.lexer.tokens.StaticTokens
 import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.parser.block.ParsedBlock
-import com.wakaztahir.kate.parser.stream.DestinationStream
-import com.wakaztahir.kate.parser.stream.ParserSourceStream
-import com.wakaztahir.kate.parser.stream.increment
+import com.wakaztahir.kate.parser.stream.*
 import com.wakaztahir.kate.parser.stream.parseTextWhile
 import com.wakaztahir.kate.parser.variable.parseKATEType
 
 private fun Char.isObjectName(): Boolean = isLetterOrDigit() || this == '_'
 
 private fun ParserSourceStream.parseObjectName(): String {
-    if (increment('(')) {
+    if (increment(StaticTokens.LeftParenthesis)) {
         val text = parseTextWhile { currentChar.isObjectName() }
-        if (increment(')')) {
+        if (increment(StaticTokens.RightParenthesis)) {
             return text
         } else {
-            throw IllegalStateException("expected ')' while declaring object $text got $currentChar")
+            throw IllegalStateException("expected '${StaticTokens.RightParenthesis}' while declaring object $text got $currentChar")
         }
     } else {
-        throw IllegalStateException("expected ')' while declaring object got $currentChar")
+        throw IllegalStateException("expected '${StaticTokens.LeftParenthesis}' while declaring object got $currentChar")
     }
 }
 
@@ -38,8 +37,8 @@ private fun LazyBlock.parseObjectDeclarationSlice(
 ): ObjectDeclarationParsedBlock {
 
     val slice = parseBlockSlice(
-        startsWith = "@define_object",
-        endsWith = "@end_define_object",
+        startsWith = StaticTokens.DefineObject,
+        endsWith = StaticTokens.EndDefineObject,
         isDefaultNoRaw = false,
         inheritModel = true
     )
@@ -60,11 +59,11 @@ private fun LazyBlock.parseObjectDeclarationSlice(
 }
 
 fun LazyBlock.parseObjectDeclaration(): ObjectDeclaration? {
-    if (source.currentChar == '@' && source.increment("@define_object")) {
-        val itemType: KATEType? = if (source.increment('<')) {
+    if (source.incrementDirective(StaticTokens.DefineObject)) {
+        val itemType: KATEType? = if (source.increment(StaticTokens.LessThan)) {
             val type = source.parseKATEType(parseMetadata = false)
-            if (!source.increment('>')) {
-                throw IllegalStateException("expected '>' after type declaration got '${source.currentChar}'")
+            if (!source.increment(StaticTokens.BiggerThan)) {
+                throw IllegalStateException("expected '${StaticTokens.BiggerThan}' after type declaration got '${source.currentChar}'")
             }
             type
         } else {

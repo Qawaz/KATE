@@ -1,5 +1,7 @@
 package com.wakaztahir.kate.parser
 
+import com.wakaztahir.kate.lexer.tokens.CharStaticToken
+import com.wakaztahir.kate.lexer.tokens.StaticTokens
 import com.wakaztahir.kate.model.BooleanValue
 import com.wakaztahir.kate.model.ConditionType
 import com.wakaztahir.kate.model.LazyBlock
@@ -138,7 +140,7 @@ enum class ArithmeticOperatorType(val char: String, val associativity: OperatorA
 
 }
 
-private fun ParserSourceStream.incrementTwoChars(char1: Char, char2: Char): Boolean {
+private fun ParserSourceStream.incrementTwoChars(char1: CharStaticToken, char2: CharStaticToken): Boolean {
     return if (increment(char1)) {
         if (increment(char2)) {
             true
@@ -180,35 +182,35 @@ internal fun ParserSourceStream.parseArithmeticOperator(): ArithmeticOperatorTyp
         }
         // Logical Operators
         '&' -> {
-            if (incrementTwoChars('&', '&')) ArithmeticOperatorType.And else null
+            if (increment(StaticTokens.AndOperator)) ArithmeticOperatorType.And else null
         }
 
         '|' -> {
-            if (incrementTwoChars('|', '|')) ArithmeticOperatorType.Or else null
+            if (increment(StaticTokens.OrOperator)) ArithmeticOperatorType.Or else null
         }
         // Conditional Operators
         '!' -> {
             return null
-            if (incrementTwoChars('!', '=')) ArithmeticOperatorType.NotEqual else null
+            if (increment(StaticTokens.NotEqual)) ArithmeticOperatorType.NotEqual else null
         }
 
         '=' -> {
             return null
-            if (incrementTwoChars('=', '=')) {
-                if (increment('=')) ArithmeticOperatorType.ReferentialEquality else ArithmeticOperatorType.Equal
+            if (increment(StaticTokens.Equals)) {
+                if (increment(StaticTokens.SingleEqual)) ArithmeticOperatorType.ReferentialEquality else ArithmeticOperatorType.Equal
             } else null
         }
 
         '>' -> {
             return null
-            if (incrementTwoChars('>', '=')) {
+            if (increment(StaticTokens.GreaterThanOrEqualTo)) {
                 ArithmeticOperatorType.GreaterThanOrEqual
             } else ArithmeticOperatorType.GreaterThan
         }
 
         '<' -> {
             return null
-            if (incrementTwoChars('<', '=')) ArithmeticOperatorType.LessThanOrEqual else ArithmeticOperatorType.LessThan
+            if (increment(StaticTokens.LessThanOrEqualTo)) ArithmeticOperatorType.LessThanOrEqual else ArithmeticOperatorType.LessThan
         }
 
         else -> null
@@ -304,11 +306,11 @@ private fun LazyBlock.parseValueAndOperator(
     val firstValue = with(valueParser) { parseExpressionValue() }
     if (firstValue != null) {
         val pointerAfterFirstValue = source.pointer
-        source.increment(' ')
+        source.increment(StaticTokens.SingleSpace)
         return if (!source.hasEnded) {
             val arithmeticOperator = source.parseArithmeticOperator()
             if (arithmeticOperator != null) {
-                source.increment(' ')
+                source.increment(StaticTokens.SingleSpace)
                 Pair(firstValue, arithmeticOperator)
             } else {
                 source.setPointerAt(pointerAfterFirstValue)

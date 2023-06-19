@@ -1,6 +1,7 @@
 package com.wakaztahir.kate.parser
 
 import com.wakaztahir.kate.dsl.ScopedModelLazyParent
+import com.wakaztahir.kate.lexer.tokens.StaticTokens
 import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.model.ConditionType
 import com.wakaztahir.kate.model.model.*
@@ -183,7 +184,8 @@ class ForLoopLazyBlockSlice(
     val forLoopBlock = ForLoopParsedBlock(parentProvider = parentBlock.provider,provider = this.provider, mutableListOf())
 
     private fun ParserSourceStream.parseBreakForAtDirective(): ForLoopBreak? {
-        return if (currentChar == '@' && increment("@break")) {
+        return if (incrementDirective(StaticTokens.Break)) {
+            // TODO remove this in some version
             if (increment("for")) {
                 throw IllegalStateException("use new @break instead of @breakfor")
             }
@@ -194,7 +196,7 @@ class ForLoopLazyBlockSlice(
     }
 
     private fun ParserSourceStream.parseContinueForAtDirective(): ForLoopContinue? {
-        return if (currentChar == '@' && increment("@continue")) {
+        return if (incrementDirective(StaticTokens.Continue)) {
             ForLoopContinue(forLoopBlock)
         } else {
             null
@@ -218,8 +220,8 @@ class ForLoopLazyBlockSlice(
 
 private fun LazyBlock.parseForBlockValue(): ForLoopLazyBlockSlice {
     val slice = parseBlockSlice(
-        startsWith = "@for",
-        endsWith = "@endfor",
+        startsWith = StaticTokens.For,
+        endsWith = StaticTokens.EndFor,
         isDefaultNoRaw = isDefaultNoRaw,
         provider = ModelProvider.Changeable(ScopedModelLazyParent { model })
     )
@@ -237,8 +239,8 @@ private fun LazyBlock.parseForBlockValue(): ForLoopLazyBlockSlice {
 private fun LazyBlock.parseConditionalFor(): ForLoop.ConditionalFor? {
     val condition = parseCondition(parseDirectRefs = false)
     if (condition != null) {
-        source.increment(')')
-        source.increment(' ')
+        source.increment(StaticTokens.RightParenthesis)
+        source.increment(StaticTokens.SingleSpace)
         val blockValue = this@parseConditionalFor.parseForBlockValue()
         return ForLoop.ConditionalFor(
             condition = condition,
@@ -257,18 +259,18 @@ private fun LazyBlock.parseListReferencedValue(parseDirectRefs: Boolean): Refere
 
 private fun LazyBlock.parseIterableForLoopAfterVariable(variableName: String): ForLoop.IterableFor? {
     var secondVariableName: String? = null
-    if (source.increment(',')) {
+    if (source.increment(StaticTokens.Comma)) {
         secondVariableName = source.parseTextWhile { currentChar.isVariableName() }
     }
     source.escapeSpaces()
-    if (source.increment(':')) {
+    if (source.increment(StaticTokens.Colon)) {
         source.escapeSpaces()
         val referencedValue = parseListReferencedValue(parseDirectRefs = true)
         source.escapeSpaces()
-        if (!source.increment(')')) {
-            throw IllegalStateException("expected ) , got ${source.currentChar}")
+        if (!source.increment(StaticTokens.RightParenthesis)) {
+            throw IllegalStateException("expected ${StaticTokens.RightParenthesis} , got ${source.currentChar}")
         }
-        source.increment(' ')
+        source.increment(StaticTokens.SingleSpace)
         val blockValue = this@parseIterableForLoopAfterVariable.parseForBlockValue()
         if (referencedValue != null) {
             return ForLoop.IterableFor(
@@ -301,7 +303,7 @@ private fun LazyBlock.parseNumberedForLoopIncrementer(variableName: String): Num
             val singleIncrement =
                 if (operator == ArithmeticOperatorType.Plus || operator == ArithmeticOperatorType.Minus) operator else null
             val singleIncrementerChar =
-                if (singleIncrement == ArithmeticOperatorType.Plus) '+' else if (singleIncrement == ArithmeticOperatorType.Minus) '-' else null
+                if (singleIncrement == ArithmeticOperatorType.Plus) StaticTokens.Plus else if (singleIncrement == ArithmeticOperatorType.Minus) StaticTokens.Minus else null
             val incrementer = if (singleIncrement != null && source.increment(singleIncrementerChar!!)) {
                 IntValue(1)
             } else {
@@ -321,11 +323,11 @@ private fun LazyBlock.parseNumberedForLoopIncrementer(variableName: String): Num
 }
 
 private fun LazyBlock.parseNumberedForLoopAfterVariable(variableName: String): ForLoop.NumberedFor? {
-    if (source.increment('=')) {
+    if (source.increment(StaticTokens.SingleEqual)) {
         source.escapeSpaces()
         val initializer = parseAnyExpressionOrValue()
             ?: throw IllegalStateException("unexpected ${source.currentChar} , expected a number or property")
-        if (source.increment(';')) {
+        if (source.increment(StaticTokens.SemiColon)) {
             val conditionalConst = source.parseTextWhile { currentChar.isVariableName() }
             if (conditionalConst == variableName) {
                 source.escapeSpaces()
@@ -335,12 +337,12 @@ private fun LazyBlock.parseNumberedForLoopAfterVariable(variableName: String): F
                 val conditional = parseAnyExpressionOrValue(
                     parseDirectRefs = true
                 ) ?: throw IllegalStateException("expected number property of value got ${source.currentChar}")
-                if (source.increment(';')) {
+                if (source.increment(StaticTokens.SemiColon)) {
                     val incrementer = parseNumberedForLoopIncrementer(variableName)
-                    if (!source.increment(')')) {
-                        throw IllegalStateException("expected ) , got ${source.currentChar}")
+                    if (!source.increment(StaticTokens.RightParenthesis)) {
+                        throw IllegalStateException("expected '${StaticTokens.RightParenthesis}' , got ${source.currentChar}")
                     }
-                    source.increment(' ')
+                    source.increment(StaticTokens.SingleSpace)
                     val blockValue = this@parseNumberedForLoopAfterVariable.parseForBlockValue()
                     return ForLoop.NumberedFor(
                         variableName = variableName,
@@ -365,7 +367,11 @@ private fun LazyBlock.parseNumberedForLoopAfterVariable(variableName: String): F
 }
 
 internal fun LazyBlock.parseForLoop(): ForLoop? {
-    if (source.currentChar == '@' && source.increment("@for(")) {
+    if (source.incrementDirective(StaticTokens.For)) {
+
+        if(!source.increment(StaticTokens.LeftParenthesis)) {
+            throw IllegalStateException("expected left parenthesis '(' after for loop")
+        }
 
         parseConditionalFor()?.let { return it }
 

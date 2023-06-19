@@ -1,6 +1,10 @@
 package com.wakaztahir.kate.parser.stream
 
 import com.wakaztahir.kate.lexer.SourceStream
+import com.wakaztahir.kate.lexer.tokens.CharStaticToken
+import com.wakaztahir.kate.lexer.tokens.StaticToken
+import com.wakaztahir.kate.lexer.tokens.StaticTokens
+import com.wakaztahir.kate.lexer.tokens.StringStaticToken
 import com.wakaztahir.kate.model.LazyBlock
 
 internal class UnexpectedEndOfStream(message: String) : Exception(message)
@@ -11,6 +15,51 @@ fun SourceStream.increment(char: Char): Boolean {
     } else {
         false
     }
+}
+
+internal fun ParserSourceStream.increment(token: StringStaticToken): Boolean {
+    return increment(token.representation)
+}
+
+fun ParserSourceStream.increment(token: CharStaticToken): Boolean {
+    return increment(token.representation)
+}
+
+internal fun ParserSourceStream.incrementDirective(second: StringStaticToken): Boolean {
+    return if (increment(StaticTokens.AtDirective)) {
+        if (increment(second.representation)) {
+            true
+        } else {
+            decrementPointer()
+            false
+        }
+    } else {
+        false
+    }
+}
+
+// TODO fix this one
+internal fun ParserSourceStream.incrementDirective(first : StringStaticToken,second : CharStaticToken) : Boolean {
+    return increment(StaticTokens.AtDirective.representation + first.representation + second.representation)
+}
+
+internal fun ParserSourceStream.increment(first: CharStaticToken, second: StringStaticToken): Boolean {
+    return if (increment(first.representation)) {
+        if (increment(second.representation)) {
+            true
+        } else {
+            decrementPointer()
+            false
+        }
+    } else {
+        false
+    }
+}
+
+internal fun ParserSourceStream.incrementAndReturnDirective(second: StringStaticToken): String? {
+    return if (incrementDirective(second)) {
+        StaticTokens.AtDirective.representation + second.representation
+    } else null
 }
 
 internal fun ParserSourceStream.increment(str: String, throwOnUnexpectedEOS: Boolean = false): Boolean {
@@ -44,6 +93,16 @@ internal fun ParserSourceStream.increment(str: String, throwOnUnexpectedEOS: Boo
     }
 }
 
+internal fun ParserSourceStream.parseTextUntilConsumedNew(token: StringStaticToken): String? {
+    return parseTextUntilConsumedNew(token.representation)
+}
+
+internal fun ParserSourceStream.parseTextUntilConsumedDirectiveNew(
+    second: StringStaticToken
+): String? {
+    return parseTextUntilConsumedNew(StaticTokens.AtDirective.representation + second.representation)
+}
+
 internal fun ParserSourceStream.parseTextUntilConsumedNew(str: String): String? {
     var text = ""
     val previous = pointer
@@ -59,6 +118,11 @@ internal fun ParserSourceStream.parseTextUntilConsumedNew(str: String): String? 
     return null
 }
 
+internal fun ParserSourceStream.incrementUntilConsumed(token: StringStaticToken): Boolean {
+    return incrementUntilConsumed(token.representation)
+}
+
+
 internal fun ParserSourceStream.incrementUntilConsumed(str: String): Boolean {
     val previous = pointer
     while (!hasEnded) {
@@ -69,6 +133,10 @@ internal fun ParserSourceStream.incrementUntilConsumed(str: String): Boolean {
     }
     decrementPointer(pointer - previous)
     return false
+}
+
+internal fun ParserSourceStream.incrementUntil(token : StringStaticToken) : Boolean {
+    return incrementUntil(token.representation)
 }
 
 internal fun ParserSourceStream.incrementUntil(str: String): Boolean {
@@ -88,7 +156,7 @@ internal inline fun <T> ParserSourceStream.resetIfNull(perform: ParserSourceStre
 }
 
 internal fun ParserSourceStream.escapeSpaces() {
-    if (increment(' ')) escapeSpaces()
+    if (increment(StaticTokens.SingleSpace)) escapeSpaces()
 }
 
 internal inline fun ParserSourceStream.incrementWhile(block: ParserSourceStream.() -> Boolean) {
@@ -123,20 +191,20 @@ internal fun ParserSourceStream.printLeftAscii() = resetIfNull {
     null
 }
 
-internal fun ParserSourceStream.parseTextUntilConsumed(str: String): String {
+internal fun ParserSourceStream.parseTextUntilConsumed(token: StringStaticToken): String {
     return parseTextWhile {
-        currentChar != str[0] || !increment(str)
+        currentChar != token.representation[0] || !increment(token)
     }
 }
 
 internal inline fun ParserSourceStream.incrementUntilDirectiveWithSkip(
-    skip: String,
+    directive : StringStaticToken,
     canIncrementDirective: (skips: Int) -> String?,
 ): String? {
     var skips = 0
     while (!hasEnded) {
-        if (currentChar == '@') {
-            if (increment(skip)) {
+        if (currentChar == StaticTokens.AtDirective.representation) {
+            if (incrementDirective(directive)) {
                 skips++
                 continue
             } else {

@@ -1,5 +1,6 @@
 package com.wakaztahir.kate.parser
 
+import com.wakaztahir.kate.lexer.tokens.StaticTokens
 import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.parser.stream.*
 import com.wakaztahir.kate.parser.stream.increment
@@ -8,7 +9,7 @@ fun ParserSourceStream.parseNumberValue(): PrimitiveValue<*>? {
 
     var textValue = ""
 
-    if (increment('-')) {
+    if (increment(StaticTokens.NegativeValueDash)) {
         textValue += "-"
     }
 
@@ -17,7 +18,7 @@ fun ParserSourceStream.parseNumberValue(): PrimitiveValue<*>? {
         incrementPointer()
     }
 
-    return if (increment('.')) {
+    return if (increment(StaticTokens.Dot)) {
         textValue += '.'
         while (!hasEnded && currentChar.isDigit()) {
             textValue += currentChar
@@ -25,7 +26,7 @@ fun ParserSourceStream.parseNumberValue(): PrimitiveValue<*>? {
         }
         textValue.toDoubleOrNull()?.let { DoubleValue(it) }
     } else {
-        if (increment('L')) {
+        if (increment(StaticTokens.LongEnder)) {
             textValue.toLongOrNull()?.let { LongValue(it) } ?: run {
                 decrementPointer()
                 null
@@ -41,8 +42,8 @@ fun ParserSourceStream.parseNumberValue(): PrimitiveValue<*>? {
 }
 
 internal fun ParserSourceStream.parseBooleanValue(): PrimitiveValue<*>? {
-    if (increment("true")) return BooleanValue(true)
-    if (increment("false")) return BooleanValue(false)
+    if (increment(StaticTokens.True)) return BooleanValue(true)
+    if (increment(StaticTokens.False)) return BooleanValue(false)
     return null
 }
 
@@ -60,7 +61,7 @@ private fun Char.transformAfterBackslashChar(): Char? {
 }
 
 internal fun ParserSourceStream.parseCharacterValue(): CharValue? {
-    if (currentChar == '\'' && increment('\'')) {
+    if (increment(StaticTokens.SingleQuote)) {
         val characterValue = if (currentChar == '\\') {
             incrementPointer()
             currentChar.transformAfterBackslashChar()
@@ -70,7 +71,7 @@ internal fun ParserSourceStream.parseCharacterValue(): CharValue? {
         }
         val value = CharValue(characterValue)
         incrementPointer()
-        if (!increment('\'')) {
+        if (!increment(StaticTokens.SingleQuote)) {
             throw IllegalStateException("a char value must end with '")
         }
         return value
@@ -79,7 +80,7 @@ internal fun ParserSourceStream.parseCharacterValue(): CharValue? {
 }
 
 internal fun ParserSourceStream.parseStringValue(): StringValue? {
-    if (currentChar == '\"' && increment('\"')) {
+    if (increment(StaticTokens.DoubleQuote)) {
         var value = ""
         while (!hasEnded && currentChar != '\"') {
             value += if (currentChar == '\\') {
@@ -90,8 +91,8 @@ internal fun ParserSourceStream.parseStringValue(): StringValue? {
             }
             incrementPointer()
         }
-        if (!increment('\"')) {
-            throw IllegalArgumentException("string value must end with \" value : $value")
+        if (!increment(StaticTokens.DoubleQuote)) {
+            throw IllegalArgumentException("string value must end with ${StaticTokens.DoubleQuote} value : $value")
         }
         return StringValue(value)
     }

@@ -1,5 +1,6 @@
 package com.wakaztahir.kate.parser.block
 
+import com.wakaztahir.kate.lexer.tokens.StaticTokens
 import com.wakaztahir.kate.model.LazyBlock
 import com.wakaztahir.kate.model.model.KATEParsingError
 import com.wakaztahir.kate.parser.stream.increment
@@ -20,13 +21,13 @@ inline fun LazyBlock.parse(
         if (directive != null) {
             onDirective(ParsedBlock.CodeGenRange(gen = directive, start = previous, end = source.pointer))
             if (!source.hasEnded && directive.expectSpaceOrNewLineWithIndentationAfterwards) {
-                if (!source.increment('\n')) {
-                    source.increment(' ')
+                if (!source.increment(StaticTokens.NewLine)) {
+                    source.increment(StaticTokens.SingleSpace)
                 } else {
                     consumeLineIndentation()
                 }
             } else if (directive.isEmptyWriter) {
-                source.increment(' ')
+                source.increment(StaticTokens.SingleSpace)
             }
         } else {
             if (isDefaultNoRaw) {

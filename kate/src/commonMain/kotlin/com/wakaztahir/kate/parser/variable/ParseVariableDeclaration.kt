@@ -1,5 +1,7 @@
 package com.wakaztahir.kate.parser.variable
 
+import com.wakaztahir.kate.lexer.tokens.StaticToken
+import com.wakaztahir.kate.lexer.tokens.StaticTokens
 import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.model.model.KATEValue
@@ -49,12 +51,12 @@ data class VariableDeclaration(
 
 internal fun ParserSourceStream.parseVariableName(): String? {
     val previous = pointer
-    if (currentChar == '@' && increment("@var")) {
+    if (incrementDirective(StaticTokens.Var)) {
         if (currentChar == '(') {
             setPointerAt(previous)
             return null
         }
-        increment(' ')
+        increment(StaticTokens.SingleSpace)
         return parseTextWhile { currentChar.isVariableName() }
     }
     return null
@@ -63,12 +65,12 @@ internal fun ParserSourceStream.parseVariableName(): String? {
 private fun Char.isTypeName(): Boolean = this.isLetter() || this == '_'
 
 private fun ParserSourceStream.parseMetaValues(): MutableMap<String, KATEValue>? {
-    if (increment('`')) {
+    if (increment(StaticTokens.Backtick)) {
         val meta = mutableMapOf<String, KATEValue>()
         do {
             val metaName = parseTextWhile { currentChar.isVariableName() }
             escapeSpaces()
-            if (increment('=')) {
+            if (increment(StaticTokens.SingleEqual)) {
                 escapeSpaces()
                 val metaValue = parsePrimitiveValue()
                     ?: parseTextWhile { currentChar.isVariableName() }.ifEmpty { null }?.let { StringValue(it) }
@@ -77,8 +79,8 @@ private fun ParserSourceStream.parseMetaValues(): MutableMap<String, KATEValue>?
             } else {
                 throw IllegalStateException("expected '=' when declaring a class property got $currentChar")
             }
-        } while (increment(','))
-        if (!increment('`')) {
+        } while (increment(StaticTokens.Comma))
+        if (!increment(StaticTokens.Backtick)) {
             throw IllegalStateException("meta properties beginning with '`' must end with '`'")
         } else {
             escapeSpaces()
@@ -89,26 +91,26 @@ private fun ParserSourceStream.parseMetaValues(): MutableMap<String, KATEValue>?
 }
 
 private fun ParserSourceStream.parseClassProperty(): KATEType {
-    if (increment(':')) {
+    if (increment(StaticTokens.Colon)) {
         escapeSpaces()
         return parseKATEType(parseMetadata = true)
-            ?: throw IllegalStateException("expected a type after ':' got $currentChar")
+            ?: throw IllegalStateException("expected a type after '${StaticTokens.Colon}' got $currentChar")
     } else {
-        throw IllegalStateException("expected ':' after variable name in class type got $currentChar")
+        throw IllegalStateException("expected '${StaticTokens.Colon}' after variable name in class type got $currentChar")
     }
 }
 
 private fun ParserSourceStream.parseClassType(): KATEType.Class? {
     val previous = pointer
-    if (increment('{')) {
+    if (increment(StaticTokens.LeftBrace)) {
         val members = mutableMapOf<String, KATEType>()
         do {
             escapeSpaces()
-            if (increment('}')) break
+            if (increment(StaticTokens.RightBrace)) break
             val variableName = parseTextWhile { currentChar.isVariableName() }
             escapeSpaces()
             members[variableName] = parseClassProperty()
-        } while (increment(';'))
+        } while (increment(StaticTokens.SemiColon))
         return KATEType.Class(members)
     }
     setPointerAt(previous)
@@ -129,16 +131,16 @@ internal fun ParserSourceStream.parseKATEType(parseMetadata: Boolean): KATEType?
             "long" -> KATEType.Long
             "boolean" -> KATEType.Boolean
             "list", "mutable_list" -> {
-                increment('<')
+                increment(StaticTokens.LessThan)
                 val itemType = parseKATEType(parseMetadata = false) ?: KATEType.NullableKateType(KATEType.Any)
-                increment('>')
+                increment(StaticTokens.BiggerThan)
                 if (type == "list") KATEType.List(itemType) else KATEType.MutableList(itemType)
             }
 
             "object" -> {
-                increment('<')
+                increment(StaticTokens.LessThan)
                 val itemType = parseKATEType(parseMetadata = false) ?: KATEType.NullableKateType(KATEType.Any)
-                increment('>')
+                increment(StaticTokens.BiggerThan)
                 KATEType.Object(itemType)
             }
 
@@ -146,7 +148,7 @@ internal fun ParserSourceStream.parseKATEType(parseMetadata: Boolean): KATEType?
                 throw IllegalStateException("unknown type name $type")
             }
         }
-        if (increment('?')) typeName = KATEType.NullableKateType(actual = typeName)
+        if (increment(StaticTokens.NullableChar)) typeName = KATEType.NullableKateType(actual = typeName)
 
         if (parseMetadata) {
             escapeSpaces()
@@ -167,15 +169,15 @@ internal fun LazyBlock.parseVariableDeclaration(): VariableDeclaration? {
             val valid = isValidVariableName(variableName)
             if (valid.isFailure) throw valid.exceptionOrNull()!!
             source.escapeSpaces()
-            val type: KATEType? = if (source.increment(':')) {
+            val type: KATEType? = if (source.increment(StaticTokens.Colon)) {
                 source.escapeSpaces()
                 source.parseKATEType(parseMetadata = false)
             } else {
                 null
             }
             source.escapeSpaces()
-            if (!source.increment('=')) {
-                throw IllegalStateException("expected '=' when assigning a value to variable \"$variableName\" but got '${source.currentChar}' in variable declaration")
+            if (!source.increment(StaticTokens.SingleEqual)) {
+                throw IllegalStateException("expected '${StaticTokens.SingleEqual}' when assigning a value to variable \"$variableName\" but got '${source.currentChar}' in variable declaration")
             }
             source.escapeSpaces()
             val property = parseValueOfType(

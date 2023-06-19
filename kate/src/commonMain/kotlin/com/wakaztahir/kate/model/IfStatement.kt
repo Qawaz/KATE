@@ -76,10 +76,10 @@ internal class LogicalCondition(
     }
 }
 
-enum class IfType(val order: Int) {
-    If(0),
-    ElseIf(1),
-    Else(2)
+enum class IfType(val order: Int,val requiresCondition : Boolean) {
+    If(0,true),
+    ElseIf(1,true),
+    Else(2,false)
 }
 
 class IfParsedBlock(val provider: ModelProvider, codeGens: List<CodeGenRange>) : ParsedBlock(codeGens) {

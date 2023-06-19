@@ -1,5 +1,6 @@
 package com.wakaztahir.kate.parser.variable
 
+import com.wakaztahir.kate.lexer.tokens.StaticTokens
 import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.model.model.KATEValue
@@ -64,15 +65,15 @@ data class AssignmentLHS(val variableName: String, val type: ArithmeticOperatorT
 internal fun ParserSourceStream.parseAssignmentLHS(isExplicitAssignment: Boolean): AssignmentLHS? {
     val previous = pointer
     if (isExplicitAssignment) {
-        if (currentChar != '@' || !increment("@set_var")) return null
+        if (!incrementDirective(StaticTokens.SetVar)) return null
     } else {
-        increment("@set_var")
+        incrementDirective(StaticTokens.SetVar)
     }
     escapeSpaces()
     val variableName = parseTextWhile { currentChar.isVariableName() }
     escapeSpaces()
     val arithmeticOperator = parseArithmeticOperator()
-    if (increment('=')) {
+    if (increment(StaticTokens.SingleEqual)) {
         val valid = isValidVariableName(variableName)
         if (valid.isSuccess) {
             return AssignmentLHS(variableName, arithmeticOperator)
@@ -80,7 +81,7 @@ internal fun ParserSourceStream.parseAssignmentLHS(isExplicitAssignment: Boolean
             valid.exceptionOrNull()?.let { throw VariableAssignmentException(it.message ?: "", cause = it) }
         }
     } else if (isExplicitAssignment) {
-        throw IllegalStateException("expected '=' after left hand side of the assignment expression with variable name $variableName but got $currentChar")
+        throw IllegalStateException("expected '${StaticTokens.SingleEqual}' after left hand side of the assignment expression with variable name $variableName but got $currentChar")
     }
     if(isExplicitAssignment){
         throw IllegalStateException()

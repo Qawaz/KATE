@@ -1,6 +1,7 @@
 package com.wakaztahir.kate.model
 
 import com.wakaztahir.kate.KATEDelicateFunction
+import com.wakaztahir.kate.lexer.tokens.StaticTokens
 import com.wakaztahir.kate.parser.block.DefaultNoRawString
 import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.parser.*
@@ -57,7 +58,7 @@ interface LazyBlock {
         var x = 0
         var consumed = 0
         while (x < indentationLevel) {
-            if (source.increment('\t') || source.increment("    ")) consumed++
+            if (source.increment(StaticTokens.Tab) || source.increment(StaticTokens.FourSpaces)) consumed++
             x++
         }
         return consumed
