@@ -4,7 +4,7 @@ import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.parser.stream.*
 import com.wakaztahir.kate.parser.stream.increment
 
-fun SourceStream.parseNumberValue(): PrimitiveValue<*>? {
+fun ParserSourceStream.parseNumberValue(): PrimitiveValue<*>? {
 
     var textValue = ""
 
@@ -40,7 +40,7 @@ fun SourceStream.parseNumberValue(): PrimitiveValue<*>? {
 
 }
 
-internal fun SourceStream.parseBooleanValue(): PrimitiveValue<*>? {
+internal fun ParserSourceStream.parseBooleanValue(): PrimitiveValue<*>? {
     if (increment("true")) return BooleanValue(true)
     if (increment("false")) return BooleanValue(false)
     return null
@@ -59,7 +59,7 @@ private fun Char.transformAfterBackslashChar(): Char? {
     }
 }
 
-internal fun SourceStream.parseCharacterValue(): CharValue? {
+internal fun ParserSourceStream.parseCharacterValue(): CharValue? {
     if (currentChar == '\'' && increment('\'')) {
         val characterValue = if (currentChar == '\\') {
             incrementPointer()
@@ -78,7 +78,7 @@ internal fun SourceStream.parseCharacterValue(): CharValue? {
     return null
 }
 
-internal fun SourceStream.parseStringValue(): StringValue? {
+internal fun ParserSourceStream.parseStringValue(): StringValue? {
     if (currentChar == '\"' && increment('\"')) {
         var value = ""
         while (!hasEnded && currentChar != '\"') {

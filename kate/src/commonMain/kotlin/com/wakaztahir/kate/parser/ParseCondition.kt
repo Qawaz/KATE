@@ -9,7 +9,7 @@ import com.wakaztahir.kate.parser.stream.increment
 import com.wakaztahir.kate.parser.stream.incrementUntilDirectiveWithSkip
 import com.wakaztahir.kate.parser.variable.parseValueOfType
 
-internal fun SourceStream.parseConditionType(): ConditionType? {
+internal fun ParserSourceStream.parseConditionType(): ConditionType? {
     if (increment("==")) {
         return if (increment('=')) {
             ConditionType.ReferentiallyEquals

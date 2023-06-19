@@ -23,10 +23,10 @@ object DefaultPlaceholderManagerInitializer {
     private fun joinToStringPlaceholder(name: String) = functionPlaceholder(name = name, call = ".joinToString()")
     private fun toCharPlaceholder(name: String) = functionPlaceholder(name = name, call = "", writer = "print_char")
 
-    fun initializerDefaultPlaceholders(source: SourceStream) {
+    fun initializerDefaultPlaceholders(source: ParserSourceStream) {
         val destination = TextDestinationStream()
         try {
-            TextSourceStream(
+            TextParserSourceStream(
                 sourceCode = placeholderBlock(name = UnitPlaceholderName, content = "") +
                         toStringPlaceholder(DoublePlaceholderName) +
                         toStringPlaceholder(IntPlaceholderName) +

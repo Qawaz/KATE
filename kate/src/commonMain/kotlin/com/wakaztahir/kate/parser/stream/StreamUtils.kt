@@ -1,5 +1,6 @@
 package com.wakaztahir.kate.parser.stream
 
+import com.wakaztahir.kate.lexer.SourceStream
 import com.wakaztahir.kate.model.LazyBlock
 
 internal class UnexpectedEndOfStream(message: String) : Exception(message)
@@ -12,7 +13,7 @@ fun SourceStream.increment(char: Char): Boolean {
     }
 }
 
-internal fun SourceStream.increment(str: String, throwOnUnexpectedEOS: Boolean = false): Boolean {
+internal fun ParserSourceStream.increment(str: String, throwOnUnexpectedEOS: Boolean = false): Boolean {
     require(str.length > 1) {
         println("$str should be more than a single character")
     }
@@ -43,7 +44,7 @@ internal fun SourceStream.increment(str: String, throwOnUnexpectedEOS: Boolean =
     }
 }
 
-internal fun SourceStream.parseTextUntilConsumedNew(str: String): String? {
+internal fun ParserSourceStream.parseTextUntilConsumedNew(str: String): String? {
     var text = ""
     val previous = pointer
     while (!hasEnded) {
@@ -58,7 +59,7 @@ internal fun SourceStream.parseTextUntilConsumedNew(str: String): String? {
     return null
 }
 
-internal fun SourceStream.incrementUntilConsumed(str: String): Boolean {
+internal fun ParserSourceStream.incrementUntilConsumed(str: String): Boolean {
     val previous = pointer
     while (!hasEnded) {
         if (currentChar == str[0] && increment(str)) {
@@ -70,7 +71,7 @@ internal fun SourceStream.incrementUntilConsumed(str: String): Boolean {
     return false
 }
 
-internal fun SourceStream.incrementUntil(str: String): Boolean {
+internal fun ParserSourceStream.incrementUntil(str: String): Boolean {
     return if (incrementUntilConsumed(str)) {
         decrementPointer(str.length)
         true
@@ -79,18 +80,18 @@ internal fun SourceStream.incrementUntil(str: String): Boolean {
     }
 }
 
-internal inline fun <T> SourceStream.resetIfNull(perform: SourceStream.() -> T?): T? {
+internal inline fun <T> ParserSourceStream.resetIfNull(perform: ParserSourceStream.() -> T?): T? {
     val previous = pointer
     val value = perform()
     if (value == null) decrementPointer(pointer - previous)
     return value
 }
 
-internal fun SourceStream.escapeSpaces() {
+internal fun ParserSourceStream.escapeSpaces() {
     if (increment(' ')) escapeSpaces()
 }
 
-internal inline fun SourceStream.incrementWhile(block: SourceStream.() -> Boolean) {
+internal inline fun ParserSourceStream.incrementWhile(block: ParserSourceStream.() -> Boolean) {
     while (!hasEnded) {
         if (!block()) {
             break
@@ -99,7 +100,7 @@ internal inline fun SourceStream.incrementWhile(block: SourceStream.() -> Boolea
     }
 }
 
-internal inline fun SourceStream.parseTextWhile(block: SourceStream.() -> Boolean): String {
+internal inline fun ParserSourceStream.parseTextWhile(block: ParserSourceStream.() -> Boolean): String {
     var text = ""
     incrementWhile {
         if (block()) {
@@ -112,23 +113,23 @@ internal inline fun SourceStream.parseTextWhile(block: SourceStream.() -> Boolea
     return text
 }
 
-internal fun SourceStream.printLeft() = resetIfNull {
+internal fun ParserSourceStream.printLeft() = resetIfNull {
     println(parseTextWhile { true })
     null
 }
 
-internal fun SourceStream.printLeftAscii() = resetIfNull {
+internal fun ParserSourceStream.printLeftAscii() = resetIfNull {
     for (char in parseTextWhile { true }) println("$char:${char.code}")
     null
 }
 
-internal fun SourceStream.parseTextUntilConsumed(str: String): String {
+internal fun ParserSourceStream.parseTextUntilConsumed(str: String): String {
     return parseTextWhile {
         currentChar != str[0] || !increment(str)
     }
 }
 
-internal inline fun SourceStream.incrementUntilDirectiveWithSkip(
+internal inline fun ParserSourceStream.incrementUntilDirectiveWithSkip(
     skip: String,
     canIncrementDirective: (skips: Int) -> String?,
 ): String? {
@@ -155,7 +156,7 @@ internal inline fun SourceStream.incrementUntilDirectiveWithSkip(
     return null
 }
 
-inline fun SourceStream.readStream(startPointer: Int, limit: Int, block: () -> Unit) {
+inline fun ParserSourceStream.readStream(startPointer: Int, limit: Int, block: () -> Unit) {
     val previous = pointer
     setPointerAt(startPointer)
     while (!hasEnded && pointer < limit) {
@@ -165,7 +166,7 @@ inline fun SourceStream.readStream(startPointer: Int, limit: Int, block: () -> U
     setPointerAt(previous)
 }
 
-fun SourceStream.getErrorInfoAtCurrentPointer(): Pair<Int, Int> {
+fun ParserSourceStream.getErrorInfoAtCurrentPointer(): Pair<Int, Int> {
     val pointerAt = pointer
     var lineNumber = 1
     var charIndex = 0
@@ -179,7 +180,7 @@ fun SourceStream.getErrorInfoAtCurrentPointer(): Pair<Int, Int> {
     return Pair(lineNumber, charIndex)
 }
 
-fun SourceStream.printErrorLineNumberAndCharacterIndex() {
+fun ParserSourceStream.printErrorLineNumberAndCharacterIndex() {
     val errorInfo = getErrorInfoAtCurrentPointer()
     println("Error : Line Number : ${errorInfo.first} , Character Index : ${errorInfo.second}")
     println("Un-parsed Code : ")

@@ -187,7 +187,7 @@ private fun LazyBlock.parseFunctionReturn(): ReferencedOrDirectValue? {
     return null
 }
 
-private fun SourceStream.parseFunctionParameters(): Map<String, KATEType>? {
+private fun ParserSourceStream.parseFunctionParameters(): Map<String, KATEType>? {
     if (increment('(')) {
         val parameters = mutableMapOf<String, KATEType>()
         do {
@@ -276,7 +276,7 @@ fun KATEParsedFunction(
     typeDefinition: String,
     invoke: KATEInvocation
 ): KATEFunction {
-    val source = TextSourceStream("@function $typeDefinition @end_function")
+    val source = TextParserSourceStream("@function $typeDefinition @end_function")
     val parsed = source.block.parseFunctionDefinition(anonymousFunctionName = null)!!
     val parsedDef = parsed.definition
     return object : KATEFunction(parsedDef.returnedType, parsedDef.parameterTypes) {

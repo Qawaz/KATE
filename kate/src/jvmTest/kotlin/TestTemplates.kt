@@ -1,11 +1,8 @@
-import com.wakaztahir.kate.InputSourceStream
+import com.wakaztahir.kate.InputParserSourceStream
 import com.wakaztahir.kate.OutputDestinationStream
 import com.wakaztahir.kate.RelativeResourceEmbeddingManager
 import com.wakaztahir.kate.TemplateContext
-import com.wakaztahir.kate.dsl.ModelObjectImpl
-import com.wakaztahir.kate.model.model.KATEObject
 import com.wakaztahir.kate.model.model.MutableKATEObject
-import com.wakaztahir.kate.parser.stream.getErrorInfoAtCurrentPointer
 import com.wakaztahir.kate.parser.stream.printErrorLineNumberAndCharacterIndex
 import org.junit.Test
 import java.io.File
@@ -63,7 +60,7 @@ class TestTemplates {
         val reader = input.bufferedReader()
         val text = reader.readText()
         reader.close()
-        val sourceStream = InputSourceStream(
+        val sourceStream = InputParserSourceStream(
             inputStream = object {}.javaClass.getResource("tests/main.kate")!!.openStream(),
             model = getObject()
         )
@@ -79,7 +76,7 @@ class TestTemplates {
     ): TemplateContext {
         val embedding = RelativeResourceEmbeddingManager(basePath, object {}.javaClass)
         return TemplateContext(
-            stream = InputSourceStream(
+            stream = InputParserSourceStream(
                 inputStream = embedding.getStream(inputPath),
                 model = model,
                 embeddingManager = embedding,

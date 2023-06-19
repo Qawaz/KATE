@@ -2,7 +2,7 @@ package com.wakaztahir.kate
 
 import com.wakaztahir.kate.model.LazyBlock
 import com.wakaztahir.kate.parser.stream.EmbeddingManager
-import com.wakaztahir.kate.parser.stream.SourceStream
+import com.wakaztahir.kate.parser.stream.ParserSourceStream
 import com.wakaztahir.kate.parser.stream.getErrorInfoAtCurrentPointer
 import java.io.InputStream
 import java.net.URL
@@ -14,7 +14,7 @@ open class RelativeResourceEmbeddingManager(
     override val embeddedStreams: MutableMap<String, Boolean> = mutableMapOf()
 ) : EmbeddingManager {
 
-    override fun handleException(path: String, stream: SourceStream, exception: Throwable): Nothing {
+    override fun handleException(path: String, stream: ParserSourceStream, exception: Throwable): Nothing {
         val indo = stream.getErrorInfoAtCurrentPointer()
         throw Throwable("${completePath(path)}:${indo.first}:${indo.second}", cause = exception)
     }
@@ -43,8 +43,8 @@ open class RelativeResourceEmbeddingManager(
         return getUrl(path).openStream() ?: throwStreamNotFound(path)
     }
 
-    override fun provideStream(block: LazyBlock, path: String): SourceStream? {
-        return InputSourceStream(
+    override fun provideStream(block: LazyBlock, path: String): ParserSourceStream? {
+        return InputParserSourceStream(
             inputStream = getStream(path),
             model = block.model,
             embeddingManager = RelativeResourceEmbeddingManager(

@@ -182,7 +182,7 @@ class ForLoopLazyBlockSlice(
     private var parseTimes = 0
     val forLoopBlock = ForLoopParsedBlock(parentProvider = parentBlock.provider,provider = this.provider, mutableListOf())
 
-    private fun SourceStream.parseBreakForAtDirective(): ForLoopBreak? {
+    private fun ParserSourceStream.parseBreakForAtDirective(): ForLoopBreak? {
         return if (currentChar == '@' && increment("@break")) {
             if (increment("for")) {
                 throw IllegalStateException("use new @break instead of @breakfor")
@@ -193,7 +193,7 @@ class ForLoopLazyBlockSlice(
         }
     }
 
-    private fun SourceStream.parseContinueForAtDirective(): ForLoopContinue? {
+    private fun ParserSourceStream.parseContinueForAtDirective(): ForLoopContinue? {
         return if (currentChar == '@' && increment("@continue")) {
             ForLoopContinue(forLoopBlock)
         } else {

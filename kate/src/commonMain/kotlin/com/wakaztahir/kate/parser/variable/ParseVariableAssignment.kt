@@ -61,7 +61,7 @@ data class AssignmentLHS(val variableName: String, val type: ArithmeticOperatorT
     override fun toString(): String = "$variableName ${type ?: ""}= "
 }
 
-internal fun SourceStream.parseAssignmentLHS(isExplicitAssignment: Boolean): AssignmentLHS? {
+internal fun ParserSourceStream.parseAssignmentLHS(isExplicitAssignment: Boolean): AssignmentLHS? {
     val previous = pointer
     if (isExplicitAssignment) {
         if (currentChar != '@' || !increment("@set_var")) return null

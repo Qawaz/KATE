@@ -3,27 +3,27 @@ package com.wakaztahir.kate
 import com.wakaztahir.kate.dsl.ModelObjectImpl
 import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.parser.stream.DestinationStream
-import com.wakaztahir.kate.parser.stream.SourceStream
-import com.wakaztahir.kate.parser.stream.TextSourceStream
+import com.wakaztahir.kate.parser.stream.ParserSourceStream
+import com.wakaztahir.kate.parser.stream.TextParserSourceStream
 
-class TemplateContext(stream: SourceStream) {
+class TemplateContext(stream: ParserSourceStream) {
 
     constructor(text: String, model: MutableKATEObject = ModelObjectImpl(GlobalModelObjectName)) : this(
-        TextSourceStream(
+        TextParserSourceStream(
             text,
             model
         )
     )
 
-    var stream: SourceStream = stream
+    var stream: ParserSourceStream = stream
         private set
 
-    fun updateStream(stream: SourceStream) {
+    fun updateStream(stream: ParserSourceStream) {
         this.stream = stream
     }
 
     fun updateStream(text: String) {
-        this.stream = TextSourceStream(text, this.stream.model)
+        this.stream = TextParserSourceStream(text, this.stream.model)
     }
 
     @OptIn(KATEDelicateFunction::class)

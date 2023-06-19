@@ -1,7 +1,7 @@
 package com.wakaztahir.kate.parser
 
 import com.wakaztahir.kate.model.*
-import com.wakaztahir.kate.parser.stream.SourceStream
+import com.wakaztahir.kate.parser.stream.ParserSourceStream
 import com.wakaztahir.kate.parser.stream.increment
 import com.wakaztahir.kate.parser.stream.parseTextWhile
 import com.wakaztahir.kate.parser.variable.isVariableName
@@ -10,14 +10,14 @@ private fun Char.isPlaceholderName() = this.isLetterOrDigit() || this == '_'
 
 private fun Char.isPlaceholderDefName() = this.isPlaceholderName()
 
-private fun SourceStream.parsePlaceHolderName(): String? {
+private fun ParserSourceStream.parsePlaceHolderName(): String? {
     if (increment('(')) {
         return parseTextWhile { currentChar.isPlaceholderName() }
     }
     return null
 }
 
-private fun SourceStream.parsePlaceHolderNameAndDefinition(): Pair<String, String>? {
+private fun ParserSourceStream.parsePlaceHolderNameAndDefinition(): Pair<String, String>? {
     val placeholderName = parsePlaceHolderName()
     if (placeholderName != null) {
         return if (increment(',')) {
@@ -38,7 +38,7 @@ private fun SourceStream.parsePlaceHolderNameAndDefinition(): Pair<String, Strin
     return null
 }
 
-private fun <T> SourceStream.parsePlaceHolderNameAndDefinitionAndParameter(parseParameter: SourceStream.() -> T?): Triple<String, String?, T?>? {
+private fun <T> ParserSourceStream.parsePlaceHolderNameAndDefinitionAndParameter(parseParameter: ParserSourceStream.() -> T?): Triple<String, String?, T?>? {
     val placeholderName = parsePlaceHolderName()
     if (placeholderName != null) {
         return if (increment(',')) {

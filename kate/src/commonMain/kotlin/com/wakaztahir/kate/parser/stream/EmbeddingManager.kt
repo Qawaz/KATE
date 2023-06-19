@@ -7,9 +7,9 @@ interface EmbeddingManager {
 
     val embeddedStreams: MutableMap<String, Boolean>
 
-    fun provideStream(block: LazyBlock, path: String): SourceStream?
+    fun provideStream(block: LazyBlock, path: String): ParserSourceStream?
 
-    fun handleException(path : String,stream: SourceStream, exception: Throwable) : Nothing {
+    fun handleException(path : String, stream: ParserSourceStream, exception: Throwable) : Nothing {
         throw exception
     }
 

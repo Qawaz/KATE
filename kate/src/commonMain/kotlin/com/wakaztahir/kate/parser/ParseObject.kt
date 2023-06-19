@@ -3,14 +3,14 @@ package com.wakaztahir.kate.parser
 import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.parser.block.ParsedBlock
 import com.wakaztahir.kate.parser.stream.DestinationStream
-import com.wakaztahir.kate.parser.stream.SourceStream
+import com.wakaztahir.kate.parser.stream.ParserSourceStream
 import com.wakaztahir.kate.parser.stream.increment
 import com.wakaztahir.kate.parser.stream.parseTextWhile
 import com.wakaztahir.kate.parser.variable.parseKATEType
 
 private fun Char.isObjectName(): Boolean = isLetterOrDigit() || this == '_'
 
-private fun SourceStream.parseObjectName(): String {
+private fun ParserSourceStream.parseObjectName(): String {
     if (increment('(')) {
         val text = parseTextWhile { currentChar.isObjectName() }
         if (increment(')')) {

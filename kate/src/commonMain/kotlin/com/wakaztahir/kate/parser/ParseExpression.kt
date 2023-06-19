@@ -5,7 +5,7 @@ import com.wakaztahir.kate.model.ConditionType
 import com.wakaztahir.kate.model.LazyBlock
 import com.wakaztahir.kate.model.model.KATEValue
 import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
-import com.wakaztahir.kate.parser.stream.SourceStream
+import com.wakaztahir.kate.parser.stream.ParserSourceStream
 import com.wakaztahir.kate.parser.stream.increment
 
 enum class OperatorAssociativity {
@@ -138,7 +138,7 @@ enum class ArithmeticOperatorType(val char: String, val associativity: OperatorA
 
 }
 
-private fun SourceStream.incrementTwoChars(char1: Char, char2: Char): Boolean {
+private fun ParserSourceStream.incrementTwoChars(char1: Char, char2: Char): Boolean {
     return if (increment(char1)) {
         if (increment(char2)) {
             true
@@ -151,7 +151,7 @@ private fun SourceStream.incrementTwoChars(char1: Char, char2: Char): Boolean {
     }
 }
 
-internal fun SourceStream.parseArithmeticOperator(): ArithmeticOperatorType? {
+internal fun ParserSourceStream.parseArithmeticOperator(): ArithmeticOperatorType? {
     val result = when (currentChar) {
         // Arithmetic Operators
         '+' -> {

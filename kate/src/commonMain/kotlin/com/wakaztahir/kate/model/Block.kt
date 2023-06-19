@@ -15,7 +15,7 @@ import com.wakaztahir.kate.parser.variable.parseVariableReferenceAsExpression
 
 interface LazyBlock {
 
-    val source: SourceStream
+    val source: ParserSourceStream
 
     val provider: ModelProvider
 
@@ -139,7 +139,7 @@ open class LazyBlockSlice(
     override val indentationLevel: Int
 ) : LazyBlock {
 
-    override val source: SourceStream = parentBlock.source
+    override val source: ParserSourceStream = parentBlock.source
 
     override fun canIterate(): Boolean {
         return source.pointer < startPointer + length

@@ -47,7 +47,7 @@ data class VariableDeclaration(
 
 }
 
-internal fun SourceStream.parseVariableName(): String? {
+internal fun ParserSourceStream.parseVariableName(): String? {
     val previous = pointer
     if (currentChar == '@' && increment("@var")) {
         if (currentChar == '(') {
@@ -62,7 +62,7 @@ internal fun SourceStream.parseVariableName(): String? {
 
 private fun Char.isTypeName(): Boolean = this.isLetter() || this == '_'
 
-private fun SourceStream.parseMetaValues(): MutableMap<String, KATEValue>? {
+private fun ParserSourceStream.parseMetaValues(): MutableMap<String, KATEValue>? {
     if (increment('`')) {
         val meta = mutableMapOf<String, KATEValue>()
         do {
@@ -88,7 +88,7 @@ private fun SourceStream.parseMetaValues(): MutableMap<String, KATEValue>? {
     return null
 }
 
-private fun SourceStream.parseClassProperty(): KATEType {
+private fun ParserSourceStream.parseClassProperty(): KATEType {
     if (increment(':')) {
         escapeSpaces()
         return parseKATEType(parseMetadata = true)
@@ -98,7 +98,7 @@ private fun SourceStream.parseClassProperty(): KATEType {
     }
 }
 
-private fun SourceStream.parseClassType(): KATEType.Class? {
+private fun ParserSourceStream.parseClassType(): KATEType.Class? {
     val previous = pointer
     if (increment('{')) {
         val members = mutableMapOf<String, KATEType>()
@@ -115,7 +115,7 @@ private fun SourceStream.parseClassType(): KATEType.Class? {
     return null
 }
 
-internal fun SourceStream.parseKATEType(parseMetadata: Boolean): KATEType? {
+internal fun ParserSourceStream.parseKATEType(parseMetadata: Boolean): KATEType? {
     val previous = pointer
     parseClassType()?.let { return it }
     val type = parseTextWhile { currentChar.isTypeName() }

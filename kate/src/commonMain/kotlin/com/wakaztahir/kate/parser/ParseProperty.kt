@@ -3,14 +3,14 @@ package com.wakaztahir.kate.parser
 import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.model.model.KATEValue
 import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
-import com.wakaztahir.kate.parser.stream.SourceStream
+import com.wakaztahir.kate.parser.stream.ParserSourceStream
 import com.wakaztahir.kate.parser.variable.parseVariableReference
 
 internal interface ExpressionValueParser {
     fun LazyBlock.parseExpressionValue(): ReferencedOrDirectValue?
 }
 
-internal fun SourceStream.parsePrimitiveValue(): PrimitiveValue<*>? {
+internal fun ParserSourceStream.parsePrimitiveValue(): PrimitiveValue<*>? {
     parseStringValue()?.let { return it }
     parseCharacterValue()?.let { return it }
     parseBooleanValue()?.let { return it }

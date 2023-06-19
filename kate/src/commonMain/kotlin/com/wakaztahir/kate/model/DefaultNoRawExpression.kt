@@ -1,13 +1,12 @@
 package com.wakaztahir.kate.model
 
-import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
 import com.wakaztahir.kate.parser.stream.DestinationStream
-import com.wakaztahir.kate.parser.stream.SourceStream
+import com.wakaztahir.kate.parser.stream.ParserSourceStream
 import com.wakaztahir.kate.tokenizer.NodeTokenizer
 
 class DefaultNoRawExpression(
-    val source: SourceStream,
+    val source: ParserSourceStream,
     val value: ReferencedOrDirectValue,
     val provider : ModelProvider,
 ) : CodeGen {
