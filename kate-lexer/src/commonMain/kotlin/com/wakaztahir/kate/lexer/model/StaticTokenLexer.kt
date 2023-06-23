@@ -2,6 +2,7 @@ package com.wakaztahir.kate.lexer.model
 
 import com.wakaztahir.kate.lexer.stream.SourceStream
 import com.wakaztahir.kate.lexer.stream.increment
+import com.wakaztahir.kate.lexer.stream.incrementDirective
 
 sealed interface StaticTokenLexer : TokenLexer {
 
@@ -14,6 +15,12 @@ sealed interface StaticTokenLexer : TokenLexer {
     class String(private val token: StaticToken.String, private val onNotFound: () -> KATEToken?) : StaticTokenLexer {
         override fun lex(stream: SourceStream): KATEToken? {
             return if (stream.increment(token)) token else onNotFound()
+        }
+    }
+
+    class Directive(private val token : StaticToken.String,private val onNotFound: () -> KATEToken?) : StaticTokenLexer {
+        override fun lex(stream: SourceStream): KATEToken? {
+            return if(stream.incrementDirective(token)) token else onNotFound()
         }
     }
 

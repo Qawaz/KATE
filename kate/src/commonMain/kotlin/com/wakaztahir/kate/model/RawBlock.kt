@@ -1,6 +1,9 @@
 package com.wakaztahir.kate.model
 
 import com.wakaztahir.kate.parser.PartialRawParsedBlock
+import com.wakaztahir.kate.parser.block.BlockParseState
+import com.wakaztahir.kate.parser.block.ParsedBlock
+import com.wakaztahir.kate.parser.block.parseSingle
 import com.wakaztahir.kate.parser.parseDefaultNoRaw
 import com.wakaztahir.kate.parser.stream.DestinationStream
 import com.wakaztahir.kate.tokenizer.NodeTokenizer

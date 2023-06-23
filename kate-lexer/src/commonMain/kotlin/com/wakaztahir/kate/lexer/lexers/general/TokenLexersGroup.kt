@@ -1,4 +1,4 @@
-package com.wakaztahir.kate.lexer.lexers
+package com.wakaztahir.kate.lexer.lexers.general
 
 import com.wakaztahir.kate.lexer.Lexer
 import com.wakaztahir.kate.lexer.model.KATEToken

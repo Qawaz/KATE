@@ -1,5 +1,6 @@
 package com.wakaztahir.kate.lexer.lexers
 
+import com.wakaztahir.kate.lexer.lexers.general.TokenLexersGroup
 import com.wakaztahir.kate.lexer.model.DynamicTokenLexer
 import com.wakaztahir.kate.lexer.model.StaticTokenLexer
 import com.wakaztahir.kate.lexer.stream.SourceStream

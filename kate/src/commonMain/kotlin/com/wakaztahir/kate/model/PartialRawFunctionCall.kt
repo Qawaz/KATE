@@ -1,5 +1,6 @@
 package com.wakaztahir.kate.model
 
+import com.wakaztahir.kate.lexer.tokens.dynamic.AccessChainToken
 import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
 import com.wakaztahir.kate.model.model.ReferencedValue
 import com.wakaztahir.kate.parser.stream.DestinationStream

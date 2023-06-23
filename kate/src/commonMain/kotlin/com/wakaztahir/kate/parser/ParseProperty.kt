@@ -1,5 +1,9 @@
 package com.wakaztahir.kate.parser
 
+import com.wakaztahir.kate.lexer.lexers.value.AccessChainLexer
+import com.wakaztahir.kate.lexer.lexers.value.DefaultExpressionValueLexer
+import com.wakaztahir.kate.lexer.lexers.value.PrimitiveValueLexer
+import com.wakaztahir.kate.lexer.tokens.dynamic.PrimitiveToken
 import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.model.model.KATEValue
 import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
@@ -11,17 +15,20 @@ internal interface ExpressionValueParser {
 }
 
 internal fun ParserSourceStream.parsePrimitiveValue(): PrimitiveValue<*>? {
-    parseStringValue()?.let { return it }
-    parseCharacterValue()?.let { return it }
-    parseBooleanValue()?.let { return it }
-    parseNumberValue()?.let { return it }
+    PrimitiveValueLexer.lex(this)?.let {
+        it.convert(TokenKATEValueConverter(ModelProvider.LateInit())).let { value ->
+            return value as PrimitiveValue<*>
+        }
+    }
     return null
 }
 
 class DefaultExpressionValueParser(private val parseDirectRefs: Boolean) : ExpressionValueParser {
     override fun LazyBlock.parseExpressionValue(): ReferencedOrDirectValue? {
-        source.parsePrimitiveValue()?.let { return it }
-        parseVariableReference(parseDirectRefs = parseDirectRefs)?.let { return it }
+        DefaultExpressionValueLexer(parseDirectRefs).lex(source)?.let { return it.convert(TokenKATEValueConverter(provider)) }
+//        source.parsePrimitiveValue()?.let { return it }
+//        AccessChainLexer(parseDirectRefs = parseDirectRefs).lex(source)?.let { return it.convert(TokenKATEValueConverter(provider)) }
+//        parseVariableReference(parseDirectRefs = parseDirectRefs)?.let { return it }
         return null
     }
 }
