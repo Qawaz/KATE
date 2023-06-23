@@ -4,9 +4,9 @@ import com.wakaztahir.kate.lexer.tokens.StaticTokens
 import com.wakaztahir.kate.model.CodeGen
 import com.wakaztahir.kate.model.LazyBlock
 import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
+import com.wakaztahir.kate.lexer.stream.increment
+import com.wakaztahir.kate.lexer.stream.incrementDirective
 import com.wakaztahir.kate.parser.stream.DestinationStream
-import com.wakaztahir.kate.parser.stream.increment
-import com.wakaztahir.kate.parser.stream.incrementDirective
 import com.wakaztahir.kate.tokenizer.NodeTokenizer
 import kotlin.jvm.JvmInline
 

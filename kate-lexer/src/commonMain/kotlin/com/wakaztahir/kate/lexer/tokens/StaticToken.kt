@@ -1,8 +1,13 @@
 package com.wakaztahir.kate.lexer.tokens
 
-interface StaticToken : KATEToken
+sealed interface StaticToken : KATEToken {
 
-data class StringStaticToken(val representation: String) : StaticToken
+    data class StringStaticToken(val representation: String) : StaticToken
 
-data class CharStaticToken(val representation : Char)
+    data class CharStaticToken(val representation: Char) : StaticToken
 
+}
+
+typealias StringStaticToken = StaticToken.StringStaticToken
+
+typealias CharStaticToken = StaticToken.CharStaticToken

@@ -9,8 +9,10 @@ import com.wakaztahir.kate.parser.ArithmeticOperatorType
 import com.wakaztahir.kate.parser.ExpressionValue
 import com.wakaztahir.kate.parser.parseAnyExpressionOrValue
 import com.wakaztahir.kate.parser.parseArithmeticOperator
-import com.wakaztahir.kate.parser.stream.*
-import com.wakaztahir.kate.parser.stream.increment
+import com.wakaztahir.kate.lexer.stream.*
+import com.wakaztahir.kate.lexer.stream.increment
+import com.wakaztahir.kate.parser.stream.DestinationStream
+import com.wakaztahir.kate.parser.stream.ParserSourceStream
 import com.wakaztahir.kate.tokenizer.NodeTokenizer
 
 data class VariableAssignment(

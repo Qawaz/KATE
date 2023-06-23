@@ -3,8 +3,10 @@ package com.wakaztahir.kate.parser
 import com.wakaztahir.kate.lexer.tokens.StaticTokens
 import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.parser.block.ParsedBlock
-import com.wakaztahir.kate.parser.stream.*
-import com.wakaztahir.kate.parser.stream.parseTextWhile
+import com.wakaztahir.kate.lexer.stream.*
+import com.wakaztahir.kate.lexer.stream.parseTextWhile
+import com.wakaztahir.kate.parser.stream.DestinationStream
+import com.wakaztahir.kate.parser.stream.ParserSourceStream
 import com.wakaztahir.kate.parser.variable.parseKATEType
 
 private fun Char.isObjectName(): Boolean = isLetterOrDigit() || this == '_'

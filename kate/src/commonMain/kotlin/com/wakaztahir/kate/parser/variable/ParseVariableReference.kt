@@ -12,9 +12,10 @@ import com.wakaztahir.kate.model.model.ReferencedValue
 import com.wakaztahir.kate.parser.*
 import com.wakaztahir.kate.parser.parseAnyExpressionOrValue
 import com.wakaztahir.kate.parser.parseStringValue
-import com.wakaztahir.kate.parser.stream.*
-import com.wakaztahir.kate.parser.stream.increment
-import com.wakaztahir.kate.parser.stream.parseTextWhile
+import com.wakaztahir.kate.lexer.stream.*
+import com.wakaztahir.kate.lexer.stream.increment
+import com.wakaztahir.kate.lexer.stream.parseTextWhile
+import com.wakaztahir.kate.parser.stream.printErrorLineNumberAndCharacterIndex
 
 internal fun LazyBlock.parseFunctionParameters(): List<ReferencedOrDirectValue>? {
     if (source.increment(StaticTokens.LeftParenthesis)) {

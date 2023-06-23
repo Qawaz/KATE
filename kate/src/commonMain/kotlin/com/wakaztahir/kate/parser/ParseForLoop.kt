@@ -6,9 +6,11 @@ import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.model.ConditionType
 import com.wakaztahir.kate.model.model.*
 import com.wakaztahir.kate.parser.function.NestableInvocationBlock
-import com.wakaztahir.kate.parser.stream.*
-import com.wakaztahir.kate.parser.stream.increment
-import com.wakaztahir.kate.parser.stream.parseTextWhile
+import com.wakaztahir.kate.lexer.stream.*
+import com.wakaztahir.kate.lexer.stream.increment
+import com.wakaztahir.kate.lexer.stream.parseTextWhile
+import com.wakaztahir.kate.parser.stream.DestinationStream
+import com.wakaztahir.kate.parser.stream.ParserSourceStream
 import com.wakaztahir.kate.parser.variable.isVariableName
 import com.wakaztahir.kate.parser.variable.parseVariableName
 import com.wakaztahir.kate.parser.variable.parseVariableReference

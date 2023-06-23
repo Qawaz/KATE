@@ -2,10 +2,10 @@ package com.wakaztahir.kate.parser
 
 import com.wakaztahir.kate.lexer.tokens.StaticTokens
 import com.wakaztahir.kate.model.*
+import com.wakaztahir.kate.lexer.stream.increment
+import com.wakaztahir.kate.lexer.stream.incrementDirective
+import com.wakaztahir.kate.lexer.stream.parseTextWhile
 import com.wakaztahir.kate.parser.stream.ParserSourceStream
-import com.wakaztahir.kate.parser.stream.increment
-import com.wakaztahir.kate.parser.stream.incrementDirective
-import com.wakaztahir.kate.parser.stream.parseTextWhile
 import com.wakaztahir.kate.parser.variable.isVariableName
 
 private fun Char.isPlaceholderName() = this.isLetterOrDigit() || this == '_'

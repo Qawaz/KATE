@@ -2,7 +2,6 @@ package com.wakaztahir.kate
 
 import com.wakaztahir.kate.dsl.ModelObjectImpl
 import com.wakaztahir.kate.lexer.InputSourceStream
-import com.wakaztahir.kate.lexer.SourceStream
 import com.wakaztahir.kate.model.LazyBlock
 import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.parser.stream.*

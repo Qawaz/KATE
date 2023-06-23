@@ -1,6 +1,6 @@
 package com.wakaztahir.kate.parser.stream
 
-import com.wakaztahir.kate.lexer.SourceStream
+import com.wakaztahir.kate.lexer.stream.SourceStream
 import com.wakaztahir.kate.model.LazyBlock
 import com.wakaztahir.kate.model.ModelProvider
 import com.wakaztahir.kate.model.PlaceholderParsedBlock

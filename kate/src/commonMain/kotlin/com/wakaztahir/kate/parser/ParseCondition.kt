@@ -5,10 +5,14 @@ import com.wakaztahir.kate.lexer.tokens.StaticTokens
 import com.wakaztahir.kate.lexer.tokens.StringStaticToken
 import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
-import com.wakaztahir.kate.parser.stream.*
-import com.wakaztahir.kate.parser.stream.escapeSpaces
-import com.wakaztahir.kate.parser.stream.increment
-import com.wakaztahir.kate.parser.stream.incrementUntilDirectiveWithSkip
+import com.wakaztahir.kate.lexer.stream.*
+import com.wakaztahir.kate.lexer.stream.escapeSpaces
+import com.wakaztahir.kate.lexer.stream.increment
+import com.wakaztahir.kate.lexer.stream.incrementUntilDirectiveWithSkip
+import com.wakaztahir.kate.parser.stream.ParserSourceStream
+import com.wakaztahir.kate.parser.stream.escapeBlockSpacesBackward
+import com.wakaztahir.kate.parser.stream.escapeBlockSpacesForward
+import com.wakaztahir.kate.parser.stream.printErrorLineNumberAndCharacterIndex
 import com.wakaztahir.kate.parser.variable.parseValueOfType
 
 internal fun ParserSourceStream.parseConditionType(): ConditionType? {

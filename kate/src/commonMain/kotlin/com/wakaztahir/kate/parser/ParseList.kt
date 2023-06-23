@@ -4,8 +4,8 @@ import com.wakaztahir.kate.lexer.tokens.StaticTokens
 import com.wakaztahir.kate.model.KATEType
 import com.wakaztahir.kate.model.LazyBlock
 import com.wakaztahir.kate.model.model.*
-import com.wakaztahir.kate.parser.stream.increment
-import com.wakaztahir.kate.parser.stream.incrementDirective
+import com.wakaztahir.kate.lexer.stream.increment
+import com.wakaztahir.kate.lexer.stream.incrementDirective
 import com.wakaztahir.kate.parser.variable.parseValueOfType
 
 private fun KATEType.actual() = if (this is KATEType.NullableKateType) this.actual else this

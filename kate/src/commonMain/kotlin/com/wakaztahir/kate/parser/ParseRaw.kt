@@ -6,8 +6,11 @@ import com.wakaztahir.kate.lexer.tokens.StringStaticToken
 import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.parser.block.ParsedBlock
-import com.wakaztahir.kate.parser.stream.*
-import com.wakaztahir.kate.parser.stream.increment
+import com.wakaztahir.kate.lexer.stream.*
+import com.wakaztahir.kate.lexer.stream.increment
+import com.wakaztahir.kate.parser.stream.DestinationStream
+import com.wakaztahir.kate.parser.stream.escapeBlockSpacesBackward
+import com.wakaztahir.kate.parser.stream.escapeBlockSpacesForward
 
 fun LazyBlock.parseBlockSlice(
     startsWith: StringStaticToken,

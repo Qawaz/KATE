@@ -1,10 +1,9 @@
 import com.wakaztahir.kate.TemplateContext
+import com.wakaztahir.kate.lexer.stream.*
 import com.wakaztahir.kate.lexer.tokens.StaticTokens
-import com.wakaztahir.kate.parser.stream.*
-import com.wakaztahir.kate.parser.stream.increment
 import kotlin.test.*
 
-class StreamUtilsText {
+class StreamUtilsTest {
     @Test
     fun testIncrement() {
         val context = TemplateContext(("<%--HelloWorld--%>"))

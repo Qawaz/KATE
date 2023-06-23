@@ -8,8 +8,11 @@ import com.wakaztahir.kate.parser.*
 import com.wakaztahir.kate.parser.block.ParsedBlock
 import com.wakaztahir.kate.parser.block.parse
 import com.wakaztahir.kate.parser.function.parseFunctionDefinition
-import com.wakaztahir.kate.parser.stream.*
-import com.wakaztahir.kate.parser.stream.increment
+import com.wakaztahir.kate.lexer.stream.*
+import com.wakaztahir.kate.lexer.stream.increment
+import com.wakaztahir.kate.parser.stream.DestinationStream
+import com.wakaztahir.kate.parser.stream.ParserSourceStream
+import com.wakaztahir.kate.parser.stream.TextDestinationStream
 import com.wakaztahir.kate.parser.variable.parseVariableAssignment
 import com.wakaztahir.kate.parser.variable.parseVariableDeclaration
 import com.wakaztahir.kate.parser.variable.parseVariableReferenceAsExpression

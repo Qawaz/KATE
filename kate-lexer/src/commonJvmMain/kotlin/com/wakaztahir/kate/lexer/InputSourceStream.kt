@@ -1,5 +1,7 @@
 package com.wakaztahir.kate.lexer
 
+import com.wakaztahir.kate.lexer.stream.LookAheadScope
+import com.wakaztahir.kate.lexer.stream.SourceStream
 import java.io.InputStream
 
 open class InputSourceStream(val inputStream: InputStream) : SourceStream {
@@ -30,6 +32,22 @@ open class InputSourceStream(val inputStream: InputStream) : SourceStream {
         return false
     }
 
+    override fun <T> lookAhead(block: LookAheadScope.() -> T): T {
+        val previousPosition = pointer
+        var restoreAt: Int? = null
+        val item = block(object : LookAheadScope {
+            override fun restorePosition() {
+                restoreAt = previousPosition
+            }
+
+            override fun restoreIncrementing(amount: Int) {
+                restoreAt = previousPosition + amount
+            }
+        })
+        restoreAt?.let { setStreamPointer(it) }
+        return item
+    }
+
     override fun lookAhead(offset: Int): Char? {
         return try {
             setStreamPointer(pointer + offset)
@@ -44,7 +62,7 @@ open class InputSourceStream(val inputStream: InputStream) : SourceStream {
 
     override fun lookAhead(offset: Int, length: Int): String? {
         return try {
-            increment(offset)
+            incrementPointer(offset)
             var text = ""
             while (pointer < length) {
                 text += currentChar
@@ -62,7 +80,7 @@ open class InputSourceStream(val inputStream: InputStream) : SourceStream {
         return setStreamPointer(pointer + 1)
     }
 
-    override fun increment(amount: Int): Boolean {
+    override fun incrementPointer(amount: Int): Boolean {
         return setStreamPointer(pointer + amount)
     }
 

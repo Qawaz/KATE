@@ -3,7 +3,7 @@ package com.wakaztahir.kate.parser.block
 import com.wakaztahir.kate.lexer.tokens.StaticTokens
 import com.wakaztahir.kate.model.LazyBlock
 import com.wakaztahir.kate.model.model.KATEParsingError
-import com.wakaztahir.kate.parser.stream.increment
+import com.wakaztahir.kate.lexer.stream.increment
 
 inline fun LazyBlock.parse(
     onDirective : (ParsedBlock.CodeGenRange)->Unit,

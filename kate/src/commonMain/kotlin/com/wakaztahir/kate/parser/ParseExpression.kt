@@ -7,8 +7,8 @@ import com.wakaztahir.kate.model.ConditionType
 import com.wakaztahir.kate.model.LazyBlock
 import com.wakaztahir.kate.model.model.KATEValue
 import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
+import com.wakaztahir.kate.lexer.stream.increment
 import com.wakaztahir.kate.parser.stream.ParserSourceStream
-import com.wakaztahir.kate.parser.stream.increment
 
 enum class OperatorAssociativity {
     LeftToRight,

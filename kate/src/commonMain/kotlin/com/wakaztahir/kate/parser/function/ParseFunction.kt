@@ -6,9 +6,12 @@ import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.model.model.*
 import com.wakaztahir.kate.parser.*
 import com.wakaztahir.kate.parser.parseAnyExpressionOrValue
-import com.wakaztahir.kate.parser.stream.*
-import com.wakaztahir.kate.parser.stream.increment
-import com.wakaztahir.kate.parser.stream.parseTextWhile
+import com.wakaztahir.kate.lexer.stream.*
+import com.wakaztahir.kate.lexer.stream.increment
+import com.wakaztahir.kate.lexer.stream.parseTextWhile
+import com.wakaztahir.kate.parser.stream.DestinationStream
+import com.wakaztahir.kate.parser.stream.ParserSourceStream
+import com.wakaztahir.kate.parser.stream.TextParserSourceStream
 import com.wakaztahir.kate.parser.variable.isVariableName
 import com.wakaztahir.kate.parser.variable.parseKATEType
 import com.wakaztahir.kate.tokenizer.NodeTokenizer
