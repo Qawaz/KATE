@@ -1,5 +1,8 @@
 package com.wakaztahir.kate.parser.stream
 
+import com.wakaztahir.kate.lexer.stream.SequentialStream
+import com.wakaztahir.kate.lexer.stream.SourceStream
+import com.wakaztahir.kate.lexer.stream.escapeBlockSpacesForward
 import com.wakaztahir.kate.lexer.stream.printLeft
 import com.wakaztahir.kate.model.LazyBlock
 
@@ -32,42 +35,6 @@ fun ParserSourceStream.printErrorLineNumberAndCharacterIndex() {
     println("Error : Line Number : ${errorInfo.first} , Character Index : ${errorInfo.second}")
     println("Un-parsed Code : ")
     printLeft()
-}
-
-internal fun LazyBlock.escapeBlockSpacesForward() {
-
-    val previous = source.pointer
-    while (!source.hasEnded) {
-        when (source.currentChar) {
-
-            '\r' -> {
-                source.incrementPointer()
-                if (source.currentChar == '\n') source.incrementPointer()
-                return
-            }
-
-            '\n' -> {
-                source.incrementPointer()
-                return
-            }
-
-            ' ' -> {
-                source.incrementPointer()
-                continue
-            }
-
-            else -> {
-                break
-            }
-        }
-    }
-
-    source.setPointerAt(previous)
-    if (source.currentChar == ' ') {
-        source.incrementPointer()
-        return
-    }
-
 }
 
 internal fun LazyBlock.escapeBlockSpacesBackward() {

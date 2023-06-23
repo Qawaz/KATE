@@ -11,7 +11,6 @@ import com.wakaztahir.kate.lexer.stream.increment
 import com.wakaztahir.kate.lexer.stream.incrementUntilDirectiveWithSkip
 import com.wakaztahir.kate.parser.stream.ParserSourceStream
 import com.wakaztahir.kate.parser.stream.escapeBlockSpacesBackward
-import com.wakaztahir.kate.parser.stream.escapeBlockSpacesForward
 import com.wakaztahir.kate.parser.stream.printErrorLineNumberAndCharacterIndex
 import com.wakaztahir.kate.parser.variable.parseValueOfType
 
@@ -99,7 +98,7 @@ internal fun LazyBlock.parseCondition(
 
 private fun LazyBlock.parseIfBlockValue(ifType: IfType): IfParsedBlock {
 
-    escapeBlockSpacesForward()
+    source.escapeBlockSpacesForward()
 
     val previous = source.pointer
 

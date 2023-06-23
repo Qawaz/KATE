@@ -232,6 +232,46 @@ inline fun SourceStream.incrementUntilDirectiveWithSkip(
     return null
 }
 
+fun SourceStream.escapeBlockSpacesForward() {
+
+    val result = lookAhead {
+        while (!hasEnded) {
+            when (currentChar) {
+
+                '\r' -> {
+                    incrementPointer()
+                    if (currentChar == '\n') incrementPointer()
+                    return@lookAhead true
+                }
+
+                '\n' -> {
+                    incrementPointer()
+                    return@lookAhead true
+                }
+
+                ' ' -> {
+                    incrementPointer()
+                    continue
+                }
+
+                else -> {
+                    break
+                }
+            }
+        }
+        restorePosition()
+        false
+    }
+
+    if (result) return
+
+    if (currentChar == ' ') {
+        incrementPointer()
+        return
+    }
+
+}
+
 fun String.escapeBlockSpacesBackward(indentationLevel: Int): String {
     var currentIndentationLevel = indentationLevel
     var i = length

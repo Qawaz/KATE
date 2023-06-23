@@ -9,7 +9,6 @@ import com.wakaztahir.kate.parser.block.ParsedBlock
 import com.wakaztahir.kate.lexer.stream.*
 import com.wakaztahir.kate.parser.stream.DestinationStream
 import com.wakaztahir.kate.parser.stream.escapeBlockSpacesBackward
-import com.wakaztahir.kate.parser.stream.escapeBlockSpacesForward
 
 fun LazyBlock.parseBlockSlice(
     startsWith: StaticToken.String,
@@ -19,7 +18,7 @@ fun LazyBlock.parseBlockSlice(
     indentationLevel: Int = this.indentationLevel + 1
 ): LazyBlockSlice {
 
-    escapeBlockSpacesForward()
+    source.escapeBlockSpacesForward()
 
     val previous = source.pointer
 
@@ -101,7 +100,7 @@ private fun String.deIndented(indentationLevel: Int): String {
 }
 
 fun LazyBlock.parseRawBlockText(): String {
-    escapeBlockSpacesForward()
+    source.escapeBlockSpacesForward()
     var text = source.parseTextUntilConsumedDirectiveNew(StaticTokens.EndRaw)
         ?: throw IllegalStateException("@raw must end with @endraw")
     text = text.deIndented(indentationLevel + 1)
