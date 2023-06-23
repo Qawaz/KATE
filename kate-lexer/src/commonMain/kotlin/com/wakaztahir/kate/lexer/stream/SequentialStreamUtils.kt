@@ -1,7 +1,6 @@
 package com.wakaztahir.kate.lexer.stream
 
-import com.wakaztahir.kate.lexer.stream.SequentialStream
-import com.wakaztahir.kate.lexer.tokens.StaticToken
+import com.wakaztahir.kate.lexer.model.StaticToken
 
 fun SequentialStream.increment(char: Char): Boolean {
     return if (!hasEnded && currentChar == char) {

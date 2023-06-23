@@ -1,5 +1,8 @@
 package com.wakaztahir.kate.lexer.tokens
 
+import com.wakaztahir.kate.lexer.model.CharStaticToken
+import com.wakaztahir.kate.lexer.model.StringStaticToken
+
 object StaticTokens {
 
     private fun token(text: String): StringStaticToken {

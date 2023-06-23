@@ -28,6 +28,7 @@ dependencyResolutionManagement {
 rootProject.name = "KATE-DEV"
 include(":desktop")
 include(":web")
+include(":kate-core")
 include(":kate-lexer")
 include(":kate-parser")
-include(":kate")
+include(":kate") // change to interpreter when ready

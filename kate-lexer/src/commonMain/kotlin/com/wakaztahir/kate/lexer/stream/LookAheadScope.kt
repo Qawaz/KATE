@@ -9,7 +9,7 @@ interface LookAheadScope {
     fun restorePosition()
 
     /**
-     * Requests that position be restored and this amount is incremented to the position
+     * Requests that position be restored and this amount is incremented to the position when the scope ends
      */
     fun restoreIncrementing(amount: Int)
 

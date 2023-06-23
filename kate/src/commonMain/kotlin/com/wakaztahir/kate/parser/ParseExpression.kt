@@ -1,6 +1,6 @@
 package com.wakaztahir.kate.parser
 
-import com.wakaztahir.kate.lexer.tokens.CharStaticToken
+import com.wakaztahir.kate.lexer.model.CharStaticToken
 import com.wakaztahir.kate.lexer.tokens.StaticTokens
 import com.wakaztahir.kate.model.BooleanValue
 import com.wakaztahir.kate.model.ConditionType

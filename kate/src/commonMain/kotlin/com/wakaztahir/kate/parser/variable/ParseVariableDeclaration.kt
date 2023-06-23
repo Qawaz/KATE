@@ -1,6 +1,5 @@
 package com.wakaztahir.kate.parser.variable
 
-import com.wakaztahir.kate.lexer.tokens.StaticToken
 import com.wakaztahir.kate.lexer.tokens.StaticTokens
 import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.model.*

@@ -1,9 +1,8 @@
 package com.wakaztahir.kate.lexer.stream
 
-import com.wakaztahir.kate.lexer.stream.SourceStream
-import com.wakaztahir.kate.lexer.tokens.CharStaticToken
+import com.wakaztahir.kate.lexer.model.CharStaticToken
 import com.wakaztahir.kate.lexer.tokens.StaticTokens
-import com.wakaztahir.kate.lexer.tokens.StringStaticToken
+import com.wakaztahir.kate.lexer.model.StringStaticToken
 
 class UnexpectedEndOfStream(message: String) : Exception(message)
 

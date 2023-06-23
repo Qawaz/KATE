@@ -2,7 +2,7 @@ package com.wakaztahir.kate.parser
 
 import com.wakaztahir.kate.dsl.ScopedModelLazyParent
 import com.wakaztahir.kate.lexer.tokens.StaticTokens
-import com.wakaztahir.kate.lexer.tokens.StringStaticToken
+import com.wakaztahir.kate.lexer.model.StringStaticToken
 import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
 import com.wakaztahir.kate.lexer.stream.*

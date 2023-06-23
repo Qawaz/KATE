@@ -1,4 +1,4 @@
-package com.wakaztahir.kate.lexer.tokens
+package com.wakaztahir.kate.lexer.model
 
 sealed interface StaticToken : KATEToken {
 
@@ -8,6 +8,6 @@ sealed interface StaticToken : KATEToken {
 
 }
 
-typealias StringStaticToken = StaticToken.StringStaticToken
-
 typealias CharStaticToken = StaticToken.CharStaticToken
+
+typealias StringStaticToken = StaticToken.StringStaticToken
