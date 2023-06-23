@@ -1,6 +1,6 @@
 package com.wakaztahir.kate.parser
 
-import com.wakaztahir.kate.lexer.model.CharStaticToken
+import com.wakaztahir.kate.lexer.model.StaticToken
 import com.wakaztahir.kate.lexer.tokens.StaticTokens
 import com.wakaztahir.kate.model.BooleanValue
 import com.wakaztahir.kate.model.ConditionType
@@ -140,7 +140,7 @@ enum class ArithmeticOperatorType(val char: String, val associativity: OperatorA
 
 }
 
-private fun ParserSourceStream.incrementTwoChars(char1: CharStaticToken, char2: CharStaticToken): Boolean {
+private fun ParserSourceStream.incrementTwoChars(char1: StaticToken.Char, char2: StaticToken.Char): Boolean {
     return if (increment(char1)) {
         if (increment(char2)) {
             true

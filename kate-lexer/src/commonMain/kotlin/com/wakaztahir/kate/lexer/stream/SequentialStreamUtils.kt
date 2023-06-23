@@ -11,6 +11,6 @@ fun SequentialStream.increment(char: Char): Boolean {
 }
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun SequentialStream.increment(token: StaticToken.CharStaticToken): Boolean {
+inline fun SequentialStream.increment(token: StaticToken.Char): Boolean {
     return increment(token.representation)
 }

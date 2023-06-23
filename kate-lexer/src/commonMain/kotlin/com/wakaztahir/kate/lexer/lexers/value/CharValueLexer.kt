@@ -1,4 +1,4 @@
-package com.wakaztahir.kate.lexer.lexers
+package com.wakaztahir.kate.lexer.lexers.value
 
 import com.wakaztahir.kate.lexer.model.DynamicTokenLexer
 import com.wakaztahir.kate.lexer.stream.SourceStream

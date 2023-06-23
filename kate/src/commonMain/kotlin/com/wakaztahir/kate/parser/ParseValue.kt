@@ -1,13 +1,10 @@
 package com.wakaztahir.kate.parser
 
-import com.wakaztahir.kate.lexer.lexers.BooleanValueLexer
-import com.wakaztahir.kate.lexer.lexers.CharValueLexer
-import com.wakaztahir.kate.lexer.lexers.NumberValueLexer
-import com.wakaztahir.kate.lexer.lexers.StringValueLexer
-import com.wakaztahir.kate.lexer.tokens.StaticTokens
+import com.wakaztahir.kate.lexer.lexers.value.BooleanValueLexer
+import com.wakaztahir.kate.lexer.lexers.value.CharValueLexer
+import com.wakaztahir.kate.lexer.lexers.value.NumberValueLexer
+import com.wakaztahir.kate.lexer.lexers.value.StringValueLexer
 import com.wakaztahir.kate.model.*
-import com.wakaztahir.kate.lexer.stream.*
-import com.wakaztahir.kate.lexer.stream.increment
 import com.wakaztahir.kate.lexer.tokens.dynamic.PrimitiveToken
 import com.wakaztahir.kate.parser.stream.ParserSourceStream
 

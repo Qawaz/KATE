@@ -1,8 +1,8 @@
 package com.wakaztahir.kate.parser
 
 import com.wakaztahir.kate.dsl.ScopedModelLazyParent
+import com.wakaztahir.kate.lexer.model.StaticToken
 import com.wakaztahir.kate.lexer.tokens.StaticTokens
-import com.wakaztahir.kate.lexer.model.StringStaticToken
 import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.parser.block.ParsedBlock
@@ -12,8 +12,8 @@ import com.wakaztahir.kate.parser.stream.escapeBlockSpacesBackward
 import com.wakaztahir.kate.parser.stream.escapeBlockSpacesForward
 
 fun LazyBlock.parseBlockSlice(
-    startsWith: StringStaticToken,
-    endsWith: StringStaticToken,
+    startsWith: StaticToken.String,
+    endsWith: StaticToken.String,
     isDefaultNoRaw: Boolean,
     provider: ModelProvider,
     indentationLevel: Int = this.indentationLevel + 1
@@ -51,8 +51,8 @@ fun LazyBlock.parseBlockSlice(
 }
 
 fun LazyBlock.parseBlockSlice(
-    startsWith: StringStaticToken,
-    endsWith: StringStaticToken,
+    startsWith: StaticToken.String,
+    endsWith: StaticToken.String,
     isDefaultNoRaw: Boolean,
     inheritModel: Boolean,
     indentationLevel: Int = this.indentationLevel + 1

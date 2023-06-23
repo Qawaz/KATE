@@ -1,8 +1,7 @@
 package com.wakaztahir.kate.lexer.stream
 
-import com.wakaztahir.kate.lexer.model.CharStaticToken
+import com.wakaztahir.kate.lexer.model.StaticToken
 import com.wakaztahir.kate.lexer.tokens.StaticTokens
-import com.wakaztahir.kate.lexer.model.StringStaticToken
 
 class UnexpectedEndOfStream(message: String) : Exception(message)
 
@@ -37,11 +36,11 @@ fun SourceStream.increment(text: String, throwOnUnexpectedEOS: Boolean = false):
     }
 }
 
-fun SourceStream.increment(token: StringStaticToken): Boolean {
+fun SourceStream.increment(token: StaticToken.String): Boolean {
     return increment(token.representation)
 }
 
-fun SourceStream.incrementDirective(second: StringStaticToken): Boolean {
+fun SourceStream.incrementDirective(second: StaticToken.String): Boolean {
     return lookAhead {
         if (increment(StaticTokens.AtDirective)) {
             if (increment(second.representation)) {
@@ -57,11 +56,11 @@ fun SourceStream.incrementDirective(second: StringStaticToken): Boolean {
 }
 
 // TODO fix this one
-fun SourceStream.incrementDirective(first: StringStaticToken, second: CharStaticToken): Boolean {
+fun SourceStream.incrementDirective(first: StaticToken.String, second: StaticToken.Char): Boolean {
     return increment(StaticTokens.AtDirective.representation + first.representation + second.representation)
 }
 
-fun SourceStream.increment(first: CharStaticToken, second: StringStaticToken): Boolean {
+fun SourceStream.increment(first: StaticToken.Char, second: StaticToken.String): Boolean {
     return lookAhead {
         if (increment(first.representation)) {
             if (increment(second.representation)) {
@@ -76,28 +75,23 @@ fun SourceStream.increment(first: CharStaticToken, second: StringStaticToken): B
     }
 }
 
-fun SourceStream.incrementAndReturnDirective(second: StringStaticToken): String? {
+fun SourceStream.incrementAndReturnDirective(second: StaticToken.String): String? {
     return if (incrementDirective(second)) {
         StaticTokens.AtDirective.representation + second.representation
     } else null
 }
 
-
-fun SourceStream.parseTextUntilConsumedNew(token: StringStaticToken): String? {
-    return parseTextUntilConsumedNew(token.representation)
-}
-
 fun SourceStream.parseTextUntilConsumedDirectiveNew(
-    second: StringStaticToken
+    second: StaticToken.String
 ): String? {
     return parseTextUntilConsumedNew(StaticTokens.AtDirective.representation + second.representation)
 }
 
-fun SourceStream.parseTextUntilConsumedNew(text: String): String? {
+fun SourceStream.parseTextUntilConsumedNew(stopper: String): String? {
     var parsedText = ""
     return lookAhead {
         while (!hasEnded) {
-            if (currentChar == text[0] && increment(text)) {
+            if (currentChar == stopper[0] && increment(stopper)) {
                 return@lookAhead parsedText
             } else {
                 parsedText += currentChar
@@ -109,7 +103,25 @@ fun SourceStream.parseTextUntilConsumedNew(text: String): String? {
     }
 }
 
-fun SourceStream.incrementUntilConsumed(token: StringStaticToken): Boolean {
+fun SourceStream.parseTextUntilConsumedNew(token: StaticToken.String): String? {
+    return parseTextUntilConsumedNew(token.representation)
+}
+
+fun SourceStream.parseTextUntil(stopper: StaticToken.String): String? {
+    return lookAhead {
+        val previous = pointer
+        val text = parseTextUntilConsumedNew(stopper)
+        if (text != null) {
+            restoreIncrementing(pointer - previous - stopper.representation.length)
+            text
+        } else {
+            null
+        }
+    }
+}
+
+
+fun SourceStream.incrementUntilConsumed(token: StaticToken.String): Boolean {
     return incrementUntilConsumed(token.representation)
 }
 
@@ -139,7 +151,7 @@ fun SourceStream.incrementUntil(str: String): Boolean {
     }
 }
 
-fun SourceStream.incrementUntil(token: StringStaticToken): Boolean {
+fun SourceStream.incrementUntil(token: StaticToken.String): Boolean {
     return incrementUntil(token.representation)
 }
 
@@ -187,14 +199,14 @@ fun SourceStream.printLeftAscii() = resetIfNull {
     null
 }
 
-fun SourceStream.parseTextUntilConsumed(token: StringStaticToken): String {
+fun SourceStream.parseTextUntilConsumed(token: StaticToken.String): String {
     return parseTextWhile {
         currentChar != token.representation[0] || !increment(token)
     }
 }
 
 inline fun SourceStream.incrementUntilDirectiveWithSkip(
-    directive: StringStaticToken,
+    directive: StaticToken.String,
     canIncrementDirective: (skips: Int) -> String?,
 ): String? {
     var skips = 0

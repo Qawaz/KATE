@@ -1,8 +1,8 @@
 package com.wakaztahir.kate.parser
 
 import com.wakaztahir.kate.dsl.ScopedModelLazyParent
+import com.wakaztahir.kate.lexer.model.StaticToken
 import com.wakaztahir.kate.lexer.tokens.StaticTokens
-import com.wakaztahir.kate.lexer.model.StringStaticToken
 import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
 import com.wakaztahir.kate.lexer.stream.*
@@ -148,7 +148,7 @@ private fun LazyBlock.parseIfBlockValue(ifType: IfType): IfParsedBlock {
     return IfParsedBlock(provider = block.provider, parsedBlock.codeGens)
 }
 
-internal fun LazyBlock.parseSingleIf(start: StringStaticToken, ifType: IfType): SingleIf? {
+internal fun LazyBlock.parseSingleIf(start: StaticToken.String, ifType: IfType): SingleIf? {
     if (source.incrementDirective(start)) {
         if (ifType != IfType.Else) {
             if (!source.increment(StaticTokens.LeftParenthesis)) {

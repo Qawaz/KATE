@@ -1,16 +1,15 @@
 package com.wakaztahir.kate.lexer.tokens
 
-import com.wakaztahir.kate.lexer.model.CharStaticToken
-import com.wakaztahir.kate.lexer.model.StringStaticToken
+import com.wakaztahir.kate.lexer.model.StaticToken
 
 object StaticTokens {
 
-    private fun token(text: String): StringStaticToken {
+    private fun token(text: String): StaticToken.String {
         require(text.length > 1) // TODO remove this once all tokens have been made
-        return StringStaticToken(text)
+        return StaticToken.String(text)
     }
 
-    private fun token(char: Char) = CharStaticToken(char)
+    private fun token(char: Char) = StaticToken.Char(char)
 
     val AtDirective = token('@')
 
@@ -31,8 +30,6 @@ object StaticTokens {
     val SingleSpace = token(' ')
 
     val SingleQuote = token('\'')
-
-    val DoubleQuote = token('"')
 
     val NewLine = token('\n')
 
@@ -126,8 +123,6 @@ object StaticTokens {
 
     val RightParenthesis = token(')')
 
-    val NegativeValueDash = token('-')
-
     val Dot = token('.')
 
     val LongEnder = token('L')
@@ -147,8 +142,6 @@ object StaticTokens {
     val RuntimeWriteChar = token("runtime.print_char")
 
     val RuntimeWriteString = token("runtime.print_string")
-
-
 
 
 }
