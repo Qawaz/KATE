@@ -2,14 +2,12 @@ package com.wakaztahir.kate.model
 
 import com.wakaztahir.kate.KATEDelicateFunction
 import com.wakaztahir.kate.lexer.tokens.StaticTokens
-import com.wakaztahir.kate.parser.block.DefaultNoRawString
 import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.parser.*
-import com.wakaztahir.kate.parser.block.ParsedBlock
-import com.wakaztahir.kate.parser.block.parse
 import com.wakaztahir.kate.parser.function.parseFunctionDefinition
 import com.wakaztahir.kate.lexer.stream.*
 import com.wakaztahir.kate.lexer.stream.increment
+import com.wakaztahir.kate.parser.block.*
 import com.wakaztahir.kate.parser.stream.DestinationStream
 import com.wakaztahir.kate.parser.stream.ParserSourceStream
 import com.wakaztahir.kate.parser.stream.TextDestinationStream
@@ -33,7 +31,7 @@ interface LazyBlock {
 
     fun canIterate(): Boolean
 
-    private fun MutableList<ParsedBlock.CodeGenRange>.appendChar(char: Char) {
+    fun MutableList<ParsedBlock.CodeGenRange>.appendChar(char: Char) {
         if (isNotEmpty() && last().gen is DefaultNoRawString) {
             last().incrementEndForDefaultNoRawStringGen(char)
         } else {
@@ -47,12 +45,26 @@ interface LazyBlock {
         }
     }
 
+    fun parseSingleNode(
+        state: BlockParseState,
+        onDirective: (ParsedBlock.CodeGenRange) -> Boolean,
+        onDefaultNoRawChar: (Char) -> Unit
+    ) = parseSingle(
+        state = state,
+        onDirective = onDirective,
+        onDefaultNoRawChar = onDefaultNoRawChar,
+    )
+
     fun parse(): ParsedBlock {
         val gens = mutableListOf<ParsedBlock.CodeGenRange>()
-        parse(
-            onDirective = { gens.add(it) },
-            onDefaultNoRawChar = { gens.appendChar(it) }
-        )
+        val state = BlockParseState()
+        while (canIterate()) {
+            parseSingle(
+                state = state,
+                onDirective = { gens.add(it) },
+                onDefaultNoRawChar = { gens.appendChar(it) }
+            )
+        }
         return ParsedBlock(codeGens = gens)
     }
 

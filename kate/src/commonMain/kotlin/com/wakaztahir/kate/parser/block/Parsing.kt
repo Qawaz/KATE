@@ -5,46 +5,51 @@ import com.wakaztahir.kate.model.LazyBlock
 import com.wakaztahir.kate.model.model.KATEParsingError
 import com.wakaztahir.kate.lexer.stream.increment
 
-inline fun LazyBlock.parse(
-    onDirective : (ParsedBlock.CodeGenRange)->Unit,
-    onDefaultNoRawChar : (Char)->Unit
+class BlockParseState(
+    var blockLineNumber : Int = 1,
+    var hasConsumedFirstLineIndentation : Boolean = false
+)
+
+inline fun LazyBlock.parseSingle(
+    state : BlockParseState,
+    onDirective: (ParsedBlock.CodeGenRange) -> Boolean,
+    onDefaultNoRawChar: (Char) -> Unit
 ) {
-    var blockLineNumber = 1
-    var hasConsumedFirstLineIndentation = false
-    while (canIterate()) {
-        val previous = source.pointer
-        val directive = try {
-            parseAtDirective()
-        } catch (e: Throwable) {
-            KATEParsingError(e)
+    val previous = source.pointer
+    val directive = try {
+        parseAtDirective()
+    } catch (e: Throwable) {
+        KATEParsingError(e)
+    }
+    if (directive != null) {
+        if (!onDirective(ParsedBlock.CodeGenRange(gen = directive, start = previous, end = source.pointer))) {
+            return
         }
-        if (directive != null) {
-            onDirective(ParsedBlock.CodeGenRange(gen = directive, start = previous, end = source.pointer))
-            if (!source.hasEnded && directive.expectSpaceOrNewLineWithIndentationAfterwards) {
-                if (!source.increment(StaticTokens.NewLine)) {
-                    source.increment(StaticTokens.SingleSpace)
-                } else {
-                    consumeLineIndentation()
-                }
-            } else if (directive.isEmptyWriter) {
+        if (!source.hasEnded && directive.expectSpaceOrNewLineWithIndentationAfterwards) {
+            if (!source.increment(StaticTokens.NewLine)) {
                 source.increment(StaticTokens.SingleSpace)
-            }
-        } else {
-            if (isDefaultNoRaw) {
-                if (blockLineNumber == 1 && (source.currentChar == '\t' || source.currentChar == ' ') && indentationLevel > 0 && !hasConsumedFirstLineIndentation) {
-                    consumeLineIndentation()
-                    hasConsumedFirstLineIndentation = true
-                    continue
-                } else {
-                    onDefaultNoRawChar(source.currentChar)
-                }
-            }
-            val isNewLine = source.currentChar == '\n'
-            source.incrementPointer()
-            if (isNewLine) {
+            } else {
                 consumeLineIndentation()
-                blockLineNumber++
             }
+        } else if (directive.isEmptyWriter) {
+            source.increment(StaticTokens.SingleSpace)
+        }
+    } else {
+        if (isDefaultNoRaw) {
+            val shouldConsumeLineIndentation = state.blockLineNumber == 1 && (source.currentChar == '\t' || source.currentChar == ' ') && indentationLevel > 0 && !state.hasConsumedFirstLineIndentation
+            if(!shouldConsumeLineIndentation){
+                onDefaultNoRawChar(source.currentChar)
+            } else {
+                consumeLineIndentation()
+                state.hasConsumedFirstLineIndentation = true
+                return
+            }
+        }
+        val isNewLine = source.currentChar == '\n'
+        source.incrementPointer()
+        if (isNewLine) {
+            consumeLineIndentation()
+            state.blockLineNumber++
         }
     }
 }
