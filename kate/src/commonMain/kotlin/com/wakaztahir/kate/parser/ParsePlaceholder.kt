@@ -119,25 +119,39 @@ fun LazyBlock.parsePlaceholderDefinition(): PlaceholderDefinition? {
 }
 
 fun LazyBlock.parsePlaceholderInvocation(): PlaceholderInvocation? {
-    PlaceholderInvocationLexer(source).lexPlaceholderToken()?.let {
-        return PlaceholderInvocation(
-            placeholderName = it.name,
-            definitionName = it.definitionName,
-            paramValue = it.param?.convert(TokenKATEValueConverter(provider)),
-            placeholderManager = source.placeholderManager,
-            invocationProvider = provider
-        )
+    if (source.incrementDirective(StaticTokens.PlaceholderCall)) {
+        val triple = source.parsePlaceHolderNameAndDefinitionAndParameter {
+            parseAnyExpressionOrValue(
+                parseDirectRefs = true
+            )
+        }
+        if (triple != null) {
+            return PlaceholderInvocation(
+                placeholderName = triple.first,
+                definitionName = triple.second,
+                paramValue = triple.third,
+                placeholderManager = source.placeholderManager,
+                invocationProvider = provider
+            )
+        } else {
+            throw IllegalStateException("placeholder name is required when invoking a placeholder using @placeholder")
+        }
     }
     return null
 }
 
 fun LazyBlock.parsePlaceholderUse(): PlaceholderUse? {
-    PlaceholderUseLexer(source).lexPlaceholderUseToken()?.let {
-        return PlaceholderUse(
-            placeholderName = it.name,
-            definitionName = it.definitionName,
-            placeholderManager = source.placeholderManager
-        )
+    if (source.incrementDirective(StaticTokens.PlaceholderUse)) {
+        val name = source.parsePlaceHolderNameAndDefinition()
+        if (name != null) {
+            return PlaceholderUse(
+                placeholderName = name.first,
+                definitionName = name.second,
+                placeholderManager = source.placeholderManager
+            )
+        } else {
+            throw IllegalStateException("placeholder name is required when invoking a placeholder using @placeholder")
+        }
     }
     return null
 }
