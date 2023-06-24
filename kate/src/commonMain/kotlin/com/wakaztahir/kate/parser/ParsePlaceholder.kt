@@ -1,6 +1,7 @@
 package com.wakaztahir.kate.parser
 
 import com.wakaztahir.kate.lexer.lexers.PlaceholderInvocationLexer
+import com.wakaztahir.kate.lexer.lexers.PlaceholderUseLexer
 import com.wakaztahir.kate.lexer.tokens.StaticTokens
 import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.lexer.stream.increment
@@ -131,17 +132,12 @@ fun LazyBlock.parsePlaceholderInvocation(): PlaceholderInvocation? {
 }
 
 fun LazyBlock.parsePlaceholderUse(): PlaceholderUse? {
-    if (source.incrementDirective(StaticTokens.PlaceholderUse)) {
-        val name = source.parsePlaceHolderNameAndDefinition()
-        if (name != null) {
-            return PlaceholderUse(
-                placeholderName = name.first,
-                definitionName = name.second,
-                placeholderManager = source.placeholderManager
-            )
-        } else {
-            throw IllegalStateException("placeholder name is required when invoking a placeholder using @placeholder")
-        }
+    PlaceholderUseLexer(source).lexPlaceholderUseToken()?.let {
+        return PlaceholderUse(
+            placeholderName = it.name,
+            definitionName = it.definitionName,
+            placeholderManager = source.placeholderManager
+        )
     }
     return null
 }
