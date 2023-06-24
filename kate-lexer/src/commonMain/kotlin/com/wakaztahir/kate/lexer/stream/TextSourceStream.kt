@@ -7,11 +7,23 @@ open class TextSourceStream(protected val sourceCode: String) : SourceStream {
     override val currentChar: Char
         get() = sourceCode[pointer]
 
+    override var lineNumber: Int = 1
+        protected set
+
+    override var columnNumber: Int = 1
+        protected set
+
     override val hasEnded get() = sourceCode.length == pointer
 
     protected fun setStreamPointer(position: Int): Boolean {
         return if (position <= sourceCode.length && position >= 0) {
             pointer = position
+            if (!hasEnded && currentChar == '\n') {
+                lineNumber++
+                columnNumber = 1
+            } else {
+                columnNumber++
+            }
             true
         } else {
             false

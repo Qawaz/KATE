@@ -8,6 +8,10 @@ interface SequentialStream {
 
     val currentChar: Char
 
+    val lineNumber : Int
+
+    val columnNumber : Int
+
     // Increments the stream pointer by 1
     fun incrementPointer(): Boolean
 

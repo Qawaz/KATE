@@ -11,15 +11,25 @@ import com.wakaztahir.kate.lexer.tokens.dynamic.PrimitiveToken
 class CommentLexer(source: SourceStream) : TokenLexersGroup(
     source = source,
     lexers = listOf(
-        StaticTokenLexer.String(
-            token = StaticTokens.CommentStart,
-            onNotFound = { null }
-        ),
-        Value,
-        StaticTokenLexer.String(
-            token = StaticTokens.CommentEnd,
-            onNotFound = { throw CommentLexException("comment must end with ${StaticTokens.CommentEnd}") }
-        ),
+        LexerFactory.New { scope ->
+            StaticTokenLexer.String(
+                token = StaticTokens.CommentStart,
+                onNotFound = {
+                    scope.stopLexing()
+                    null
+                }
+            )
+        },
+        LexerFactory.New { Value },
+        LexerFactory.New { scope ->
+            StaticTokenLexer.String(
+                token = StaticTokens.CommentEnd,
+                onNotFound = {
+                    scope.stopLexingWithError(CommentLexException("comment must end with ${StaticTokens.CommentEnd}"))
+                    null
+                }
+            )
+        },
     )
 ) {
 

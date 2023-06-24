@@ -3,9 +3,11 @@ package com.wakaztahir.kate.parser
 import com.wakaztahir.kate.lexer.model.StaticToken
 import com.wakaztahir.kate.lexer.model.TokenConverter
 import com.wakaztahir.kate.lexer.tokens.dynamic.AccessChainToken
+import com.wakaztahir.kate.lexer.tokens.dynamic.ErrorToken
 import com.wakaztahir.kate.lexer.tokens.dynamic.ExpressionToken
 import com.wakaztahir.kate.lexer.tokens.dynamic.PrimitiveToken
 import com.wakaztahir.kate.model.*
+import com.wakaztahir.kate.model.model.KATEParsingError
 import com.wakaztahir.kate.model.model.KATEValue
 import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
 
@@ -65,6 +67,10 @@ class TokenKATEValueConverter(val provider: ModelProvider) : TokenConverter<Refe
             operatorType = token.operator,
             second = token.second.convert(this)
         )
+    }
+
+    override fun convert(token: ErrorToken): ReferencedOrDirectValue {
+        return KATEParsingError(token.exception)
     }
 
 }

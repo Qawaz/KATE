@@ -25,9 +25,9 @@ internal fun ParserSourceStream.parsePrimitiveValue(): PrimitiveValue<*>? {
 
 class DefaultExpressionValueParser(private val parseDirectRefs: Boolean) : ExpressionValueParser {
     override fun LazyBlock.parseExpressionValue(): ReferencedOrDirectValue? {
-        DefaultExpressionValueLexer(parseDirectRefs).lex(source)?.let { return it.convert(TokenKATEValueConverter(provider)) }
-//        source.parsePrimitiveValue()?.let { return it }
-//        AccessChainLexer(parseDirectRefs = parseDirectRefs).lex(source)?.let { return it.convert(TokenKATEValueConverter(provider)) }
+//        DefaultExpressionValueLexer(parseDirectRefs).lex(source)?.let { return it.convert(TokenKATEValueConverter(provider)) }
+        source.parsePrimitiveValue()?.let { return it }
+        AccessChainLexer(parseDirectRefs = parseDirectRefs).lex(source)?.let { return it.convert(TokenKATEValueConverter(provider)) }
 //        parseVariableReference(parseDirectRefs = parseDirectRefs)?.let { return it }
         return null
     }

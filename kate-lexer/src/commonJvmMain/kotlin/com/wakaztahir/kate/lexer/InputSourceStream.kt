@@ -13,6 +13,12 @@ open class InputSourceStream(val inputStream: InputStream) : SourceStream {
 
     override val currentChar: Char get() = currentInt.toChar()
 
+    override var lineNumber: Int = 1
+        protected set
+
+    override var columnNumber: Int = 1
+        protected set
+
     override val hasEnded: Boolean get() = currentInt == -1
 
     private fun readInt(): Int {
@@ -27,6 +33,14 @@ open class InputSourceStream(val inputStream: InputStream) : SourceStream {
         if (position >= 0 && pointer != position) {
             pointer = position
             currentInt = readInt()
+            currentChar.let { current ->
+                if (current == '\n') {
+                    lineNumber++
+                    columnNumber = 1
+                } else {
+                    columnNumber++
+                }
+            }
             return true
         }
         return false
