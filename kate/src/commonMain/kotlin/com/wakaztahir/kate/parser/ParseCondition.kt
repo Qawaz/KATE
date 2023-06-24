@@ -104,16 +104,16 @@ private fun LazyBlock.parseIfBlockValue(ifType: IfType): IfParsedBlock {
 
     val blockEnder = if (ifType == IfType.Else) {
         source.incrementUntilDirectiveWithSkip(StaticTokens.If) {
-            source.incrementAndReturnDirective(StaticTokens.EndIf)
+            source.returnDirectiveAtCurrentPosition(StaticTokens.EndIf)
         }
     } else {
         source.incrementUntilDirectiveWithSkip(StaticTokens.If) { skips ->
             if (skips == 0) {
-                source.incrementAndReturnDirective(StaticTokens.ElseIf) ?: source.incrementAndReturnDirective(
+                source.returnDirectiveAtCurrentPosition(StaticTokens.ElseIf) ?: source.returnDirectiveAtCurrentPosition(
                     StaticTokens.Else
-                ) ?: source.incrementAndReturnDirective(StaticTokens.EndIf)
+                ) ?: source.returnDirectiveAtCurrentPosition(StaticTokens.EndIf)
             } else {
-                source.incrementAndReturnDirective(StaticTokens.EndIf)
+                source.returnDirectiveAtCurrentPosition(StaticTokens.EndIf)
             }
         }
     }
@@ -121,8 +121,6 @@ private fun LazyBlock.parseIfBlockValue(ifType: IfType): IfParsedBlock {
     if (blockEnder == null) {
         throw IllegalStateException("@if block must end with @elseif / @else / @endif")
     }
-
-    source.decrementPointer(blockEnder.length)
 
     val pointerBeforeEnder = source.pointer
 

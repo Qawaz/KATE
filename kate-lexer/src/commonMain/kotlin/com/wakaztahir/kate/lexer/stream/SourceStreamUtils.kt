@@ -5,34 +5,47 @@ import com.wakaztahir.kate.lexer.tokens.StaticTokens
 
 class UnexpectedEndOfStream(message: String) : Exception(message)
 
-fun SourceStream.increment(text: String, throwOnUnexpectedEOS: Boolean = false): Boolean {
+fun SourceStream.isAtCurrentPosition(text: String, offset: Int = 0, throwOnUnexpectedEOS: Boolean = false): Boolean {
     require(text.length > 1) {
         println("$text should be more than a single character")
     }
-    return lookAhead {
-        val previous = pointer
-        while (!hasEnded && pointer - previous < text.length) {
-            val current = pointer - previous
-            if (text[current] != currentChar) {
-                restorePosition()
-                return@lookAhead false
+    var x = 0
+//    if (lookAhead(0 + offset) == text[0]) { // unsure about this , condition works
+    while (x < text.length) {
+        lookAhead(x + offset)?.let {
+            if (text[x] != it) {
+                return false
             } else {
-                if (!incrementPointer()) {
-                    break
-                }
+                x++
             }
-        }
-        val current = pointer - previous
-        if (current == text.length) {
-            true
+        } ?: break
+    }
+//    }
+    return if (x == text.length) true else {
+        if (throwOnUnexpectedEOS) {
+            throw UnexpectedEndOfStream("unexpected end of stream , expected $text")
         } else {
-            if (throwOnUnexpectedEOS) {
-                throw UnexpectedEndOfStream("unexpected end of stream , expected $text")
-            } else {
-                restorePosition()
-                false
-            }
+            false
         }
+    }
+}
+
+
+@Suppress("NOTHING_TO_INLINE")
+inline fun SourceStream.isAtCurrentPosition(
+    token: StaticToken.String,
+    offset: Int = 0,
+    throwOnUnexpectedEOS: Boolean = false
+): Boolean {
+    return isAtCurrentPosition(token.representation, offset = offset, throwOnUnexpectedEOS = throwOnUnexpectedEOS)
+}
+
+fun SourceStream.increment(text: String, throwOnUnexpectedEOS: Boolean = false): Boolean {
+    return if (isAtCurrentPosition(text = text, throwOnUnexpectedEOS = throwOnUnexpectedEOS)) {
+        incrementPointer(amount = text.length)
+        true
+    } else {
+        false
     }
 }
 
@@ -40,18 +53,33 @@ fun SourceStream.increment(token: StaticToken.String): Boolean {
     return increment(token.representation)
 }
 
+fun SourceStream.isAtCurrentPosition(first: StaticToken.Char, second: StaticToken.String): Boolean {
+    return if (isAtCurrentPosition(first)) {
+        isAtCurrentPosition(second, offset = 1)
+    } else false
+}
+
+fun SourceStream.increment(first: StaticToken.Char, second: StaticToken.String): Boolean {
+    return if (isAtCurrentPosition(first, second)) {
+        incrementPointer(amount = second.representation.length + 1)
+        true
+    } else false
+}
+
+fun SourceStream.isDirectiveAtCurrentPosition(second: StaticToken.String): Boolean {
+    return if (isAtCurrentPosition(StaticTokens.AtDirective)) {
+        isAtCurrentPosition(second, offset = 1)
+    } else {
+        false
+    }
+}
+
 fun SourceStream.incrementDirective(second: StaticToken.String): Boolean {
-    return lookAhead {
-        if (increment(StaticTokens.AtDirective)) {
-            if (increment(second.representation)) {
-                true
-            } else {
-                restorePosition()
-                false
-            }
-        } else {
-            false
-        }
+    return if (isDirectiveAtCurrentPosition(second)) {
+        incrementPointer(amount = second.representation.length + 1)
+        true
+    } else {
+        false
     }
 }
 
@@ -60,23 +88,8 @@ fun SourceStream.incrementDirective(first: StaticToken.String, second: StaticTok
     return increment(StaticTokens.AtDirective.representation + first.representation + second.representation)
 }
 
-fun SourceStream.increment(first: StaticToken.Char, second: StaticToken.String): Boolean {
-    return lookAhead {
-        if (increment(first.representation)) {
-            if (increment(second.representation)) {
-                true
-            } else {
-                restorePosition()
-                false
-            }
-        } else {
-            false
-        }
-    }
-}
-
-fun SourceStream.incrementAndReturnDirective(second: StaticToken.String): String? {
-    return if (incrementDirective(second)) {
+fun SourceStream.returnDirectiveAtCurrentPosition(second: StaticToken.String): String? {
+    return if (isDirectiveAtCurrentPosition(second)) {
         StaticTokens.AtDirective.representation + second.representation
     } else null
 }
@@ -87,18 +100,27 @@ fun SourceStream.parseTextUntilConsumedDirectiveNew(
     return parseTextUntilConsumedNew(StaticTokens.AtDirective.representation + second.representation)
 }
 
-fun SourceStream.parseTextUntilConsumedNew(stopper: String): String? {
+fun SourceStream.readTextAheadUntil(text: String): String? {
     var parsedText = ""
-    return lookAhead {
-        while (!hasEnded) {
-            if (currentChar == stopper[0] && increment(stopper)) {
-                return@lookAhead parsedText
-            } else {
-                parsedText += currentChar
-            }
-            incrementPointer()
+    var x = 0
+    do {
+        val currChar = lookAhead(x)
+        if (currChar == text[0] && isAtCurrentPosition(text, offset = x)) {
+            return parsedText
+        } else {
+            parsedText += currChar
         }
-        restorePosition()
+        x++
+    } while (currChar != null)
+    return null
+}
+
+fun SourceStream.parseTextUntilConsumedNew(stopper: String): String? {
+    val text = readTextAheadUntil(text = stopper)
+    return if (text != null) {
+        incrementPointer(text.length + stopper.length)
+        text
+    } else {
         null
     }
 }
@@ -108,16 +130,11 @@ fun SourceStream.parseTextUntilConsumedNew(token: StaticToken.String): String? {
 }
 
 fun SourceStream.parseTextUntil(stopper: StaticToken.String): String? {
-    return lookAhead {
-        val previous = pointer
-        val text = parseTextUntilConsumedNew(stopper)
-        if (text != null) {
-            restoreIncrementing(pointer - previous - stopper.representation.length)
-            text
-        } else {
-            null
-        }
-    }
+    val text = readTextAheadUntil(text = stopper.representation)
+    return if (text != null) {
+        incrementPointer(text.length)
+        text
+    } else null
 }
 
 
@@ -125,42 +142,30 @@ fun SourceStream.incrementUntilConsumed(token: StaticToken.String): Boolean {
     return incrementUntilConsumed(token.representation)
 }
 
-
-fun SourceStream.incrementUntilConsumed(str: String): Boolean {
-    return lookAhead {
-        while (!hasEnded) {
-            if (currentChar == str[0] && increment(str)) {
-                return@lookAhead true
-            }
-            incrementPointer()
+fun SourceStream.incrementUntil(text: String): Boolean {
+    var x = 0
+    do {
+        val currChar = lookAhead(x)
+        if (currChar == text[0] && isAtCurrentPosition(text, offset = x)) {
+            incrementPointer(x)
+            return true
         }
-        restorePosition()
-        false
-    }
+        x++
+    } while (currChar != null)
+    return false
 }
 
-fun SourceStream.incrementUntil(str: String): Boolean {
-    return lookAhead {
-        val previous = pointer
-        if (incrementUntilConsumed(str)) {
-            restoreIncrementing(pointer - previous - str.length)
-            true
-        } else {
-            false
-        }
+fun SourceStream.incrementUntilConsumed(text: String): Boolean {
+    return if (incrementUntil(text)) {
+        incrementPointer(text.length)
+        true
+    } else {
+        false
     }
 }
 
 fun SourceStream.incrementUntil(token: StaticToken.String): Boolean {
     return incrementUntil(token.representation)
-}
-
-inline fun <T> SourceStream.resetIfNull(crossinline perform: SourceStream.() -> T?): T? {
-    return lookAhead {
-        val value = perform()
-        if (value == null) restorePosition()
-        value
-    }
 }
 
 fun SourceStream.escapeSpaces() {
@@ -189,14 +194,26 @@ inline fun SourceStream.parseTextWhile(block: SourceStream.() -> Boolean): Strin
     return text
 }
 
-fun SourceStream.printLeft() = resetIfNull {
-    println(parseTextWhile { true })
-    null
+fun SourceStream.readAllAheadFromCurrentPosition(): String? {
+    var parsedText = ""
+    var x = 0
+    do {
+        val currChar = lookAhead(x)
+        parsedText += currChar
+        x++
+    } while (currChar != null)
+    return null
 }
 
-fun SourceStream.printLeftAscii() = resetIfNull {
-    for (char in parseTextWhile { true }) println("$char:${char.code}")
-    null
+fun SourceStream.printLeft() {
+    println(readAllAheadFromCurrentPosition())
+}
+
+fun SourceStream.printLeftAscii() {
+    val text = readAllAheadFromCurrentPosition()
+    if (text != null) {
+        for (char in text) println("$char:${char.code}")
+    }
 }
 
 fun SourceStream.parseTextUntilConsumed(token: StaticToken.String): String {
@@ -207,7 +224,7 @@ fun SourceStream.parseTextUntilConsumed(token: StaticToken.String): String {
 
 inline fun SourceStream.incrementUntilDirectiveWithSkip(
     directive: StaticToken.String,
-    canIncrementDirective: (skips: Int) -> String?,
+    returnEnderAtCurrentPosition: (skips: Int) -> String?,
 ): String? {
     var skips = 0
     while (!hasEnded) {
@@ -216,11 +233,12 @@ inline fun SourceStream.incrementUntilDirectiveWithSkip(
                 skips++
                 continue
             } else {
-                val incremented = canIncrementDirective(skips)
-                if (incremented != null) {
+                val ender = returnEnderAtCurrentPosition(skips)
+                if (ender != null) {
                     if (skips == 0) {
-                        return incremented
+                        return ender
                     } else {
+                        incrementPointer(ender.length)
                         skips--
                         continue
                     }
@@ -234,36 +252,28 @@ inline fun SourceStream.incrementUntilDirectiveWithSkip(
 
 fun SourceStream.escapeBlockSpacesForward() {
 
-    val result = lookAhead {
-        while (!hasEnded) {
-            when (currentChar) {
-
-                '\r' -> {
-                    incrementPointer()
-                    if (currentChar == '\n') incrementPointer()
-                    return@lookAhead true
-                }
-
-                '\n' -> {
-                    incrementPointer()
-                    return@lookAhead true
-                }
-
-                ' ' -> {
-                    incrementPointer()
-                    continue
-                }
-
-                else -> {
-                    break
-                }
+    var x = 0
+    do {
+        val currChar = lookAhead(x)
+        when (currChar) {
+            '\r' -> {
+                incrementPointer(x + 1)
+                if (currentChar == '\n') incrementPointer()
+                return
             }
-        }
-        restorePosition()
-        false
-    }
 
-    if (result) return
+            '\n' -> {
+                incrementPointer(x + 1)
+                return
+            }
+
+            ' ' -> {
+                x++
+            }
+
+            else -> break
+        }
+    } while (currChar != null)
 
     if (currentChar == ' ') {
         incrementPointer()

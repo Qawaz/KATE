@@ -13,19 +13,6 @@ import com.wakaztahir.kate.parser.stream.ParserSourceStream
 
 typealias ArithmeticOperatorType = com.wakaztahir.kate.model.expression.ArithmeticOperatorType
 
-private fun ParserSourceStream.incrementTwoChars(char1: StaticToken.Char, char2: StaticToken.Char): Boolean {
-    return if (increment(char1)) {
-        if (increment(char2)) {
-            true
-        } else {
-            decrementPointer()
-            false
-        }
-    } else {
-        false
-    }
-}
-
 internal fun ParserSourceStream.parseArithmeticOperator(): ArithmeticOperatorType? {
     val result = when (currentChar) {
         // Arithmetic Operators

@@ -58,6 +58,14 @@ class IfStatementTest {
     }
 
     @Test
+    fun testBasicBlockValue() {
+        assertEquals(
+            expected = "blockValue",
+            actual = GenerateCode("@if(true) blockValue @endif")
+        )
+    }
+
+    @Test
     fun testBlockValue() {
         val context = TemplateContext("@if(@var(var1)) blockValue @endif")
         context.stream.model.insertValue("var1", true)

@@ -8,7 +8,7 @@ import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.runtime.GlobalObjectImplementation
 
 class TextParserSourceStream(
-    sourceCode: String,
+    sourceCode: CharSequence,
     override val model: MutableKATEObject = ModelObjectImpl(objectName = GlobalModelObjectName),
     override val placeholderManager: PlaceholderManager = ParserSourceStream.EmptyPlaceholderManager(),
     override val embeddingManager: EmbeddingManager = ParserSourceStream.NoEmbeddings,

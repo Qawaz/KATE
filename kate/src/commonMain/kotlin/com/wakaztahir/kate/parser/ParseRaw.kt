@@ -23,11 +23,8 @@ fun LazyBlock.parseBlockSlice(
     val previous = source.pointer
 
     val ender: String = source.incrementUntilDirectiveWithSkip(startsWith) {
-        source.incrementAndReturnDirective(endsWith)
+        source.returnDirectiveAtCurrentPosition(endsWith)
     } ?: throw IllegalStateException("$startsWith must end with $endsWith")
-
-
-    source.decrementPointer(ender.length)
 
     val pointerBeforeEnder = source.pointer
 

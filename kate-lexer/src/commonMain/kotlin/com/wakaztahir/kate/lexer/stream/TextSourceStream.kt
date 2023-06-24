@@ -1,6 +1,6 @@
 package com.wakaztahir.kate.lexer.stream
 
-open class TextSourceStream(protected val sourceCode: String) : SourceStream {
+open class TextSourceStream(protected val sourceCode: CharSequence) : SourceStream {
 
     override var pointer: Int = 0
 
@@ -49,7 +49,7 @@ open class TextSourceStream(protected val sourceCode: String) : SourceStream {
 
     override fun lookAhead(offset: Int): Char? {
         val position = pointer + offset
-        return if (position <= sourceCode.length) {
+        return if (position < sourceCode.length) {
             sourceCode[position]
         } else {
             null

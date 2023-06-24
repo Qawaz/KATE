@@ -45,7 +45,9 @@ object DefaultPlaceholderManagerInitializer {
         }catch (e : Exception){
             throw IllegalStateException("default placeholder initialization failed",e)
         }
-        require(destination.getValue().isEmpty())
+        require(destination.getValue().isEmpty()){
+            destination.getValue()
+        }
     }
 
 }
