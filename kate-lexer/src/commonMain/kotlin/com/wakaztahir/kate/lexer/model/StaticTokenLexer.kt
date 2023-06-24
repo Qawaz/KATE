@@ -18,9 +18,19 @@ sealed interface StaticTokenLexer : TokenLexer {
         }
     }
 
-    class Directive(private val token : StaticToken.String,private val onNotFound: () -> KATEToken?) : StaticTokenLexer {
+    object Whitespace : StaticTokenLexer {
+        override fun lex(stream: SourceStream): KATEToken {
+            val previous = stream.pointer
+            while (stream.currentChar == ' ') {
+                stream.incrementPointer()
+            }
+            return StaticToken.Whitespace(previous - stream.pointer)
+        }
+    }
+
+    class Directive(private val token: StaticToken.String, private val onNotFound: () -> KATEToken?) : StaticTokenLexer {
         override fun lex(stream: SourceStream): KATEToken? {
-            return if(stream.incrementDirective(token)) token else onNotFound()
+            return if (stream.incrementDirective(token)) token else onNotFound()
         }
     }
 

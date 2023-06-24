@@ -11,6 +11,8 @@ interface TokenConverter<T> {
 
     fun convert(token: StaticToken.Char): T
 
+    fun convert(token : StaticToken.Whitespace) : T
+
     fun convert(token: PrimitiveToken.BooleanToken): T
 
     fun convert(token: PrimitiveToken.CharToken): T
@@ -22,6 +24,8 @@ interface TokenConverter<T> {
     fun convert(token: PrimitiveToken.NumberToken.DoubleToken): T
 
     fun convert(token: PrimitiveToken.NumberToken.LongToken): T
+
+    fun convert(token : ArithmeticOperatorToken) : T
 
     fun convert(token: AccessChainToken): T
 

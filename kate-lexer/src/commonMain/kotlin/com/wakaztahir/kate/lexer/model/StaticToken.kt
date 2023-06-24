@@ -14,4 +14,10 @@ sealed interface StaticToken : KATEToken {
         }
     }
 
+    data class Whitespace(val amount : Int) : StaticToken {
+        override fun <T> convert(converter: TokenConverter<T>): T {
+            return converter.convert(this)
+        }
+    }
+
 }

@@ -1,16 +1,16 @@
 package com.wakaztahir.kate.parser.variable
 
+import com.wakaztahir.kate.lexer.lexers.VariableAssignmentLexer
 import com.wakaztahir.kate.lexer.tokens.StaticTokens
 import com.wakaztahir.kate.model.model.MutableKATEObject
 import com.wakaztahir.kate.model.*
 import com.wakaztahir.kate.model.model.KATEValue
 import com.wakaztahir.kate.model.model.ReferencedOrDirectValue
-import com.wakaztahir.kate.parser.ArithmeticOperatorType
-import com.wakaztahir.kate.parser.ExpressionValue
-import com.wakaztahir.kate.parser.parseAnyExpressionOrValue
-import com.wakaztahir.kate.parser.parseArithmeticOperator
 import com.wakaztahir.kate.lexer.stream.*
 import com.wakaztahir.kate.lexer.stream.increment
+import com.wakaztahir.kate.parser.*
+import com.wakaztahir.kate.parser.ExpressionValue
+import com.wakaztahir.kate.parser.parseArithmeticOperator
 import com.wakaztahir.kate.parser.stream.DestinationStream
 import com.wakaztahir.kate.parser.stream.ParserSourceStream
 import com.wakaztahir.kate.tokenizer.NodeTokenizer
@@ -85,7 +85,7 @@ internal fun ParserSourceStream.parseAssignmentLHS(isExplicitAssignment: Boolean
     } else if (isExplicitAssignment) {
         throw IllegalStateException("expected '${StaticTokens.SingleEqual}' after left hand side of the assignment expression with variable name $variableName but got $currentChar")
     }
-    if(isExplicitAssignment){
+    if (isExplicitAssignment) {
         throw IllegalStateException()
     }
     setPointerAt(previous)

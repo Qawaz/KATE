@@ -1,5 +1,6 @@
 package com.wakaztahir.kate.parser
 
+import com.wakaztahir.kate.lexer.model.ArithmeticOperatorToken
 import com.wakaztahir.kate.lexer.model.StaticToken
 import com.wakaztahir.kate.lexer.model.TokenConverter
 import com.wakaztahir.kate.lexer.tokens.dynamic.AccessChainToken
@@ -18,6 +19,10 @@ class TokenKATEValueConverter(val provider: ModelProvider) : TokenConverter<Refe
     }
 
     override fun convert(token: StaticToken.Char): KATEValue {
+        TODO("Not yet implemented")
+    }
+
+    override fun convert(token: StaticToken.Whitespace): ReferencedOrDirectValue {
         TODO("Not yet implemented")
     }
 
@@ -43,6 +48,10 @@ class TokenKATEValueConverter(val provider: ModelProvider) : TokenConverter<Refe
 
     override fun convert(token: PrimitiveToken.NumberToken.LongToken): KATEValue {
         return LongValue(token.value)
+    }
+
+    override fun convert(token: ArithmeticOperatorToken): ReferencedOrDirectValue {
+        TODO("Not yet implemented")
     }
 
     override fun convert(token: AccessChainToken): ReferencedOrDirectValue {
