@@ -13,6 +13,7 @@ open class TokenLexersGroup(
 ) : Lexer {
 
     private var index = 0
+    private var hasLexed = false
     private var errorToken: ErrorToken? = null
 
     init {
@@ -21,7 +22,7 @@ open class TokenLexersGroup(
 
     private val scope: ContinuationScope = object : ContinuationScope {
         override fun stopLexing() {
-            index = lexers.size
+            hasLexed = true
         }
 
         override fun stopLexingWithError(error: ErrorToken) {
@@ -31,8 +32,7 @@ open class TokenLexersGroup(
         override fun stopLexingWithError(error: Throwable) {
             errorToken = ErrorToken(
                 exception = error,
-                lineNumber = source.lineNumber,
-                columnNumber = source.columnNumber
+                stream = source
             )
         }
     }
@@ -41,25 +41,24 @@ open class TokenLexersGroup(
         return lexers[index].createLexer(scope)
     }
 
-    private fun tokenNotFound(): KATEToken? {
-        return null
-    }
-
     override fun lexAndIncrementToken(): KATEToken? {
-        return if (index < lexers.size) {
-            if (errorToken != null) {
-                index = lexers.size
-                return errorToken
-            }
-            val token = getLexerAt(index).lex(source) ?: tokenNotFound()
+        if (hasLexed) {
             index++
-            token
-        } else null
+            return null
+        }
+        if (errorToken != null) {
+            index++
+            hasLexed = true
+            return errorToken
+        }
+        val token = getLexerAt(index).lex(source)
+        index++
+        return token
     }
 
-    fun lexTokens(): List<KATEToken>? {
-        val list = mutableListOf<KATEToken>()
-        while (index < lexers.size) lexAndIncrementToken()?.let { list.add(it) } ?: return null
+    fun lexTokens(): List<KATEToken?>? {
+        val list = mutableListOf<KATEToken?>()
+        while (index < lexers.size) list.add(lexAndIncrementToken())
         if (list.isEmpty()) return null
         return list
     }

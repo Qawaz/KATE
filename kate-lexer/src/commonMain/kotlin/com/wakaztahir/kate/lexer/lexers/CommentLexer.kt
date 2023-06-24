@@ -43,7 +43,7 @@ class CommentLexer(source: SourceStream) : TokenLexersGroup(
     }
 
     fun lexCommentText(): String? {
-        return lexTokens()?.let { (it[1] as PrimitiveToken.StringToken).text }
+        return lexTokens()?.let { (it[1] as? PrimitiveToken.StringToken)?.text }
     }
 
 }
