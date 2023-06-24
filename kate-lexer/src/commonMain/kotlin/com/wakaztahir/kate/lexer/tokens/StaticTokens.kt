@@ -139,9 +139,6 @@ object StaticTokens {
 
     val RightBrace = token('}')
 
-    val RuntimeWriteChar = token("runtime.print_char")
-
-    val RuntimeWriteString = token("runtime.print_string")
-
+    val RuntimeWrite = token("write")
 
 }

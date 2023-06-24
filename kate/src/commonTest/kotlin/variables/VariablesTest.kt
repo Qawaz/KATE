@@ -46,7 +46,7 @@ class VariablesTest {
         assertEquals(
             expected = "5",
             actual = GenerateCode(
-                "@var i = 5 @var j = @var(i) @runtime.print_string(j.toString())"
+                "@var i = 5 @var j = @var(i) @write(j.toString())"
             )
         )
     }

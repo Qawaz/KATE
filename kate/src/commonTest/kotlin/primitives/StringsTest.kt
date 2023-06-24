@@ -11,15 +11,15 @@ class StringsTest {
     fun testStringConcatenation() {
         assertEquals(
             expected = "hello",
-            actual = GenerateCode("@runtime.print_string(\"hel\" + \"lo\")")
+            actual = GenerateCode("@write(\"hel\" + \"lo\")")
         )
         assertEquals(
             expected = "hello",
-            actual = GenerateCode("@var hel = \"hel\"@runtime.print_string(@var(hel) + \"lo\")")
+            actual = GenerateCode("@var hel = \"hel\"@write(@var(hel) + \"lo\")")
         )
         assertEquals(
             expected = "hello",
-            actual = GenerateCode("@var lo = \"lo\"@runtime.print_string(\"hel\" + @var(lo))")
+            actual = GenerateCode("@var lo = \"lo\"@write(\"hel\" + @var(lo))")
         )
         assertEquals(
             expected = "hello",

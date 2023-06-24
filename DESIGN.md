@@ -382,14 +382,14 @@ the definition name when calling `@use_placeholder`
 
 Now when you invoke / call the placeholder , `GreetingText` will be used again , instead of `NewsText`
 
-## Runtime Directives
+## Runtime Write
 
-Runtime directives call functions in the runtime , Currently these directives are available
+To write a value to output, Any value can be written
 
-| Directive                        | Description                    |
-|----------------------------------|--------------------------------|
-| `@runtime.print_char('x')`       | Prints the character to output |
-| `@runtime.print_string("hello")` | Prints the string to output    |
+| Directive         | Description                    |
+|-------------------|--------------------------------|
+| `@write('x')`     | Prints the character to output |
+| `@write("hello")` | Prints the string to output    |
 
 ## Function Definition
 

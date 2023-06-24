@@ -68,14 +68,14 @@ Call a placeholder by the name of `int` using variable `@var(i)` as parameter
 It does that using the following code
 
 ```
-@runtime.print_string(@var(__param__.toString()))
+@write(@var(__param__.toString()))
 ```
 
 Say if you wanted to write `Kate` or any text before printing every `int` to output
 
 ```
 @define_placeholder(int,kateint)
-    Kate@runtime.print_string(@var(__param__.toString()))
+    Kate@write(@var(__param__.toString()))
 @end_define_placeholder
 @var i = 5 @var(i)
 ```

@@ -30,7 +30,7 @@ class FunctionsTest {
             expected = "hello",
             actual = GeneratePartialRaw(
                 """@function myFunc()
-                |@runtime.print_string("hello")
+                |@write("hello")
                 |@end_function
                 |@var another = myFunc
                 |another()""".trimMargin()
@@ -43,7 +43,7 @@ class FunctionsTest {
                 |otherFunc()
                 |@end_function
                 |@function call()
-                |@runtime.print_string("hello")
+                |@write("hello")
                 |@end_function
                 |myFunc(call)""".trimMargin()
             )
@@ -60,7 +60,7 @@ class FunctionsTest {
             expected = "hello1",
             actual = GenerateCode(
                 """@function myFunc()
-                |@runtime.print_string("hello1")
+                |@write("hello1")
                 |@end_function
                 |@var(myFunc())""".trimMargin()
             )
@@ -70,7 +70,7 @@ class FunctionsTest {
             actual = GeneratePartialRaw(
                 """
                 |@function First()
-                |@runtime.print_string("hello2")
+                |@write("hello2")
                 |@end_function
                 |@var(First())
                 """.trimMargin()
@@ -80,7 +80,7 @@ class FunctionsTest {
             GeneratePartialRaw(
                 """
                 |@function Second(param1)
-                |@runtime.print_string(@var(param1))
+                |@write(@var(param1))
                 |@end_function
                 |@var(Second())
                 """.trimMargin()
@@ -91,7 +91,7 @@ class FunctionsTest {
             actual = GeneratePartialRaw(
                 """
                 |@function MyFunc(param1)
-                |@runtime.print_string(param1)
+                |@write(param1)
                 |@end_function
                 |MyFunc("world")
                 """.trimMargin()
@@ -103,7 +103,7 @@ class FunctionsTest {
                 """
                 |@function indent(indentation)
                 |   @for(@var i = 0;i<indentation;i++)
-                |      @runtime.print_char('\t')
+                |      @write('\t')
                 |   @endfor
                 |@end_function
                 |indent(3)
@@ -115,7 +115,7 @@ class FunctionsTest {
             actual = GeneratePartialRaw(
                 """
                 |@function MyFunc(param1)
-                |@runtime.print_string(@var(param1))
+                |@write(@var(param1))
                 |@end_function
                 |@var(MyFunc("world"))
                 """.trimMargin()

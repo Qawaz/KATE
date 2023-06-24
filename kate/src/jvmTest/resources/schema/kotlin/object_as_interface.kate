@@ -9,7 +9,7 @@
 		@for(@var i=0;i<keys.size();i++)
             @if(object[keys[i]].getType().startsWith("object"))
                 @var(writeObjectAsKotlinInterface(object[keys[i]],appendI))
-                @runtime.print_string("\n\n")
+                @write("\n\n")
             @endif
         @endfor
 
@@ -17,14 +17,14 @@
 		@default_no_raw
 			interface @if(appendI) I @endif @var(object.getName()) {
 		@end_default_no_raw
-        @runtime.print_string("\n")
+        @write("\n")
 
 		@for(@var i=0;i<keys.size();i++)
-		    @runtime.print_char('\t')
+		    @write('\t')
 		    @default_no_raw
 				val @var(keys[i].decapitalize()) : @var(getKotlinType(object[keys[i]]))
 			@end_default_no_raw
-			@runtime.print_string("\n")
+			@write("\n")
 		@endfor
 		@raw } @endraw
 

@@ -16,12 +16,12 @@ object DefaultPlaceholderManagerInitializer {
     private fun placeholderBlock(name: String, content: String) =
         "@define_placeholder($name) $content @end_define_placeholder"
 
-    private fun functionPlaceholder(name: String, call: String, writer: String = "print_string") =
-        placeholderBlock(name = name, content = "@runtime.$writer(__param__$call)")
+    private fun functionPlaceholder(name: String, call: String) =
+        placeholderBlock(name = name, content = "@write(__param__$call)")
 
     private fun toStringPlaceholder(name: String) = functionPlaceholder(name = name, call = ".toString()")
     private fun joinToStringPlaceholder(name: String) = functionPlaceholder(name = name, call = ".joinToString()")
-    private fun toCharPlaceholder(name: String) = functionPlaceholder(name = name, call = "", writer = "print_char")
+    private fun toCharPlaceholder(name: String) = functionPlaceholder(name = name, call = "")
 
     fun initializerDefaultPlaceholders(source: ParserSourceStream) {
         val destination = TextDestinationStream()

@@ -2,10 +2,12 @@ package com.wakaztahir.kate.model
 
 import com.wakaztahir.kate.model.model.KATEValue
 import com.wakaztahir.kate.parser.ArithmeticOperatorType
+import com.wakaztahir.kate.parser.stream.DestinationStream
 import com.wakaztahir.kate.runtime.*
+import com.wakaztahir.kate.tokenizer.NodeTokenizer
 import kotlin.jvm.JvmInline
 
-interface PrimitiveValue<T : Any> : KATEValue {
+interface PrimitiveValue<T : Any> : KATEValue,CodeGen {
 
     val value: T
 
@@ -88,6 +90,14 @@ value class CharValue(override val value: Char) : PrimitiveValue<Char> {
         return value.toString()
     }
 
+    override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T {
+        TODO("Not yet implemented")
+    }
+
+    override fun generateTo(destination: DestinationStream) {
+        destination.stream.write(value)
+    }
+
 }
 
 @JvmInline
@@ -141,6 +151,14 @@ value class IntValue(override val value: Int) : PrimitiveValue<Int> {
 
     override fun toString(): String = value.toString()
 
+    override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T {
+        TODO("Not yet implemented")
+    }
+
+    override fun generateTo(destination: DestinationStream) {
+        destination.stream.write(value.toString())
+    }
+
 }
 
 @JvmInline
@@ -190,6 +208,14 @@ value class DoubleValue(override val value: Double) : PrimitiveValue<Double> {
 
     override fun getModelReference(reference: ModelReference): KATEValue? {
         return DoubleImplementation.propertyMap[reference.name]
+    }
+
+    override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T {
+        TODO("Not yet implemented")
+    }
+
+    override fun generateTo(destination: DestinationStream) {
+        destination.stream.write(value.toString())
     }
 
     override fun toString(): String = value.toString()
@@ -245,6 +271,14 @@ value class LongValue(override val value: Long) : PrimitiveValue<Long> {
         return LongImplementation.propertyMap[reference.name]
     }
 
+    override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T {
+        TODO("Not yet implemented")
+    }
+
+    override fun generateTo(destination: DestinationStream) {
+        destination.stream.write(value.toString())
+    }
+
     override fun toString(): String = value.toString()
 
 }
@@ -276,6 +310,14 @@ value class BooleanValue(override val value: Boolean) : PrimitiveValue<Boolean> 
 
     override fun getModelReference(reference: ModelReference): KATEValue? {
         return BooleanImplementation.propertyMap[reference.name]
+    }
+
+    override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T {
+        TODO("Not yet implemented")
+    }
+
+    override fun generateTo(destination: DestinationStream) {
+        destination.stream.write(value.toString())
     }
 
     override fun toString(): String = value.toString()
@@ -329,6 +371,14 @@ value class StringValue(override val value: String) : PrimitiveValue<String> {
                 throw IllegalStateException("operator '${type.char}' cannot be applied with an unknown value")
             }
         }
+    }
+
+    override fun <T> selectNode(tokenizer: NodeTokenizer<T>): T {
+        TODO("Not yet implemented")
+    }
+
+    override fun generateTo(destination: DestinationStream) {
+        destination.stream.write(value.toString())
     }
 
     override fun toString(): String = value

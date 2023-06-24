@@ -6,23 +6,23 @@
 
         @function indent()
             @for(@var i = 0;i<indentation;i++)
-                @runtime.print_char('\t')
+                @write('\t')
             @endfor
         @end_function
 
-		@runtime.print_char('{')
+		@write('{')
 
-        @runtime.print_char('\n')
+        @write('\n')
 
         @function listValue(param)
-            @runtime.print_char('[')
+            @write('[')
             @for(@var j = 0;j<param.size();j++)
                 @var(jsonValue(param[j]))
                 @default_no_raw
                     @if(j != param.size() - 1) , @endif
                 @end_default_no_raw
             @endfor
-            @runtime.print_char(']')
+            @write(']')
         @end_function
 
         @function jsonValue(param)
@@ -51,25 +51,25 @@
 
             @var(indent())
 
-            @runtime.print_char('\t')
+            @write('\t')
 
 		    @default_no_raw
                 "@var(keys[i].decapitalize())" :
 			@end_default_no_raw
 
-			@runtime.print_char(' ')
+			@write(' ')
 
 			@var(jsonValue(object[keys[i]]))
 
 			@var(separator())
 
-			@runtime.print_char('\n')
+			@write('\n')
 
 		@endfor
 
 		@var(indent())
 
-		@runtime.print_char('}')
+		@write('}')
 
     @end_function
 

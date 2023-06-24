@@ -9,7 +9,7 @@
         @for(@var i=0;i<keys.size();i++)
             @if(object[keys[i]].getType().startsWith("object"))
                 @var(writeObjectAsKotlinDataClass(object[keys[i]],overriding))
-                @runtime.print_string("\n\n")
+                @write("\n\n")
             @endif
         @endfor
 
@@ -23,7 +23,7 @@
 		    @default_no_raw
                     @if(overriding) override  @endif val @var(keys[i].decapitalize()) : @var(getKotlinType(object[keys[i]])),
 			@end_default_no_raw
-			@runtime.print_string("\n")
+			@write("\n")
 		@endfor
 		@default_no_raw
 		    )
