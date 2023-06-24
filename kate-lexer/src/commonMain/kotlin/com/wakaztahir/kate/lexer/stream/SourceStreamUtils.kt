@@ -100,6 +100,21 @@ fun SourceStream.parseTextUntilConsumedDirectiveNew(
     return parseTextUntilConsumedNew(StaticTokens.AtDirective.representation + second.representation)
 }
 
+fun SourceStream.readTextAheadUntil(char: Char): String? {
+    var parsedText = ""
+    var x = 0
+    do {
+        val currChar = lookAhead(x)
+        if (currChar == char) {
+            return parsedText
+        } else {
+            parsedText += currChar
+        }
+        x++
+    } while (currChar != null)
+    return null
+}
+
 fun SourceStream.readTextAheadUntil(text: String): String? {
     var parsedText = ""
     var x = 0

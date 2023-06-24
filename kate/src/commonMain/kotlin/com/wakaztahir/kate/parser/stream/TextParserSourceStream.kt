@@ -9,11 +9,17 @@ import com.wakaztahir.kate.runtime.GlobalObjectImplementation
 
 class TextParserSourceStream(
     sourceCode: CharSequence,
+    startPosition: Int = 0,
+    endPosition: Int = sourceCode.length,
     override val model: MutableKATEObject = ModelObjectImpl(objectName = GlobalModelObjectName),
     override val placeholderManager: PlaceholderManager = ParserSourceStream.EmptyPlaceholderManager(),
     override val embeddingManager: EmbeddingManager = ParserSourceStream.NoEmbeddings,
     initialize: Boolean = true
-) : TextSourceStream(sourceCode = sourceCode), ParserSourceStream {
+) : TextSourceStream(
+    sourceCode = sourceCode,
+    startPosition = startPosition,
+    endPosition = endPosition,
+), ParserSourceStream {
 
     init {
         if (initialize) {

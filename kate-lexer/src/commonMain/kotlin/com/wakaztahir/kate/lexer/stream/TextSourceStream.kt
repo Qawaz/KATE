@@ -1,8 +1,12 @@
 package com.wakaztahir.kate.lexer.stream
 
-open class TextSourceStream(protected val sourceCode: CharSequence) : SourceStream {
+open class TextSourceStream(
+    protected val sourceCode: CharSequence,
+    startPosition: Int = 0,
+    private val endPosition: Int = sourceCode.length
+) : SourceStream {
 
-    override var pointer: Int = 0
+    override var pointer: Int = startPosition
 
     override val currentChar: Char
         get() = sourceCode[pointer]
@@ -13,7 +17,7 @@ open class TextSourceStream(protected val sourceCode: CharSequence) : SourceStre
     override var columnNumber: Int = 1
         protected set
 
-    override val hasEnded get() = sourceCode.length == pointer
+    override val hasEnded get() = pointer == endPosition
 
     protected fun setStreamPointer(position: Int): Boolean {
         return if (position <= sourceCode.length && position >= 0) {
