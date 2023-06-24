@@ -95,7 +95,6 @@ class VariableAssignmentLexer(source: SourceStream, val isDefaultNoRaw: Boolean)
             val name = list[2]?.let { it as PrimitiveToken.StringToken } ?: return null
             val arithmeticOperatorToken = list[4]?.let { it as ArithmeticOperatorToken }
             val value = list[7]?.let { it as ValueToken }
-            println(list)
             VariableAssignment(
                 variableName = name.text,
                 arithmeticOperatorType = arithmeticOperatorToken?.operator,
