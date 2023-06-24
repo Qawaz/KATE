@@ -116,9 +116,9 @@ interface LazyBlock {
         parsePlaceholderInvocation()?.let { return it }
         parseFunctionDefinition(anonymousFunctionName = null)?.let { return it }
         parsePlaceholderUse()?.let { return it }
-        parseVariableDeclaration()?.let { return it }
         parseVariableAssignment()?.let { return it }
         parseImplicitDirectives()?.let { return it }
+        parseVariableDeclaration()?.let { return it }
         return null
     }
 

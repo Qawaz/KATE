@@ -51,12 +51,7 @@ data class VariableDeclaration(
 }
 
 internal fun ParserSourceStream.parseVariableName(): String? {
-    val previous = pointer
     if (incrementDirective(StaticTokens.Var)) {
-        if (currentChar == '(') {
-            setPointerAt(previous)
-            return null
-        }
         increment(StaticTokens.SingleSpace)
         return parseTextWhile { currentChar.isVariableName() }
     }
