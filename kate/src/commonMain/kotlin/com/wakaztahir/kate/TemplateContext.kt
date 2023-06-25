@@ -11,7 +11,7 @@ class TemplateContext(stream: ParserSourceStream) {
     constructor(text: String, model: MutableKATEObject = ModelObjectImpl(GlobalModelObjectName)) : this(
         TextParserSourceStream(
             text,
-            model
+            model = model
         )
     )
 
@@ -23,7 +23,7 @@ class TemplateContext(stream: ParserSourceStream) {
     }
 
     fun updateStream(text: String) {
-        this.stream = TextParserSourceStream(text, this.stream.model)
+        this.stream = TextParserSourceStream(text, model = this.stream.model)
     }
 
     @OptIn(KATEDelicateFunction::class)

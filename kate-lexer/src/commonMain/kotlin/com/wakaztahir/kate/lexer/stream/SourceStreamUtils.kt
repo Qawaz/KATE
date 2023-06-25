@@ -100,14 +100,14 @@ fun SourceStream.parseTextUntilConsumedDirectiveNew(
     return parseTextUntilConsumedNew(StaticTokens.AtDirective.representation + second.representation)
 }
 
-fun SourceStream.readTextAheadUntil(char: Char): String? {
+fun SourceStream.readTextAheadUntil(stopIf: (currChar: Char?, offset: Int) -> Boolean): String? {
     var parsedText = ""
     var x = 0
     do {
         val currChar = lookAhead(x)
-        if (currChar == char) {
+        if (stopIf(currChar, x)) {
             return parsedText
-        } else {
+        } else if(currChar != null) {
             parsedText += currChar
         }
         x++
@@ -115,25 +115,32 @@ fun SourceStream.readTextAheadUntil(char: Char): String? {
     return null
 }
 
-fun SourceStream.readTextAheadUntil(text: String): String? {
-    var parsedText = ""
-    var x = 0
-    do {
-        val currChar = lookAhead(x)
-        if (currChar == text[0] && isAtCurrentPosition(text, offset = x)) {
-            return parsedText
-        } else {
-            parsedText += currChar
-        }
-        x++
-    } while (currChar != null)
-    return null
+/**
+ * reads the text until [stopAt] is at current position
+ * if the stream ends before [stopAt] is found , null is returned
+ * if [stopAt] already exists at current position , empty string is returned
+ */
+@Suppress("NOTHING_TO_INLINE")
+inline fun SourceStream.readTextAheadUntil(stopAt: Char): String? {
+    return readTextAheadUntil { currChar, _ -> currChar == stopAt }
 }
 
-fun SourceStream.parseTextUntilConsumedNew(stopper: String): String? {
-    val text = readTextAheadUntil(text = stopper)
+/**
+ * reads the text until [stopAt] is at current position
+ * if the stream ends before [stopAt] is found , null is returned
+ * if [stopAt] exists at current position , empty string is returned
+ */
+@Suppress("NOTHING_TO_INLINE")
+inline fun SourceStream.readTextAheadUntil(stopAt: String): String? {
+    return readTextAheadUntil { currChar, offset ->
+        currChar == stopAt[0] && isAtCurrentPosition(stopAt,offset)
+    }
+}
+
+fun SourceStream.parseTextUntilConsumedNew(stopAt: String): String? {
+    val text = readTextAheadUntil(stopAt = stopAt)
     return if (text != null) {
-        incrementPointer(text.length + stopper.length)
+        incrementPointer(text.length + stopAt.length)
         text
     } else {
         null
@@ -145,7 +152,7 @@ fun SourceStream.parseTextUntilConsumedNew(token: StaticToken.String): String? {
 }
 
 fun SourceStream.parseTextUntil(stopper: StaticToken.String): String? {
-    val text = readTextAheadUntil(text = stopper.representation)
+    val text = readTextAheadUntil(stopAt = stopper.representation)
     return if (text != null) {
         incrementPointer(text.length)
         text

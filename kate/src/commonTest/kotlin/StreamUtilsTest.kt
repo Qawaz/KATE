@@ -54,4 +54,24 @@ class StreamUtilsTest {
         assertEquals("my comment", context.stream.parseTextWhile { currentChar != '-' })
     }
 
+    @Test
+    fun testReadTextAhead() {
+        val context = TemplateContext("hello world")
+        // Testing lambda version
+        assertEquals("",context.stream.readTextAheadUntil { char,_ -> char == 'h' })
+        assertEquals("hello worl",context.stream.readTextAheadUntil { char,_ -> char == 'd' })
+        assertEquals("hello ",context.stream.readTextAheadUntil { char,_ -> char == 'w' })
+        assertEquals(null,context.stream.readTextAheadUntil { char,_ -> char == 'x' })
+        assertEquals("hello world",context.stream.readTextAheadUntil { char,_ -> char == 'x' || char == null })
+        // Testing string version
+        assertEquals("hello ",context.stream.readTextAheadUntil("world"))
+        assertEquals("",context.stream.readTextAheadUntil("hello"))
+        assertEquals(null,context.stream.readTextAheadUntil("no"))
+        // Testing character version
+        assertEquals("hello ",context.stream.readTextAheadUntil('w'))
+        assertEquals("hello worl",context.stream.readTextAheadUntil('d'))
+        assertEquals("",context.stream.readTextAheadUntil('h'))
+        assertEquals(null,context.stream.readTextAheadUntil('x'))
+    }
+
 }

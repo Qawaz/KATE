@@ -2,7 +2,7 @@ package com.wakaztahir.kate.lexer.stream
 
 open class TextSourceStream(
     protected val sourceCode: CharSequence,
-    startPosition: Int = 0,
+    private val startPosition: Int = 0,
     private val endPosition: Int = sourceCode.length
 ) : SourceStream {
 
@@ -17,10 +17,11 @@ open class TextSourceStream(
     override var columnNumber: Int = 1
         protected set
 
-    override val hasEnded get() = pointer == endPosition
+    override val hasEnded get() = pointer >= endPosition
 
     protected fun setStreamPointer(position: Int): Boolean {
-        return if (position <= sourceCode.length && position >= 0) {
+        @Suppress("ConvertTwoComparisonsToRangeCheck")
+        return if (position >= startPosition && position <= endPosition) {
             pointer = position
             if (!hasEnded && currentChar == '\n') {
                 lineNumber++
@@ -53,7 +54,7 @@ open class TextSourceStream(
 
     override fun lookAhead(offset: Int): Char? {
         val position = pointer + offset
-        return if (position < sourceCode.length) {
+        return if (position < endPosition) {
             sourceCode[position]
         } else {
             null
@@ -63,7 +64,7 @@ open class TextSourceStream(
     override fun lookAhead(offset: Int, length: Int): String? {
         val start = pointer + offset
         val stop = start + length
-        return if (stop <= sourceCode.length) {
+        return if (stop <= endPosition) {
             sourceCode.substring(start, stop)
         } else {
             null
